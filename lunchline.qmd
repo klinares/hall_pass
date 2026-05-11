@@ -1,0 +1,357 @@
+---
+title: "lunchline"
+subtitle: "Scrape school cafeteria menus and push them to Google Calendar"
+author: "Fallsmead ES family edition"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: show
+    code-tools: true
+    theme: cosmo
+    embed-resources: true
+execute:
+  warning: false
+  message: false
+---
+
+## What this does
+
+Pulls breakfast and lunch menus from the [MealViewer](https://www.mealviewer.com) API for a given school, writes them to a `.ics` calendar file, and optionally pushes the events straight into Google Calendar via the Calendar API.
+
+The default behavior is **"give me everything from today through whatever future menus MealViewer has published."** No manual date ranges, no clicking through school websites.
+
+### Pipeline
+
+```         
+MealViewer API  ──▶  tibble of menu items  ──▶  one event per (date, meal)
+                                                       │
+                                  ┌────────────────────┴────────────────────┐
+                                  ▼                                         ▼
+                            fallsmead_menus.ics                    Google Calendar API
+                            (backup / manual import)                (direct push, idempotent)
+```
+
+## Setup
+
+```{r}
+#| label: setup
+
+# Install (one-time):
+# install.packages(c("tidyverse", "httr2", "lubridate", "googleAuthR", "cli"))
+
+library(tidyverse)
+library(httr2)
+library(lubridate)
+library(googleAuthR)
+library(cli)
+```
+
+### Configuration
+
+Change `SCHOOL_KEY` to point at a different school. Find your school's key by visiting `mealviewer.com`, searching for the school, and copying the slug from the URL (e.g. `https://schools.mealviewer.com/school/FallsmeadES` → `FallsmeadES`).
+
+```{r}
+#| label: config
+
+SCHOOL_KEY  <- "FallsmeadES"
+SCHOOL_NAME <- "Fallsmead ES"
+BASE_URL    <- "https://api.mealviewer.com/api/v4/school"
+
+# How far ahead to ask MealViewer for menus. The API silently returns whatever
+# subset of this window it actually has data for, so being generous is free.
+LOOKAHEAD_DAYS <- 60
+
+# Where the calendar lands. Relative to the .qmd file when rendered, or to
+# getwd() when run interactively chunk-by-chunk.
+OUTPUT_ICS <- "fallsmead_menus.ics"
+```
+
+## Step 1 — Fetch from MealViewer
+
+MealViewer's API takes a school key and a date range formatted `MM-DD-YYYY`. We chunk requests into 30-day windows to be polite and to avoid any quiet truncation on the server side.
+
+```{r}
+#| label: fetch-functions
+
+fetch_menu_chunk <- function(school_key, start_date, end_date) {
+  url <- str_glue(
+    "{BASE_URL}/{school_key}/",
+    "{format(start_date, '%m-%d-%Y')}/{format(end_date, '%m-%d-%Y')}/"
+  )
+
+  cli_alert_info("Fetching {format(start_date)} → {format(end_date)}")
+
+  resp <- tryCatch(
+    request(url) |>
+      req_headers(
+        "Accept"     = "application/json",
+        "User-Agent" = "lunchline/0.1 (R; tidyverse)"
+      ) |>
+      req_retry(max_tries = 3, backoff = \(i) 2^i) |>
+      req_perform(),
+    error = function(e) {
+      cli_alert_danger("Request failed: {e$message}")
+      NULL
+    }
+  )
+
+  if (is.null(resp) || resp_status(resp) != 200) return(NULL)
+  resp_body_json(resp)
+}
+```
+
+Parsing is verbose because MealViewer nests its data four levels deep (`menuSchedules → menuBlocks → cafeteriaLineList → foodItemList`). We flatten it into one row per food item.
+
+```{r}
+#| label: parse-functions
+
+# Parse one date from MealViewer's `dateInformation` block.
+# It exposes both `dateFull` ("2026-04-07T00:00:00") and `dateKey` (20260407).
+# We try both because individual schools sometimes omit one or the other.
+parse_menu_date <- function(date_info) {
+  if (!is.null(date_info$dateFull) && nchar(date_info$dateFull) > 0) {
+    d <- suppressWarnings(as_date(ymd_hms(date_info$dateFull)))
+    if (!is.na(d)) return(d)
+  }
+  if (!is.null(date_info$dateKey)) {
+    d <- suppressWarnings(ymd(as.character(date_info$dateKey)))
+    if (!is.na(d)) return(d)
+  }
+  NA
+}
+
+parse_menu_response <- function(api_response) {
+  if (is.null(api_response$menuSchedules) || length(api_response$menuSchedules) == 0) {
+    return(tibble())
+  }
+
+  # walk the four-level nest with map_dfr at each layer
+  api_response$menuSchedules |>
+    map_dfr(function(schedule) {
+      menu_date <- parse_menu_date(schedule$dateInformation)
+      if (is.na(menu_date)) return(tibble())
+      if (length(schedule$menuBlocks %||% list()) == 0) return(tibble())
+
+      map_dfr(schedule$menuBlocks, function(block) {
+        meal_type <- block$blockName
+        lines <- block$cafeteriaLineList$data %||% list()
+
+        map_dfr(lines, function(line) {
+          items <- line$foodItemList$data %||% list()
+          map_dfr(items, function(item) {
+            tibble(
+              date           = menu_date,
+              meal_type      = meal_type,
+              cafeteria_line = line$name %||% NA_character_,
+              item_type      = item$item_Type %||% NA_character_,
+              item_name      = item$item_Name %||% NA_character_
+            )
+          })
+        })
+      })
+    })
+}
+```
+
+The driver function: start at today, ask for `LOOKAHEAD_DAYS` worth of menus, chunk the requests, stitch the results together.
+
+```{r}
+#| label: scrape-driver
+
+scrape_menus <- function(school_key = SCHOOL_KEY,
+                         start_date = today(),
+                         lookahead_days = LOOKAHEAD_DAYS,
+                         chunk_days = 30) {
+
+  end_date <- start_date + days(lookahead_days)
+  cli_h2("Scraping {school_key}: {start_date} → {end_date}")
+
+  windows <- tibble(
+    chunk_start = seq(start_date, end_date, by = chunk_days)
+  ) |>
+    mutate(chunk_end = pmin(chunk_start + days(chunk_days - 1), end_date))
+
+  windows |>
+    pmap(function(chunk_start, chunk_end) {
+      Sys.sleep(0.5) # rate-limit politeness
+      fetch_menu_chunk(school_key, chunk_start, chunk_end) |>
+        parse_menu_response()
+    }) |>
+    bind_rows() |>
+    distinct() |>
+    arrange(date, meal_type, cafeteria_line)
+}
+```
+
+Run it:
+
+```{r}
+#| label: do-scrape
+
+menus <- scrape_menus()
+
+cli_alert_success("Got {nrow(menus)} menu items across {n_distinct(menus$date)} days")
+```
+
+Quick sanity peek:
+
+```{r}
+#| label: peek
+menus |>
+  count(date, meal_type) |>
+  arrange(date) |>
+  head(10)
+```
+
+## Step 2 — Collapse into one event per (date, meal)
+
+Each `(date, meal_type)` becomes a single all-day event. We bucket items into entrees / vegetables / fruits / grains so the description reads cleanly, and pick the most distinctive entrees for the event title.
+
+```{r}
+#| label: shape-events
+
+# These show up every single day and add no signal to the title.
+# Still listed in the description, just not in the headline.
+BORING_ITEMS <- c(
+  "Grab N Go Yogurt & Granola",
+  "Blueberry Chex Cereal",
+  "Honey O's Cereal",
+  "Banana Bread",
+  "Mini Pancakes",
+  "Maryland Made Cinnamon Roll",
+  "Beef Sausage & Cheese WG Mini Bagel",
+  "Beef & Cheese Spicy Taco",
+  "Mini Cinnamon Cream Cheese Bagel",
+  "Vanilla Belgian Waffle",
+  "Grilled Cheese Sandwich",  # available daily as an alt at lunch
+  "Craisins",
+  "Apple Juice",
+  "Orange Juice"
+)
+
+pick_headline_entrees <- function(entrees, n = 2) {
+  if (length(entrees) == 0) return(character(0))
+  interesting <- setdiff(entrees, BORING_ITEMS)
+  if (length(interesting) == 0) interesting <- entrees
+  head(unique(interesting), n)
+}
+
+events <- menus |>
+  group_by(date, meal_type) |>
+  summarize(
+    entrees    = list(unique(item_name[item_type == "Entree"])),
+    vegetables = list(unique(item_name[item_type == "Vegetable"])),
+    fruits     = list(unique(item_name[item_type == "Fruit"])),
+    grains     = list(unique(item_name[item_type == "Grain"])),
+    .groups = "drop"
+  ) |>
+  mutate(
+    headline    = map_chr(entrees, \(e) paste(pick_headline_entrees(e), collapse = " • ")),
+    summary     = str_glue("{meal_type}: {headline}"),
+    description = pmap_chr(
+      list(entrees, vegetables, fruits, grains),
+      function(e, v, f, g) {
+        parts <- c(
+          if (length(e) > 0) str_glue("ENTREES: {paste(e, collapse = ', ')}"),
+          if (length(v) > 0) str_glue("VEGGIES: {paste(v, collapse = ', ')}"),
+          if (length(f) > 0) str_glue("FRUIT: {paste(f, collapse = ', ')}"),
+          if (length(g) > 0) str_glue("GRAINS: {paste(g, collapse = ', ')}")
+        )
+        paste(parts, collapse = "\n")
+      }
+    )
+  ) |>
+  select(date, meal_type, summary, description)
+
+events |> select(date, meal_type, summary) |> head(6)
+```
+
+## Step 3 — Write the `.ics` file
+
+Two things from the original script needed fixing:
+
+1.  **Idempotent UIDs.** The old code used `Sys.time()` in the UID, so every re-scrape generated brand new UIDs and re-uploading the .ics created duplicate events. New scheme: `YYYYMMDD-meal@lunchline.local` — stable across runs, so re-imports update in place.
+2.  **RFC 5545 escaping.** The old code stripped commas and semicolons to dodge the ICS format. The right fix is to escape them: `,` → `\,`, `;` → `\;`, `\` → `\\`, newlines → `\n`. Now item names render with their natural punctuation.
+
+```{r}
+#| label: ics-helpers
+
+# RFC 5545 §3.3.11: escape \, ; , and newlines in TEXT values
+escape_ics_text <- function(x) {
+  x |>
+    str_replace_all("\\\\", "\\\\\\\\") |>  # backslash first
+    str_replace_all(";",  "\\\\;") |>
+    str_replace_all(",",  "\\\\,") |>
+    str_replace_all("\n", "\\\\n")
+}
+
+# RFC 5545 §3.1: lines must not exceed 75 octets. Long lines get folded by
+# inserting CRLF + a single space.
+fold_ics_line <- function(line, width = 73) {
+  if (nchar(line, type = "bytes") <= 75) return(line)
+  segments <- character()
+  remaining <- line
+  first <- TRUE
+  while (nchar(remaining, type = "bytes") > width) {
+    seg <- substr(remaining, 1, width)
+    segments <- c(segments, if (first) seg else paste0(" ", seg))
+    remaining <- substr(remaining, width + 1, nchar(remaining))
+    first <- FALSE
+  }
+  segments <- c(segments, paste0(" ", remaining))
+  paste(segments, collapse = "\r\n")
+}
+
+build_ics <- function(events_df, school_name = SCHOOL_NAME) {
+  dtstamp <- format(Sys.time(), "%Y%m%dT%H%M%SZ", tz = "UTC")
+
+  event_blocks <- events_df |>
+    mutate(
+      date_str = format(date, "%Y%m%d"),
+      dtend_str = format(date + days(1), "%Y%m%d"),  # all-day events are exclusive of end date
+      uid = str_glue("{date_str}-{tolower(meal_type)}@lunchline.local"),
+      block = pmap_chr(
+        list(date_str, dtend_str, uid, summary, description),
+        function(d, dend, u, s, desc) {
+          lines <- c(
+            "BEGIN:VEVENT",
+            str_glue("UID:{u}"),
+            str_glue("DTSTAMP:{dtstamp}"),
+            str_glue("DTSTART;VALUE=DATE:{d}"),
+            str_glue("DTEND;VALUE=DATE:{dend}"),
+            fold_ics_line(str_glue("SUMMARY:{escape_ics_text(s)}")),
+            fold_ics_line(str_glue("DESCRIPTION:{escape_ics_text(desc)}")),
+            "TRANSP:TRANSPARENT",
+            "STATUS:CONFIRMED",
+            "END:VEVENT"
+          )
+          paste(lines, collapse = "\r\n")
+        }
+      )
+    ) |>
+    pull(block)
+
+  header <- c(
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//lunchline//School Menus//EN",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+    str_glue("X-WR-CALNAME:{escape_ics_text(school_name)} Menus"),
+    "X-WR-TIMEZONE:America/New_York"
+  )
+
+  paste(c(header, event_blocks, "END:VCALENDAR"), collapse = "\r\n")
+}
+```
+
+```{r}
+#| label: write-ics
+ics_text <- build_ics(events)
+writeLines(ics_text, OUTPUT_ICS, sep = "")
+cli_alert_success("Wrote {nrow(events)} events to {OUTPUT_ICS}")
+```
+
+## 

@@ -6,252 +6,262 @@ METHOD:PUBLISH
 X-WR-CALNAME:Fallsmead ES Menus
 X-WR-TIMEZONE:America/New_York
 BEGIN:VEVENT
-UID:20260511-breakfast@lunchline.local
-DTSTAMP:20260511T150146Z
-DTSTART;VALUE=DATE:20260511
-DTEND;VALUE=DATE:20260512
-SUMMARY:Breakfast: Mini Cinnamon Cream Cheese Bagel • Grab N Go Yogurt & 
- Granola
-DESCRIPTION:ENTREES: Mini Cinnamon Cream Cheese Bagel\, Grab N Go Yogurt 
- & Granola\, Blueberry Chex Cereal\, Honey O's Cereal\, Mini Pancakes\, Ma
- ryland Made Cinnamon Roll\, Beef Sausage & Cheese WG Mini Bagel\, Beef & 
- Cheese Spicy Taco\, Banana Bread\nFRUIT: Apple Juice\, Applesauce Cup\, O
- range Juice
-TRANSP:TRANSPARENT
-STATUS:CONFIRMED
-END:VEVENT
-BEGIN:VEVENT
-UID:20260511-lunch@lunchline.local
-DTSTAMP:20260511T150146Z
-DTSTART;VALUE=DATE:20260511
-DTEND;VALUE=DATE:20260512
-SUMMARY:Lunch: Mini Chicken Bites w/ Seasoned Potatoes & Dinner R • Mini 
- Pancakes\, Yogurt & String Cheese or Cubes
-DESCRIPTION:ENTREES: Mini Chicken Bites w/ Seasoned Potatoes & Dinner R\,
-  Mini Pancakes\, Yogurt & String Cheese or Cubes\, Grilled Cheese Sandwic
- h\, Mini Pancakes\, Yogurt\, Cheese Cubes\nVEGGIES: Baby Carrots\, Crinkl
- e Cut Potatoes\, Spring Salad\, Cucumbers & Tomatoes\nFRUIT: Fresh Sliced
-  Apple\, Applesauce Cup
-TRANSP:TRANSPARENT
-STATUS:CONFIRMED
-END:VEVENT
-BEGIN:VEVENT
-UID:20260512-breakfast@lunchline.local
-DTSTAMP:20260511T150146Z
-DTSTART;VALUE=DATE:20260512
-DTEND;VALUE=DATE:20260513
-SUMMARY:Breakfast: Mini Pancakes • Grab N Go Yogurt & Granola
-DESCRIPTION:ENTREES: Mini Pancakes\, Grab N Go Yogurt & Granola\, Blueber
- ry Chex Cereal\, Honey O's Cereal\nFRUIT: Orange Juice\, Craisins
-TRANSP:TRANSPARENT
-STATUS:CONFIRMED
-END:VEVENT
-BEGIN:VEVENT
-UID:20260512-lunch@lunchline.local
-DTSTAMP:20260511T150146Z
-DTSTART;VALUE=DATE:20260512
-DTEND;VALUE=DATE:20260513
-SUMMARY:Lunch: Chik'N Parmesan w/ Penne Pasta & Dinner Roll • Beef & Chee
- se CrispUps
-DESCRIPTION:ENTREES: Chik'N Parmesan w/ Penne Pasta & Dinner Roll\, Beef 
- & Cheese CrispUps\, Grilled Cheese Sandwich\nVEGGIES: Roasted Chickpeas\,
-  Celery Sticks\nFRUIT: Fresh Sliced Apple
-TRANSP:TRANSPARENT
-STATUS:CONFIRMED
-END:VEVENT
-BEGIN:VEVENT
-UID:20260513-breakfast@lunchline.local
-DTSTAMP:20260511T150146Z
-DTSTART;VALUE=DATE:20260513
-DTEND;VALUE=DATE:20260514
-SUMMARY:Breakfast: Banana Bread • Grab N Go Yogurt & Granola
-DESCRIPTION:ENTREES: Banana Bread\, Grab N Go Yogurt & Granola\, Blueberr
- y Chex Cereal\, Honey O's Cereal\nFRUIT: Apple Juice\, Craisins
-TRANSP:TRANSPARENT
-STATUS:CONFIRMED
-END:VEVENT
-BEGIN:VEVENT
-UID:20260513-lunch@lunchline.local
-DTSTAMP:20260511T150146Z
-DTSTART;VALUE=DATE:20260513
-DTEND;VALUE=DATE:20260514
-SUMMARY:Lunch: Chickpea Tikka Masala w/ Rice • Crispy Chicken Sandwich
-DESCRIPTION:ENTREES: Chickpea Tikka Masala w/ Rice\, Crispy Chicken Sandw
- ich\, Grilled Cheese Sandwich\nVEGGIES: Side Salad\nFRUIT: Fresh Sliced A
- pple
-TRANSP:TRANSPARENT
-STATUS:CONFIRMED
-END:VEVENT
-BEGIN:VEVENT
-UID:20260514-breakfast@lunchline.local
-DTSTAMP:20260511T150146Z
-DTSTART;VALUE=DATE:20260514
-DTEND;VALUE=DATE:20260515
-SUMMARY:Breakfast: Beef Sausage & Cheese WG Mini Bagel • Grab N Go Yogurt
-  & Granola
-DESCRIPTION:ENTREES: Beef Sausage & Cheese WG Mini Bagel\, Grab N Go Yogu
- rt & Granola\, Blueberry Chex Cereal\, Honey O's Cereal\nFRUIT: Orange Ju
- ice\, Craisins
-TRANSP:TRANSPARENT
-STATUS:CONFIRMED
-END:VEVENT
-BEGIN:VEVENT
-UID:20260514-lunch@lunchline.local
-DTSTAMP:20260511T150146Z
-DTSTART;VALUE=DATE:20260514
-DTEND;VALUE=DATE:20260515
-SUMMARY:Lunch: Grand Slam Corn Dog Bites &  Baked Beans • Veggie Burger w
- / Bun & Green Beans
-DESCRIPTION:ENTREES: Grand Slam Corn Dog Bites &  Baked Beans\, Veggie Bu
- rger w/ Bun & Green Beans\, Grilled Cheese Sandwich\nVEGGIES: Side Salad\
- nFRUIT: Fresh Sliced Apple
-TRANSP:TRANSPARENT
-STATUS:CONFIRMED
-END:VEVENT
-BEGIN:VEVENT
-UID:20260515-breakfast@lunchline.local
-DTSTAMP:20260511T150146Z
-DTSTART;VALUE=DATE:20260515
-DTEND;VALUE=DATE:20260516
-SUMMARY:Breakfast: Maryland Made Cinnamon Roll • Grab N Go Yogurt & Grano
- la
-DESCRIPTION:ENTREES: Maryland Made Cinnamon Roll\, Grab N Go Yogurt & Gra
- nola\, Blueberry Chex Cereal\, Honey O's Cereal\nFRUIT: Apple Juice\, Cra
- isins
-TRANSP:TRANSPARENT
-STATUS:CONFIRMED
-END:VEVENT
-BEGIN:VEVENT
-UID:20260515-lunch@lunchline.local
-DTSTAMP:20260511T150146Z
-DTSTART;VALUE=DATE:20260515
-DTEND;VALUE=DATE:20260516
-SUMMARY:Lunch: Pepperoni Pizza • Cheese Pizza
-DESCRIPTION:ENTREES: Pepperoni Pizza\, Cheese Pizza\, Turkey Ham & Cheese
-  Croissant Sandwich\nVEGGIES: Assorted Fresh Vegetables\nFRUIT: Fresh Sli
- ced Apple
-TRANSP:TRANSPARENT
-STATUS:CONFIRMED
-END:VEVENT
-BEGIN:VEVENT
 UID:20260518-breakfast@lunchline.local
-DTSTAMP:20260511T150146Z
+DTSTAMP:20260516T140331Z
 DTSTART;VALUE=DATE:20260518
 DTEND;VALUE=DATE:20260519
-SUMMARY:Breakfast: Vanilla Belgian Waffle • Grab N Go Yogurt & Granola
-DESCRIPTION:ENTREES: Vanilla Belgian Waffle\, Grab N Go Yogurt & Granola\
- , Blueberry Chex Cereal\, Honey O's Cereal\nFRUIT: Apple Juice\, Craisins
+SUMMARY:Breakfast: Vanilla Belgian Waffle
+DESCRIPTION:VEGETABLE\nVanilla Belgian Waffle\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\nMini Pancakes\nBeef & Cheese Spicy Taco\nBeef Sausage & Cheese WG Mini Bagel\nBanana Bread\nMaryland Made Cinnamon Roll\n\nGRAINS\nApplesauce Cup\nApple Juice\nFruit Punch Juice\nCraisins\nOrange Juice\n
 TRANSP:TRANSPARENT
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:20260518-lunch@lunchline.local
-DTSTAMP:20260511T150146Z
+UID:20260518-lunch1@lunchline.local
+DTSTAMP:20260516T140331Z
 DTSTART;VALUE=DATE:20260518
 DTEND;VALUE=DATE:20260519
-SUMMARY:Lunch: Hamburger w/ Bun & Crinkle Cut Potatoes • 3 Bean Chili w/ 
- Corn & WG Scoops
-DESCRIPTION:ENTREES: Hamburger w/ Bun & Crinkle Cut Potatoes\, 3 Bean Chi
- li w/ Corn & WG Scoops\, Grilled Cheese Sandwich\nVEGGIES: Crinkle Cut Po
- tatoes\, Celery Sticks\nFRUIT: Fresh Sliced Apple
+SUMMARY:Lunch 1: Hamburger w/ Bun & Crinkle Cut Potatoes
+DESCRIPTION:ALL OPTIONS\nBaked Scoops\n\nVEGETABLE\nHamburger w/ Bun & Crinkle Cut Potatoes\n3 Bean Chili w/ Corn & WG Scoops\nGrilled Cheese Sandwich\n\nFRUIT\nCrinkle Cut Potatoes\nCelery Sticks\nCarrots & Celery\nBaby Carrots\n\nGRAINS\nFresh Sliced Apple\nFresh Banana\nApplesauce Cup\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20260518-lunch2@lunchline.local
+DTSTAMP:20260516T140331Z
+DTSTART;VALUE=DATE:20260518
+DTEND;VALUE=DATE:20260519
+SUMMARY:Lunch 2: 3 Bean Chili w/ Corn & WG Scoops
+DESCRIPTION:ALL OPTIONS\nBaked Scoops\n\nVEGETABLE\nHamburger w/ Bun & Crinkle Cut Potatoes\n3 Bean Chili w/ Corn & WG Scoops\nGrilled Cheese Sandwich\n\nFRUIT\nCrinkle Cut Potatoes\nCelery Sticks\nCarrots & Celery\nBaby Carrots\n\nGRAINS\nFresh Sliced Apple\nFresh Banana\nApplesauce Cup\n
 TRANSP:TRANSPARENT
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
 UID:20260519-breakfast@lunchline.local
-DTSTAMP:20260511T150146Z
+DTSTAMP:20260516T140331Z
 DTSTART;VALUE=DATE:20260519
 DTEND;VALUE=DATE:20260520
 SUMMARY:Breakfast: Turkey Sausage Egg & Cheese Pocket
-DESCRIPTION:ENTREES: Turkey Sausage Egg & Cheese Pocket\, Grab N Go Yogur
- t & Granola\, Blueberry Chex Cereal\, Honey O's Cereal\nFRUIT: Orange Jui
- ce\, Craisins
+DESCRIPTION:VEGETABLE\nTurkey Sausage Egg & Cheese Pocket\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\n\nGRAINS\nOrange Juice\nCraisins\n
 TRANSP:TRANSPARENT
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:20260519-lunch@lunchline.local
-DTSTAMP:20260511T150146Z
+UID:20260519-lunch1@lunchline.local
+DTSTAMP:20260516T140331Z
 DTSTART;VALUE=DATE:20260519
 DTEND;VALUE=DATE:20260520
-SUMMARY:Lunch: Chik'N Nuggets w/ Green Beans\, Corn\, and Dinner Ro • Cat
- fish Cake w/ Mac & Cheese & Pineapple Salsa
-DESCRIPTION:ENTREES: Chik'N Nuggets w/ Green Beans\, Corn\, and Dinner Ro
- \, Catfish Cake w/ Mac & Cheese & Pineapple Salsa\, Grilled Cheese Sandwi
- ch\nVEGGIES: Baby Carrots\, Roasted Chickpeas\nFRUIT: Fresh Sliced Apple
+SUMMARY:Lunch 1: Chik'N Nuggets w/ Green Beans\, Corn\, and Dinner Ro
+DESCRIPTION:VEGETABLE\nChik'N Nuggets w/ Green Beans\, Corn\, and Dinner Ro\nCatfish Cake w/ Mac & Cheese & Pineapple Salsa\nGrilled Cheese Sandwich\n\nFRUIT\nBaby Carrots\nRoasted Chickpeas\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20260519-lunch2@lunchline.local
+DTSTAMP:20260516T140331Z
+DTSTART;VALUE=DATE:20260519
+DTEND;VALUE=DATE:20260520
+SUMMARY:Lunch 2: Catfish Cake w/ Mac & Cheese & Pineapple Salsa
+DESCRIPTION:VEGETABLE\nChik'N Nuggets w/ Green Beans\, Corn\, and Dinner Ro\nCatfish Cake w/ Mac & Cheese & Pineapple Salsa\nGrilled Cheese Sandwich\n\nFRUIT\nBaby Carrots\nRoasted Chickpeas\n\nGRAINS\nFresh Sliced Apple\n
 TRANSP:TRANSPARENT
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
 UID:20260520-breakfast@lunchline.local
-DTSTAMP:20260511T150146Z
+DTSTAMP:20260516T140331Z
 DTSTART;VALUE=DATE:20260520
 DTEND;VALUE=DATE:20260521
-SUMMARY:Breakfast: Banana Bread • Grab N Go Yogurt & Granola
-DESCRIPTION:ENTREES: Banana Bread\, Grab N Go Yogurt & Granola\, Blueberr
- y Chex Cereal\, Honey O's Cereal\nFRUIT: Apple Juice\, Craisins
+SUMMARY:Breakfast: Banana Bread
+DESCRIPTION:VEGETABLE\nBanana Bread\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\n\nGRAINS\nApple Juice\nCraisins\n
 TRANSP:TRANSPARENT
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:20260520-lunch@lunchline.local
-DTSTAMP:20260511T150146Z
+UID:20260520-lunch1@lunchline.local
+DTSTAMP:20260516T140331Z
 DTSTART;VALUE=DATE:20260520
 DTEND;VALUE=DATE:20260521
-SUMMARY:Lunch: Beef Taco w/ WG Scoops\, Corn\, & Edamame • Cheesy Pull Ap
- arts w/ Marinara Sauce
-DESCRIPTION:ENTREES: Beef Taco w/ WG Scoops\, Corn\, & Edamame\, Cheesy P
- ull Aparts w/ Marinara Sauce\, Grilled Cheese Sandwich\nVEGGIES: Fresh Br
- occoli\, Mixed Sweet Peppers\nFRUIT: Fresh Sliced Apple
+SUMMARY:Lunch 1: Beef Taco w/ WG Scoops\, Corn\, & Edamame
+DESCRIPTION:VEGETABLE\nBeef Taco w/ WG Scoops\, Corn\, & Edamame\nCheesy Pull Aparts w/ Marinara Sauce\nGrilled Cheese Sandwich\n\nFRUIT\nFresh Broccoli\nMixed Sweet Peppers\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20260520-lunch2@lunchline.local
+DTSTAMP:20260516T140331Z
+DTSTART;VALUE=DATE:20260520
+DTEND;VALUE=DATE:20260521
+SUMMARY:Lunch 2: Cheesy Pull Aparts w/ Marinara Sauce
+DESCRIPTION:VEGETABLE\nBeef Taco w/ WG Scoops\, Corn\, & Edamame\nCheesy Pull Aparts w/ Marinara Sauce\nGrilled Cheese Sandwich\n\nFRUIT\nFresh Broccoli\nMixed Sweet Peppers\n\nGRAINS\nFresh Sliced Apple\n
 TRANSP:TRANSPARENT
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
 UID:20260521-breakfast@lunchline.local
-DTSTAMP:20260511T150146Z
+DTSTAMP:20260516T140331Z
 DTSTART;VALUE=DATE:20260521
 DTEND;VALUE=DATE:20260522
-SUMMARY:Breakfast: Beef & Cheese Spicy Taco • Grab N Go Yogurt & Granola
-DESCRIPTION:ENTREES: Beef & Cheese Spicy Taco\, Grab N Go Yogurt & Granol
- a\, Blueberry Chex Cereal\, Honey O's Cereal\nFRUIT: Orange Juice\, Crais
- ins
+SUMMARY:Breakfast: Beef & Cheese Spicy Taco
+DESCRIPTION:VEGETABLE\nBeef & Cheese Spicy Taco\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\n\nGRAINS\nOrange Juice\nCraisins\n
 TRANSP:TRANSPARENT
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:20260521-lunch@lunchline.local
-DTSTAMP:20260511T150146Z
+UID:20260521-lunch1@lunchline.local
+DTSTAMP:20260516T140331Z
 DTSTART;VALUE=DATE:20260521
 DTEND;VALUE=DATE:20260522
-SUMMARY:Lunch: French Toast w/ Pork Sausage • Bean & Cheese Pupusa w/ Cur
- tido
-DESCRIPTION:ENTREES: French Toast w/ Pork Sausage\, Bean & Cheese Pupusa 
- w/ Curtido\, Grilled Cheese Sandwich\nVEGGIES: Grape Tomatoes\, Cucumber 
- Coins\nFRUIT: Fresh Sliced Apple
+SUMMARY:Lunch 1: French Toast w/ Pork Sausage
+DESCRIPTION:VEGETABLE\nFrench Toast w/ Pork Sausage\nBean & Cheese Pupusa w/ Curtido\nGrilled Cheese Sandwich\n\nFRUIT\nGrape Tomatoes\nCucumber Coins\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20260521-lunch2@lunchline.local
+DTSTAMP:20260516T140331Z
+DTSTART;VALUE=DATE:20260521
+DTEND;VALUE=DATE:20260522
+SUMMARY:Lunch 2: Bean & Cheese Pupusa w/ Curtido
+DESCRIPTION:VEGETABLE\nFrench Toast w/ Pork Sausage\nBean & Cheese Pupusa w/ Curtido\nGrilled Cheese Sandwich\n\nFRUIT\nGrape Tomatoes\nCucumber Coins\n\nGRAINS\nFresh Sliced Apple\n
 TRANSP:TRANSPARENT
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
 UID:20260522-breakfast@lunchline.local
-DTSTAMP:20260511T150146Z
+DTSTAMP:20260516T140331Z
 DTSTART;VALUE=DATE:20260522
 DTEND;VALUE=DATE:20260523
-SUMMARY:Breakfast: Maryland Made Cinnamon Roll • Grab N Go Yogurt & Grano
- la
-DESCRIPTION:ENTREES: Maryland Made Cinnamon Roll\, Grab N Go Yogurt & Gra
- nola\, Blueberry Chex Cereal\, Honey O's Cereal\nFRUIT: Apple Juice\, Cra
- isins
+SUMMARY:Breakfast: Maryland Made Cinnamon Roll
+DESCRIPTION:VEGETABLE\nMaryland Made Cinnamon Roll\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\n\nGRAINS\nApple Juice\nCraisins\n
 TRANSP:TRANSPARENT
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:20260522-lunch@lunchline.local
-DTSTAMP:20260511T150146Z
+UID:20260522-lunch1@lunchline.local
+DTSTAMP:20260516T140331Z
 DTSTART;VALUE=DATE:20260522
 DTEND;VALUE=DATE:20260523
-SUMMARY:Lunch: Pepperoni Pizza • Cheese Pizza
-DESCRIPTION:ENTREES: Pepperoni Pizza\, Cheese Pizza\, Buffalo Chicken & C
- heese Croissant\nVEGGIES: Spring Salad\nFRUIT: Fresh Sliced Apple
+SUMMARY:Lunch 1: Pepperoni Pizza
+DESCRIPTION:VEGETABLE\nPepperoni Pizza\nCheese Pizza\nBuffalo Chicken & Cheese Croissant\n\nFRUIT\nSpring Salad\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20260522-lunch2@lunchline.local
+DTSTAMP:20260516T140331Z
+DTSTART;VALUE=DATE:20260522
+DTEND;VALUE=DATE:20260523
+SUMMARY:Lunch 2: Cheese Pizza
+DESCRIPTION:VEGETABLE\nPepperoni Pizza\nCheese Pizza\nBuffalo Chicken & Cheese Croissant\n\nFRUIT\nSpring Salad\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20260522-lunch3@lunchline.local
+DTSTAMP:20260516T140331Z
+DTSTART;VALUE=DATE:20260522
+DTEND;VALUE=DATE:20260523
+SUMMARY:Lunch 3: Buffalo Chicken & Cheese Croissant
+DESCRIPTION:VEGETABLE\nPepperoni Pizza\nCheese Pizza\nBuffalo Chicken & Cheese Croissant\n\nFRUIT\nSpring Salad\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20260526-breakfast@lunchline.local
+DTSTAMP:20260516T140331Z
+DTSTART;VALUE=DATE:20260526
+DTEND;VALUE=DATE:20260527
+SUMMARY:Breakfast: Mini Pancakes
+DESCRIPTION:VEGETABLE\nMini Pancakes\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\n\nGRAINS\nOrange Juice\nCraisins\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20260526-lunch1@lunchline.local
+DTSTAMP:20260516T140331Z
+DTSTART;VALUE=DATE:20260526
+DTEND;VALUE=DATE:20260527
+SUMMARY:Lunch 1: Cheese Crunchers w/ Marinara Sauce
+DESCRIPTION:VEGETABLE\nCheese Crunchers w/ Marinara Sauce\nCrispy Chicken Sandwich\nGrilled Cheese Sandwich\n\nFRUIT\nCrinkle Cut Potatoes\nBaby Carrots\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20260526-lunch2@lunchline.local
+DTSTAMP:20260516T140331Z
+DTSTART;VALUE=DATE:20260526
+DTEND;VALUE=DATE:20260527
+SUMMARY:Lunch 2: Crispy Chicken Sandwich
+DESCRIPTION:VEGETABLE\nCheese Crunchers w/ Marinara Sauce\nCrispy Chicken Sandwich\nGrilled Cheese Sandwich\n\nFRUIT\nCrinkle Cut Potatoes\nBaby Carrots\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20260528-breakfast@lunchline.local
+DTSTAMP:20260516T140331Z
+DTSTART;VALUE=DATE:20260528
+DTEND;VALUE=DATE:20260529
+SUMMARY:Breakfast: Beef Sausage & Cheese WG Mini Bagel
+DESCRIPTION:VEGETABLE\nBeef Sausage & Cheese WG Mini Bagel\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\n\nGRAINS\nOrange Juice\nCraisins\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20260528-lunch1@lunchline.local
+DTSTAMP:20260516T140331Z
+DTSTART;VALUE=DATE:20260528
+DTEND;VALUE=DATE:20260529
+SUMMARY:Lunch 1: Chicken Walking Taco w/ Corn & Chips
+DESCRIPTION:VEGETABLE\nChicken Walking Taco w/ Corn & Chips\nVeggie Burger w/ Bun & Green Beans\nGrilled Cheese Sandwich\n\nFRUIT\nSide Salad\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20260528-lunch2@lunchline.local
+DTSTAMP:20260516T140331Z
+DTSTART;VALUE=DATE:20260528
+DTEND;VALUE=DATE:20260529
+SUMMARY:Lunch 2: Veggie Burger w/ Bun & Green Beans
+DESCRIPTION:VEGETABLE\nChicken Walking Taco w/ Corn & Chips\nVeggie Burger w/ Bun & Green Beans\nGrilled Cheese Sandwich\n\nFRUIT\nSide Salad\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20260529-breakfast@lunchline.local
+DTSTAMP:20260516T140331Z
+DTSTART;VALUE=DATE:20260529
+DTEND;VALUE=DATE:20260530
+SUMMARY:Breakfast: Maryland Made Cinnamon Roll
+DESCRIPTION:VEGETABLE\nMaryland Made Cinnamon Roll\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\n\nGRAINS\nApple Juice\nCraisins\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20260529-lunch1@lunchline.local
+DTSTAMP:20260516T140331Z
+DTSTART;VALUE=DATE:20260529
+DTEND;VALUE=DATE:20260530
+SUMMARY:Lunch 1: Pepperoni Pizza
+DESCRIPTION:VEGETABLE\nPepperoni Pizza\nCheese Pizza\n3 Bean Chili w/ Corn & WG Scoops\nGrilled Cheese Sandwich\n\nFRUIT\nRoasted Chickpeas\nAssorted Fresh Vegetables\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20260529-lunch2@lunchline.local
+DTSTAMP:20260516T140331Z
+DTSTART;VALUE=DATE:20260529
+DTEND;VALUE=DATE:20260530
+SUMMARY:Lunch 2: Cheese Pizza
+DESCRIPTION:VEGETABLE\nPepperoni Pizza\nCheese Pizza\n3 Bean Chili w/ Corn & WG Scoops\nGrilled Cheese Sandwich\n\nFRUIT\nRoasted Chickpeas\nAssorted Fresh Vegetables\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20260529-lunch3@lunchline.local
+DTSTAMP:20260516T140331Z
+DTSTART;VALUE=DATE:20260529
+DTEND;VALUE=DATE:20260530
+SUMMARY:Lunch 3: 3 Bean Chili w/ Corn & WG Scoops
+DESCRIPTION:VEGETABLE\nPepperoni Pizza\nCheese Pizza\n3 Bean Chili w/ Corn & WG Scoops\nGrilled Cheese Sandwich\n\nFRUIT\nRoasted Chickpeas\nAssorted Fresh Vegetables\n\nGRAINS\nFresh Sliced Apple\n
 TRANSP:TRANSPARENT
 STATUS:CONFIRMED
 END:VEVENT

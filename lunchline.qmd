@@ -1,6 +1,6 @@
 ---
 title: "lunchline"
-subtitle: "Scrape school cafeteria menus and push them to Google Calendar"
+subtitle: "Scrape school cafeteria menus into a Google-Calendar-ready `.ics` file"
 author: "Fallsmead ES family edition"
 date: today
 format:
@@ -18,20 +18,22 @@ execute:
 
 ## What this does
 
-Pulls breakfast and lunch menus from the [MealViewer](https://www.mealviewer.com) API for a given school, writes them to a `.ics` calendar file, and optionally pushes the events straight into Google Calendar via the Calendar API.
+Pulls breakfast and lunch menus from the [MealViewer](https://www.mealviewer.com)
+API for a given school and writes them to a single `.ics` calendar file you can
+import into Google Calendar (or anything else that speaks iCalendar).
 
-The default behavior is **"give me everything from today through whatever future menus MealViewer has published."** No manual date ranges, no clicking through school websites.
+The default behavior is **"give me everything from today through whatever future
+menus MealViewer has published."** No manual date ranges, no clicking through
+school websites.
 
 ### Pipeline
 
-```         
-MealViewer API  ──▶  tibble of menu items  ──▶  one event per (date, meal)
-                                                       │
-                                  ┌────────────────────┴────────────────────┐
-                                  ▼                                         ▼
-                            fallsmead_menus.ics                    Google Calendar API
-                            (backup / manual import)                (direct push, idempotent)
 ```
+MealViewer API  ──▶  tibble of menu items  ──▶  one event per (date, meal)  ──▶  fallsmead_menus.ics
+```
+
+After rendering, open Google Calendar in a browser → Settings → Import & Export →
+upload `fallsmead_menus.ics` → pick the calendar you want it on.
 
 ## Setup
 
@@ -39,18 +41,19 @@ MealViewer API  ──▶  tibble of menu items  ──▶  one event per (date,
 #| label: setup
 
 # Install (one-time):
-# install.packages(c("tidyverse", "httr2", "lubridate", "googleAuthR", "cli"))
+# install.packages(c("tidyverse", "httr2", "lubridate", "cli"))
 
 library(tidyverse)
 library(httr2)
 library(lubridate)
-library(googleAuthR)
 library(cli)
 ```
 
 ### Configuration
 
-Change `SCHOOL_KEY` to point at a different school. Find your school's key by visiting `mealviewer.com`, searching for the school, and copying the slug from the URL (e.g. `https://schools.mealviewer.com/school/FallsmeadES` → `FallsmeadES`).
+Change `SCHOOL_KEY` to point at a different school. Find your school's key by
+visiting `mealviewer.com`, searching for the school, and copying the slug from
+the URL (e.g. `https://schools.mealviewer.com/school/FallsmeadES` → `FallsmeadES`).
 
 ```{r}
 #| label: config
@@ -70,7 +73,9 @@ OUTPUT_ICS <- "fallsmead_menus.ics"
 
 ## Step 1 — Fetch from MealViewer
 
-MealViewer's API takes a school key and a date range formatted `MM-DD-YYYY`. We chunk requests into 30-day windows to be polite and to avoid any quiet truncation on the server side.
+MealViewer's API takes a school key and a date range formatted `MM-DD-YYYY`.
+We chunk requests into 30-day windows to be polite and to avoid any quiet
+truncation on the server side.
 
 ```{r}
 #| label: fetch-functions
@@ -102,7 +107,9 @@ fetch_menu_chunk <- function(school_key, start_date, end_date) {
 }
 ```
 
-Parsing is verbose because MealViewer nests its data four levels deep (`menuSchedules → menuBlocks → cafeteriaLineList → foodItemList`). We flatten it into one row per food item.
+Parsing is verbose because MealViewer nests its data four levels deep
+(`menuSchedules → menuBlocks → cafeteriaLineList → foodItemList`). We
+flatten it into one row per food item.
 
 ```{r}
 #| label: parse-functions
@@ -155,7 +162,8 @@ parse_menu_response <- function(api_response) {
 }
 ```
 
-The driver function: start at today, ask for `LOOKAHEAD_DAYS` worth of menus, chunk the requests, stitch the results together.
+The driver function: start at today, ask for `LOOKAHEAD_DAYS` worth of menus,
+chunk the requests, stitch the results together.
 
 ```{r}
 #| label: scrape-driver
@@ -207,13 +215,17 @@ menus |>
 
 ## Step 2 — Collapse into one event per (date, meal)
 
-Each `(date, meal_type)` becomes a single all-day event. We bucket items into entrees / vegetables / fruits / grains so the description reads cleanly, and pick the most distinctive entrees for the event title.
+Each `(date, meal_type)` becomes a single all-day event. We bucket items into
+entrees / vegetables / fruits / grains so the description reads cleanly.
+
+Each interesting entree becomes its own event (`Lunch 1`, `Lunch 2`, etc.)
+so the title never gets truncated and your calendar day view reads like a menu.
 
 ```{r}
 #| label: shape-events
 
-# These show up every single day and add no signal to the title.
-# Still listed in the description, just not in the headline.
+# These show up every single day — they're always available, so listing them
+# as their own event adds noise. They still appear in the description.
 BORING_ITEMS <- c(
   "Grab N Go Yogurt & Granola",
   "Blueberry Chex Cereal",
@@ -225,55 +237,88 @@ BORING_ITEMS <- c(
   "Beef & Cheese Spicy Taco",
   "Mini Cinnamon Cream Cheese Bagel",
   "Vanilla Belgian Waffle",
-  "Grilled Cheese Sandwich",  # available daily as an alt at lunch
+  "Grilled Cheese Sandwich",
   "Craisins",
   "Apple Juice",
-  "Orange Juice"
+  "Orange Juice",
+  "Yogurt",
+  "Cheese Cubes"
 )
 
-pick_headline_entrees <- function(entrees, n = 2) {
-  if (length(entrees) == 0) return(character(0))
-  interesting <- setdiff(entrees, BORING_ITEMS)
-  if (length(interesting) == 0) interesting <- entrees
-  head(unique(interesting), n)
+# Build the shared sides description (same for all events on a given date+meal)
+build_sides_desc <- function(v, f, g, all_entrees) {
+  parts <- c()
+  if (length(all_entrees) > 0) parts <- c(parts, "ALL OPTIONS", all_entrees, "")
+  if (length(v) > 0) parts <- c(parts, "VEGETABLE", v, "")
+  if (length(f) > 0) parts <- c(parts, "FRUIT", f, "")
+  if (length(g) > 0) parts <- c(parts, "GRAINS", g, "")
+  paste(parts, collapse = "\n")
 }
 
 events <- menus |>
   group_by(date, meal_type) |>
   summarize(
-    entrees    = list(unique(item_name[item_type == "Entree"])),
-    vegetables = list(unique(item_name[item_type == "Vegetable"])),
-    fruits     = list(unique(item_name[item_type == "Fruit"])),
-    grains     = list(unique(item_name[item_type == "Grain"])),
+    all_entrees = list(unique(item_name[item_type == "Entree"])),
+    vegetables  = list(unique(item_name[item_type == "Vegetable"])),
+    fruits      = list(unique(item_name[item_type == "Fruit"])),
+    grains      = list(unique(item_name[item_type == "Grain"])),
     .groups = "drop"
   ) |>
   mutate(
-    headline    = map_chr(entrees, \(e) paste(pick_headline_entrees(e), collapse = " • ")),
-    summary     = str_glue("{meal_type}: {headline}"),
+    # Filter to interesting entrees for the title events
+    headline_entrees = map(all_entrees, \(e) setdiff(e, BORING_ITEMS)),
+    # If everything was boring, keep the first one so we still get an event
+    headline_entrees = map2(headline_entrees, all_entrees, \(h, a) {
+      if (length(h) == 0) head(a, 1) else h
+    })
+  ) |>
+  # Explode: one row per headline entree
+  unnest(headline_entrees) |>
+  group_by(date, meal_type) |>
+  mutate(
+    n_options = n(),
+    option_num = row_number(),
+    # If only one option, just "Lunch: Pizza". If multiple, "Lunch 1: Pizza"
+    summary = if_else(
+      n_options == 1,
+      str_glue("{meal_type}: {headline_entrees}"),
+      str_glue("{meal_type} {option_num}: {headline_entrees}")
+    ),
     description = pmap_chr(
-      list(entrees, vegetables, fruits, grains),
-      function(e, v, f, g) {
-        parts <- c(
-          if (length(e) > 0) str_glue("ENTREES: {paste(e, collapse = ', ')}"),
-          if (length(v) > 0) str_glue("VEGGIES: {paste(v, collapse = ', ')}"),
-          if (length(f) > 0) str_glue("FRUIT: {paste(f, collapse = ', ')}"),
-          if (length(g) > 0) str_glue("GRAINS: {paste(g, collapse = ', ')}")
-        )
-        paste(parts, collapse = "\n")
-      }
+      list(all_entrees, vegetables, fruits, grains),
+      build_sides_desc
+    ),
+    # UID: date-meal-N so each option has a unique stable ID
+    uid_suffix = if_else(
+      n_options == 1,
+      tolower(meal_type),
+      str_glue("{tolower(meal_type)}{option_num}")
     )
   ) |>
-  select(date, meal_type, summary, description)
+  ungroup() |>
+  select(date, meal_type, summary, description, uid_suffix)
 
-events |> select(date, meal_type, summary) |> head(6)
+events |> select(date, meal_type, summary) |> print(n = 20)
 ```
 
 ## Step 3 — Write the `.ics` file
 
-Two things from the original script needed fixing:
+A few things that were worth getting right:
 
-1.  **Idempotent UIDs.** The old code used `Sys.time()` in the UID, so every re-scrape generated brand new UIDs and re-uploading the .ics created duplicate events. New scheme: `YYYYMMDD-meal@lunchline.local` — stable across runs, so re-imports update in place.
-2.  **RFC 5545 escaping.** The old code stripped commas and semicolons to dodge the ICS format. The right fix is to escape them: `,` → `\,`, `;` → `\;`, `\` → `\\`, newlines → `\n`. Now item names render with their natural punctuation.
+1. **Idempotent UIDs.** Each event's UID is `YYYYMMDD-meal@lunchline.local` —
+   stable across runs. Google Calendar dedupes imported events by UID, so
+   re-uploading the same `.ics` updates events in place rather than creating
+   duplicates. (The previous version of this script used `Sys.time()` in UIDs,
+   which produced fresh IDs every run and caused exactly that duplication.)
+2. **RFC 5545 escaping.** Item names contain commas
+   (`Chik'N Nuggets w/ Green Beans, Corn, and Dinner Roll`), which would break
+   the .ics format if dropped in raw. We escape them per spec: `,` → `\,`,
+   `;` → `\;`, `\` → `\\`, newlines → `\n`.
+3. **No line folding on DESCRIPTION.** RFC 5545 says lines should be ≤75 bytes,
+   but Google Calendar's import silently drops continuation lines in
+   descriptions, truncating them at the first fold. Google's own exported .ics
+   files violate this rule too, and every major calendar client handles long
+   lines fine. We still fold SUMMARY (which is short and works correctly).
 
 ```{r}
 #| label: ics-helpers
@@ -288,16 +333,25 @@ escape_ics_text <- function(x) {
 }
 
 # RFC 5545 §3.1: lines must not exceed 75 octets. Long lines get folded by
-# inserting CRLF + a single space.
+# inserting CRLF + a single space. We try to break at the last space before the
+# limit so the .ics stays human-readable; if there's no space in the first 75
+# bytes we fall back to a hard break.
 fold_ics_line <- function(line, width = 73) {
   if (nchar(line, type = "bytes") <= 75) return(line)
+
   segments <- character()
   remaining <- line
   first <- TRUE
-  while (nchar(remaining, type = "bytes") > width) {
-    seg <- substr(remaining, 1, width)
+
+  while (nchar(remaining, type = "bytes") > 75) {
+    # Look for the last space within the first `width` chars to break cleanly
+    candidate <- substr(remaining, 1, width)
+    last_space <- max(c(0, gregexpr(" ", candidate, fixed = TRUE)[[1]]))
+    break_at <- if (last_space > 1) last_space else width
+
+    seg <- substr(remaining, 1, break_at)
     segments <- c(segments, if (first) seg else paste0(" ", seg))
-    remaining <- substr(remaining, width + 1, nchar(remaining))
+    remaining <- substr(remaining, break_at + 1, nchar(remaining))
     first <- FALSE
   }
   segments <- c(segments, paste0(" ", remaining))
@@ -311,7 +365,7 @@ build_ics <- function(events_df, school_name = SCHOOL_NAME) {
     mutate(
       date_str = format(date, "%Y%m%d"),
       dtend_str = format(date + days(1), "%Y%m%d"),  # all-day events are exclusive of end date
-      uid = str_glue("{date_str}-{tolower(meal_type)}@lunchline.local"),
+      uid = str_glue("{date_str}-{uid_suffix}@lunchline.local"),
       block = pmap_chr(
         list(date_str, dtend_str, uid, summary, description),
         function(d, dend, u, s, desc) {
@@ -321,8 +375,8 @@ build_ics <- function(events_df, school_name = SCHOOL_NAME) {
             str_glue("DTSTAMP:{dtstamp}"),
             str_glue("DTSTART;VALUE=DATE:{d}"),
             str_glue("DTEND;VALUE=DATE:{dend}"),
-            fold_ics_line(str_glue("SUMMARY:{escape_ics_text(s)}")),
-            fold_ics_line(str_glue("DESCRIPTION:{escape_ics_text(desc)}")),
+            str_glue("SUMMARY:{escape_ics_text(s)}"),
+            str_glue("DESCRIPTION:{escape_ics_text(desc)}"),
             "TRANSP:TRANSPARENT",
             "STATUS:CONFIRMED",
             "END:VEVENT"
@@ -354,4 +408,23 @@ writeLines(ics_text, OUTPUT_ICS, sep = "")
 cli_alert_success("Wrote {nrow(events)} events to {OUTPUT_ICS}")
 ```
 
-## 
+## Uploading to Google Calendar
+
+1. Open [Google Calendar](https://calendar.google.com) in a browser.
+2. **Settings (gear icon) → Settings → Import & export**.
+3. Under **Import**, click **Select file from your computer** and pick
+   `fallsmead_menus.ics`.
+4. Choose the destination calendar (a dedicated "School Menus" sub-calendar
+   keeps things tidy and lets you mute or share it independently).
+5. Click **Import**.
+
+When new menus get published and you re-run this doc, repeat the upload —
+Google Calendar matches on UID, so existing events update in place and only
+genuinely new ones get added.
+
+## Session info
+
+```{r}
+#| label: sessioninfo
+sessionInfo()
+```

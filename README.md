@@ -7,7 +7,7 @@ Small tools that make life with a school-age kid a little easier. Built for Fall
 | Project | What it does | Try it |
 |------------------------|------------------------|------------------------|
 | [`lunchline/`](lunchline/) | Scrapes the school cafeteria menu into a `.ics` file you can import into Google Calendar, so "what's for lunch, can I pack instead?" is answered before Monday morning. | R + Quarto, [read more](lunchline/README.md) |
-| `spelling_4_U/` | **Pop Quiz, Pop Star**, a pink pop-concert spelling game that gets a 5th grader ready for the weekly test. Works on a laptop or iPad, no install. | [Play it](https://klinares.github.io/hall-pass/spelling/) |
+| [`spelling_4_U/`](spelling_4_U/) | **Pop Quiz, Pop Star**, a pink pop-concert spelling game that gets a 5th grader ready for the weekly test. Works on a laptop or iPad, no install. | [Play it](https://klinares.github.io/hall-pass/spelling_4_U/) |
 
 ## How the repo is laid out
 

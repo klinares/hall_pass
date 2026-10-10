@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>you seem pretty smart for a 5th grader so in love with spelling</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --pink:#fdb1cb;      /* baby pink background */
+  --pink-deep:#f98bb0;
+  --white:#ffffff;
+  --black:#000000;
+  --lilac:#a8a9fc;
+  --blue:#2f2fc1;
+  --mono:'Courier Prime','Courier New',Courier,monospace;
+  --hand:'Caveat Brush','Segoe Print',cursive;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+body{background:var(--pink);color:var(--white);font-family:var(--mono);text-transform:lowercase;min-height:100vh;overflow-x:hidden}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;text-transform:lowercase}
+
+/* announcement bar */
+.ticker{background:var(--black);color:var(--pink);font-size:.8rem;white-space:nowrap;overflow:hidden;padding:9px 0}
+.ticker span{display:inline-block;padding-left:100%;animation:tick 22s linear infinite}
+@keyframes tick{to{transform:translateX(-100%)}}
+
+/* header */
+header{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;padding:14px 20px;border-bottom:1px solid var(--white)}
+.brand{grid-column:2;font-family:var(--hand);font-size:clamp(1.9rem,6vw,2.6rem);line-height:1;color:var(--white);text-align:center;cursor:pointer}
+.counts{grid-column:3;flex-direction:column;align-items:flex-end;gap:4px;justify-self:end;display:flex;gap:14px;font-size:.85rem}
+.count{position:relative;display:flex;align-items:center;gap:4px}
+.count b{background:var(--black);color:var(--pink);min-width:24px;height:24px;border-radius:99px;display:grid;place-items:center;padding:0 7px;font-size:.75rem}
+
+main{max-width:620px;margin:0 auto;padding:28px 20px 70px}
+.screen{animation:in .35s ease-out}
+@keyframes in{from{opacity:0;transform:translateY(12px)}}
+
+.eyebrow{font-size:.8rem;letter-spacing:.06em;opacity:.95}
+h1{font-family:var(--hand);font-weight:400;font-size:clamp(3rem,13vw,5.2rem);line-height:.9;margin:10px 0 14px;color:var(--white)}
+h1 .ink{color:var(--black)}
+p.lede{font-size:1rem;line-height:1.5;max-width:44ch}
+
+/* pill buttons: black fill, handwritten label */
+.pill{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:var(--black);color:var(--white);
+      border-radius:36px;padding:12px 26px;font-family:var(--hand);font-size:1.7rem;line-height:1;transition:background .15s,color .15s,transform .1s}
+.pill:hover{background:var(--white);color:var(--black)}
+.pill:active{transform:scale(.97)}
+.pill.ghost{background:transparent;border:1px solid var(--white)}
+.pill.ghost:hover{background:var(--white);color:var(--black)}
+.pill:disabled{opacity:.4;pointer-events:none}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.btnrow .pill{flex:1}
+
+/* week select */
+.week{display:flex;align-items:center;gap:10px;margin:22px 0 6px;font-size:.9rem}
+.week select{flex:1;font:inherit;text-transform:lowercase;color:var(--black);background:var(--white);border:1px solid var(--black);border-radius:0;padding:10px 12px}
+
+/* menu rows like a nav list */
+.menu{list-style:none;margin-top:18px;border-top:1px solid var(--white)}
+.menu button{width:100%;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;padding:16px 4px;border-bottom:1px solid var(--white);text-align:left;transition:padding .2s,background .2s}
+.menu button:hover{background:rgba(255,255,255,.18);padding-left:14px}
+.menu .no{font-size:.8rem;opacity:.9}
+.menu .t{font-family:var(--hand);font-size:2.1rem;line-height:1}
+.menu .s{display:block;font-family:var(--mono);font-size:.8rem;margin-top:2px;color:var(--black)}
+.menu .arr{font-size:1.4rem}
+
+/* play */
+.progress{display:flex;gap:4px;margin:14px 0 22px}
+.progress i{flex:1;height:6px;background:rgba(255,255,255,.45)}
+.progress i.done{background:var(--white)}
+.progress i.now{background:var(--black)}
+.clue{background:var(--white);color:var(--black);padding:16px 18px;font-size:1.05rem;line-height:1.45;border:2px solid var(--black);box-shadow:6px 6px 0 var(--black);text-transform:none;position:relative}
+.clue::before{content:"clue:";display:block;font-size:.75rem;text-transform:lowercase;color:var(--pink-deep);font-weight:700;margin-bottom:4px}
+.slots{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:24px 0 18px}
+.slot{width:clamp(30px,8vw,42px);height:clamp(42px,11vw,54px);border:1px solid var(--white);display:grid;place-items:center;
+      font-family:var(--mono);font-weight:700;font-size:clamp(1.3rem,5vw,1.8rem);color:var(--white)}
+.slot.gap{background:var(--white);color:var(--pink-deep)}
+.slot.fill{background:var(--black);color:var(--white);border-color:var(--black);animation:drop .18s ease-out}
+@keyframes drop{from{transform:translateY(-8px);opacity:0}}
+.ans{width:100%;background:transparent;border:none;border-bottom:2px solid var(--white);color:var(--white);
+     font-family:var(--mono);font-size:1.7rem;font-weight:700;text-align:center;padding:10px 4px;outline:none;text-transform:lowercase}
+.ans::placeholder{color:rgba(255,255,255,.75);font-weight:400;font-size:1.1rem}
+.ans:focus{border-bottom-color:var(--black)}
+.tiles{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:6px 0}
+.tile{width:48px;height:52px;background:var(--white);color:var(--black);border:2px solid var(--black);box-shadow:3px 3px 0 var(--black);font-family:var(--mono);font-weight:700;font-size:1.5rem;transition:transform .1s,background .1s}
+.tile:hover{background:var(--black);color:var(--white)}
+.tile:active{transform:scale(.92)}
+.tile.used{visibility:hidden}
+.choices{display:grid;gap:10px;margin-top:20px}
+.choice{border:1px solid var(--white);padding:14px 18px;text-align:left;font-family:var(--hand);font-size:2rem;line-height:1;transition:background .15s,color .15s}
+.choice:hover:not(:disabled){background:var(--white);color:var(--black)}
+.choice.good{background:var(--black);color:var(--white);border-color:var(--black)}
+.choice.bad{background:var(--white);color:var(--pink-deep);text-decoration:line-through;animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.fb{min-height:2.4rem;margin-top:16px;text-align:center;font-size:1rem}
+.fb b{color:var(--black)}
+.record{display:block;margin:18px auto 10px;width:150px;height:150px;border-radius:50%;
+        background:radial-gradient(circle,var(--pink) 0 14%,var(--black) 15% 17%,#1a1a1a 18% 100%);
+        box-shadow:inset 0 0 0 10px #111,inset 0 0 0 11px #333,inset 0 0 0 24px #111,inset 0 0 0 25px #333,inset 0 0 0 40px #111;
+        position:relative;transition:transform .2s}
+.record::after{content:"▶ play";position:absolute;bottom:-28px;left:0;right:0;text-align:center;font-family:var(--mono);font-size:.85rem;color:var(--white)}
+.record.spin{animation:spin 1.2s linear}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* finish: ticket stub */
+.ticket{background:var(--white);color:var(--black);margin:20px 0;display:grid;grid-template-columns:1fr auto;border:2px solid var(--black);box-shadow:6px 6px 0 var(--black);position:relative}
+.ticket .main{padding:18px 18px 16px}
+.ticket .stub{border-left:2px dashed var(--black);padding:18px 14px;writing-mode:vertical-rl;text-align:center;font-weight:700;letter-spacing:.2em;font-size:.8rem}
+.ticket h2{font-family:var(--hand);font-weight:400;font-size:2.6rem;line-height:1;color:var(--pink-deep)}
+.ticket .big{font-family:var(--mono);font-weight:700;font-size:2rem;margin:6px 0 2px}
+.ticket .row{display:flex;justify-content:space-between;font-size:.85rem;border-top:1px solid var(--black);padding-top:8px;margin-top:10px}
+.setlist{list-style:none;border-top:1px solid var(--white);margin-top:10px}
+.setlist li{display:flex;justify-content:space-between;padding:10px 2px;border-bottom:1px solid var(--white);font-size:1rem}
+.setlist li span:last-child{color:var(--black)}
+.setlist .miss span:last-child{color:var(--white)}
+
+.toast{position:fixed;left:50%;top:30%;transform:translateX(-50%);font-family:var(--hand);font-size:clamp(3rem,12vw,4.5rem);
+       color:var(--black);pointer-events:none;white-space:nowrap;z-index:9;animation:rise 1.1s forwards}
+@keyframes rise{0%{opacity:0;transform:translate(-50%,20px) rotate(-4deg) scale(.7)}25%{opacity:1;transform:translate(-50%,0) rotate(-4deg) scale(1.05)}100%{opacity:0;transform:translate(-50%,-50px) rotate(-4deg)}}
+canvas{position:fixed;inset:0;pointer-events:none;z-index:8}
+@media (max-width:520px){
+  header{grid-template-columns:1fr auto;padding:12px 16px}
+  .brand{grid-column:1;text-align:left;font-size:2rem}
+  .counts{grid-column:2}
+}
+.record::after{content:none}
+.tap{text-align:center;font-size:.85rem;margin-top:-4px}
+h1.album{font-size:clamp(2.6rem,10vw,4.4rem);line-height:.92}
+</style>
+</head>
+<body>
+<canvas id="fx"></canvas>
+<div class="ticker"><span id="ticker"></span></div>
+<header>
+  <div class="brand" id="brand">natalia's spelling tour</div>
+  <div class="counts" id="counts" hidden>
+    <div class="count">fans <b id="fans">0</b></div>
+    <div class="count">🔥 <b id="streak">0</b></div>
+  </div>
+</header>
+<main id="main"></main>
+
+<script>
+/* =========================================================
+   WORD BANK: add each new week at the TOP.
+   id = test date (YYYY-MM-DD). The newest week on or before
+   today opens automatically; older weeks stay in the menu.
+   s = syllable chunks used as a hint after a second miss.
+   ========================================================= */
+const WEEKS = [
+  { id:"2026-10-10", label:"week of oct 10, 2026", words:[
+    { w:"population",   s:"pop-u-la-tion",    h:"The total number of people living in a specific area (like a massive concert crowd!)" },
+    { w:"tropical",     s:"trop-i-cal",       h:"Warm, humid regions near the Earth's equator where it's sunny all year" },
+    { w:"pyramid",      s:"pyr-a-mid",        h:"A massive ancient structure with triangular sides, like those built in Egypt" },
+    { w:"empire",       s:"em-pire",          h:"A large group of territories or nations ruled by a single leader or government" },
+    { w:"peninsula",    s:"pen-in-su-la",     h:"A piece of land almost entirely surrounded by water, sticking out into the sea" },
+    { w:"civilization", s:"civ-i-li-za-tion", h:"A complex human society with its own advanced culture, cities, and government" },
+    { w:"rainforest",   s:"rain-for-est",     h:"A dense, lush forest found in wet, warm areas with heavy rainfall" },
+    { w:"indigenous",   s:"in-dig-e-nous",    h:"Originating or occurring naturally in a particular place; native to the land" },
+    { w:"temple",       s:"tem-ple",          h:"A sacred building devoted to the worship of a god or gods in ancient cultures" },
+    { w:"monument",     s:"mon-u-ment",       h:"A statue, building, or structure built to remember a famous person or historical event" }
+  ]}
+];
+
+const todayISO = (() => { const d = new Date(); return new Date(d - d.getTimezoneOffset()*6e4).toISOString().slice(0,10); })();
+const sorted = [...WEEKS].sort((a,b) => b.id.localeCompare(a.id));
+let WEEK = sorted.find(w => w.id <= todayISO) || sorted[sorted.length-1];
+
+/* ---------- helpers ---------- */
+const $ = id => document.getElementById(id);
+const shuffle = a => { const b=[...a]; for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];} return b; };
+const pick = a => a[Math.floor(Math.random()*a.length)];
+const CHEERS = ['iconic','yes!!','flawless','encore!','obsessed','crowd screaming','main character'];
+function setTicker(){ const t=`now playing: you seem pretty smart for a 5th grader so in love with spelling ✶ ${WEEK.label} ✶ ${WEEK.words.length} songs on the setlist ✶ spell them all to sell out the show ✶ `; $('ticker').textContent = t+t; }
+
+/* ---------- sound ---------- */
+let ac;
+function tone(f,d=.15,type='triangle',v=.12,delay=0){
+  try{
+    ac = ac || new (window.AudioContext||window.webkitAudioContext)();
+    const t = ac.currentTime + delay, o = ac.createOscillator(), g = ac.createGain();
+    o.type = type; o.frequency.value = f;
+    g.gain.setValueAtTime(v,t); g.gain.exponentialRampToValueAtTime(.001,t+d);
+    o.connect(g).connect(ac.destination); o.start(t); o.stop(t+d);
+  }catch(e){}
+}
+const sGood = () => [523,659,784,1047].forEach((f,i)=>tone(f,.18,'triangle',.1,i*.07));
+const sBad  = () => { tone(240,.18,'square',.05); tone(200,.25,'square',.05,.12); };
+const sTap  = () => tone(880,.05,'sine',.06);
+
+/* ---------- confetti: hearts + stars ---------- */
+const cv = $('fx'), cx = cv.getContext('2d'), bits = [];
+const fit = () => { cv.width = innerWidth; cv.height = innerHeight; }; fit(); addEventListener('resize', fit);
+function burst(n=30){
+  const cols=['#000','#fff','#a8a9fc','#fff','#000'], glyphs=['♥','✶','♥','★'];
+  for(let i=0;i<n;i++) bits.push({x:innerWidth/2,y:innerHeight*.35,vx:(Math.random()-.5)*13,vy:-Math.random()*11-4,
+    r:Math.random()*6.28,vr:(Math.random()-.5)*.3,s:12+Math.random()*12,c:cols[i%cols.length],g:glyphs[i%glyphs.length],life:90});
+}
+(function loop(){
+  cx.clearRect(0,0,cv.width,cv.height);
+  for(let i=bits.length-1;i>=0;i--){
+    const p=bits[i]; p.x+=p.vx; p.y+=p.vy; p.vy+=.35; p.r+=p.vr; p.life--;
+    cx.save(); cx.translate(p.x,p.y); cx.rotate(p.r); cx.fillStyle=p.c; cx.font=p.s+'px serif'; cx.fillText(p.g,0,0); cx.restore();
+    if(p.life<=0) bits.splice(i,1);
+  }
+  requestAnimationFrame(loop);
+})();
+function toast(t){ const d=document.createElement('div'); d.className='toast'; d.textContent=t; document.body.appendChild(d); setTimeout(()=>d.remove(),1100); }
+
+/* ---------- state ---------- */
+let G = null;
+const MODES = {
+  slots:  { name:'missing letters', sub:'fill in the blanks' },
+  vowels: { name:'missing vowels',  sub:'every vowel is gone. put them back' },
+  tiles:  { name:'remix',           sub:'tap the letters in order' },
+  match:  { name:'fan mail',        sub:'match the word to its meaning' },
+  listen: { name:'studio session',  sub:'hear it, spell it (test practice)' }
+};
+function updateStats(){ $('fans').textContent = G.fans.toLocaleString(); $('streak').textContent = G.streak; }
+function screen(html){ $('main').innerHTML = `<section class="screen">${html}</section>`; window.scrollTo(0,0); }
+
+/* ---------- menu ---------- */
+function menu(){
+  $('counts').hidden = true; setTicker();
+  screen(`
+    <div class="eyebrow">5th grade social studies ✶ tonight's headliner: natalia</div>
+    <h1 class="album">you seem pretty smart <span class="ink">for a 5th grader so in love with spelling</span> 🎸</h1>
+    <p class="lede">every word you spell right wins fans. get all ${WEEK.words.length} on the setlist and the show sells out.</p>
+    <label class="week">tour date <select id="wk">${sorted.map(w=>`<option value="${w.id}" ${w.id===WEEK.id?'selected':''}>${w.label}</option>`).join('')}</select></label>
+    <ul class="menu">
+      ${Object.entries(MODES).map(([k,m],i)=>`<li><button data-m="${k}"><span class="no">0${i+1}</span><span><span class="t">${m.name}</span><span class="s">${m.sub}</span></span><span class="arr">→</span></button></li>`).join('')}
+    </ul>
+    <div class="btnrow"><button class="pill ghost" id="setlist">see the setlist</button></div>`);
+  $('wk').onchange = e => { WEEK = WEEKS.find(w=>w.id===e.target.value); setTicker(); };
+  document.querySelectorAll('.menu button').forEach(b => b.onclick = () => start(b.dataset.m));
+  $('setlist').onclick = setlist;
+}
+function setlist(){
+  screen(`<div class="eyebrow">${WEEK.label}</div><h1>the setlist</h1>
+    <ul class="setlist">${WEEK.words.map((v,i)=>`<li><span>${String(i+1).padStart(2,'0')}. ${v.w}</span><span>✶</span></li>`).join('')}</ul>
+    <div class="btnrow"><button class="pill" id="back">back</button></div>`);
+  $('back').onclick = menu;
+}
+$('brand').onclick = () => menu();
+
+/* ---------- round flow ---------- */
+function start(mode){
+  G = { mode, q:shuffle(WEEK.words), i:0, fans:0, streak:0, best:0, firstTry:0, missed:new Set(), tries:0 };
+  $('counts').hidden = false; updateStats(); show();
+}
+function frame(inner){
+  return `<div class="eyebrow">${MODES[G.mode].name} ✶ song ${G.i+1} of ${G.q.length}</div>
+    <div class="progress">${G.q.map((_,i)=>`<i class="${i<G.i?'done':i===G.i?'now':''}"></i>`).join('')}</div>${inner}
+    <div class="btnrow" style="margin-top:28px"><button class="pill ghost" onclick="menu()" style="flex:0;font-size:1.3rem;padding:8px 18px">quit</button></div>`;
+}
+function show(){
+  if(G.i >= G.q.length) return finish();
+  G.tries = 0; G.cur = G.q[G.i];
+  ({slots, vowels, tiles, match, listen})[G.mode](G.cur);
+}
+function win(){
+  if(G.tries===0){ G.streak++; G.firstTry++; G.best=Math.max(G.best,G.streak); G.fans += 1000*Math.min(G.streak,5); }
+  else { G.fans += 300; }
+  sGood(); burst(); toast(G.streak>=3 ? `${G.streak} in a row!` : pick(CHEERS)); updateStats();
+}
+function oops(){ G.tries++; G.streak=0; G.missed.add(G.cur.w); sBad(); updateStats(); }
+function next(){ G.i++; show(); }
+function fb(msg){ $('fb').innerHTML = msg; }
+const clue = v => `<div class="clue">${v.h}</div>`;
+function chunks(v){ /* first + last syllable only, so the hint never spells the whole word */
+  const s=(v.s||v.w).split('-');
+  return s.length<2 ? `${v.w.slice(0,2)}…${v.w.slice(-2)}` : [s[0],...s.slice(1,-1).map(()=>'___'),s[s.length-1]].join(' - ');
+}
+function ladder(v){
+  return G.tries===1
+    ? `not quite yet! hint: <b>${v.w.length} letters</b>, starts with <b>"${v.w[0]}"</b>`
+    : `keep going, natalia! sound it out: <b>${chunks(v)}</b>`;
+}
+
+function wireTyped(){
+  const inp=$('ans'); inp.focus();
+  inp.onkeydown = e => { if(e.key==='Enter') check(); };
+  $('go').onclick = check;
+}
+function check(){
+  const inp=$('ans'), v=G.cur, val=inp.value.trim().toLowerCase();
+  if(!val) return;
+  if(val===v.w){ inp.disabled=true; $('go').disabled=true; win(); fb(`✶ <b>${v.w}</b> ✶`); setTimeout(next,1300); return; }
+  oops();
+  if(G.tries>=3){ inp.disabled=true; $('go').disabled=true; fb(`it's <b>${v.w}</b>. look closely, it'll come back around!`); setTimeout(next,2600); }
+  else { fb(ladder(v)); inp.select(); }
+}
+
+/* MODE: missing letters */
+function slots(v){
+  const n = Math.max(2, Math.round(v.w.length/3));
+  const hide = new Set(shuffle([...v.w].map((_,i)=>i)).slice(0,n));
+  screen(frame(`${clue(v)}
+    <div class="slots">${[...v.w].map((c,i)=>`<div class="slot ${hide.has(i)?'gap':''}">${hide.has(i)?'?':c}</div>`).join('')}</div>
+    <input class="ans" id="ans" placeholder="type the whole word" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <div class="btnrow"><button class="pill" id="go">check it</button></div><div id="fb" class="fb"></div>`));
+  wireTyped();
+}
+
+/* MODE: missing vowels */
+function vowels(v){
+  screen(frame(`${clue(v)}
+    <div class="slots">${[...v.w].map(c=>'aeiou'.includes(c)?`<div class="slot gap">_</div>`:`<div class="slot">${c}</div>`).join('')}</div>
+    <input class="ans" id="ans" placeholder="type the whole word" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <div class="btnrow"><button class="pill" id="go">check it</button></div><div id="fb" class="fb"></div>`));
+  wireTyped();
+}
+
+/* MODE: remix (tap tiles) */
+function tiles(v){
+  let mix; do{ mix=shuffle([...v.w]); }while(mix.join('')===v.w);
+  screen(frame(`${clue(v)}
+    <div class="slots" id="built">${[...v.w].map(()=>`<div class="slot"></div>`).join('')}</div>
+    <div class="tiles">${mix.map((c,i)=>`<button class="tile" data-i="${i}">${c}</button>`).join('')}</div>
+    <div class="btnrow"><button class="pill ghost" id="undo">undo</button><button class="pill ghost" id="clear">clear</button></div>
+    <div id="fb" class="fb"></div>`));
+  const picked=[], slotsEl=[...$('built').children], tileEls=[...document.querySelectorAll('.tile')];
+  const paint=()=>{ slotsEl.forEach((s,i)=>{ const has=picked[i]!=null; s.textContent = has ? mix[picked[i]] : ''; s.classList.toggle('fill',has); });
+                     tileEls.forEach((t,i)=>t.classList.toggle('used',picked.includes(i))); };
+  tileEls.forEach(t=>t.onclick=()=>{
+    sTap(); picked.push(+t.dataset.i); paint();
+    if(picked.length===v.w.length){
+      const word=picked.map(i=>mix[i]).join('');
+      if(word===v.w){ tileEls.forEach(x=>x.disabled=true); win(); fb(`✶ <b>${v.w}</b> ✶`); setTimeout(next,1300); }
+      else{
+        oops();
+        if(G.tries>=3){ fb(`it's <b>${v.w}</b>!`); tileEls.forEach(x=>x.disabled=true); setTimeout(next,2400); }
+        else{ fb(ladder(v)); setTimeout(()=>{picked.length=0;paint();},700); }
+      }
+    }
+  });
+  $('undo').onclick=()=>{ picked.pop(); paint(); };
+  $('clear').onclick=()=>{ picked.length=0; paint(); };
+}
+
+/* MODE: fan mail (definition match) */
+function match(v){
+  const opts = shuffle([v, ...shuffle(WEEK.words.filter(x=>x.w!==v.w)).slice(0,3)]);
+  screen(frame(`<p style="margin-bottom:10px">a fan dm'd you: which word means…</p>${clue(v)}
+    <div class="choices">${opts.map(o=>`<button class="choice">${o.w}</button>`).join('')}</div>
+    <div id="fb" class="fb"></div>
+    <div class="btnrow"><button class="pill" id="nx" hidden>next song →</button></div>`));
+  const bs=[...document.querySelectorAll('.choice')];
+  bs.forEach(b=>b.onclick=()=>{
+    bs.forEach(x=>x.disabled=true);
+    if(b.textContent===v.w){ b.classList.add('good'); win(); fb('✶ correct ✶'); setTimeout(next,1200); }
+    else{ b.classList.add('bad'); G.tries=3; oops(); bs.find(x=>x.textContent===v.w).classList.add('good');
+          fb(`it was <b>${v.w}</b>`); $('nx').hidden=false; $('nx').onclick=next; }
+  });
+}
+
+/* MODE: studio session (listen & spell) */
+function say(w){ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(w); u.rate=.8; speechSynthesis.speak(u); }
+function listen(v){
+  const can='speechSynthesis' in window;
+  screen(frame(`${can?`<button class="record" id="spk" aria-label="play the word"></button><p class="tap">tap the record to hear it again</p><div style="height:18px"></div>`:clue(v)}
+    <input class="ans" id="ans" placeholder="spell it like it's test day" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <div class="btnrow"><button class="pill ghost" id="hint">clue?</button><button class="pill" id="go">submit</button></div>
+    <div id="fb" class="fb"></div>`));
+  if(can){ const s=$('spk'); s.onclick=()=>{ s.classList.remove('spin'); void s.offsetWidth; s.classList.add('spin'); say(v.w); }; setTimeout(()=>s.click(),350); }
+  $('hint').onclick=()=>fb(`clue: <b>${v.h.toLowerCase()}</b><br>sounds like: <b>${chunks(v)}</b>`);
+  wireTyped();
+}
+
+/* ---------- finish ---------- */
+function finish(){
+  const n=G.q.length, pct=G.firstTry/n;
+  const head = pct>=.9?'sold out':pct>=.7?'what a show':'rehearsal night';
+  const sub  = pct>=.9?"you're so ready for that test.":pct>=.7?'a couple more run-throughs and it’s perfect.':'every star rehearses. run it back!';
+  screen(`<div class="eyebrow">${WEEK.label} ✶ ${MODES[G.mode].name}</div>
+    <h1>${head}</h1><p class="lede">${sub}</p>
+    <div class="ticket">
+      <div class="main">
+        <h2>admit one ♥</h2>
+        <div class="big">${G.fans.toLocaleString()} fans</div>
+        <div class="row"><span>first try: ${G.firstTry}/${n}</span><span>best streak: ${G.best}</span></div>
+      </div>
+      <div class="stub">${pct>=.9?'vip':'ga'} ✶ ${todayISO}</div>
+    </div>
+    <div class="eyebrow">tonight's setlist</div>
+    <ul class="setlist">${G.q.map(v=>`<li class="${G.missed.has(v.w)?'miss':''}"><span>${v.w}</span><span>${G.missed.has(v.w)?'rehearse again':'✶ nailed it'}</span></li>`).join('')}</ul>
+    <div class="btnrow"><button class="pill" id="again">encore</button><button class="pill ghost" id="home">menu</button></div>`);
+  setTimeout(()=>burst(pct>=.9?140:60),300);
+  [523,659,784,1047].forEach((f,i)=>tone(f,.22,'triangle',.12,i*.12));
+  $('again').onclick=()=>start(G.mode);
+  $('home').onclick=menu;
+}
+
+menu();
+</script>
+</body>
+</html>

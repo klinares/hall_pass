@@ -1,0 +1,378 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//lunchline//School Menus//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Fallsmead ES Menus
+X-WR-TIMEZONE:America/New_York
+BEGIN:VEVENT
+UID:20260929-breakfast1@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20260929
+DTEND;VALUE=DATE:20260930
+SUMMARY:Breakfast 1: Turkey Sausage Egg & Cheese Pocket
+DESCRIPTION:VEGETABLE\nMini Pancakes\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\nTurkey Sausage Egg & Cheese Pocket\nBanana Bread\nBeef & Cheese Spicy Breakfast Taco\nMaryland Made Cinnamon Roll\nMini Cinnamon Cream Cheese Bagel\nMini Strawberry Bagel\n\nGRAINS\nOrange Juice\nCraisins\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20260929-breakfast2@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20260929
+DTEND;VALUE=DATE:20260930
+SUMMARY:Breakfast 2: Beef & Cheese Spicy Breakfast Taco
+DESCRIPTION:VEGETABLE\nMini Pancakes\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\nTurkey Sausage Egg & Cheese Pocket\nBanana Bread\nBeef & Cheese Spicy Breakfast Taco\nMaryland Made Cinnamon Roll\nMini Cinnamon Cream Cheese Bagel\nMini Strawberry Bagel\n\nGRAINS\nOrange Juice\nCraisins\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20260929-breakfast3@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20260929
+DTEND;VALUE=DATE:20260930
+SUMMARY:Breakfast 3: Mini Strawberry Bagel
+DESCRIPTION:VEGETABLE\nMini Pancakes\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\nTurkey Sausage Egg & Cheese Pocket\nBanana Bread\nBeef & Cheese Spicy Breakfast Taco\nMaryland Made Cinnamon Roll\nMini Cinnamon Cream Cheese Bagel\nMini Strawberry Bagel\n\nGRAINS\nOrange Juice\nCraisins\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20260929-lunch1@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20260929
+DTEND;VALUE=DATE:20260930
+SUMMARY:Lunch 1: Chicken Walking Taco w/ Corn & Chips
+DESCRIPTION:ALL OPTIONS\nCorn Chips\n\nVEGETABLE\nChicken Walking Taco w/ Corn & Chips\nVeggie Burger w/ Bun & Green Beans\n\nFRUIT\nCucumber Coins\nHummus\nBaby Carrots\nRoasted Chickpeas\nCucumbers & Tomatoes\n\nGRAINS\nFresh Sliced Apple\nFresh Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20260929-lunch2@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20260929
+DTEND;VALUE=DATE:20260930
+SUMMARY:Lunch 2: Veggie Burger w/ Bun & Green Beans
+DESCRIPTION:ALL OPTIONS\nCorn Chips\n\nVEGETABLE\nChicken Walking Taco w/ Corn & Chips\nVeggie Burger w/ Bun & Green Beans\n\nFRUIT\nCucumber Coins\nHummus\nBaby Carrots\nRoasted Chickpeas\nCucumbers & Tomatoes\n\nGRAINS\nFresh Sliced Apple\nFresh Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20260930-breakfast1@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20260930
+DTEND;VALUE=DATE:20261001
+SUMMARY:Breakfast 1: Beef & Cheese Spicy Breakfast Taco
+DESCRIPTION:VEGETABLE\nBanana Bread\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\nBeef & Cheese Spicy Breakfast Taco\nMaryland Made Cinnamon Roll\nMini Cinnamon Cream Cheese Bagel\nMini Strawberry Bagel\nMini Pancakes\n\nGRAINS\nApple Juice\nCraisins\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20260930-breakfast2@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20260930
+DTEND;VALUE=DATE:20261001
+SUMMARY:Breakfast 2: Mini Strawberry Bagel
+DESCRIPTION:VEGETABLE\nBanana Bread\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\nBeef & Cheese Spicy Breakfast Taco\nMaryland Made Cinnamon Roll\nMini Cinnamon Cream Cheese Bagel\nMini Strawberry Bagel\nMini Pancakes\n\nGRAINS\nApple Juice\nCraisins\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20260930-lunch1@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20260930
+DTEND;VALUE=DATE:20261001
+SUMMARY:Lunch 1: Korean BBQ Turkey w/ Veggie Rice & Dinner Roll
+DESCRIPTION:VEGETABLE\nKorean BBQ Turkey w/ Veggie Rice & Dinner Roll\nCheesy Pull Aparts w/ Marinara Sauce\n\nFRUIT\nHummus\nBaby Carrots\nRoasted Chickpeas\nCucumber Coins\n\nGRAINS\nFresh Sliced Apple\nFresh Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20260930-lunch2@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20260930
+DTEND;VALUE=DATE:20261001
+SUMMARY:Lunch 2: Cheesy Pull Aparts w/ Marinara Sauce
+DESCRIPTION:VEGETABLE\nKorean BBQ Turkey w/ Veggie Rice & Dinner Roll\nCheesy Pull Aparts w/ Marinara Sauce\n\nFRUIT\nHummus\nBaby Carrots\nRoasted Chickpeas\nCucumber Coins\n\nGRAINS\nFresh Sliced Apple\nFresh Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261001-breakfast@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20261001
+DTEND;VALUE=DATE:20261002
+SUMMARY:Breakfast: Beef Sausage & Cheese WG Mini Bagel
+DESCRIPTION:VEGETABLE\nBeef Sausage & Cheese WG Mini Bagel\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\n\nGRAINS\nOrange Juice\nCraisins\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261001-lunch1@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20261001
+DTEND;VALUE=DATE:20261002
+SUMMARY:Lunch 1: Egg Bite and Sausage link w/ Apple Bread
+DESCRIPTION:VEGETABLE\nEgg Bite and Sausage link w/ Apple Bread\nChik'N Nuggets w/ Baked Beans\n\nFRUIT\nSide Salad\nCelery Sticks\nHummus\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261001-lunch2@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20261001
+DTEND;VALUE=DATE:20261002
+SUMMARY:Lunch 2: Chik'N Nuggets w/ Baked Beans
+DESCRIPTION:VEGETABLE\nEgg Bite and Sausage link w/ Apple Bread\nChik'N Nuggets w/ Baked Beans\n\nFRUIT\nSide Salad\nCelery Sticks\nHummus\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261002-breakfast@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20261002
+DTEND;VALUE=DATE:20261003
+SUMMARY:Breakfast: Maryland Made Cinnamon Roll
+DESCRIPTION:VEGETABLE\nMaryland Made Cinnamon Roll\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\n\nGRAINS\nApple Juice\nCraisins\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261002-lunch1@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20261002
+DTEND;VALUE=DATE:20261003
+SUMMARY:Lunch 1: Cheese Pizza
+DESCRIPTION:ALL OPTIONS\nBaked Scoops\n\nVEGETABLE\nCheese Pizza\nPepperoni Pizza\nSouthwest Grilled Chicken Salad With Scoops\n\nFRUIT\nAssorted Fresh Vegetables\nHummus\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261002-lunch2@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20261002
+DTEND;VALUE=DATE:20261003
+SUMMARY:Lunch 2: Pepperoni Pizza
+DESCRIPTION:ALL OPTIONS\nBaked Scoops\n\nVEGETABLE\nCheese Pizza\nPepperoni Pizza\nSouthwest Grilled Chicken Salad With Scoops\n\nFRUIT\nAssorted Fresh Vegetables\nHummus\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261002-lunch3@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20261002
+DTEND;VALUE=DATE:20261003
+SUMMARY:Lunch 3: Southwest Grilled Chicken Salad With Scoops
+DESCRIPTION:ALL OPTIONS\nBaked Scoops\n\nVEGETABLE\nCheese Pizza\nPepperoni Pizza\nSouthwest Grilled Chicken Salad With Scoops\n\nFRUIT\nAssorted Fresh Vegetables\nHummus\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261005-breakfast@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20261005
+DTEND;VALUE=DATE:20261006
+SUMMARY:Breakfast: Chicken Sausage & Cheese Waffle
+DESCRIPTION:VEGETABLE\nChicken Sausage & Cheese Waffle\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\n\nGRAINS\nApple Juice\nCraisins\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261005-lunch@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20261005
+DTEND;VALUE=DATE:20261006
+SUMMARY:Lunch: French Toast w/ Pork Sausage
+DESCRIPTION:VEGETABLE\nFrench Toast w/ Pork Sausage\nGrilled Cheese Sandwich\n\nFRUIT\nCrinkle Cut Potatoes\nBaby Carrots\nHummus\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261006-breakfast@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20261006
+DTEND;VALUE=DATE:20261007
+SUMMARY:Breakfast: Turkey Sausage Egg & Cheese Pocket
+DESCRIPTION:VEGETABLE\nTurkey Sausage Egg & Cheese Pocket\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\n\nGRAINS\nOrange Juice\nCraisins\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261006-lunch1@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20261006
+DTEND;VALUE=DATE:20261007
+SUMMARY:Lunch 1: Chik'N Nuggets w/ Vegetable Fried Rice
+DESCRIPTION:VEGETABLE\nChik'N Nuggets w/ Vegetable Fried Rice\nBeef & Cheese CrispUps\n\nFRUIT\nCelery Sticks\nHummus\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261006-lunch2@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20261006
+DTEND;VALUE=DATE:20261007
+SUMMARY:Lunch 2: Beef & Cheese CrispUps
+DESCRIPTION:VEGETABLE\nChik'N Nuggets w/ Vegetable Fried Rice\nBeef & Cheese CrispUps\n\nFRUIT\nCelery Sticks\nHummus\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261007-breakfast@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20261007
+DTEND;VALUE=DATE:20261008
+SUMMARY:Breakfast: Banana Bread
+DESCRIPTION:VEGETABLE\nBanana Bread\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\n\nGRAINS\nApple Juice\nCraisins\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261007-lunch1@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20261007
+DTEND;VALUE=DATE:20261008
+SUMMARY:Lunch 1: Cheese Crunchers w/ Marinara Sauce
+DESCRIPTION:VEGETABLE\nCheese Crunchers w/ Marinara Sauce\nCheesy Enchilada\n\nFRUIT\nSpring Salad\nGrape Tomatoes\nHummus\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261007-lunch2@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20261007
+DTEND;VALUE=DATE:20261008
+SUMMARY:Lunch 2: Cheesy Enchilada
+DESCRIPTION:VEGETABLE\nCheese Crunchers w/ Marinara Sauce\nCheesy Enchilada\n\nFRUIT\nSpring Salad\nGrape Tomatoes\nHummus\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261008-breakfast@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20261008
+DTEND;VALUE=DATE:20261009
+SUMMARY:Breakfast: Beef & Cheese Spicy Breakfast Taco
+DESCRIPTION:VEGETABLE\nBeef & Cheese Spicy Breakfast Taco\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\n\nGRAINS\nOrange Juice\nCraisins\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261008-lunch1@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20261008
+DTEND;VALUE=DATE:20261009
+SUMMARY:Lunch 1: Chik'N Nuggets w/ Green Beans\, Corn\, and Dinner Ro
+DESCRIPTION:VEGETABLE\nChik'N Nuggets w/ Green Beans\, Corn\, and Dinner Ro\nCatfish Cake w/ Tater Tots\n\nFRUIT\nSpring Salad\nCucumber Coins\nHummus\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261008-lunch2@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20261008
+DTEND;VALUE=DATE:20261009
+SUMMARY:Lunch 2: Catfish Cake w/ Tater Tots
+DESCRIPTION:VEGETABLE\nChik'N Nuggets w/ Green Beans\, Corn\, and Dinner Ro\nCatfish Cake w/ Tater Tots\n\nFRUIT\nSpring Salad\nCucumber Coins\nHummus\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261009-breakfast@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20261009
+DTEND;VALUE=DATE:20261010
+SUMMARY:Breakfast: Maryland Made Cinnamon Roll
+DESCRIPTION:VEGETABLE\nMaryland Made Cinnamon Roll\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\n\nGRAINS\nApple Juice\nCraisins\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261009-lunch1@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20261009
+DTEND;VALUE=DATE:20261010
+SUMMARY:Lunch 1: Pepperoni Pizza
+DESCRIPTION:VEGETABLE\nPepperoni Pizza\nCheese Pizza\nBuffalo Chicken & PepperJack Cheese Croissant\n\nFRUIT\nMixed Sweet Peppers\nHummus\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261009-lunch2@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20261009
+DTEND;VALUE=DATE:20261010
+SUMMARY:Lunch 2: Cheese Pizza
+DESCRIPTION:VEGETABLE\nPepperoni Pizza\nCheese Pizza\nBuffalo Chicken & PepperJack Cheese Croissant\n\nFRUIT\nMixed Sweet Peppers\nHummus\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261009-lunch3@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20261009
+DTEND;VALUE=DATE:20261010
+SUMMARY:Lunch 3: Buffalo Chicken & PepperJack Cheese Croissant
+DESCRIPTION:VEGETABLE\nPepperoni Pizza\nCheese Pizza\nBuffalo Chicken & PepperJack Cheese Croissant\n\nFRUIT\nMixed Sweet Peppers\nHummus\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261012-breakfast@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20261012
+DTEND;VALUE=DATE:20261013
+SUMMARY:Breakfast: Mini Strawberry Bagel
+DESCRIPTION:VEGETABLE\nMini Strawberry Bagel\nMini Cinnamon Cream Cheese Bagel\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\n\nGRAINS\nApple Juice\nCraisins\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261012-lunch1@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20261012
+DTEND;VALUE=DATE:20261013
+SUMMARY:Lunch 1: Spicy Chicken Tenders w/ Green Beans & Roll
+DESCRIPTION:VEGETABLE\nSpicy Chicken Tenders w/ Green Beans & Roll\nVeggie Burger w/ Bun & Green Beans\n\nFRUIT\nBaby Carrots\nHummus\nCrinkle Cut Potatoes\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261012-lunch2@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20261012
+DTEND;VALUE=DATE:20261013
+SUMMARY:Lunch 2: Veggie Burger w/ Bun & Green Beans
+DESCRIPTION:VEGETABLE\nSpicy Chicken Tenders w/ Green Beans & Roll\nVeggie Burger w/ Bun & Green Beans\n\nFRUIT\nBaby Carrots\nHummus\nCrinkle Cut Potatoes\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261013-breakfast@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20261013
+DTEND;VALUE=DATE:20261014
+SUMMARY:Breakfast: Mini Pancakes
+DESCRIPTION:VEGETABLE\nMini Pancakes\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\n\nGRAINS\nOrange Juice\nCraisins\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261013-lunch1@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20261013
+DTEND;VALUE=DATE:20261014
+SUMMARY:Lunch 1: Chicken Walking Taco w/ Corn & Chips
+DESCRIPTION:VEGETABLE\nChicken Walking Taco w/ Corn & Chips\nSpicy Chik'n Sandwich\n\nFRUIT\nCucumber Coins\nHummus\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261013-lunch2@lunchline.local
+DTSTAMP:20260929T233038Z
+DTSTART;VALUE=DATE:20261013
+DTEND;VALUE=DATE:20261014
+SUMMARY:Lunch 2: Spicy Chik'n Sandwich
+DESCRIPTION:VEGETABLE\nChicken Walking Taco w/ Corn & Chips\nSpicy Chik'n Sandwich\n\nFRUIT\nCucumber Coins\nHummus\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR

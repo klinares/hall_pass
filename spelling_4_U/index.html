@@ -128,6 +128,19 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:8}
 .record::after{content:none}
 .tap{text-align:center;font-size:.85rem;margin-top:-4px}
 h1.album{font-size:clamp(2.6rem,10vw,4.4rem);line-height:.92}
+.slot.given{background:var(--lilac);color:var(--black);border-color:var(--black);animation:drop .18s ease-out}
+.tile.glow{background:var(--lilac);animation:glow .7s ease-in-out infinite alternate}
+@keyframes glow{from{box-shadow:3px 3px 0 var(--black),0 0 0 0 rgba(47,47,193,0)}to{box-shadow:3px 3px 0 var(--black),0 0 0 7px rgba(47,47,193,.55)}}
+.choice.gone{opacity:.35;text-decoration:line-through}
+.hintbtn small{font-family:var(--mono);font-size:.75rem}
+.pill.nudge{animation:wiggle 1s ease-in-out 3}
+@keyframes wiggle{0%,100%{transform:none}20%{transform:rotate(-4deg) scale(1.06)}40%{transform:rotate(4deg) scale(1.06)}60%{transform:rotate(-3deg)}80%{transform:rotate(3deg)}}
+.hintnote{text-align:center;font-size:.8rem;margin-top:12px}
+.pat{font-family:var(--mono);font-weight:700;font-size:1.3rem;letter-spacing:.1em;color:var(--black);display:inline-block;margin-top:4px;word-break:break-all}
+.btnrow.tight{gap:8px}
+.btnrow.tight .pill{padding:10px 4px;font-size:1.3rem;white-space:nowrap}
+.btnrow.tight .hintbtn{flex:1.8}
+.hintbtn.spent{font-size:1.3rem}
 </style>
 </head>
 <body>
@@ -223,11 +236,12 @@ function screen(html){ $('main').innerHTML = `<section class="screen">${html}</s
 
 /* ---------- menu ---------- */
 function menu(){
+  if(G) G.dead = true; clearTimeout(nudgeT);
   $('counts').hidden = true; setTicker();
   screen(`
     <div class="eyebrow">5th grade social studies ✶ tonight's headliner: natalia</div>
     <h1 class="album">you seem pretty smart <span class="ink">for a 5th grader so in love with spelling</span> 🎸</h1>
-    <p class="lede">every word you spell right wins fans. get all ${WEEK.words.length} on the setlist and the show sells out.</p>
+    <p class="lede">every word you spell right wins fans. get all ${WEEK.words.length} on the setlist and the show sells out. stuck? every game has a 💡 hint button.</p>
     <label class="week">tour date <select id="wk">${sorted.map(w=>`<option value="${w.id}" ${w.id===WEEK.id?'selected':''}>${w.label}</option>`).join('')}</select></label>
     <ul class="menu">
       ${Object.entries(MODES).map(([k,m],i)=>`<li><button data-m="${k}"><span class="no">0${i+1}</span><span><span class="t">${m.name}</span><span class="s">${m.sub}</span></span><span class="arr">→</span></button></li>`).join('')}
@@ -247,7 +261,8 @@ $('brand').onclick = () => menu();
 
 /* ---------- round flow ---------- */
 function start(mode){
-  G = { mode, q:shuffle(WEEK.words), i:0, fans:0, streak:0, best:0, firstTry:0, missed:new Set(), tries:0 };
+  try{ if('speechSynthesis' in window){ const u=new SpeechSynthesisUtterance(' '); u.volume=0; speechSynthesis.speak(u); } }catch(e){} /* wakes up read-aloud on iPad/Safari */
+  G = { mode, q:shuffle(WEEK.words), i:0, fans:0, streak:0, best:0, firstTry:0, hintOnly:0, hintTotal:0, hinted:new Set(), missed:new Set(), tries:0, hints:0, maxHints:0, dead:false };
   $('counts').hidden = false; updateStats(); show();
 }
 function frame(inner){
@@ -257,16 +272,20 @@ function frame(inner){
 }
 function show(){
   if(G.i >= G.q.length) return finish();
-  G.tries = 0; G.cur = G.q[G.i];
+  G.tries = 0; G.hints = 0; G.maxHints = 0; clearTimeout(nudgeT); G.cur = G.q[G.i];
   ({slots, vowels, tiles, match, listen})[G.mode](G.cur);
 }
 function win(){
-  if(G.tries===0){ G.streak++; G.firstTry++; G.best=Math.max(G.best,G.streak); G.fans += 1000*Math.min(G.streak,5); }
+  lockHint();
+  const clean = G.tries===0 && G.hints===0;
+  if(clean){ G.streak++; G.firstTry++; G.best=Math.max(G.best,G.streak); G.fans += 1000*Math.min(G.streak,5); }
+  else if(G.tries===0){ G.fans += 500; G.hintOnly++; }   /* used hints but no wrong guesses: the streak is safe */
   else { G.fans += 300; }
-  sGood(); burst(); toast(G.streak>=3 ? `${G.streak} in a row!` : pick(CHEERS)); updateStats();
+  sGood(); burst(); toast(clean && G.streak>=3 ? `${G.streak} in a row!` : pick(CHEERS)); updateStats();
 }
 function oops(){ G.tries++; G.streak=0; G.missed.add(G.cur.w); sBad(); updateStats(); }
 function next(){ G.i++; show(); }
+function later(fn,ms){ const g=G; setTimeout(()=>{ if(G===g && !g.dead) fn(); },ms); }  /* ignores timers left over from a quit game */
 function fb(msg){ $('fb').innerHTML = msg; }
 const clue = v => `<div class="clue">${v.h}</div>`;
 function chunks(v){ /* first + last syllable only, so the hint never spells the whole word */
@@ -287,93 +306,162 @@ function wireTyped(){
 function check(){
   const inp=$('ans'), v=G.cur, val=inp.value.trim().toLowerCase();
   if(!val) return;
-  if(val===v.w){ inp.disabled=true; $('go').disabled=true; win(); fb(`✶ <b>${v.w}</b> ✶`); setTimeout(next,1300); return; }
+  if(val===v.w){ inp.disabled=true; $('go').disabled=true; win(); fb(`✶ <b>${v.w}</b> ✶`); later(next,1300); return; }
   oops();
-  if(G.tries>=3){ inp.disabled=true; $('go').disabled=true; fb(`it's <b>${v.w}</b>. look closely, it'll come back around!`); setTimeout(next,2600); }
+  if(G.tries>=3){ lockHint(); inp.disabled=true; $('go').disabled=true; fb(`it's <b>${v.w}</b>. look closely, it'll come back around!`); later(next,2600); }
   else { fb(ladder(v)); inp.select(); }
+}
+
+/* ---------- hints: every game has a 💡 button. each press = a stronger clue, never the whole word ---------- */
+let nudgeT;
+const HINTBTN  = '<button class="pill ghost hintbtn" id="hint"></button>';
+const HINTNOTE = '<p class="hintnote">stuck? tap 💡 hint. you keep your streak, you just win fewer fans.</p>';
+const pat = (v, show) => [...v.w].map((c,i)=>show(c,i)?c:'_').join(' ');
+function paintHint(){
+  const b=$('hint'); if(!b) return;
+  const left=G.maxHints-G.hints;
+  b.disabled = left<=0;
+  b.classList.toggle('spent', left<=0);
+  b.innerHTML = left>0 ? `💡 hint <small>(${left})</small>` : '💡 none left';
+}
+function armNudge(){   /* after 15 seconds with no answer the hint button wiggles: "psst, i can help" */
+  clearTimeout(nudgeT);
+  nudgeT = setTimeout(()=>{ const b=$('hint'); if(b && !b.disabled) b.classList.add('nudge'); }, 15000);
+}
+function lockHint(){ clearTimeout(nudgeT); const b=$('hint'); if(b) b.disabled=true; }
+function setupHints(max, apply){
+  G.maxHints = max; G.hints = 0; paintHint(); armNudge();
+  $('hint').onclick = () => {
+    if(G.hints >= G.maxHints) return;
+    if(apply(G.hints+1) === false) return;     /* nothing new to show, so the hint isn't used up */
+    G.hints++; G.hintTotal++; G.hinted.add(G.cur.w);
+    sTap(); paintHint();
+    $('hint').classList.remove('nudge'); armNudge();
+    const inp=$('ans'); if(inp && !inp.disabled) inp.focus();
+  };
+}
+/* missing letters + missing vowels: hint 1 = syllables, then one blank filled in per press (the last blank is always left for her) */
+function letterHints(v, hide){
+  const shown = new Set();
+  setupHints(Math.max(1, hide.length), level => {
+    const i = level>1 ? hide.find(k=>!shown.has(k)) : undefined;
+    if(i===undefined){ fb(`sounds like: <b>${chunks(v)}</b>`); return; }
+    shown.add(i);
+    const el = $('row').children[i]; el.textContent = v.w[i]; el.classList.remove('gap'); el.classList.add('given');
+    fb(`here's a letter for you: <b>${v.w[i]}</b>`);
+  });
 }
 
 /* MODE: missing letters */
 function slots(v){
   const n = Math.max(2, Math.round(v.w.length/3));
-  const hide = new Set(shuffle([...v.w].map((_,i)=>i)).slice(0,n));
+  const hide = shuffle([...v.w].map((_,i)=>i)).slice(0,n).sort((a,b)=>a-b);
   screen(frame(`${clue(v)}
-    <div class="slots">${[...v.w].map((c,i)=>`<div class="slot ${hide.has(i)?'gap':''}">${hide.has(i)?'?':c}</div>`).join('')}</div>
+    <div class="slots" id="row">${[...v.w].map((c,i)=>`<div class="slot ${hide.includes(i)?'gap':''}">${hide.includes(i)?'?':c}</div>`).join('')}</div>
     <input class="ans" id="ans" placeholder="type the whole word" autocomplete="off" autocapitalize="off" spellcheck="false">
-    <div class="btnrow"><button class="pill" id="go">check it</button></div><div id="fb" class="fb"></div>`));
-  wireTyped();
+    <div class="btnrow">${HINTBTN}<button class="pill" id="go">check it</button></div><div id="fb" class="fb"></div>${HINTNOTE}`));
+  wireTyped(); letterHints(v, hide);
 }
 
 /* MODE: missing vowels */
 function vowels(v){
+  const hide = [...v.w].map((c,i)=>'aeiou'.includes(c)?i:-1).filter(i=>i>=0);
   screen(frame(`${clue(v)}
-    <div class="slots">${[...v.w].map(c=>'aeiou'.includes(c)?`<div class="slot gap">_</div>`:`<div class="slot">${c}</div>`).join('')}</div>
+    <div class="slots" id="row">${[...v.w].map((c,i)=>hide.includes(i)?`<div class="slot gap">_</div>`:`<div class="slot">${c}</div>`).join('')}</div>
     <input class="ans" id="ans" placeholder="type the whole word" autocomplete="off" autocapitalize="off" spellcheck="false">
-    <div class="btnrow"><button class="pill" id="go">check it</button></div><div id="fb" class="fb"></div>`));
-  wireTyped();
+    <div class="btnrow">${HINTBTN}<button class="pill" id="go">check it</button></div><div id="fb" class="fb"></div>${HINTNOTE}`));
+  wireTyped(); letterHints(v, hide);
 }
 
-/* MODE: remix (tap tiles) */
+/* MODE: remix (tap tiles). hint = clears any wrong letters, then glows the next right tile */
 function tiles(v){
   let mix; do{ mix=shuffle([...v.w]); }while(mix.join('')===v.w);
   screen(frame(`${clue(v)}
     <div class="slots" id="built">${[...v.w].map(()=>`<div class="slot"></div>`).join('')}</div>
     <div class="tiles">${mix.map((c,i)=>`<button class="tile" data-i="${i}">${c}</button>`).join('')}</div>
-    <div class="btnrow"><button class="pill ghost" id="undo">undo</button><button class="pill ghost" id="clear">clear</button></div>
-    <div id="fb" class="fb"></div>`));
+    <div class="btnrow tight"><button class="pill ghost" id="undo">undo</button><button class="pill ghost" id="clear">clear</button>${HINTBTN}</div>
+    <div id="fb" class="fb"></div>${HINTNOTE}`));
   const picked=[], slotsEl=[...$('built').children], tileEls=[...document.querySelectorAll('.tile')];
+  let busy=false;
   const paint=()=>{ slotsEl.forEach((s,i)=>{ const has=picked[i]!=null; s.textContent = has ? mix[picked[i]] : ''; s.classList.toggle('fill',has); });
-                     tileEls.forEach((t,i)=>t.classList.toggle('used',picked.includes(i))); };
+                     tileEls.forEach((t,i)=>{ t.classList.toggle('used',picked.includes(i)); t.classList.remove('glow'); }); };
   tileEls.forEach(t=>t.onclick=()=>{
+    if(busy) return;
     sTap(); picked.push(+t.dataset.i); paint();
     if(picked.length===v.w.length){
       const word=picked.map(i=>mix[i]).join('');
-      if(word===v.w){ tileEls.forEach(x=>x.disabled=true); win(); fb(`✶ <b>${v.w}</b> ✶`); setTimeout(next,1300); }
+      if(word===v.w){ tileEls.forEach(x=>x.disabled=true); win(); fb(`✶ <b>${v.w}</b> ✶`); later(next,1300); }
       else{
         oops();
-        if(G.tries>=3){ fb(`it's <b>${v.w}</b>!`); tileEls.forEach(x=>x.disabled=true); setTimeout(next,2400); }
-        else{ fb(ladder(v)); setTimeout(()=>{picked.length=0;paint();},700); }
+        if(G.tries>=3){ lockHint(); fb(`it's <b>${v.w}</b>!`); tileEls.forEach(x=>x.disabled=true); later(next,2400); }
+        else{ busy=true; $('hint').disabled=true; fb(ladder(v)); later(()=>{ picked.length=0; paint(); busy=false; paintHint(); },700); }
       }
     }
   });
-  $('undo').onclick=()=>{ picked.pop(); paint(); };
-  $('clear').onclick=()=>{ picked.length=0; paint(); };
+  $('undo').onclick=()=>{ if(!busy){ picked.pop(); paint(); } };
+  $('clear').onclick=()=>{ if(!busy){ picked.length=0; paint(); } };
+  setupHints(Math.max(2, Math.ceil(v.w.length/3)), () => {
+    if(tileEls.some(t=>t.classList.contains('glow'))){ fb('that glowing tile is still your next letter. tap it!'); return false; }
+    let ok=0; while(ok<picked.length && mix[picked[ok]]===v.w[ok]) ok++;
+    const hadWrong = ok < picked.length;
+    picked.length = ok; paint();
+    const t = tileEls.find((x,i)=>!picked.includes(i) && mix[i]===v.w[ok]);
+    if(t) t.classList.add('glow');
+    fb(hadWrong ? 'i cleared the wrong letters. tap the glowing tile next!' : 'tap the glowing tile. that is the next letter!');
+  });
 }
 
-/* MODE: fan mail (definition match) */
+/* MODE: fan mail (definition match). hint = cross out wrong answers, then show the first letter */
 function match(v){
   const opts = shuffle([v, ...shuffle(WEEK.words.filter(x=>x.w!==v.w)).slice(0,3)]);
   screen(frame(`<p style="margin-bottom:10px">a fan dm'd you: which word means…</p>${clue(v)}
     <div class="choices">${opts.map(o=>`<button class="choice">${o.w}</button>`).join('')}</div>
     <div id="fb" class="fb"></div>
-    <div class="btnrow"><button class="pill" id="nx" hidden>next song →</button></div>`));
+    <div class="btnrow">${HINTBTN}<button class="pill" id="nx" hidden>next song →</button></div>${HINTNOTE}`));
   const bs=[...document.querySelectorAll('.choice')];
   bs.forEach(b=>b.onclick=()=>{
+    lockHint(); $('hint').hidden=true;
     bs.forEach(x=>x.disabled=true);
-    if(b.textContent===v.w){ b.classList.add('good'); win(); fb('✶ correct ✶'); setTimeout(next,1200); }
+    if(b.textContent===v.w){ b.classList.add('good'); win(); fb('✶ correct ✶'); later(next,1200); }
     else{ b.classList.add('bad'); G.tries=3; oops(); bs.find(x=>x.textContent===v.w).classList.add('good');
           fb(`it was <b>${v.w}</b>`); $('nx').hidden=false; $('nx').onclick=next; }
   });
+  setupHints(3, level => {
+    if(level<=2){
+      const live = bs.filter(b=>b.textContent!==v.w && !b.classList.contains('gone'));
+      if(live.length){ const b=pick(live); b.classList.add('gone'); b.disabled=true; }
+      fb(level===1 ? 'i crossed one out for you!' : 'one more crossed out. you got this!');
+    } else fb(`it starts with <b>"${v.w[0]}"</b> and has <b>${v.w.length}</b> letters`);
+  });
 }
 
-/* MODE: studio session (listen & spell) */
-function say(w){ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(w); u.rate=.8; speechSynthesis.speak(u); }
+/* MODE: studio session (listen & spell). hints: clue, slow syllables, first+last letters, consonants */
+function say(w,rate=.8){ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(w); u.rate=rate; speechSynthesis.speak(u); }
 function listen(v){
   const can='speechSynthesis' in window;
   screen(frame(`${can?`<button class="record" id="spk" aria-label="play the word"></button><p class="tap">tap the record to hear it again</p><div style="height:18px"></div>`:clue(v)}
     <input class="ans" id="ans" placeholder="spell it like it's test day" autocomplete="off" autocapitalize="off" spellcheck="false">
-    <div class="btnrow"><button class="pill ghost" id="hint">clue?</button><button class="pill" id="go">submit</button></div>
-    <div id="fb" class="fb"></div>`));
+    <div class="btnrow">${HINTBTN}<button class="pill" id="go">submit</button></div>
+    <div id="fb" class="fb"></div>${HINTNOTE}`));
   if(can){ const s=$('spk'); s.onclick=()=>{ s.classList.remove('spin'); void s.offsetWidth; s.classList.add('spin'); say(v.w); }; setTimeout(()=>s.click(),350); }
-  $('hint').onclick=()=>fb(`clue: <b>${v.h.toLowerCase()}</b><br>sounds like: <b>${chunks(v)}</b>`);
   wireTyped();
+  const steps = can ? ['clue','chunks','ends','vowels'] : ['chunks','ends','vowels'];   /* the clue is already on screen when there's no sound */
+  setupHints(steps.length, level => {
+    const s = steps[level-1];
+    if(s==='clue')   fb(`clue: <b>${v.h.toLowerCase()}</b>`);
+    if(s==='chunks'){ fb(`sounds like: <b>${chunks(v)}</b>`); if(can) say(v.w,.55); }
+    if(s==='ends')   fb(`${v.w.length} letters: <span class="pat">${pat(v,(c,i)=>i===0||i===v.w.length-1)}</span>`);
+    if(s==='vowels') fb(`just the consonants: <span class="pat">${pat(v,c=>!'aeiou'.includes(c))}</span>`);
+  });
 }
 
 /* ---------- finish ---------- */
 function finish(){
-  const n=G.q.length, pct=G.firstTry/n;
+  clearTimeout(nudgeT);
+  const n=G.q.length, pct=(G.firstTry + .5*G.hintOnly)/n;
   const head = pct>=.9?'sold out':pct>=.7?'what a show':'rehearsal night';
   const sub  = pct>=.9?"you're so ready for that test.":pct>=.7?'a couple more run-throughs and it’s perfect.':'every star rehearses. run it back!';
+  const tag = v => G.missed.has(v.w) ? ['miss','rehearse again'] : G.hinted.has(v.w) ? ['','💡 used a hint'] : ['','✶ nailed it'];
   screen(`<div class="eyebrow">${WEEK.label} ✶ ${MODES[G.mode].name}</div>
     <h1>${head}</h1><p class="lede">${sub}</p>
     <div class="ticket">
@@ -381,11 +469,12 @@ function finish(){
         <h2>admit one ♥</h2>
         <div class="big">${G.fans.toLocaleString()} fans</div>
         <div class="row"><span>first try: ${G.firstTry}/${n}</span><span>best streak: ${G.best}</span></div>
+        <div class="row" style="border-top:none;margin-top:2px;padding-top:0"><span>hints used: ${G.hintTotal}</span></div>
       </div>
       <div class="stub">${pct>=.9?'vip':'ga'} ✶ ${todayISO}</div>
     </div>
     <div class="eyebrow">tonight's setlist</div>
-    <ul class="setlist">${G.q.map(v=>`<li class="${G.missed.has(v.w)?'miss':''}"><span>${v.w}</span><span>${G.missed.has(v.w)?'rehearse again':'✶ nailed it'}</span></li>`).join('')}</ul>
+    <ul class="setlist">${G.q.map(v=>{ const [c,t]=tag(v); return `<li class="${c}"><span>${v.w}</span><span>${t}</span></li>`; }).join('')}</ul>
     <div class="btnrow"><button class="pill" id="again">encore</button><button class="pill ghost" id="home">menu</button></div>`);
   setTimeout(()=>burst(pct>=.9?140:60),300);
   [523,659,784,1047].forEach((f,i)=>tone(f,.22,'triangle',.12,i*.12));

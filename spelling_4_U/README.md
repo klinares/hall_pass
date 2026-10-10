@@ -18,15 +18,37 @@ A pink, pop-concert spelling game for a 5th grader. Spell each word right to win
 
 Every game uses the same ten words for the week.
 
-## Hints and scoring
+## Hints on demand
 
-Wrong answers get a little more help each time, never the whole word right away:
+Every game has a **💡 hint** button, so a kid who is stuck can ask for help instead of guessing. Each press gives a stronger clue, and no hint ever gives away the whole word:
+
+| Game | What the hints do |
+|----|----|
+| **missing letters** | 1st: the syllables (`pop - ___ - ___ - tion`). Then it fills in one blank letter per press, and always leaves the last blank for her. |
+| **missing vowels** | Same idea: syllables first, then one vowel at a time, keeping the last one back. |
+| **remix** | Clears any wrong letters she tapped, then glows the next right tile. Pressing again before she taps it is free. |
+| **fan mail** | Crosses out a wrong answer (twice), then shows the first letter and the length. |
+| **studio session** | The clue, then the syllables (read aloud slowly), then the first and last letters (`p _ _ _ _ _ _ _ _ n`), then the consonants only. |
+
+If she doesn't touch the hint button for 15 seconds, it wiggles to say "psst, I can help."
+
+The button shows how many hints are left for that word (`💡 hint (3)`). Hints cost a few fans but never her streak, so asking for help feels safe.
+
+## Wrong answers and scoring
+
+Wrong answers also get a little more help each time:
 
 1.  **First miss:** how many letters, and the first letter.
-2.  **Second miss:** the first and last syllable (`pop - ___ - ___ - tion`).
+2.  **Second miss:** the first and last syllable.
 3.  **Third miss:** the word is shown and the game moves on. It comes back in the "rehearse again" list at the end.
 
-Right on the first try earns fans (1,000 each, up to 5,000 as the streak grows). A right answer on a later try earns 300. After ten words she gets an "admit one" ticket and a setlist showing which words she nailed.
+| What happened | Fans |
+|----|----|
+| Right on the first try, no hints | 1,000 each, rising to 5,000 as the streak grows |
+| Right after using a hint (no wrong guesses) | 500, and the streak is kept |
+| Right after a wrong guess | 300 |
+
+After ten words she gets an "admit one" ticket and a setlist that marks each word **nailed it**, **used a hint**, or **rehearse again**, which is a quick list of what to study before the test.
 
 ## Adding next week's words
 
@@ -59,7 +81,7 @@ python -m http.server 8000
 # open http://localhost:8000
 ```
 
-Read-aloud (the studio session game) uses the browser's built-in text-to-speech, which works best when the page is served over `https://` or `localhost`.
+Read-aloud (the studio session game) uses the browser's built-in text-to-speech, which works best when the page is served over `https://` or `localhost`. On iPad, sound starts after the first tap on a game button.
 
 ## Publish with GitHub Pages
 

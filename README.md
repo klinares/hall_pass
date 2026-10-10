@@ -7,12 +7,12 @@ Small tools that make life with a school-age kid a little easier. Built for Fall
 | Project | What it does | Try it |
 |------------------------|------------------------|------------------------|
 | [`lunchline/`](lunchline/) | Scrapes the school cafeteria menu into a `.ics` file you can import into Google Calendar, so "what's for lunch, can I pack instead?" is answered before Monday morning. | R + Quarto, [read more](lunchline/README.md) |
-| [`spelling_4_U/`](spelling_4_U/) | **Pop Quiz, Pop Star**, a pink pop-concert spelling game that gets a 5th grader ready for the weekly test. Works on a laptop or iPad, no install. | [Play it](https://klinares.github.io/hall-pass/spelling_4_U/) |
+| [`spelling_4_U/`](spelling_4_U/) | **Pop Quiz, Pop Star**, a pink pop-concert spelling game that gets a 5th grader ready for the weekly test. Works on a laptop or iPad, no install. | [Play it](https://klinares.github.io/hall_pass/spelling_4_U/) |
 
 ## How the repo is laid out
 
 ```         
-hall-pass/
+hall_pass/
 ├── lunchline/     R + Quarto pipeline for cafeteria menus
 ├── spelling/      static HTML spelling game, hosted with GitHub Pages
 └── README.md      you are here
@@ -22,7 +22,7 @@ Each project lives in its own folder with its own README, so they never get in e
 
 ## Hosting
 
-The spelling game is a single static HTML file served by **GitHub Pages** (Settings → Pages → deploy from the `main` branch, root folder). Anything in the repo is then reachable at `https://klinares.github.io/hall-pass/<folder>/`.
+The spelling game is a single static HTML file served by **GitHub Pages** (Settings → Pages → deploy from the `main` branch, root folder). Anything in the repo is then reachable at `https://klinares.github.io/hall_pass/<folder>/`.
 
 ## Adding a new project
 

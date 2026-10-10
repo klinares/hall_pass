@@ -2,7 +2,7 @@
 
 A pink, pop-concert spelling game for a 5th grader. Spell each word right to win fans, build a streak, and sell out the show. Runs in any browser, with nothing to install, so it works on a laptop or iPad.
 
-**Play:** <https://klinares.github.io/hall-pass/spelling_4_U/>
+**Play:** <https://klinares.github.io/hall_pass/spelling_4_U/>
 
 > The in-game title is *"you seem pretty smart for a 5th grader so in love with spelling 🎸"*.
 
@@ -65,7 +65,7 @@ Read-aloud (the studio session game) uses the browser's built-in text-to-speech,
 
 1.  Make sure the game file is named `index.html`.
 2.  In the repo: **Settings → Pages → Build and deployment → Deploy from a branch → `main` / root**.
-3.  After a minute the game is live at `https://klinares.github.io/hall-pass/spelling_4_U/`.
+3.  After a minute the game is live at `https://klinares.github.io/hall_pass/spelling_4_U/`.
 4.  On the iPad, open the link in Safari and choose **Share → Add to Home Screen** for a one-tap icon.
 
 Note: free GitHub Pages needs a public repo, so everything in it, including the first name that appears in the game, is publicly visible.

@@ -163,6 +163,20 @@ h1.album{font-size:clamp(2.6rem,10vw,4.4rem);line-height:.92}
    s = syllable chunks used as a hint after a second miss.
    ========================================================= */
 const WEEKS = [
+  { id:"2026-10-26", label:"week of oct 26, 2026", words:[
+    { w:"irrational",      s:"ir-ra-tion-al",      h:"Not based on reason or clear thinking, like a fear that makes no sense" },
+    { w:"intercept",       s:"in-ter-cept",        h:"To stop or catch something on its way from one place to another, like a football pass" },
+    { w:"illegal",         s:"il-le-gal",          h:"Against the law" },
+    { w:"international",   s:"in-ter-na-tion-al",  h:"Happening between or involving two or more countries" },
+    { w:"irresponsible",   s:"ir-re-spon-si-ble",  h:"Not able to be trusted to do what you're supposed to do; careless about your duties" },
+    { w:"illegible",       s:"il-leg-i-ble",       h:"So messy that it can't be read, like scribbled handwriting" },
+    { w:"intersection",    s:"in-ter-sec-tion",    h:"The spot where two roads or lines cross each other" },
+    { w:"irregular",       s:"ir-reg-u-lar",       h:"Not even, normal, or following the usual pattern" },
+    { w:"interaction",     s:"in-ter-ac-tion",     h:"When two or more people or things talk, work, or act together and affect each other" },
+    { w:"illogical",       s:"il-log-i-cal",       h:"Not making sense; not following good reasoning" },
+    { w:"irreplaceable",   s:"ir-re-place-a-ble",  h:"So special or valuable that nothing else could take its place" },
+    { w:"intercede",       s:"in-ter-cede",        h:"To step in and speak up for someone else, often to help settle a problem" }
+  ]},
   { id:"2026-10-10", label:"week of oct 10, 2026", words:[
     { w:"population",   s:"pop-u-la-tion",    h:"The total number of people living in a specific area (like a massive concert crowd!)" },
     { w:"tropical",     s:"trop-i-cal",       h:"Warm, humid regions near the Earth's equator where it's sunny all year" },
@@ -247,7 +261,7 @@ function menu(){
       ${Object.entries(MODES).map(([k,m],i)=>`<li><button data-m="${k}"><span class="no">0${i+1}</span><span><span class="t">${m.name}</span><span class="s">${m.sub}</span></span><span class="arr">→</span></button></li>`).join('')}
     </ul>
     <div class="btnrow"><button class="pill ghost" id="setlist">see the setlist</button></div>`);
-  $('wk').onchange = e => { WEEK = WEEKS.find(w=>w.id===e.target.value); setTicker(); };
+  $('wk').onchange = e => { WEEK = WEEKS.find(w=>w.id===e.target.value); setTicker(); menu(); };
   document.querySelectorAll('.menu button').forEach(b => b.onclick = () => start(b.dataset.m));
   $('setlist').onclick = setlist;
 }

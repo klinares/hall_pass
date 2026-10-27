@@ -16,7 +16,7 @@ A pink, pop-concert spelling game for a 5th grader. Spell each word right to win
 | **fan mail** | Pick the word that matches the definition. |
 | **studio session** | The word is read aloud and Natalia types it, the closest thing to test day. |
 
-Every game uses the same ten words for the week.
+Every game uses the same list of words for the week (10 to 12 words).
 
 ## Hints on demand
 
@@ -48,7 +48,7 @@ Wrong answers also get a little more help each time:
 | Right after using a hint (no wrong guesses) | 500, and the streak is kept |
 | Right after a wrong guess | 300 |
 
-After ten words she gets an "admit one" ticket and a setlist that marks each word **nailed it**, **used a hint**, or **rehearse again**, which is a quick list of what to study before the test.
+After the last word she gets an "admit one" ticket and a setlist that marks each word **nailed it**, **used a hint**, or **rehearse again**, which is a quick list of what to study before the test.
 
 ## Adding next week's words
 

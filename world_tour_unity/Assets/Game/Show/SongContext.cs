@@ -100,6 +100,18 @@ namespace WorldTour.Game.Show
             if (Live) _host.SetupHints(this, max, apply);
         }
 
+        /// <summary>ctx.mistake(tag): which known mistake a wrong answer matched, counted on the skill (show.js:211).</summary>
+        public void Mistake(string tag)
+        {
+            if (Open) Engine.NoteMistake(tag);
+        }
+
+        /// <summary>show.js:209 ctx.prob: the math problem for this song (null for a word).</summary>
+        public WorldTour.Core.Maths.Gen.Problem Problem { get { var m = Slot.Item as MathItem; return m != null ? m.Prob : null; } }
+
+        /// <summary>The map's sprites (stickers by name), for modes that draw stickers (merch table), or null.</summary>
+        public WorldTour.Game.Map.MapArt Art { get { return _host != null ? _host.ArtAsset : null; } }
+
         /// <summary>ctx.lockHints: the hint button off for the rest of the song.</summary>
         public void LockHints()
         {

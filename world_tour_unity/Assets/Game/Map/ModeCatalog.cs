@@ -28,7 +28,7 @@ namespace WorldTour.Game.Map
     /// The web game's mode registry (world_tour/modes/index.js MODES, setlist order), with the copy from each mode file.
     /// Every mode is listed so milestones (every-mode, master-*) and the office see the whole set, as progress.js
     /// <c>setModes(MODES)</c> does; <see cref="ModeEntry.Playable"/> marks the ones the Unity build can play so far.
-    /// Math modes a math_config switch turns off are not filtered yet (no math mode is playable yet).
+    /// Math modes a math_config switch turns off are left off the venue card (index.js filters MODES the same way).
     /// </summary>
     public static class ModeCatalog
     {
@@ -43,13 +43,13 @@ namespace WorldTour.Game.Map
             new ModeEntry(new ModeInfo("studio", "studio session", ModeInfo.Spelling), "hear it, spell it. test-day practice", "vinyl", true),
             new ModeEntry(new ModeInfo("lyric", "lyric writer", ModeInfo.Spelling), "finish the lyric with this week" + A + "s word", "setlist", true),
             new ModeEntry(new ModeInfo("prefix", "prefix mixer", ModeInfo.Spelling), "build the word, then crack the prefix", "pick", true),
-            new ModeEntry(new ModeInfo("merch", "merch table", ModeInfo.Math, "dec"), "ring up fans and count their change", "tee", false),
-            new ModeEntry(new ModeInfo("beat", "beat maker", ModeInfo.Math, "frac"), "fill the measure with fraction notes", "note", false),
-            new ModeEntry(new ModeInfo("tickets", "ticket sales", ModeInfo.Math, "md"), "multiply and divide the crowd", "ticket", false),
-            new ModeEntry(new ModeInfo("stage", "stage designer", ModeInfo.Math, "xy"), "place the gear on the grid", "lights", false),
-            new ModeEntry(new ModeInfo("truck", "pack the truck", ModeInfo.Math, "vol"), "volume: fill the trailer", "bus", false),
-            new ModeEntry(new ModeInfo("budget", "tour budget", ModeInfo.Math, "ops"), "order of operations on the books", "setlist", false),
-            new ModeEntry(new ModeInfo("soundcheck", "soundcheck", ModeInfo.Math, "flu"), "fast facts and powers of ten", "amp", false),
+            new ModeEntry(new ModeInfo("merch", "merch table", ModeInfo.Math, "dec"), "ring up fans and count their change", "tee", true),
+            new ModeEntry(new ModeInfo("beat", "beat maker", ModeInfo.Math, "frac"), "fill the measure with fraction notes", "note", true),
+            new ModeEntry(new ModeInfo("tickets", "ticket sales", ModeInfo.Math, "md"), "multiply and divide the crowd", "ticket", true),
+            new ModeEntry(new ModeInfo("stage", "stage designer", ModeInfo.Math, "xy"), "place the gear on the grid", "lights", true),
+            new ModeEntry(new ModeInfo("truck", "pack the truck", ModeInfo.Math, "vol"), "volume: fill the trailer", "bus", true),
+            new ModeEntry(new ModeInfo("budget", "tour budget", ModeInfo.Math, "ops"), "order of operations on the books", "setlist", true),
+            new ModeEntry(new ModeInfo("soundcheck", "soundcheck", ModeInfo.Math, "flu"), "fast facts and powers of ten", "amp", true),
         };
 
         static List<ModeInfo> s_Infos;

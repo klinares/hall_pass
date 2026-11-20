@@ -92,3 +92,86 @@ Kept: "1 5/4" counts as 9/4 where simplest form isn't asked (7.4); equivalent de
     writer's "it starts with" hint ("it has 7 letters."). Lyric writer's live words already kept the floor; it uses the
     same rule so a short word added later can't break it. Tested on every live word with the hints and ladder lines in
     five orders.
+15. **Pack the truck builder: "load it" on an empty floor is not a try (QUESTIONS 15, answer 7's rule).** The web counts
+    it as a miss (a fan-costing try and a step up the ladder for pressing the button before loading anything). Here the
+    dog says "load a crate or two first." ("think" pose): no miss, no wobble, no fans lost, the streak and the ladder stay
+    put, as the keypad does with an empty answer. Any crate on the floor makes "load it" a real try again, as on the web.
+    `TruckBuild.Load` returns `TruckCheck.Empty`; `MathBuilderTests.TruckBuild_EmptyFloor_IsAMissOnTheWeb_ButNotHere`
+    pins both sides against the real truck.js (builder_vectors.json `truckEmpty`).
+16. **Ticket sales, a one-part area model at hint 2 (QUESTIONS 8's rule, applied to the picture).** When the factor that's
+    broken up is a round number (70), the web's area model has a single cell, and from hint 2 that cell shows the
+    product, which is the answer (36 x 70: the cell says 2,520 while the hint text says "36 x 7 = 252. now make that ten
+    times bigger"). About 1 in 11 multiplication problems. Here the cell says "252 x 10" at hint 2, the step the text
+    describes, and the product appears at the worked solution as on the web. `TicketsWork.Draw`; tested on every
+    multiplication problem in the 3,000-seed set per level and replayed against the real tickets.js.
+17. **Ticket sales, the seat rows at hint 2 (QUESTIONS 8's rule, applied to the picture).** For "how many rows will be
+    completely full?" the web draws every full row from hint 2 (12 icons and "... 17 more full rows"), which counts out
+    the answer while hint 2's text keeps the choice ("21 x 29 = 609 and 21 x 30 = 630. which one fits under 623?",
+    answer 8.3). Here hint 2 draws one full row, a gap and the part row, with the web's line "21 seats per row. does the
+    last row fill up?"; the worked solution draws the rows as the web does. Every level 3 rows problem.
+18. **Stage designer: "set" before the light has moved is not a try (QUESTIONS 15, answer 15).** As on the web, "set" with
+    nothing placed (place), or before both numbers are set (read), is no miss, no try and no fans lost, and the ladder
+    stays put; the web's lines stay ("tap a spot on the stage first.", "set both numbers first."). On a move problem the
+    gear already stands on the stage, so the web's "tap a spot on the stage first." didn't fit: here riff says "move the
+    spotlight first." (the problem's gear; "think" pose). `StageLines.NeedMove`;
+    `MathBuilderTests.Stage_SetBeforeAnything_IsNotATry_InEveryKind`.
+19. **Beat maker: "play it" on an empty measure is not a try (QUESTIONS 15, answer 15; task 4.1).** On a fill problem with
+    no note added, riff says "add a note or two first." ("think" pose): no miss, no try, no fans lost, the ladder stays
+    put. The web counted it as a miss. A take-out problem starts too full, so playing it untouched is still a try.
+    `BeatBoard.Play` returns `BeatPlay.Empty`.
+20. **Math songs are laid out in two columns (task 4.1).** The desk and the controls on the left, the prompt card and the
+    keypad (or the choices, or the stage-hand panel) on the right, 350 wide; tour budget's story choices sit under
+    the sheet on the left, where there is room. The web's single column (desk, prompt,
+    keypad, controls) is taller than a 1366x768 window. Same order of things to read; nothing is left out.
+21. **Fractions are larger than the web's (task 4.1).** Stacked fractions are drawn as real fractions in TMP
+    (`MathText.ToTmp`) and a little larger than math.css sets them: the prompt at 1.15 and the dog's bubble at 1.1 of the
+    text size (the web's 1.05 and .95), so the numerator and denominator stay easy to read at 1366x768.
+22. **The keypad and the keyboard (task 4.1).** Keypad keys aren't Tab stops (she types on the real keys); Tab goes to the
+    hint and next buttons. Typing a digit, "." or "/" while one of those buttons has focus takes the focus back to the
+    pad first, so the next Enter locks the answer in instead of pressing the button again. On the web the focused button
+    kept Enter.
+23. **The on-screen key moves when its real key is pressed (task 4.1).** Typing "7" on the keyboard presses the pad's 7
+    with the same squash as a click, so she sees what was typed. The web's keys only move when clicked.
+24. **Merch table: an item card widens to fit a long price tag (task 4.1).** A bulk tag ("2.5 ounces x $1.20") makes its
+    card wider; on the web the tag ran past the edge of the 112 px card.
+25. **Stage designer: the light can be dragged, and the arrow keys move it (task 4.2).** The web has a press on the stage
+    and the four arrow buttons; here the light also follows a drag point to point, and with the stage focused the arrow
+    keys move it and Enter or Space sets it. Read mode's pickers take Up/Down and the + and - keys. What counts as right
+    is unchanged.
+26. **Stage designer read mode: the pickers show the answer at the worked step (task 4.2).** The web set the pair line to
+    the answer but left her numbers in the pickers, so the worked picture disagreed with itself.
+27. **Pack the truck builder: a "crate" chip to drag (task 4.2).** One new word on a chip she can drag onto a spot, or press
+    and then press a spot; a press on a spot alone still stacks a crate, as on the web.
+28. **Tour budget: the keypad takes no keys until the expression is picked (task 4.3).** On a story problem the web's
+    hidden keypad still listened, so typing a number before picking could submit it. Here it appears, and listens, once
+    the expression is chosen (by her or by hint 2).
+29. **Stage designer: no hint-2 route or big number onto the answer (answer 16; phase 4 fix round 1, B3).** The web's hint-2
+    route runs across to the answer's x and highlights that bottom-line number. When the answer is on the bottom line
+    (y = 0: place problems from (0, 0), read problems), the route ends on the answer and the big number sits on it, so the
+    picture marks the answer. Then hint 2 draws neither and leaves the text alone (answer 9's low items); on a move
+    problem with y = 0 the route stays (it ends off the answer) but the big number goes. The worked step draws them as
+    the web does. `StageGame.Step`; `AnswerSixteenTests.B3_*` sweeps every kind at every level.
+30. **Worked lines end with a full stop before "it'll come back around." (phase 4 fix round 1, P2).** The web ran them
+    together ("... so 9 it'll come back around."). `MathLines.ComeBackAfter` adds the full stop unless the worked line
+    already ends a sentence; the JS-match tests map the web's reveal lines the same way (`RevealExpect`).
+31. **Pack the truck, missing height: hint 2 shows one layer (answer 16; phase 4 fix round 1, B1).** The web's hint 2 drew
+    every unit line, up the sides too, so the layers (the hidden height) could be counted. Here hint 2 draws only the
+    length x width grid on the top face, the height label stays "?", and every line comes with the worked step.
+    `IsoGeometry.Typed` (`IsoLines.Top`); `AnswerSixteenTests.B1_*` checks every line lies on the top face.
+32. **Tour budget: the hint-2 highlighter on story problems (phase 4 fix round 1, P3).** budget.js's pattern
+    (`<b>(.*?) = `) ran across "</b>" in "it's <b>expr</b>. first: a + b = c." and found nothing, so story problems
+    never got the highlighter. Here a bold part may not contain a tag, and a story's "first: a + b = " is used; the
+    highlighted part is never the final value (swept).
+33. **Beat maker, typed sum and difference: separate rows before the worked step (answer 16; phase 4 fix round 1, B2/P8).**
+    The web drew the two notes end to end on the grid from the start, so the sum (or the solid remainder) could be
+    counted off at any hint, and on a difference it wrote the whole's fraction on a block drawn as long as the
+    remainder. Here, before the worked step, each note has its own row from the left edge (a difference: the whole, and
+    the part to cut, faded); from hint 2 each is labelled in the common denominator (2/8, 5/8: the step the hint text
+    names) with only its own cells numbered. The worked step draws the web's picture, the remainder labelled with its
+    own length. `BeatTypedPicture`; `AnswerSixteenTests.B2_*`.
+34. **Readable small type in the math screens (phase 4 fix round 1, P4, P5, P9).** The ticket setlist's fractions are
+    1.1x the line's size in bold with taller lines (the web's .8em came out about 8 px and grey); the beat maker's note
+    labels are 20 px and its cell numbers 14 px ink with a card outline (the web's .62rem on-ink vanished on light
+    notes); ticket chunk notes, truck side labels (at least 15 px) and the "more full rows" line are larger and darker;
+    the stage's bottom-line numbers sit a little lower so a light on the bottom line doesn't cover its number; a
+    coordinate pair keeps together with a no-break space (P6); a four-line prompt clears the card's torn edge (P10).

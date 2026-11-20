@@ -80,9 +80,14 @@ namespace WorldTour.Game.Show
         [SerializeField] Sprite streakIcon;
         [Tooltip("studio.js:20: the vinyl sticker on the record button (stickers/vinyl).")]
         [SerializeField] Sprite recordSticker;
+        [Tooltip("The map's sprite set (stickers by name): the merch table's item stickers.")]
+        [SerializeField] WorldTour.Game.Map.MapArt art;
 
         /// <summary>The record button's art for studio session, or null (a plain disc is drawn).</summary>
         internal Sprite RecordStickerSprite { get { return recordSticker; } }
+
+        /// <summary>The map's sprites, or null (the merch table then draws its items without stickers).</summary>
+        internal WorldTour.Game.Map.MapArt ArtAsset { get { return art; } }
 
         /// <summary>Raised for every show screen that starts a show, so the dog can follow without a scene reference.</summary>
         public static event Action<ShowScreen> Started;
@@ -180,7 +185,13 @@ namespace WorldTour.Game.Show
             Save = _store != null ? _store.Blob : SaveBlob.Defaults(Today());
             MathConfig config = DataLoader.Math != null ? DataLoader.Math.Config : null;
 
+            // index.js: a math mode plays its skill's problems (show.js pickProblems), a spelling mode the week's words
+            ModeInfo info = ModeList.ById(request.ModeId, null);
+            bool isMath = info != null && info.Kind == ModeInfo.Math;
+            string skill = isMath ? info.Skill : null;
             List<ShowItem> items = request.Items;
+            if (items == null && isMath)
+                items = ShowPicker.PickProblems(skill, ProgressRules.ReviewItems(Save, skill), _random);
             if (items == null)
             {
                 // index.js poolFor: lyric writer and prefix mixer play only their own words (lyric.js:70, prefix.js:156)
@@ -193,8 +204,8 @@ namespace WorldTour.Game.Show
 
             Engine = new ShowEngine(new ShowSetup
             {
-                IsMath = false, ModeId = request.ModeId, VenueId = request.VenueId, Items = items, Encore = request.Encore,
-                SkillRecord = ProgressRules.Skill(Save, "spell:" + request.ModeId)
+                IsMath = isMath, ModeId = request.ModeId, Skill = skill, VenueId = request.VenueId, Items = items, Encore = request.Encore,
+                SkillRecord = ProgressRules.Skill(Save, isMath ? skill : "spell:" + request.ModeId)
             });
             _result = new ShowResult { Request = request, Engine = Engine, Week = request.Week };
             // Attach first, so the save (and the stickers) are done before this screen reacts to ShowFinished.
@@ -229,10 +240,12 @@ namespace WorldTour.Game.Show
                     Sfx.Play(SfxId.Strum);
                     Debug.Log("WT_SONG_RESULT i=" + (e.Index + 1) + " kind=" + (e.Win == WinKind.Clean ? "clean" : e.Win == WinKind.HintOnly ? "hinted" : "wrong"));
                     _nudgeAt = -1;
+                    PaintHint();                                         // show.js win(): lockHints(), the button goes off (fix round 1, P1)
                     break;
                 case ShowEventKind.Revealed:
                     Debug.Log("WT_SONG_RESULT i=" + (e.Index + 1) + " kind=revealed");
                     _nudgeAt = -1;
+                    PaintHint();                                         // show.js reveal(): lockHints()
                     break;
                 case ShowEventKind.FansAwarded:
                 case ShowEventKind.ItemRecorded:
@@ -294,6 +307,13 @@ namespace WorldTour.Game.Show
                 case "studio": return host.AddComponent<StudioMode>();
                 case "lyric": return host.AddComponent<LyricMode>();
                 case "prefix": return host.AddComponent<PrefixMode>();
+                case "merch": return host.AddComponent<MerchMode>();
+                case "beat": return host.AddComponent<BeatMode>();
+                case "tickets": return host.AddComponent<TicketsMode>();
+                case "stage": return host.AddComponent<StageMode>();
+                case "truck": return host.AddComponent<TruckMode>();
+                case "budget": return host.AddComponent<BudgetMode>();
+                case "soundcheck": return host.AddComponent<SoundcheckMode>();
                 default: throw new NotSupportedException("mode " + id + " isn't built yet");
             }
         }

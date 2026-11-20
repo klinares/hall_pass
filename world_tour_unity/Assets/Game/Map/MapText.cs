@@ -129,6 +129,17 @@ namespace WorldTour.Game.Map
         /// <summary>venue.js:44.</summary>
         public const string TourDate = "tour date";
 
+        /// <summary>venue.js:58 the math section's heading and its pencil note.</summary>
+        public const string MathSets = "math sets";
+        public const string LevelsMove = "levels move with you";
+
+        /// <summary>venue.js:64 .mlvl: "<stars> level n" (filled stars for the level, empty for the rest of 3).</summary>
+        public static string LevelStars(int level)
+        {
+            int l = System.Math.Max(0, System.Math.Min(3, level));
+            return new string((char)0x2605, l) + new string((char)0x2606, 3 - l);
+        }
+
         /// <summary>venue.js:68: the button on a locked venue's card.</summary>
         public static string PlayInstead(Venue newest) { return "play at " + newest.Short + " instead"; }
     }

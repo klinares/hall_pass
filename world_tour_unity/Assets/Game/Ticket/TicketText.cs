@@ -44,6 +44,8 @@ namespace WorldTour.Game.Ticket
         public string TagClass;
         /// <summary>"nailed it", "used a hint" or "rehearse again".</summary>
         public string TagText;
+        /// <summary>A math problem's label (generator text with [[n/d]] fractions, drawn stacked), not a word from weeks.json.</summary>
+        public bool IsMath;
     }
 
     /// <summary>
@@ -200,7 +202,7 @@ namespace WorldTour.Game.Ticket
             return (oneBased < 0 ? "-" : "") + d;
         }
 
-        /// <summary>ticket.js:69 <c>x.v.w ? x.v.w : rich(labelOf(x.v))</c>. Math labels come back as plain text (rich fractions are phase 4).</summary>
+        /// <summary>ticket.js:69 <c>x.v.w ? x.v.w : rich(labelOf(x.v))</c>. Math labels keep their [[n/d]] markup; the screen stacks them (TicketSong.IsMath).</summary>
         public static string SongText(ShowItem item)
         {
             var w = item as WordItem;
@@ -318,7 +320,7 @@ namespace WorldTour.Game.Ticket
                     m.Setlist.Add(new TicketSong
                     {
                         Number = TicketText.SongNumber(i), Text = TicketText.SongText(e.Item), Tag = e.Tag,
-                        TagClass = TicketText.TagClass(e.Tag), TagText = TicketText.TagText(e.Tag)
+                        TagClass = TicketText.TagClass(e.Tag), TagText = TicketText.TagText(e.Tag), IsMath = e.Item is MathItem
                     });
                 }
 

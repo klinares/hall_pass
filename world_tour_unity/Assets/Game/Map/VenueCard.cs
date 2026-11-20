@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using WorldTour.Core.Data;
+using WorldTour.Core.Maths;
 using WorldTour.Core.Progress;
 using WorldTour.Game.Data;
 using WorldTour.Game.Modes;
@@ -117,6 +118,7 @@ namespace WorldTour.Game.Map
                 Week wk = WeekRules.ChooseWeek(all, s_ChosenWeek, LocalClock.TodayIso());
                 if (wk != null) y = Sets(v, wk, all, x0, y + 30f, cw);
                 else Debug.LogWarning("[map] no weeks loaded: the spelling sets are hidden");
+                y = MathSets(v, wk, x0, y, cw);
             }
             else
             {
@@ -309,11 +311,44 @@ namespace WorldTour.Game.Map
             return y;
         }
 
-        float ModeRow(Venue v, Week wk, ModeEntry m, int i, float x0, float y, float cw)
+        /// <summary>
+        /// venue.js:58-67 the math sets: a heading with "levels move with you", then a row per math mode the Unity build can
+        /// play (and math_config.json has on), each with its level in stars. Left off entirely while none is playable.
+        /// </summary>
+        float MathSets(Venue v, Week wk, float x0, float y, float cw)
         {
-            const float h = 84f;
+            MathConfig config = DataLoader.Math != null ? DataLoader.Math.Config : null;
+            var modes = new List<ModeEntry>();
+            foreach (ModeEntry m in ModeCatalog.All)
+                if (!m.IsSpelling && m.Playable && (config == null || config.IsEnabled(m.Info.Skill))) modes.Add(m);
+            if (modes.Count == 0) return y;
+            y += 30f;
+            TextMeshProUGUI head = UiKit.Text(_content, "MathHeading", MapText.MathSets, FontRole.Display, Tokens.Fs3, ColorRole.Ink,
+                TextAlignmentOptions.BottomLeft, false);
+            float headW = UiKit.WidthOf(head);
+            UiKit.Place(head.rectTransform, new Vector2(x0, y), new Vector2(headW + 4f, 40f), UiKit.TopLeft);
+            TextMeshProUGUI pencil = UiKit.Text(_content, "MathNote", MapText.LevelsMove, FontRole.Body, Tokens.Fs0, ColorRole.Ink,
+                TextAlignmentOptions.BottomLeft, false);
+            pencil.fontStyle = FontStyles.Italic;
+            Color pc = pencil.color; pc.a = .85f; pencil.color = pc;
+            UiKit.Place(pencil.rectTransform, new Vector2(x0 + headW + 14f, y + 10f), new Vector2(UiKit.WidthOf(pencil) + 4f, 26f), UiKit.TopLeft);
+            y += 40f + 12f;
+            SaveBlob s = MapScreen.Blob;
+            for (int i = 0; i < modes.Count; i++)
+            {
+                int level = s != null ? ProgressRules.Level(s, modes[i].Info.Skill) : 1;
+                y = ModeRow(v, wk, modes[i], i, x0, y, cw, level) + 14f;
+            }
+            return y;
+        }
+
+        float ModeRow(Venue v, Week wk, ModeEntry m, int i, float x0, float y, float cw, int mathLevel = 0)
+        {
+            bool math = mathLevel > 0;
+            float h = math ? 100f : 84f;
             RectTransform root = UiKit.Place(UiKit.Rect("Mode_" + m.Id, _content), new Vector2(x0 + cw * 0.5f, y + h * 0.5f), new Vector2(cw, h), UiKit.Center);
-            root.localEulerAngles = new Vector3(0f, 0f, MapLayout.UnityTilt(i % 2 == 1 ? 1f : -1f));   // venue.js:49 --r
+            // venue.js:49 --r (spelling rows -1, 1, ...; math rows 1, -1, ..., venue.js:62)
+            root.localEulerAngles = new Vector3(0f, 0f, MapLayout.UnityTilt((i % 2 == 1 ? 1f : -1f) * (math ? -1f : 1f)));
             Image hit = root.gameObject.AddComponent<Image>();
             hit.color = new Color(1, 1, 1, 0);
             RectTransform body = UiKit.Stretch(UiKit.Rect("Body", root));
@@ -335,6 +370,14 @@ namespace WorldTour.Game.Map
             UiKit.Place(name.rectTransform, new Vector2(x, 10f), new Vector2(textW, 36f), UiKit.TopLeft);
             TextMeshProUGUI sub = UiKit.Text(face, "Sub", m.Sub, FontRole.Body, 13.6f, ColorRole.Ink, TextAlignmentOptions.TopLeft, false);
             UiKit.Place(sub.rectTransform, new Vector2(x, 48f), new Vector2(textW, 20f), UiKit.TopLeft);
+            if (math)
+            {
+                // .mlvl: the stars in accent-2 at 1rem, letter-spaced, then "level n" small in ink
+                TextMeshProUGUI lvl = UiKit.Text(face, "Level", "", FontRole.Body, 16f, ColorRole.Accent2, TextAlignmentOptions.TopLeft, false);
+                lvl.characterSpacing = 8f;
+                lvl.text = MapText.LevelStars(mathLevel) + " <cspace=0><size=11.5><color=#" + ColorUtility.ToHtmlStringRGB(Theme.Color(ColorRole.Ink)) + ">level " + mathLevel + "</color></size></cspace>";
+                UiKit.Place(lvl.rectTransform, new Vector2(x, 70f), new Vector2(textW, 20f), UiKit.TopLeft);
+            }
             TextMeshProUGUI arrow = UiKit.Text(face, "Arrow", MapText.Arrow, FontRole.Body, 25.6f, ColorRole.Ink, TextAlignmentOptions.Center, false);
             UiKit.Place(arrow.rectTransform, new Vector2(cw - 2f * Tokens.BorderWidth - 18f - arrowW, (h - 2f * Tokens.BorderWidth) * 0.5f - 15f), new Vector2(arrowW, 30f), UiKit.TopLeft);
 
@@ -343,9 +386,9 @@ namespace WorldTour.Game.Map
             press.squash = new Vector2(0.98f, 0.94f);   // screens.css .moderow:active
             press.transition = Selectable.Transition.None;
             press.targetGraphic = hit;
-            string vid = v.Id, wid = wk.id, mid = m.Id;
+            string vid = v.Id, wid = wk != null ? wk.id : null, mid = m.Id;
             press.Clicked += () => RequestShow(vid, wid, mid);
-            if (i == 0) FirstSelected = press;
+            if (i == 0 && (!math || !(FirstSelected is PressTarget))) FirstSelected = press;
             return y + h;
         }
 

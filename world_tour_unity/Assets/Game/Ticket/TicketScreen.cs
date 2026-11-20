@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -529,7 +530,9 @@ namespace WorldTour.Game.Ticket
         float BuildSetlist(float y)
         {
             TicketModel m = Model;
-            const float padT = 30f, padR = 20f, padB = 26f, padL = 50f, line = 32f, titleH = 33.6f;
+            const float padT = 30f, padR = 20f, padB = 26f, padL = 50f, titleH = 33.6f;
+            // a math setlist's stacked fractions need taller lines, so 11/12 clears the line above (fix round 1, P4)
+            float line = m.Setlist.Any(x => x.IsMath) ? 44f : 32f;
             float h = padT + titleH + 8f + m.Setlist.Count * line + padB;
             RectTransform wrap = NewRect("Setlist", _content);
             Place(wrap, 0f, y, Width, h);
@@ -569,7 +572,7 @@ namespace WorldTour.Game.Ticket
                 Place(tag.rectTransform, padL + iw - tagW, ly, tagW, line);
 
                 // .w::before "01. " at .8rem, then the word (escaped: words come from weeks.json)
-                TMP_Text w = Text(wrap, "Song" + i, "<size=12.8>" + s.Number + ". </size>" + Plain(s.Text), 16.8f, FontRole.Body, ColorRole.Ink);
+                TMP_Text w = Text(wrap, "Song" + i, "<size=12.8>" + s.Number + ". </size>" + (s.IsMath ? WorldTour.Game.Modes.MathText.ToTmp(s.Text, WorldTour.Game.Modes.MathText.SetlistScale) : Plain(s.Text)), 16.8f, s.IsMath ? FontRole.BodyBold : FontRole.Body, ColorRole.Ink);
                 w.alignment = TextAlignmentOptions.MidlineLeft;
                 w.overflowMode = TextOverflowModes.Ellipsis;
                 Place(w.rectTransform, padL, ly, iw - tagW - 10f, line);

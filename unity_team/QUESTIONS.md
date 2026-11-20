@@ -206,3 +206,34 @@ In missing letters (and potentially missing vowels), the "sounds like" syllable 
 Do not reuse level 2's "the 0 in the ones place drops off" at level 3: for 140 / 10 it hands over the answer. Leave level 2 as it is.
 
 Test: for every generated decimal-point problem at every level, the hint's claim holds for that problem (digits move N places in the stated direction, and the added question appears exactly when a zero is filled in or dropped). Apply the same wording to the web game as a follow-up to task W, inside the same one-time approval.
+
+## 15. Pack the truck: "load it" on an empty floor (FYI, decided by the lead 2026-11-20 14:0x under answer 7)
+
+**Context:** In the web game, pressing "load it" with no crates placed counts as a miss (costs the streak, moves the hint ladder). Answer 7's principle is that input she hasn't really given is never a miss.
+
+**Decision:** treat an empty floor like an empty keypad: no miss, no try, no fans lost; riff says one short line asking her to load some crates first (new copy, written in the game's voice; the exact line will be listed here when placed). Logged as an intended difference. Say if you want the web behaviour back.
+
+**Line chosen for 15:** "load a crate or two first." (riff's thinking pose). Intended difference 15.
+
+**Answer to 15 (advisor, 2026-11-20 13:58):** Agreed. An empty floor is not an attempt, and the line fits. Apply the same test to the other builders: "set" in stage designer with the light never moved, and "play it" in beat maker with an empty measure, should also ask her to do something first, not count as a miss.
+
+## 16. Ticket sales hint pictures that show the answer at hint 2 (FYI, decided by the lead 2026-11-20 14:4x under answer 8)
+
+Running the web game's own ticket sales code shows two pictures that give the answer away at hint 2, while the hint text still leaves the last step to her:
+- **Area model with one part** (about 1 in 11 multiplication problems, e.g. 36 × 70): the only cell already shows 2,520. In Unity, hint 2 shows "252 × 10" (the step the text describes) and the product appears with the worked solution. Intended difference 16.
+- **Seat rows on remainder problems** (level 3): every full row is drawn, which counts out the answer. In Unity, hint 2 draws one full row, a gap and the part row, with the web's line "21 seats per row. does the last row fill up?". The worked solution draws every row, as on the web. Intended difference 17.
+
+Both follow answer 8 (hints 1 and 2 never state the answer). Say if you want either back. The web game has the same pictures; that is not in task W's scope.
+
+**Answer to 16 (advisor, 2026-11-20 13:58):** Agreed on both. A picture counts as part of the hint, so the rule from answer 8 covers what is drawn as well as what is written: at hints 1 and 2 no picture shows the answer or lets her count it out. Have the phase 4 tester check every visual model in every math mode against that, not only these two. Note both pictures in the phase 4 report under "For the owner" as faults the web game still has.
+
+## 17. Answer 16 applied to every math picture: three more pictures fixed (FYI, decided by the lead 2026-11-20 17:xx)
+
+The phase 4 tester checked every hint picture in every math mode. Three show the answer, or let her count it, at hint 2 (the web game has all three):
+- **Pack the truck, level 3, missing height** (about half of level 3): the unit lines let her count the layers. Hint 2 will draw the lines only on the base layer, and the height stays "?".
+- **Beat maker, typed sum (level 2) and difference (level 3)** (about a third of each): the numbered grid ends on the answer. Hint 2 will show the two fractions on separate rows, converted to the common denominator. The combined or remaining block appears only with the worked solution.
+- **Stage designer, place problems with y = 0** (about 1 in 7 at levels 1 and 2): the hint 2 route ends on the answer point. Hint 2 will draw no route there. The text alone stays, as in answer 9's low items.
+
+The tester ruled beat maker's builder hint 2 (the grid and "you need 4/8 more") acceptable, since answer 8 kept that line for builders. All three will be listed in the phase 4 report as faults the web game still has. Say if you disagree with any.
+
+**Answer to 17 (advisor, 2026-11-20 18:58):** Agreed on all three fixes, and on the tester's ruling that beat maker's builder hint 2 stays. Nothing to change.

@@ -15,7 +15,8 @@ namespace WorldTour.Core.Tests
     internal static class IntendedDifferences
     {
         /// <summary>Shape names, for counting what was restored.</summary>
-        public const string FluDecimalPoint = "flu L3 decimal point one place: hint 2 (9.1)";
+        public const string FluDecimalPoint = "flu L3 decimal point one place: hint 2 (9.1, 14)";
+        public const string FluDecimalPointMore = "flu L3 decimal point 2 or 3 places: hint 2 (14)";
         public const string MdSmallQuotient = "md L2 quotient 2 or 3: hint 1 (8.1)";
         public const string MdQuotientTen = "md L2 quotient 10: hint 1 (8.2)";
         public const string VolOneLayer = "vol L1 one-layer stack: hint 2 (9.2)";
@@ -46,7 +47,15 @@ namespace WorldTour.Core.Tests
             {
                 bool mul = p.Kind == "decpow";
                 string[] ab = p.Label.Split(new[] { mul ? Times : " " + Glyph.Divide + " " }, StringSplitOptions.None);
-                if (ab.Length != 2 || ab[1] != "10") return null;   // 100 and 1,000 keep the web text ("x 10 = ... keep going")
+                if (ab.Length != 2) return null;
+                if (ab[1] != "10")
+                {
+                    // 100 and 1,000: the web hint 2 worked the first x 10 or / 10 and said "keep going" (QUESTIONS 14).
+                    Rational v = DecimalText(ab[0]);
+                    Rational ten = mul ? Rational.Mul(v, Rational.R(10)) : Rational.Div(v, Rational.R(10));
+                    p.Steps[1] = ab[0] + (mul ? Times : " " + Glyph.Divide + " ") + "10 = " + Rational.Dec(ten) + ". keep going" + Glyph.Ellipsis;
+                    return FluDecimalPointMore;
+                }
                 if (mul)
                 {
                     Rational xv = DecimalText(ab[0]);

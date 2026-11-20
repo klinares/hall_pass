@@ -38,8 +38,8 @@ namespace WorldTour.Game.Modes
             _ctx = ctx;
             string word = ctx.Item.W;
             _deal = RemixRules.Deal(word, ctx.Level, ctx.Random);       // remix.js:19-22
-            _board = new RemixBoard(word, _deal.Mix);
-            _round = new RemixRound(_board, new Host(ctx), new View(this));
+            _board = new RemixBoard(word, _deal.Mix) { Syllables = ctx.Item.S };
+            _round = new RemixRound(_board, new Host(ctx, _board), new View(this));
             Build(ctx.Area, word);
             Paint(-1);
             ctx.Later(LogRack, .45f);
@@ -102,7 +102,8 @@ namespace WorldTour.Game.Modes
         private sealed class Host : IRemixHost
         {
             private readonly SongContext _c;
-            public Host(SongContext c) { _c = c; }
+            private readonly RemixBoard _b;
+            public Host(SongContext c, RemixBoard b) { _c = c; _b = b; }
             public bool Open { get { return _c.Open; } }
             public bool Resolved { get { return _c.Engine.Resolved; } }
             public int Tries { get { return _c.Tries; } }
@@ -114,7 +115,8 @@ namespace WorldTour.Game.Modes
             public void Later(System.Action action, float seconds) { _c.Later(action, seconds); }
             public void Next(float seconds) { _c.Next(seconds); }
             public void BlockHints(bool blocked) { _c.BlockHints(blocked); }
-            public string Ladder(int tries) { return RemixLines.Ladder(_c.Item.W, _c.Item.S, tries, _c.Random); }
+            // QUESTIONS 11 / task Q tester D1: the ladder counts the glows she has seen, and the glows count the ladder
+            public string Ladder(int tries) { return _b.LadderLine(tries, _c.Random); }
             public void Log(string line) { Debug.Log(line); }
             public void Error(System.Exception e) { Debug.LogException(e); }
         }

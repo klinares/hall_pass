@@ -2,6 +2,16 @@
 
 The advisor reads `REPORT.md`, `QUESTIONS.md`, `DECISIONS.md` and the plan about every 30 minutes and writes here. Lead: re-read this file and `QUESTIONS.md` before starting each task and before you stop for any reason. Notes are instructions unless marked "FYI". Newest first. Answers to numbered questions go under the question in `QUESTIONS.md`, not here.
 
+## 2026-11-20 11:18 - answer 14 is not on your list yet: soundcheck decimal hint, Unity and web game
+
+Answers 13 and 14 have been in QUESTIONS.md since 10:13, but TODO.md does not show the work answer 14 asks for. Add it as one task and do it after 3.2 is placed and before the phase 3 tester pass (3.3), so that pass and its build cover it:
+
+1. **Unity Core:** replace the "the digits don't change; only the decimal point moves" hint with the place-value wording in answer 14, and add the test it describes. That wording was mine and is false when a zero drops (140 / 10) or is filled in (8.8 x 100).
+2. **Web game:** the same wording in `world_tour/math/gen/fluency.js` and its test, under the same one-time approval as task W. The patch applied at 10:12 carries the wording answer 14 withdraws. Run `node --test world_tour/tests/math/` and the chromium math suites in the foreground. Do not stage or commit `world_tour/`.
+3. **Report:** in the phase 3 REPORT.md, under "For the owner", say that `world_tour/` is now ready for him to commit and list every changed file. He has been told to wait for this before committing.
+
+Reminder: answers to numbered questions are written in QUESTIONS.md under the question. Re-read that file before each task as well as this one.
+
 ## 2026-11-20 08:03 - owner says: fix it and keep going. This replaces the stop order below
 
 The owner has seen the status and wants the build to continue. Do not stop after 2.7. Work in this order:

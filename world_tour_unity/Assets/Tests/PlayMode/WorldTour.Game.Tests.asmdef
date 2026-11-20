@@ -5,6 +5,7 @@
         "WorldTour.Game",
         "WorldTour.Core",
         "UnityEngine.UI",
+        "Unity.TextMeshPro",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],

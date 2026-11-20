@@ -2,46 +2,46 @@
 
 ## For the owner
 
-- **The live web game in `world_tour/` shows wrong digits in about one in ten level 3 soundcheck problems.** For example, "8.82 × 10: the digits stay 441" should be 882. A patch is ready and tested on a copy (five files, all its tests pass). It is applied next, after the Unity fixes are committed; you commit `world_tour/` yourself.
-- **Please listen once:** the game should make sound after "start". Headless tests can't hear it.
-- **Correction:** the phase 1 report said questions 7–11 were open and the advisor was silent. Both were wrong: the answers were in QUESTIONS.md all along.
+- **Don't commit `world_tour/` yet.** It holds this morning's patch: js/show.js, math/gen/fluency.js, multdiv.js, volume.js, tests/math/generators.test.mjs. Answer 14 then withdrew one of its lines: level 3's "the digits don't change; only the decimal point moves" is false for 140 ÷ 10 and 8.8 × 100. The advisor asked for the same fix in `fluency.js`. Your 08:03 approval covered three faults, not this one, so I haven't touched it. **Should I apply it?** (Same terms as this morning.) If not, I'll give you the text.
+- **Please listen once:** sound, and the studio session's spoken words. Tests only used a stand-in for the voice.
+- **Your word list:** irrational and illogical each fit the other's fan mail clue and lyric line. Reword one (the web game shares this).
 
 ## Phase and status
 
-Phase 2 (look and feel, map, remix, ticket) is **done** and committed locally. Next: apply answers 7–12 in Unity, patch the web game's three hint faults, then phase 3.
+Phase 3 (six more spelling modes) is **done** and committed locally. Next: phase 4, the math modes, merch table and beat maker first.
 
 ## What now works
 
-- Start card, tour map with the route and venues, venue card, remix spelling mode, show bar, ticket, encore and back to the map.
-- riff, the dog: idle, cheering, thinking and oops, with the web game's lines.
-- Sound effects, a mute button that is remembered, reduce motion, the "progress won't save on this device" notice, and the brand fonts and art.
-- Play by mouse (click or drag), or by keyboard alone (Tab, Enter, Space, typing).
+- All seven spelling modes play through to the ticket and the encore: remix, missing letters, missing vowels, fan mail, studio session (the word is read aloud; the clue shows if there's no voice), lyric writer, prefix mixer.
+- The venue card lists every mode and notes any not on a week's bill.
+- No hint, alone or combined with others, shows the whole word before the third miss (answer 11).
+- The decimal-point hint uses the new place-value wording (answer 14) in the Unity game.
 
 ## Test results
 
-- Edit-mode 1071/1071; play-mode 7/7 (including a full remix show with a miss, a hint and the encore); browser 16/16. Compile has 0 warnings.
-- Mouse, keyboard, reduced-motion and storage-blocked playthroughs at 1366x768, 1440x900 and 1920x1080 all reached the ticket with 0 console errors. 240 freeze-repro runs found 0 freezes.
-- Download 12.77 MB (budget 20 MB; largest file 7.68 MB). Cold load 0.7–1.2 s on localhost.
+- Edit-mode 1233/1233, play-mode 14/14 (each mode plays a full show with a miss, a hint and the encore), browser 16/16, 0 compile warnings.
+- 18 browser playthroughs (every mode at 1366x768 and 1920x1080, by mouse and keyboard, plus no voice and storage blocked) reached the ticket with 0 console errors.
+- An independent hint checker: 110,533 checks, 0 breaks.
+- Download 12.84 MB (budget 20 MB); ready in 0.7–1.3 s on this computer.
 
 ## What the tester looked at
 
-Every screen at three sizes, all player text, the feel rules, saving across a reload, and the code against the web game.
+Every mode's screens at both sizes (216 screenshots), all new text, speech calls, saving, and the decimal hint test.
 
 ## Not done or not verified
 
-- **Sound:** inferred from the scenes and logs, not heard.
-- **Remix hints:** still the web wording until the next task.
-- **Polish list:** win toast, confetti and crowd; low-contrast pink text; the no-save notice covers a map label; a very fast sideways drag can pick the next tile.
-- **Advisor checks** paused 03:22–07:52, and a usage limit paused work 03:22–04:20.
+- Real voices and sound; a real graphics card; home-wifi load time.
+- Soundcheck on screen (math modes arrive in phase 4).
+- Polish list: long patterns wrap in riff's bubble; a paid hint can repeat a known letter; "the 0" when two zeros drop; low-contrast note; venue card Tab order.
 
 ## Departures from the brief
 
-- 2.1–2.6 were tested in one combined pass, not one per task, to have a playable build by morning.
-- Some builds ran in the background, moved by the tool.
+- 3.2 used two builds and two browser runs, not one: the first caught two faults that would have shipped.
+- Long builds were moved to the background by the tool.
 
 ## Open questions
 
-None. Answers 7–12 are in QUESTIONS.md and are applied next.
+- Whether to apply answer 14 to `world_tour/` (above).
 
 ## How to try it
 
@@ -49,6 +49,5 @@ From the repo root, run `node world_tour_unity/Tests/Web/server.mjs tour`, open 
 
 ## Files changed
 
-- `world_tour_unity/Assets/`: Art, Fonts, Game (Ui, Motion, Audio, Map, Mascot, Modes, Show, Ticket, Flow), Editor builders, scenes, tests.
-- `world_tour_unity/Tools/` and `Tests/Web/`.
-- `tour/` (the rebuilt game) and `unity_team/`.
+- `world_tour_unity/Assets/`: Game (Modes/Spelling, Speech, Map, Show, Ui), Core/Math/Gen/Fluency.cs, Plugins/WebGL/speech.jslib, tests.
+- `world_tour_unity/Tests/Web/`, `tour/` (rebuilt), `unity_team/`.

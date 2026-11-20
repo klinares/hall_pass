@@ -28,7 +28,7 @@ namespace WorldTour.Game.Map
     /// The web game's mode registry (world_tour/modes/index.js MODES, setlist order), with the copy from each mode file.
     /// Every mode is listed so milestones (every-mode, master-*) and the office see the whole set, as progress.js
     /// <c>setModes(MODES)</c> does; <see cref="ModeEntry.Playable"/> marks the ones the Unity build can play so far.
-    /// Math modes a math_config switch turns off are not filtered yet (no math mode is playable in phase 2).
+    /// Math modes a math_config switch turns off are not filtered yet (no math mode is playable yet).
     /// </summary>
     public static class ModeCatalog
     {
@@ -36,13 +36,13 @@ namespace WorldTour.Game.Map
 
         public static readonly IReadOnlyList<ModeEntry> All = new[]
         {
-            new ModeEntry(new ModeInfo("slots", "missing letters", ModeInfo.Spelling), "some letters skipped town. fill them in", "mic", false),
-            new ModeEntry(new ModeInfo("vowels", "missing vowels", ModeInfo.Spelling), "every vowel is gone. put them back", "phones", false),
+            new ModeEntry(new ModeInfo("slots", "missing letters", ModeInfo.Spelling), "some letters skipped town. fill them in", "mic", true),
+            new ModeEntry(new ModeInfo("vowels", "missing vowels", ModeInfo.Spelling), "every vowel is gone. put them back", "phones", true),
             new ModeEntry(new ModeInfo("remix", "remix", ModeInfo.Spelling), "tap the letter stickers in order", "cassette", true),
-            new ModeEntry(new ModeInfo("fanmail", "fan mail", ModeInfo.Spelling), "match the word to the fan" + A + "s message", "heart", false),
-            new ModeEntry(new ModeInfo("studio", "studio session", ModeInfo.Spelling), "hear it, spell it. test-day practice", "vinyl", false),
-            new ModeEntry(new ModeInfo("lyric", "lyric writer", ModeInfo.Spelling), "finish the lyric with this week" + A + "s word", "setlist", false),
-            new ModeEntry(new ModeInfo("prefix", "prefix mixer", ModeInfo.Spelling), "build the word, then crack the prefix", "pick", false),
+            new ModeEntry(new ModeInfo("fanmail", "fan mail", ModeInfo.Spelling), "match the word to the fan" + A + "s message", "heart", true),
+            new ModeEntry(new ModeInfo("studio", "studio session", ModeInfo.Spelling), "hear it, spell it. test-day practice", "vinyl", true),
+            new ModeEntry(new ModeInfo("lyric", "lyric writer", ModeInfo.Spelling), "finish the lyric with this week" + A + "s word", "setlist", true),
+            new ModeEntry(new ModeInfo("prefix", "prefix mixer", ModeInfo.Spelling), "build the word, then crack the prefix", "pick", true),
             new ModeEntry(new ModeInfo("merch", "merch table", ModeInfo.Math, "dec"), "ring up fans and count their change", "tee", false),
             new ModeEntry(new ModeInfo("beat", "beat maker", ModeInfo.Math, "frac"), "fill the measure with fraction notes", "note", false),
             new ModeEntry(new ModeInfo("tickets", "ticket sales", ModeInfo.Math, "md"), "multiply and divide the crowd", "ticket", false),

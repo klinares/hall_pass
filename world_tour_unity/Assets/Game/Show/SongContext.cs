@@ -35,6 +35,10 @@ namespace WorldTour.Game.Show
         public WordItem Item { get { return Slot.Item as WordItem; } }
         /// <summary>The week's full word record (clue, syllables), when the show was built from a week.</summary>
         public Word Word { get { return Item != null ? Item.Data as Word : null; } }
+        /// <summary>The week the show plays (show.js ctx.week; fan mail draws its choices from it). Null when the show has none.</summary>
+        public Week Week { get { return _host != null && _host.Request != null ? _host.Request.Week : null; } }
+        /// <summary>studio.js:20 the vinyl sticker for the record button, or null.</summary>
+        public Sprite RecordSticker { get { return _host != null ? _host.RecordStickerSprite : null; } }
         /// <summary>The clue (word.h).</summary>
         public string Clue { get { return Word != null ? Word.h ?? "" : ""; } }
         /// <summary>show.js:208 <c>level</c>: the skill's level for a spelling song.</summary>

@@ -92,7 +92,7 @@ namespace WorldTour.Game.Mascot
             Build();
             if (_text == null) return;
             gameObject.SetActive(!string.IsNullOrEmpty(line));
-            _text.text = line ?? "";
+            _text.text = WorldTour.Game.Ui.Blanks.Spread(line ?? "");    // "____" would print as one line in Courier Prime
             Layout();
         }
 

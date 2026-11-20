@@ -44,11 +44,15 @@ namespace WorldTour.Core.Maths.Gen
         private static string Dec(Rational r) => Rational.Dec(r);
 
         /// <summary>
-        /// Hint 2 for moving the decimal point one place (QUESTIONS 9.1, an intended difference from the JS): names the
-        /// direction and the number of places, never the digits.
+        /// Hint 2 for moving the decimal point (QUESTIONS 9.1 and 14, an intended difference from the JS): place-value
+        /// wording that is true for every problem. x 10, 100, 1000 moves every digit left; / moves it right. When a
+        /// zero has to be filled in (8.8 x 100) or drops off the end (140 / 10), it asks about the zero instead of
+        /// saying it, so the last step stays hers. Never prints the digits or the answer.
         /// </summary>
-        public static string DigitsStay(int places, string direction) =>
-            "the digits don" + Glyph.Apos + "t change; only the decimal point moves " + S(places) + " place" + (places == 1 ? "" : "s") + " to the " + direction + ".";
+        public static string PlaceValueHint(bool times, long power, int places, bool zeroChanges) =>
+            (times ? Glyph.Times : Glyph.Divide) + " " + F(power) + " moves every digit " + S(places) + " place" + (places == 1 ? "" : "s")
+            + " to the " + (times ? "left" : "right") + "."
+            + (zeroChanges ? (times ? " what fills the empty place?" : " what happens to the 0 at the end?") : "");
 
         public static Problem Generate(int level, long seed) => Guard.Guarded(Build, level, seed);
 
@@ -160,10 +164,10 @@ namespace WorldTour.Core.Maths.Gen
                     steps = new List<string>
                     {
                         Glyph.Times + " " + F(p) + " moves the decimal point " + places + " to the right.",
-                        // Unity (QUESTIONS 9.1): the JS printed "the digits stay " + the reduced numerator, which is
-                        // wrong for 8.82 (441) and gives the answer away for 6.1 (61). Never print the digits.
-                        k > 1 ? Dec(xv) + x + "10 = " + Dec(Rational.Mul(xv, R(10))) + ". keep going" + Glyph.Ellipsis
-                              : DigitsStay(k, "right"),
+                        // Unity (QUESTIONS 9.1, 14): the JS printed "the digits stay " + the reduced numerator for x 10
+                        // (wrong for 8.82, the answer for 6.1) and "x 10 = ... keep going" for 100 and 1000. A zero is
+                        // filled in exactly when the power has more zeros than xv has decimal places (8.8 x 100 = 880).
+                        PlaceValueHint(true, p, k, k > pl),
                         Dec(xv) + x + F(p) + " = <b>" + Dec(ans) + "</b>"
                     };
                 }
@@ -184,8 +188,9 @@ namespace WorldTour.Core.Maths.Gen
                     steps = new List<string>
                     {
                         Glyph.Divide + " " + F(p) + " moves the decimal point " + places + " to the left.",
-                        k > 1 ? F(n) + dv + "10 = " + Dec(Rational.Div(xv, R(10))) + ". keep going" + Glyph.Ellipsis
-                              : DigitsStay(k, "left"), // Unity (QUESTIONS 9.1): the JS printed n's digits ("the digits stay 7")
+                        // Unity (QUESTIONS 9.1, 14): the JS printed n's digits for / 10 ("the digits stay 7") and
+                        // "/ 10 = ... keep going" for 100 and 1000. A 0 drops off the end exactly when n ends in 0.
+                        PlaceValueHint(false, p, k, n % 10 == 0),
                         F(n) + dv + F(p) + " = <b>" + Dec(ans) + "</b>"
                     };
                 }

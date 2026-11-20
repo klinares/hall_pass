@@ -211,6 +211,63 @@ namespace WorldTour.Game.Modes
         /// remix.js:112-122 the hint: if busy, nothing. If a tile already glows, a free reminder. Otherwise keep the
         /// right letters at the start, clear the rest, and glow the first unused tile with the next letter.
         /// </summary>
+        /// <summary>The word's syllables (for the ladder's "sound it out" line), or null.</summary>
+        public string Syllables;
+
+        /// <summary>
+        /// Letters a hint or a ladder line has shown so far this song (QUESTIONS 11; the task Q tester's D1): the glowing
+        /// tile counts as showing the letters up to it, the first ladder line the first letter, the second its chunks. Kept
+        /// across the resets after a miss, since she has already seen them.
+        /// </summary>
+        private readonly HashSet<int> _shown = new HashSet<int>();
+
+        public IReadOnlyCollection<int> Shown { get { return _shown; } }
+
+        private int Unknown(IEnumerable<int> more)
+        {
+            var known = new HashSet<int>(_shown);
+            foreach (int k in more) known.Add(k);
+            return Word.Length - known.Count;
+        }
+
+        /// <summary>
+        /// May the hint light the letter at <paramref name="pos"/>? Only within <see cref="SpellingHints.MaxShown"/>, and
+        /// only while at least <see cref="SpellingHints.MinHidden"/> letters stay unknown counting what the ladder lines have
+        /// already shown ("in - ___ - cept" plus the glows used to spell intercept).
+        /// </summary>
+        public bool CanGlow(int pos)
+        {
+            if (!SpellingHints.CanReveal(pos, Word.Length)) return false;
+            return Unknown(Enumerable.Range(0, pos + 1)) >= SpellingHints.MinHidden(Word.Length);
+        }
+
+        /// <summary>
+        /// show.js ladder() held to the same floor, counting the glows already seen: the first line drops "and starts with x"
+        /// if naming the first letter would leave fewer than the floor unknown; the second masks the chunk letters that
+        /// would, keeping the leftmost ones it may show. With nothing shown yet it is the RemixLines.Ladder text.
+        /// </summary>
+        public string LadderLine(int tries, Func<double> random)
+        {
+            int floor = SpellingHints.MinHidden(Word.Length);
+            var mask = new HashSet<int>();
+            if (tries == 1)
+            {
+                if (!_shown.Contains(0) && Unknown(new[] { 0 }) < floor) mask.Add(0);
+                else _shown.Add(0);
+            }
+            else
+            {
+                var chunk = MaskedChunks.Render(Word, Syllables, null).Shown.Where(k => !_shown.Contains(k)).OrderBy(k => k).ToList();
+                int allowed = Math.Max(0, Unknown(new int[0]) - floor);
+                for (int i = 0; i < chunk.Count; i++)
+                {
+                    if (i < allowed) _shown.Add(chunk[i]);
+                    else mask.Add(chunk[i]);
+                }
+            }
+            return MaskedChunks.Ladder(Word, Syllables, tries, random, mask);
+        }
+
         public RemixHint Hint()
         {
             var r = new RemixHint();
@@ -228,7 +285,7 @@ namespace WorldTour.Game.Modes
             Glow = -1;
             // QUESTIONS 11 (an intended difference from remix.js): the last hidden letters are always hers to find, so a
             // hint never lights a letter past SpellingHints.MaxShown. Clearing wrong letters still counts as a hint.
-            if (!SpellingHints.CanReveal(ok, Word.Length))
+            if (!CanGlow(ok))
             {
                 r.Glow = -1;
                 r.Counted = r.HadWrong;
@@ -238,6 +295,7 @@ namespace WorldTour.Game.Modes
             if (ok < Word.Length)
                 for (int i = 0; i < Mix.Count; i++)
                     if (!_picked.Contains(i) && Mix[i] == Word[ok]) { Glow = i; break; }
+            if (Glow >= 0) for (int k = 0; k <= ok; k++) _shown.Add(k);
             r.Glow = Glow;
             r.Counted = true;
             r.Line = r.HadWrong ? RemixLines.HintCleared : RemixLines.HintGlow;

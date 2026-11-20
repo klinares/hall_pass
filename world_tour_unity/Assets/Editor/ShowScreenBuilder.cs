@@ -43,11 +43,14 @@ public static class ShowScreenBuilder
         var bolt = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Sprites/stickers/bolt_sm.png");
         if (bolt == null) Debug.LogWarning("[show] stickers/bolt_sm.png is missing; the streak chip has no icon");
         so.FindProperty("streakIcon").objectReferenceValue = bolt;
+        var vinyl = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Sprites/stickers/vinyl.png");
+        if (vinyl == null) Debug.LogWarning("[show] stickers/vinyl.png is missing; studio session's record is a plain disc");
+        so.FindProperty("recordSticker").objectReferenceValue = vinyl;
         so.ApplyModifiedPropertiesWithoutUndo();
         GameObject saved = PrefabUtility.SaveAsPrefabAsset(root, PrefabPath, out bool ok);
         UnityEngine.Object.DestroyImmediate(root);
         if (!ok || saved == null) throw new Exception("could not save " + PrefabPath);
         AssetDatabase.SaveAssets();
-        Debug.Log("WT_SHOW_PREFAB ok path=" + PrefabPath + " button=" + (button != null ? "sticker" : "plain") + " streakIcon=" + (bolt != null ? "bolt_sm" : "none"));
+        Debug.Log("WT_SHOW_PREFAB ok path=" + PrefabPath + " button=" + (button != null ? "sticker" : "plain") + " streakIcon=" + (bolt != null ? "bolt_sm" : "none") + " record=" + (vinyl != null ? "vinyl" : "none"));
     }
 }

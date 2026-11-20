@@ -78,6 +78,11 @@ namespace WorldTour.Game.Show
         [SerializeField] StickerButton buttonPrefab;
         [Tooltip("show.js:75: the bolt sticker on the streak chip (stickers/bolt_sm).")]
         [SerializeField] Sprite streakIcon;
+        [Tooltip("studio.js:20: the vinyl sticker on the record button (stickers/vinyl).")]
+        [SerializeField] Sprite recordSticker;
+
+        /// <summary>The record button's art for studio session, or null (a plain disc is drawn).</summary>
+        internal Sprite RecordStickerSprite { get { return recordSticker; } }
 
         /// <summary>Raised for every show screen that starts a show, so the dog can follow without a scene reference.</summary>
         public static event Action<ShowScreen> Started;
@@ -178,7 +183,8 @@ namespace WorldTour.Game.Show
             List<ShowItem> items = request.Items;
             if (items == null)
             {
-                var pool = (request.Week != null && request.Week.words != null ? request.Week.words : new Word[0])
+                // index.js poolFor: lyric writer and prefix mixer play only their own words (lyric.js:70, prefix.js:156)
+                var pool = ModeRules.Pool(request.ModeId, request.Week)
                     .Where(w => w != null && !string.IsNullOrEmpty(w.w))
                     .Select(w => new WordItem(w.w, w.s, w)).ToList();
                 items = ShowPicker.PickWords(pool, new HashSet<string>(ProgressRules.ReviewWords(Save)),
@@ -281,7 +287,13 @@ namespace WorldTour.Game.Show
         {
             switch (id)
             {
+                case "slots": return host.AddComponent<SlotsMode>();
+                case "vowels": return host.AddComponent<VowelsMode>();
                 case "remix": return host.AddComponent<RemixMode>();
+                case "fanmail": return host.AddComponent<FanmailMode>();
+                case "studio": return host.AddComponent<StudioMode>();
+                case "lyric": return host.AddComponent<LyricMode>();
+                case "prefix": return host.AddComponent<PrefixMode>();
                 default: throw new NotSupportedException("mode " + id + " isn't built yet");
             }
         }

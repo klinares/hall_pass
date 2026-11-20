@@ -261,13 +261,24 @@ try {
 
   // ---- start remix
   m0 = mark();
-  if (keyboardMode) await key('Enter');                               // the remix row has focus
-  else {
-    // the remix row: the widest white box below the poster
-    const b = await tool.evaluate(([p, r, S]) => findBoxes(p, r, 500 * S, 800 * S, 60 * S, 100 * S, 'white'), [await png(), [0, Math.round(vh * .45), vw, vh], S]);
-    if (!b.length) throw new Error('no remix row found');
-    await click(b[0].x - b[0].w * .3, b[0].y);
+  // Since task 3.1 the first row is missing letters, not remix: pick Mode_remix by name.
+  if (keyboardMode) {
+    // Tab until the focus log names Mode_remix (third of seven rows), then Enter
+    let ok = false;
+    for (let t = 0; t < 14 && !ok; t++) { const mt = mark(); await key('Tab'); const f = await wait(/^WT_FOCUS name=/, 800, mt); if (f && f.endsWith('name=Mode_remix')) ok = true; }
+    if (!ok) throw new Error('Tab never reached Mode_remix');
+    await key('Enter');
+  } else {
+    // pixels carry no names: Mode_remix is the third white row (rows sorted top to bottom); the show request
+    // below must then name mode=remix, so a click on any other row fails here instead of playing the wrong mode
+    const b = await tool.evaluate(([p, r, S]) => findBoxes(p, r, 500 * S, 800 * S, 60 * S, 100 * S, 'white'), [await png(), [0, Math.round(vh * .3), vw, vh], S]);
+    b.sort((a, c) => a.y - c.y);
+    if (b.length < 3) throw new Error('no remix row found (' + b.length + ' rows)');
+    await click(b[2].x - b[2].w * .3, b[2].y);
   }
+  const request = await wait(/^WT_SHOW_REQUEST /, 5000, m0);
+  if (!request) throw new Error('no show request');
+  if (!/ mode=remix$/.test(request)) throw new Error('the row picked was not Mode_remix: ' + request);
   if (!await wait(/^WT_SHOW_START/, 5000, m0)) throw new Error('no show');
 
   // ---- the show

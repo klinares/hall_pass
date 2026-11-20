@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using WorldTour.Core.Data;
 using WorldTour.Core.Progress;
 using WorldTour.Game.Data;
+using WorldTour.Game.Modes;
 using WorldTour.Game.Ui;
 using WorldTour.Game.Util;
 
@@ -283,13 +284,27 @@ namespace WorldTour.Game.Map
             UiKit.Place(head.rectTransform, new Vector2(x0, y + blockH - 40f), new Vector2(headW + 4f, 40f), UiKit.TopLeft);
             y += blockH + 12f;
 
-            // the sets: only what the Unity build can play (venue.js:47-55)
+            // the sets: only what the Unity build can play and this week has words for (venue.js:21-22, :47-55)
             int n = 0;
+            var hidden = new List<KeyValuePair<string, string>>();
             foreach (ModeEntry m in ModeCatalog.All)
             {
                 if (!m.IsSpelling || !m.Playable) continue;
+                if (!ModeRules.IsAvailable(m.Id, wk)) { hidden.Add(new KeyValuePair<string, string>(m.Id, m.Name)); continue; }
                 y = ModeRow(v, wk, m, n, x0, y, cw) + 14f;
                 n++;
+            }
+            // venue.js:57 the pencil note for the modes left off this week (screens.css .pencil: small, italic look, 85%)
+            string note = ModeRules.BillNote(hidden);
+            if (note != null)
+            {
+                TextMeshProUGUI pencil = UiKit.Text(_content, "BillNote", note.TrimEnd(), FontRole.Body, Tokens.Fs0, ColorRole.Ink);
+                pencil.fontStyle = FontStyles.Italic;
+                Color pc = pencil.color; pc.a = .85f; pencil.color = pc;
+                float w = Mathf.Min(cw, 52f * 7.7f);                       // max-width 52ch of Courier at fs-0
+                float h = UiKit.HeightFor(pencil, w) + 4f;
+                UiKit.Place(pencil.rectTransform, new Vector2(x0, y), new Vector2(w, h), UiKit.TopLeft);
+                y += h + 14f;
             }
             return y;
         }

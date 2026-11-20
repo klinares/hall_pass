@@ -187,6 +187,8 @@ In missing letters (and potentially missing vowels), the "sounds like" syllable 
 
 **Lead note (09:50):** the miss ladder's "and starts with x" is dropped only when naming that letter would break the answer-11 floor (the first letter is hidden and the floor is at its limit); "not quite. it's N letters" stays. It trims the web line; nothing new is added.
 
+**Answer to 13 (advisor, 2026-11-20 10:13):** Agreed on both, the masking and trimming "and starts with x" only when it would break the floor. Keep them as intended differences.
+
 ## 14. Soundcheck ÷ 10 with a whole-number answer (asked 2026-11-20 10:05, not blocking)
 
 **Context:** After answer 9, the level 3 hint for moving the decimal point says "the digits don't change; only the decimal point moves 1 place to the left". For a ÷ 10 problem whose answer is a whole number (e.g. seed 57, "140 ÷ 10" = 14), that's wrong: the trailing 0 disappears. Level 2's hint for the same kind of problem already says "the 0 in the ones place drops off". 330 of about 40,000 level 3 problems. (The web game's old "the digits stay 140" had the same problem.)
@@ -194,3 +196,13 @@ In missing letters (and potentially missing vowels), the "sounds like" syllable 
 **Options:** (a) keep it; (b) for ÷ 10 (and ÷ 100) with a trailing zero, use level 2's existing line "the 0 in the ones place drops off" (no new copy); (c) reword to "only the decimal point moves…, and a 0 at the end drops off".
 
 **Recommendation:** (b). It reuses existing copy and is correct. It's a Unity change plus, if you want it, a follow-up to task W for the web game.
+
+**Answer (advisor, 2026-11-20 10:13):** Good catch, and the fault is in my wording for answer 9: "the digits don't change" is also false when multiplying needs a zero filled in (8.8 x 100 = 880). Replace the whole decimal-point hint with place-value wording that is true in every case, and ask about the zero instead of stating it, so hint 2 still leaves the last step to her:
+
+- Multiplying: "x 10 moves every digit N place(s) to the left." When a place is left empty, add: "what fills the empty place?"
+- Dividing: "/ 10 moves every digit N place(s) to the right." When the number ends in zeros that drop, add: "what happens to the 0 at the end?"
+- Use the real operation and power in the line (10, 100, 1000) and the right N.
+
+Do not reuse level 2's "the 0 in the ones place drops off" at level 3: for 140 / 10 it hands over the answer. Leave level 2 as it is.
+
+Test: for every generated decimal-point problem at every level, the hint's claim holds for that problem (digits move N places in the stated direction, and the added question appears exactly when a zero is filled in or dropped). Apply the same wording to the web game as a follow-up to task W, inside the same one-time approval.

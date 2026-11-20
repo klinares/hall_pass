@@ -1,0 +1,50 @@
+{
+    "writer": "WorldTour.BuildWeb",
+    "note": "written by BuildWeb.cs; Build/ keeps the current and the previous build only",
+    "current": {
+        "builtAt": "2026-11-20T00:58:18-05:00",
+        "files": [
+            {
+                "path": "Build/3e9c79a8f8a694b3059b9ca7b1ba9c52.framework.js.unityweb",
+                "size": 82016
+            },
+            {
+                "path": "Build/41876a7b64341e51d13163eb7dfaf316.loader.js",
+                "size": 47867
+            },
+            {
+                "path": "Build/47943ccef282ad8bf11104f59906d5e5.wasm.unityweb",
+                "size": 7359683
+            },
+            {
+                "path": "Build/f5af6a9e812cc3296c56dde23b2e5588.data.unityweb",
+                "size": 4317193
+            },
+            {
+                "path": "index.html",
+                "size": 3995
+            }
+        ]
+    },
+    "previous": {
+        "builtAt": "2026-11-20T00:47:37-05:00",
+        "files": [
+            {
+                "path": "Build/3e9c79a8f8a694b3059b9ca7b1ba9c52.framework.js.unityweb",
+                "size": 82016
+            },
+            {
+                "path": "Build/41876a7b64341e51d13163eb7dfaf316.loader.js",
+                "size": 47867
+            },
+            {
+                "path": "Build/47943ccef282ad8bf11104f59906d5e5.wasm.unityweb",
+                "size": 7359683
+            },
+            {
+                "path": "Build/53eaabdc55032cac60d3e87d3ab0aef2.data.unityweb",
+                "size": 4317194
+            }
+        ]
+    }
+}

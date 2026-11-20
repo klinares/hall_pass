@@ -4,6 +4,7 @@
     "references": [
         "WorldTour.Game",
         "WorldTour.Core",
+        "UnityEngine.UI",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],

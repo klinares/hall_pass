@@ -1,0 +1,91 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 741fbd20de0e7314183d7b05cb10fe1d, type: 3}
+  m_Name: TicketArt
+  m_EditorClassIdentifier: WorldTour.Game::WorldTour.Game.Ticket.TicketArt
+  ticketStub: {fileID: 21300000, guid: db9ce939fa6b7b4459836520d0caffb7, type: 3}
+  stamp: {fileID: 21300000, guid: 4eca5becb31439445987d6dc69a73278, type: 3}
+  paperLined: {fileID: 21300000, guid: 0a2f2ff8e79077d46ac72bfae3b2198a, type: 3}
+  tape: {fileID: 21300000, guid: 1b119c8e86024b640bce1b3bfe1c6cde, type: 3}
+  bubble: {fileID: 21300000, guid: 46a9671ba2404ff42a044f7a85d0b791, type: 3}
+  bubbleTail: {fileID: 21300000, guid: b3bb14011966e704a950b58a4ef6850c, type: 3}
+  star6: {fileID: 0}
+  heart: {fileID: 0}
+  shout: {fileID: 2100000, guid: b135d1e0316acd1489cf6cf6e79cbd8b, type: 2}
+  stroke: {fileID: 2100000, guid: e5c5cfc2b1386fa4f8a1c5942990ba3d, type: 2}
+  sprites:
+  - name: amp
+    sprite: {fileID: 21300000, guid: a77dd00c6f4928f4381fc413014e6282, type: 3}
+  - name: bolt
+    sprite: {fileID: 21300000, guid: 66f59207ff1c3d641a0187f22f089696, type: 3}
+  - name: bus
+    sprite: {fileID: 21300000, guid: ff975b95b50628a44abd0005007508b7, type: 3}
+  - name: cassette
+    sprite: {fileID: 21300000, guid: f31244929965bdb49a5a2d277fae3af0, type: 3}
+  - name: coffee
+    sprite: {fileID: 21300000, guid: 9b025950ba57fc0489d2ce22343a7bd2, type: 3}
+  - name: crate
+    sprite: {fileID: 21300000, guid: 24d2f9e53e53a0f42b28ac0af9ea3251, type: 3}
+  - name: guitar
+    sprite: {fileID: 21300000, guid: 4f48aec9173898141b2a3c7a34faacf8, type: 3}
+  - name: guitar_cherry
+    sprite: {fileID: 21300000, guid: 2c108af435426824c9c3ff0f56c44be2, type: 3}
+  - name: guitar_lilac
+    sprite: {fileID: 21300000, guid: 621141978ba997e41a6dfb77c39e153e, type: 3}
+  - name: guitar_midnight
+    sprite: {fileID: 21300000, guid: 5844e99c3e617b843ba43399cdcb9c90, type: 3}
+  - name: guitar_mint
+    sprite: {fileID: 21300000, guid: 81752bc9d53a59443b1d04d6bc288f17, type: 3}
+  - name: guitar_sunburst
+    sprite: {fileID: 21300000, guid: ce80966599faea349ad03edbd5ad0d10, type: 3}
+  - name: heart
+    sprite: {fileID: 21300000, guid: e3722deda577b134892bf4ce10e0b088, type: 3}
+  - name: lights
+    sprite: {fileID: 21300000, guid: f19a0dee0346c51469dc749adbbc1b3d, type: 3}
+  - name: mic
+    sprite: {fileID: 21300000, guid: 84847190249a3344b9d6dfe2047e385c, type: 3}
+  - name: note
+    sprite: {fileID: 21300000, guid: 9f3934420454bb34b81e035583edbf4a, type: 3}
+  - name: pass
+    sprite: {fileID: 21300000, guid: 0b44438205d17f343bc81b4e474c9ed5, type: 3}
+  - name: phones
+    sprite: {fileID: 21300000, guid: e4344515dfcc9314e985e39fd65f0015, type: 3}
+  - name: pick
+    sprite: {fileID: 21300000, guid: a97831f12a952cb4ca5c94a441919a5a, type: 3}
+  - name: setlist
+    sprite: {fileID: 21300000, guid: bf111b3d636066e4e8d9e33f6d170bde, type: 3}
+  - name: star
+    sprite: {fileID: 21300000, guid: aa8691c0e1db08e48b350a188ec017b1, type: 3}
+  - name: tee
+    sprite: {fileID: 21300000, guid: 582fc92fa9f156643b0a42ee7e82da09, type: 3}
+  - name: ticket
+    sprite: {fileID: 21300000, guid: fb3ec335dce820b4cb24345da1df41a2, type: 3}
+  - name: trophy
+    sprite: {fileID: 21300000, guid: e4c77be54cb5bfb4cb5f63fc161d84f3, type: 3}
+  - name: venue_arena
+    sprite: {fileID: 21300000, guid: 79e1e10f9740172439e3d516a22f62bb, type: 3}
+  - name: venue_club
+    sprite: {fileID: 21300000, guid: b6774479901e61942aa9ae8da06eadec, type: 3}
+  - name: venue_coffee
+    sprite: {fileID: 21300000, guid: 5fdf3e2e15778024fa75e0aecd6fc6a3, type: 3}
+  - name: venue_festival
+    sprite: {fileID: 21300000, guid: ad4f82bc4d1a0334a91d64eb33bfc86f, type: 3}
+  - name: venue_rec
+    sprite: {fileID: 21300000, guid: a4ec1dbc5c96b0b4aa616994a9d5f186, type: 3}
+  - name: venue_records
+    sprite: {fileID: 21300000, guid: 4cd0d8fc42e988b47ad40deada1de2f2, type: 3}
+  - name: venue_rooftop
+    sprite: {fileID: 21300000, guid: cc3ca1418cc2ca24d880eec2fca3e3dc, type: 3}
+  - name: venue_theater
+    sprite: {fileID: 21300000, guid: 5ab344056538c4e4b83e09807bd18fe8, type: 3}
+  - name: vinyl
+    sprite: {fileID: 21300000, guid: 8480266828e5764409aff408477c1306, type: 3}

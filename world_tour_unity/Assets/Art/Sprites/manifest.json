@@ -1,0 +1,6605 @@
+{
+  "format": 1,
+  "generator": "world_tour_unity/Tools/export_sprites.mjs",
+  "renderer": {
+    "playwright": "1.65.1",
+    "chromium": "159.0.8154.6"
+  },
+  "theme": "tour-pink",
+  "reference": "2x the largest CSS size in a 1920x1080 window; Sprite pixels per unit 200 makes native size equal that CSS size",
+  "conventions": {
+    "pivot": "Unity normalized pivot, origin bottom-left",
+    "box": "where the web svg box lies in the sprite, px from the sprite top-left [x, y, w, h] (x, y can be negative); the web sizes and rotates that box, and the art may overflow it",
+    "offset": "px from the frame top-left (dog: web box; bubble_tail: bubble bottom centre) to the sprite top-left; y down",
+    "border": "Unity sprite border in px [left, bottom, right, top] (Vector4 order); drawMode says sliced, tiled, or tiled-whole (tile the whole sprite)",
+    "dogStack": "draw every _ink sprite, then every _pad sprite, then the art sprites, in the listed order",
+    "tint": "white art meant to be tinted with a palette colour"
+  },
+  "groups": {
+    "stickers": {
+      "size": {
+        "regular": {
+          "box": [
+            -10,
+            -10,
+            124,
+            124
+          ],
+          "css": 170,
+          "px": [
+            340,
+            340
+          ],
+          "where": "studio record (vinyl) 170px; backstage mirror 120px; journal 104px"
+        },
+        "small": {
+          "box": [
+            -10,
+            -10,
+            124,
+            124
+          ],
+          "css": 84,
+          "px": [
+            168,
+            168
+          ],
+          "where": "tour bus on the map 84px; map decor 78px; desk lights 70px"
+        }
+      },
+      "note": "regular uses the web wt-stk filter (thicker border), _sm uses wt-stk-sm; guitar_<skin> are the shop guitar skins, plain guitar is classic"
+    },
+    "map": {
+      "size": {
+        "box": [
+          -6,
+          -6,
+          132,
+          112
+        ],
+        "css": 272,
+        "px": [
+          561,
+          476
+        ],
+        "where": "venue page poster 272x231px; map 190px (4.25 px per unit)"
+      },
+      "note": "locked venues are a CSS filter in the web (grayscale, contrast .7, brightness 1.08, opacity .5), not separate art"
+    },
+    "ui": {
+      "size": {
+        "icon": {
+          "box": [
+            0,
+            0,
+            24,
+            24
+          ],
+          "css": 24,
+          "px": [
+            48,
+            48
+          ],
+          "where": "sound and quit buttons 24px"
+        },
+        "scribble": {
+          "box": [
+            0,
+            0,
+            200,
+            20
+          ],
+          "css": 0,
+          "px": [
+            400,
+            40
+          ],
+          "where": "stretched under text (about 80x7px); exported at its viewBox x2"
+        }
+      }
+    },
+    "dog": {
+      "size": {
+        "box": [
+          0,
+          0,
+          160,
+          160
+        ],
+        "css": 190,
+        "px": [
+          380,
+          380
+        ],
+        "where": "show coach and backstage mirror 190px"
+      },
+      "framePx": [
+        380,
+        380
+      ],
+      "anchorPx": [
+        190,
+        380
+      ],
+      "unitsToPx": 2.375
+    },
+    "glyphs": {
+      "note": "symbols the bundled fonts lack (BRIEF: drawn by the team in the same style), white for tinting; glyph = TMP sprite metrics in px at emPx per em (Editor/GlyphSetup builds the TMP sprite asset from them)"
+    },
+    "decor": {
+      "note": "CSS scrapbook pieces from the web stylesheets at 2x CSS px (device scale 2). Tiled pieces have a centre exactly tilePx wide and high, so the pattern continues; a partial last tile can leave a small seam before the right or bottom border"
+    }
+  },
+  "sprites": [
+    {
+      "name": "guitar",
+      "group": "stickers",
+      "file": "stickers/guitar.png",
+      "w": 276,
+      "h": 332,
+      "pivot": [
+        0.405797,
+        0.587349
+      ],
+      "box": [
+        -58,
+        -33,
+        340,
+        340
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "guitar",
+          {
+            "small": false
+          }
+        ]
+      },
+      "sha256": "146ccc32b61c5ce41e6111ecae70b4ba9056a3a4c390c3d59b67692acd746741"
+    },
+    {
+      "name": "guitar_sm",
+      "group": "stickers",
+      "file": "stickers/guitar_sm.png",
+      "w": 128,
+      "h": 156,
+      "pivot": [
+        0.40625,
+        0.589744
+      ],
+      "box": [
+        -32,
+        -20,
+        168,
+        168
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "guitar",
+          {
+            "small": true
+          }
+        ]
+      },
+      "sha256": "e95a28283b298108a727b20b7c581ed2e7f735ea3ddce10c9619ed9ceffa3b75"
+    },
+    {
+      "name": "amp",
+      "group": "stickers",
+      "file": "stickers/amp.png",
+      "w": 336,
+      "h": 324,
+      "pivot": [
+        0.401786,
+        0.641975
+      ],
+      "box": [
+        -35,
+        -54,
+        340,
+        340
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "amp",
+          {
+            "small": false
+          }
+        ]
+      },
+      "sha256": "bc2ca9fe883d063fdbff5406cd737e3948b6b6438b2a2e99ecc77d2969a7d0f0"
+    },
+    {
+      "name": "amp_sm",
+      "group": "stickers",
+      "file": "stickers/amp_sm.png",
+      "w": 160,
+      "h": 152,
+      "pivot": [
+        0.39375,
+        0.644737
+      ],
+      "box": [
+        -21,
+        -30,
+        168,
+        168
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "amp",
+          {
+            "small": true
+          }
+        ]
+      },
+      "sha256": "206430bf2dd8be265546b486266643f6430a7c344687caa745655b70542a16f7"
+    },
+    {
+      "name": "mic",
+      "group": "stickers",
+      "file": "stickers/mic.png",
+      "w": 232,
+      "h": 336,
+      "pivot": [
+        0.405172,
+        0.607143
+      ],
+      "box": [
+        -76,
+        -38,
+        340,
+        340
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "mic",
+          {
+            "small": false
+          }
+        ]
+      },
+      "sha256": "5cab808c3a5902f61beec2d43046a5355373739719b778f8cbe4be9c3b51d088"
+    },
+    {
+      "name": "mic_sm",
+      "group": "stickers",
+      "file": "stickers/mic_sm.png",
+      "w": 108,
+      "h": 156,
+      "pivot": [
+        0.398148,
+        0.602564
+      ],
+      "box": [
+        -41,
+        -22,
+        168,
+        168
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "mic",
+          {
+            "small": true
+          }
+        ]
+      },
+      "sha256": "0c9b5a8b7270c528b2b1f71da9405308366ceed746870f09692dafedd303ba34"
+    },
+    {
+      "name": "bus",
+      "group": "stickers",
+      "file": "stickers/bus.png",
+      "w": 356,
+      "h": 276,
+      "pivot": [
+        0.398876,
+        0.648551
+      ],
+      "box": [
+        -28,
+        -73,
+        340,
+        340
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "bus",
+          {
+            "small": false
+          }
+        ]
+      },
+      "sha256": "bc7192416113c5b8ef65ef5645708fb9c45e072cd2fb0ffabd582f0a4ffc75ae"
+    },
+    {
+      "name": "bus_sm",
+      "group": "stickers",
+      "file": "stickers/bus_sm.png",
+      "w": 168,
+      "h": 128,
+      "pivot": [
+        0.39881,
+        0.648438
+      ],
+      "box": [
+        -17,
+        -39,
+        168,
+        168
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "bus",
+          {
+            "small": true
+          }
+        ]
+      },
+      "sha256": "3cca1f082aa78d45996bc7d15bde2928b050cda38745a5f5585818b116f13a2b"
+    },
+    {
+      "name": "tee",
+      "group": "stickers",
+      "file": "stickers/tee.png",
+      "w": 324,
+      "h": 328,
+      "pivot": [
+        0.395062,
+        0.588415
+      ],
+      "box": [
+        -42,
+        -35,
+        340,
+        340
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "tee",
+          {
+            "small": false
+          }
+        ]
+      },
+      "sha256": "427ebf3d7278732c3f1fc2fdf144fa962d911b0c621f5c4c8344e4edf9a4ebf0"
+    },
+    {
+      "name": "tee_sm",
+      "group": "stickers",
+      "file": "stickers/tee_sm.png",
+      "w": 152,
+      "h": 156,
+      "pivot": [
+        0.394737,
+        0.589744
+      ],
+      "box": [
+        -24,
+        -20,
+        168,
+        168
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "tee",
+          {
+            "small": true
+          }
+        ]
+      },
+      "sha256": "5f1f26fe862e391f52f12d41a164b109cb20a5c076b81e3390b793bec3096a97"
+    },
+    {
+      "name": "vinyl",
+      "group": "stickers",
+      "file": "stickers/vinyl.png",
+      "w": 356,
+      "h": 356,
+      "pivot": [
+        0.407303,
+        0.592697
+      ],
+      "box": [
+        -25,
+        -25,
+        340,
+        340
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "vinyl",
+          {
+            "small": false
+          }
+        ]
+      },
+      "sha256": "bebce4f8f90d5e163dbbafe3977a20d658bbcc237c757f91388bad310857f640"
+    },
+    {
+      "name": "vinyl_sm",
+      "group": "stickers",
+      "file": "stickers/vinyl_sm.png",
+      "w": 168,
+      "h": 168,
+      "pivot": [
+        0.410714,
+        0.595238
+      ],
+      "box": [
+        -15,
+        -16,
+        168,
+        168
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "vinyl",
+          {
+            "small": true
+          }
+        ]
+      },
+      "sha256": "2ecaf2d9277c0ddded1feeffa8e0b883ed97d1c291481bf9785ae1177e015b30"
+    },
+    {
+      "name": "lights",
+      "group": "stickers",
+      "file": "stickers/lights.png",
+      "w": 376,
+      "h": 356,
+      "pivot": [
+        0.412234,
+        0.601124
+      ],
+      "box": [
+        -15,
+        -28,
+        340,
+        340
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "lights",
+          {
+            "small": false
+          }
+        ]
+      },
+      "sha256": "64ae017823d3bc1cea1e273afc9c140f7704306297665de9142b902003c65f15"
+    },
+    {
+      "name": "lights_sm",
+      "group": "stickers",
+      "file": "stickers/lights_sm.png",
+      "w": 180,
+      "h": 168,
+      "pivot": [
+        0.411111,
+        0.60119
+      ],
+      "box": [
+        -10,
+        -17,
+        168,
+        168
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "lights",
+          {
+            "small": true
+          }
+        ]
+      },
+      "sha256": "522619fa62e6963ef14dbca9de0a14737e5cb3ff2622c01fb7a7fd4db0d6e945"
+    },
+    {
+      "name": "crate",
+      "group": "stickers",
+      "file": "stickers/crate.png",
+      "w": 304,
+      "h": 372,
+      "pivot": [
+        0.388158,
+        0.591398
+      ],
+      "box": [
+        -52,
+        -18,
+        340,
+        340
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "crate",
+          {
+            "small": false
+          }
+        ]
+      },
+      "sha256": "56752a3be711d82fdc7f561f8affd6765340e35fe2b74edcfa1f809d93884dcf"
+    },
+    {
+      "name": "crate_sm",
+      "group": "stickers",
+      "file": "stickers/crate_sm.png",
+      "w": 140,
+      "h": 176,
+      "pivot": [
+        0.392857,
+        0.590909
+      ],
+      "box": [
+        -29,
+        -12,
+        168,
+        168
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "crate",
+          {
+            "small": true
+          }
+        ]
+      },
+      "sha256": "80364bdc7de63bee952fca83784a14813a573ba0b468cb32eb16135e8eefc1aa"
+    },
+    {
+      "name": "star",
+      "group": "stickers",
+      "file": "stickers/star.png",
+      "w": 356,
+      "h": 340,
+      "pivot": [
+        0.404494,
+        0.582353
+      ],
+      "box": [
+        -26,
+        -28,
+        340,
+        340
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "star",
+          {
+            "small": false
+          }
+        ]
+      },
+      "sha256": "2efd039c2bd1712225d055a1f27056dfa78d576e3aa41a8ae14123e07395a913"
+    },
+    {
+      "name": "star_sm",
+      "group": "stickers",
+      "file": "stickers/star_sm.png",
+      "w": 168,
+      "h": 160,
+      "pivot": [
+        0.404762,
+        0.58125
+      ],
+      "box": [
+        -16,
+        -17,
+        168,
+        168
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "star",
+          {
+            "small": true
+          }
+        ]
+      },
+      "sha256": "20c160bae0c165fcb1cc787a7d374c6e2010c82d1795bfc514da7e0a788727a5"
+    },
+    {
+      "name": "heart",
+      "group": "stickers",
+      "file": "stickers/heart.png",
+      "w": 308,
+      "h": 296,
+      "pivot": [
+        0.392857,
+        0.662162
+      ],
+      "box": [
+        -49,
+        -70,
+        340,
+        340
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "heart",
+          {
+            "small": false
+          }
+        ]
+      },
+      "sha256": "12e1a646752052ceebef99a3fde11a07e160793977909d8855910737ae2bab8a"
+    },
+    {
+      "name": "heart_sm",
+      "group": "stickers",
+      "file": "stickers/heart_sm.png",
+      "w": 144,
+      "h": 136,
+      "pivot": [
+        0.395833,
+        0.661765
+      ],
+      "box": [
+        -27,
+        -38,
+        168,
+        168
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "heart",
+          {
+            "small": true
+          }
+        ]
+      },
+      "sha256": "e1ccd2548bdae6bf698e357859716bac5c66d33d8ab219c9b77c7f30b071e411"
+    },
+    {
+      "name": "bolt",
+      "group": "stickers",
+      "file": "stickers/bolt.png",
+      "w": 280,
+      "h": 376,
+      "pivot": [
+        0.385714,
+        0.587766
+      ],
+      "box": [
+        -62,
+        -15,
+        340,
+        340
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "bolt",
+          {
+            "small": false
+          }
+        ]
+      },
+      "sha256": "810170b965aba0b0c78a441ed66673b796d9c72402d1a927f8528cba807c3b5b"
+    },
+    {
+      "name": "bolt_sm",
+      "group": "stickers",
+      "file": "stickers/bolt_sm.png",
+      "w": 132,
+      "h": 180,
+      "pivot": [
+        0.378788,
+        0.594444
+      ],
+      "box": [
+        -34,
+        -11,
+        168,
+        168
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "bolt",
+          {
+            "small": true
+          }
+        ]
+      },
+      "sha256": "2873d4f8baec940c67b2392a50bd0404f2c0b36093089a0ffee075d29251fbff"
+    },
+    {
+      "name": "ticket",
+      "group": "stickers",
+      "file": "stickers/ticket.png",
+      "w": 384,
+      "h": 260,
+      "pivot": [
+        0.411458,
+        0.630769
+      ],
+      "box": [
+        -12,
+        -74,
+        340,
+        340
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "ticket",
+          {
+            "small": false
+          }
+        ]
+      },
+      "sha256": "01226c735b25a1ac8e9532d2854528a2d8dfd4c97af5b0b8c1454fdb9db4eb9b"
+    },
+    {
+      "name": "ticket_sm",
+      "group": "stickers",
+      "file": "stickers/ticket_sm.png",
+      "w": 180,
+      "h": 120,
+      "pivot": [
+        0.416667,
+        0.633333
+      ],
+      "box": [
+        -9,
+        -40,
+        168,
+        168
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "ticket",
+          {
+            "small": true
+          }
+        ]
+      },
+      "sha256": "2bb53e98ba7297f1990f6425775e77dccf29074b49aa0364bfa85df5f3e8d2e5"
+    },
+    {
+      "name": "cassette",
+      "group": "stickers",
+      "file": "stickers/cassette.png",
+      "w": 348,
+      "h": 268,
+      "pivot": [
+        0.408046,
+        0.623134
+      ],
+      "box": [
+        -28,
+        -69,
+        340,
+        340
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "cassette",
+          {
+            "small": false
+          }
+        ]
+      },
+      "sha256": "e7c53b013fb7f38c2783070930fa245f158df77e121eb50d7115c2e1197aadf1"
+    },
+    {
+      "name": "cassette_sm",
+      "group": "stickers",
+      "file": "stickers/cassette_sm.png",
+      "w": 164,
+      "h": 124,
+      "pivot": [
+        0.408537,
+        0.620968
+      ],
+      "box": [
+        -17,
+        -37,
+        168,
+        168
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "cassette",
+          {
+            "small": true
+          }
+        ]
+      },
+      "sha256": "ae9970f7a05b8f95485d981aa89d77b0b5cd2afb1b8f5e46a772c0cedf4c480f"
+    },
+    {
+      "name": "phones",
+      "group": "stickers",
+      "file": "stickers/phones.png",
+      "w": 348,
+      "h": 308,
+      "pivot": [
+        0.408046,
+        0.607143
+      ],
+      "box": [
+        -28,
+        -49,
+        340,
+        340
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "phones",
+          {
+            "small": false
+          }
+        ]
+      },
+      "sha256": "b969bdcf60b1e6f7cc89b1e4a8b23d03722ca6a3789e643c95d1e1686bca6840"
+    },
+    {
+      "name": "phones_sm",
+      "group": "stickers",
+      "file": "stickers/phones_sm.png",
+      "w": 164,
+      "h": 144,
+      "pivot": [
+        0.408537,
+        0.604167
+      ],
+      "box": [
+        -17,
+        -27,
+        168,
+        168
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "phones",
+          {
+            "small": true
+          }
+        ]
+      },
+      "sha256": "4e6167902f0b8cdb65197bf3f802a46065d558d0df61c1bb6d38048dcb15bcdd"
+    },
+    {
+      "name": "setlist",
+      "group": "stickers",
+      "file": "stickers/setlist.png",
+      "w": 312,
+      "h": 384,
+      "pivot": [
+        0.391026,
+        0.585938
+      ],
+      "box": [
+        -48,
+        -11,
+        340,
+        340
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "setlist",
+          {
+            "small": false
+          }
+        ]
+      },
+      "sha256": "a4b5a4ba74b0ea79120787f5ca26f9e545b26acb6990833529aaa96b4bfdb6bc"
+    },
+    {
+      "name": "setlist_sm",
+      "group": "stickers",
+      "file": "stickers/setlist_sm.png",
+      "w": 148,
+      "h": 180,
+      "pivot": [
+        0.385135,
+        0.583333
+      ],
+      "box": [
+        -27,
+        -9,
+        168,
+        168
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "setlist",
+          {
+            "small": true
+          }
+        ]
+      },
+      "sha256": "f10f9993588c59598c113bd9cd5c76628ac45dda6403e0faa6b6cfe3364ddf29"
+    },
+    {
+      "name": "pass",
+      "group": "stickers",
+      "file": "stickers/pass.png",
+      "w": 240,
+      "h": 376,
+      "pivot": [
+        0.3625,
+        0.569149
+      ],
+      "box": [
+        -83,
+        -8,
+        340,
+        340
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "pass",
+          {
+            "small": false
+          }
+        ]
+      },
+      "sha256": "fc1881d93528301212c49788c7eaf96cafc05422216f348a732949c29b3dbb8f"
+    },
+    {
+      "name": "pass_sm",
+      "group": "stickers",
+      "file": "stickers/pass_sm.png",
+      "w": 112,
+      "h": 180,
+      "pivot": [
+        0.357143,
+        0.572222
+      ],
+      "box": [
+        -44,
+        -7,
+        168,
+        168
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "pass",
+          {
+            "small": true
+          }
+        ]
+      },
+      "sha256": "99db0e032bbf5a5b4e8935541478e12a05a7488b20afd41ea6f319034e1815f3"
+    },
+    {
+      "name": "pick",
+      "group": "stickers",
+      "file": "stickers/pick.png",
+      "w": 292,
+      "h": 340,
+      "pivot": [
+        0.383562,
+        0.611765
+      ],
+      "box": [
+        -58,
+        -38,
+        340,
+        340
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "pick",
+          {
+            "small": false
+          }
+        ]
+      },
+      "sha256": "e9b5b82494a44b78fe8b12f84640e4e9e3ba3ffff5b1c78397561bcc594dcccc"
+    },
+    {
+      "name": "pick_sm",
+      "group": "stickers",
+      "file": "stickers/pick_sm.png",
+      "w": 136,
+      "h": 160,
+      "pivot": [
+        0.382353,
+        0.6125
+      ],
+      "box": [
+        -32,
+        -22,
+        168,
+        168
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "pick",
+          {
+            "small": true
+          }
+        ]
+      },
+      "sha256": "630cd5dca17046442b150c9211cfcc58e3cb1038074f2699a87df9789359aeed"
+    },
+    {
+      "name": "note",
+      "group": "stickers",
+      "file": "stickers/note.png",
+      "w": 280,
+      "h": 312,
+      "pivot": [
+        0.382143,
+        0.589744
+      ],
+      "box": [
+        -63,
+        -42,
+        340,
+        340
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "note",
+          {
+            "small": false
+          }
+        ]
+      },
+      "sha256": "dd9890021f654baee1b897ab60e36f111cd176c4250ee654b41469a733f10a07"
+    },
+    {
+      "name": "note_sm",
+      "group": "stickers",
+      "file": "stickers/note_sm.png",
+      "w": 132,
+      "h": 148,
+      "pivot": [
+        0.371212,
+        0.594595
+      ],
+      "box": [
+        -35,
+        -24,
+        168,
+        168
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "note",
+          {
+            "small": true
+          }
+        ]
+      },
+      "sha256": "e77998cddf56ccecba634593dd0fc69d0cf38855bcabdf85e9ff452db700e7c9"
+    },
+    {
+      "name": "coffee",
+      "group": "stickers",
+      "file": "stickers/coffee.png",
+      "w": 268,
+      "h": 360,
+      "pivot": [
+        0.376866,
+        0.575
+      ],
+      "box": [
+        -69,
+        -17,
+        340,
+        340
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "coffee",
+          {
+            "small": false
+          }
+        ]
+      },
+      "sha256": "4f6e0a7589e99dfc4a33e1dfc3df6307530e3e102b736780eea95728be3e7a73"
+    },
+    {
+      "name": "coffee_sm",
+      "group": "stickers",
+      "file": "stickers/coffee_sm.png",
+      "w": 124,
+      "h": 172,
+      "pivot": [
+        0.379032,
+        0.575581
+      ],
+      "box": [
+        -37,
+        -11,
+        168,
+        168
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "coffee",
+          {
+            "small": true
+          }
+        ]
+      },
+      "sha256": "38ae52eb981d39acab97d4d37735b0c9526c636e91fda427c4744cbd98a8d94e"
+    },
+    {
+      "name": "trophy",
+      "group": "stickers",
+      "file": "stickers/trophy.png",
+      "w": 288,
+      "h": 336,
+      "pivot": [
+        0.385417,
+        0.598214
+      ],
+      "box": [
+        -59,
+        -35,
+        340,
+        340
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "trophy",
+          {
+            "small": false
+          }
+        ]
+      },
+      "sha256": "4de30b86131dda213d23e87aa4a1fc39a801700b58ba5e54c6542009411ff187"
+    },
+    {
+      "name": "trophy_sm",
+      "group": "stickers",
+      "file": "stickers/trophy_sm.png",
+      "w": 136,
+      "h": 156,
+      "pivot": [
+        0.382353,
+        0.596154
+      ],
+      "box": [
+        -32,
+        -21,
+        168,
+        168
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "trophy",
+          {
+            "small": true
+          }
+        ]
+      },
+      "sha256": "4d3e5bfd892fa8fe60053ae3964d5cf606e9fcbb254496e0fc8d02834f62f30e"
+    },
+    {
+      "name": "guitar_lilac",
+      "group": "stickers",
+      "file": "stickers/guitar_lilac.png",
+      "w": 276,
+      "h": 332,
+      "pivot": [
+        0.405797,
+        0.587349
+      ],
+      "box": [
+        -58,
+        -33,
+        340,
+        340
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "guitar",
+          {
+            "small": false
+          }
+        ],
+        "css": {
+          "--gtr": "var(--accent)"
+        },
+        "from": "world_tour/data/shop.js guitar:lilac"
+      },
+      "sha256": "b27db2f02e7c0daa87e91f8e8d63b6f14afb68c8ecdfa64e2d9d2b1104d32211"
+    },
+    {
+      "name": "guitar_lilac_sm",
+      "group": "stickers",
+      "file": "stickers/guitar_lilac_sm.png",
+      "w": 128,
+      "h": 156,
+      "pivot": [
+        0.40625,
+        0.589744
+      ],
+      "box": [
+        -32,
+        -20,
+        168,
+        168
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "guitar",
+          {
+            "small": true
+          }
+        ],
+        "css": {
+          "--gtr": "var(--accent)"
+        },
+        "from": "world_tour/data/shop.js guitar:lilac"
+      },
+      "sha256": "34c4d768d17471644a9106f440ccd4ca3fdc50968fb5c1932e67099c0e58da1b"
+    },
+    {
+      "name": "guitar_sunburst",
+      "group": "stickers",
+      "file": "stickers/guitar_sunburst.png",
+      "w": 276,
+      "h": 332,
+      "pivot": [
+        0.405797,
+        0.587349
+      ],
+      "box": [
+        -58,
+        -33,
+        340,
+        340
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "guitar",
+          {
+            "small": false
+          }
+        ],
+        "css": {
+          "--gtr": "#ffb23f"
+        },
+        "from": "world_tour/data/shop.js guitar:sunburst"
+      },
+      "sha256": "86d7d116b293f57e36129df388dcb6c11402575e2d694a1ec5b7f520b80b966f"
+    },
+    {
+      "name": "guitar_sunburst_sm",
+      "group": "stickers",
+      "file": "stickers/guitar_sunburst_sm.png",
+      "w": 128,
+      "h": 156,
+      "pivot": [
+        0.40625,
+        0.589744
+      ],
+      "box": [
+        -32,
+        -20,
+        168,
+        168
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "guitar",
+          {
+            "small": true
+          }
+        ],
+        "css": {
+          "--gtr": "#ffb23f"
+        },
+        "from": "world_tour/data/shop.js guitar:sunburst"
+      },
+      "sha256": "d4177bcb85e441e8a14b16f30847289865cf3f6f1844b2249d3dbd378700291a"
+    },
+    {
+      "name": "guitar_mint",
+      "group": "stickers",
+      "file": "stickers/guitar_mint.png",
+      "w": 276,
+      "h": 332,
+      "pivot": [
+        0.405797,
+        0.587349
+      ],
+      "box": [
+        -58,
+        -33,
+        340,
+        340
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "guitar",
+          {
+            "small": false
+          }
+        ],
+        "css": {
+          "--gtr": "#8fe3c4"
+        },
+        "from": "world_tour/data/shop.js guitar:mint"
+      },
+      "sha256": "076a1132059375e551f6c6f4ea8867598a3e2e68237f0035a8359228dcdb9242"
+    },
+    {
+      "name": "guitar_mint_sm",
+      "group": "stickers",
+      "file": "stickers/guitar_mint_sm.png",
+      "w": 128,
+      "h": 156,
+      "pivot": [
+        0.40625,
+        0.589744
+      ],
+      "box": [
+        -32,
+        -20,
+        168,
+        168
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "guitar",
+          {
+            "small": true
+          }
+        ],
+        "css": {
+          "--gtr": "#8fe3c4"
+        },
+        "from": "world_tour/data/shop.js guitar:mint"
+      },
+      "sha256": "a412e44f56c4db37e4193ddfd8a666731edf310b6d422a4d35d12d8d49865760"
+    },
+    {
+      "name": "guitar_midnight",
+      "group": "stickers",
+      "file": "stickers/guitar_midnight.png",
+      "w": 276,
+      "h": 332,
+      "pivot": [
+        0.405797,
+        0.587349
+      ],
+      "box": [
+        -58,
+        -33,
+        340,
+        340
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "guitar",
+          {
+            "small": false
+          }
+        ],
+        "css": {
+          "--gtr": "#2f2fc1"
+        },
+        "from": "world_tour/data/shop.js guitar:midnight"
+      },
+      "sha256": "50780b75de761bb0b08fdea8d04ade581b762ec136f5c623590f2387ab87f67c"
+    },
+    {
+      "name": "guitar_midnight_sm",
+      "group": "stickers",
+      "file": "stickers/guitar_midnight_sm.png",
+      "w": 128,
+      "h": 156,
+      "pivot": [
+        0.40625,
+        0.589744
+      ],
+      "box": [
+        -32,
+        -20,
+        168,
+        168
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "guitar",
+          {
+            "small": true
+          }
+        ],
+        "css": {
+          "--gtr": "#2f2fc1"
+        },
+        "from": "world_tour/data/shop.js guitar:midnight"
+      },
+      "sha256": "17608633d49bceb2643de0c07ef579744b6b73dba6aeaac7bdfe12b807c6d4cf"
+    },
+    {
+      "name": "guitar_cherry",
+      "group": "stickers",
+      "file": "stickers/guitar_cherry.png",
+      "w": 276,
+      "h": 332,
+      "pivot": [
+        0.405797,
+        0.587349
+      ],
+      "box": [
+        -58,
+        -33,
+        340,
+        340
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "guitar",
+          {
+            "small": false
+          }
+        ],
+        "css": {
+          "--gtr": "#e8364f"
+        },
+        "from": "world_tour/data/shop.js guitar:cherry"
+      },
+      "sha256": "b6b578d2aa5354dca425a76d7f87b24a927f4f99ede0608f3e2acbf92e6411d9"
+    },
+    {
+      "name": "guitar_cherry_sm",
+      "group": "stickers",
+      "file": "stickers/guitar_cherry_sm.png",
+      "w": 128,
+      "h": 156,
+      "pivot": [
+        0.40625,
+        0.589744
+      ],
+      "box": [
+        -32,
+        -20,
+        168,
+        168
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "sticker",
+        "args": [
+          "guitar",
+          {
+            "small": true
+          }
+        ],
+        "css": {
+          "--gtr": "#e8364f"
+        },
+        "from": "world_tour/data/shop.js guitar:cherry"
+      },
+      "sha256": "9602d94e30e9f33904fe13998d224bedc965211eaa4e577f0534670b6026cb0c"
+    },
+    {
+      "name": "venue_coffee",
+      "group": "map",
+      "file": "map/venue_coffee.png",
+      "w": 596,
+      "h": 500,
+      "pivot": [
+        0.44547,
+        0.548
+      ],
+      "box": [
+        -15,
+        -12,
+        561,
+        476
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "venueArt",
+        "args": [
+          "coffee"
+        ]
+      },
+      "sha256": "7a1d37dddd353df8c71efe924ef2fa0d32f5b02d0e887916ba0ab6d0c28bd4b9"
+    },
+    {
+      "name": "venue_records",
+      "group": "map",
+      "file": "map/venue_records.png",
+      "w": 596,
+      "h": 500,
+      "pivot": [
+        0.44547,
+        0.548
+      ],
+      "box": [
+        -15,
+        -12,
+        561,
+        476
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "venueArt",
+        "args": [
+          "records"
+        ]
+      },
+      "sha256": "210bc3f1c81f08d2ccd8fb79d1a90af83b4f2a341ac3ed7eaa5cbd82a9b9361e"
+    },
+    {
+      "name": "venue_rec",
+      "group": "map",
+      "file": "map/venue_rec.png",
+      "w": 612,
+      "h": 404,
+      "pivot": [
+        0.446895,
+        0.670792
+      ],
+      "box": [
+        -7,
+        -105,
+        561,
+        476
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "venueArt",
+        "args": [
+          "rec"
+        ]
+      },
+      "sha256": "7a801c42d00c7230eaaa0f520b6cc2f015997f2246d99af0bb6e981902ab32a2"
+    },
+    {
+      "name": "venue_rooftop",
+      "group": "map",
+      "file": "map/venue_rooftop.png",
+      "w": 596,
+      "h": 472,
+      "pivot": [
+        0.44547,
+        0.57839
+      ],
+      "box": [
+        -15,
+        -39,
+        561,
+        476
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "venueArt",
+        "args": [
+          "rooftop"
+        ]
+      },
+      "sha256": "2d7678d9d7e56528574f5399232c91e6759c7265d2c0b2d50e5d57b15606bce0"
+    },
+    {
+      "name": "venue_club",
+      "group": "map",
+      "file": "map/venue_club.png",
+      "w": 596,
+      "h": 404,
+      "pivot": [
+        0.44547,
+        0.670792
+      ],
+      "box": [
+        -15,
+        -105,
+        561,
+        476
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "venueArt",
+        "args": [
+          "club"
+        ]
+      },
+      "sha256": "ed832ae40cb80a1854f16066420fc629d29b9e972bf9c9d093c6953d559597df"
+    },
+    {
+      "name": "venue_theater",
+      "group": "map",
+      "file": "map/venue_theater.png",
+      "w": 596,
+      "h": 488,
+      "pivot": [
+        0.44547,
+        0.555328
+      ],
+      "box": [
+        -15,
+        -21,
+        561,
+        476
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "venueArt",
+        "args": [
+          "theater"
+        ]
+      },
+      "sha256": "d93b462b4de04b6ebd8d4682b63272cfa4fd50212beb1b32b7b3fd08df053c10"
+    },
+    {
+      "name": "venue_festival",
+      "group": "map",
+      "file": "map/venue_festival.png",
+      "w": 596,
+      "h": 488,
+      "pivot": [
+        0.44547,
+        0.559426
+      ],
+      "box": [
+        -15,
+        -23,
+        561,
+        476
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "venueArt",
+        "args": [
+          "festival"
+        ]
+      },
+      "sha256": "88ddbc03c5aadd1c0419f15f5e67fd178eeae18670cf12306d3a5ed41569e37b"
+    },
+    {
+      "name": "venue_arena",
+      "group": "map",
+      "file": "map/venue_arena.png",
+      "w": 596,
+      "h": 472,
+      "pivot": [
+        0.44547,
+        0.57839
+      ],
+      "box": [
+        -15,
+        -39,
+        561,
+        476
+      ],
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "venueArt",
+        "args": [
+          "arena"
+        ]
+      },
+      "sha256": "cf91ee44b50a34c2cafc90bfc71d1ece7b4f4cf6d6d3de4a9c8c46a7b0af1b5d"
+    },
+    {
+      "name": "icon_sound",
+      "group": "ui",
+      "file": "ui/icon_sound.png",
+      "w": 44,
+      "h": 36,
+      "pivot": [
+        0.477273,
+        0.527778
+      ],
+      "box": [
+        -3,
+        -7,
+        48,
+        48
+      ],
+      "tint": true,
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "icon",
+        "args": [
+          "i-sound"
+        ],
+        "css": {
+          "color": "#fff"
+        }
+      },
+      "sha256": "56d8fefb596c4edf5f191f7438b34189ef5441f4cd575e09653273502a32d2f7"
+    },
+    {
+      "name": "icon_mute",
+      "group": "ui",
+      "file": "ui/icon_mute.png",
+      "w": 44,
+      "h": 36,
+      "pivot": [
+        0.477273,
+        0.527778
+      ],
+      "box": [
+        -3,
+        -7,
+        48,
+        48
+      ],
+      "tint": true,
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "icon",
+        "args": [
+          "i-mute"
+        ],
+        "css": {
+          "color": "#fff"
+        }
+      },
+      "sha256": "d87aa2f32ad11eab14c968f4eea4d04d8774d272a69dfcea2d7de9dc85124d40"
+    },
+    {
+      "name": "icon_x",
+      "group": "ui",
+      "file": "ui/icon_x.png",
+      "w": 32,
+      "h": 32,
+      "pivot": [
+        0.46875,
+        0.53125
+      ],
+      "box": [
+        -9,
+        -9,
+        48,
+        48
+      ],
+      "tint": true,
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "icon",
+        "args": [
+          "i-x"
+        ],
+        "css": {
+          "color": "#fff"
+        }
+      },
+      "sha256": "1d9b5864c018d6722c7d983b06b9ddf41f050d026e24a0a332fccd6064016476"
+    },
+    {
+      "name": "icon_back",
+      "group": "ui",
+      "file": "ui/icon_back.png",
+      "w": 20,
+      "h": 36,
+      "pivot": [
+        0.55,
+        0.527778
+      ],
+      "box": [
+        -13,
+        -7,
+        48,
+        48
+      ],
+      "tint": true,
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "icon",
+        "args": [
+          "i-back"
+        ],
+        "css": {
+          "color": "#fff"
+        }
+      },
+      "sha256": "0eb53ee1f85e84979691dcbd32cfade10fc4011b004e5d17a970b1975413f15b"
+    },
+    {
+      "name": "icon_lock",
+      "group": "ui",
+      "file": "ui/icon_lock.png",
+      "w": 36,
+      "h": 40,
+      "pivot": [
+        0.472222,
+        0.525
+      ],
+      "box": [
+        -7,
+        -5,
+        48,
+        48
+      ],
+      "tint": true,
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "icon",
+        "args": [
+          "i-lock"
+        ],
+        "css": {
+          "color": "#fff"
+        }
+      },
+      "sha256": "7874a83f2f5ae1781069aac695ceaafbe53878d0eea7ba6c61496b9f1d54bce6"
+    },
+    {
+      "name": "icon_undo",
+      "group": "ui",
+      "file": "ui/icon_undo.png",
+      "w": 40,
+      "h": 32,
+      "pivot": [
+        0.475,
+        0.53125
+      ],
+      "box": [
+        -5,
+        -9,
+        48,
+        48
+      ],
+      "tint": true,
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "icon",
+        "args": [
+          "i-undo"
+        ],
+        "css": {
+          "color": "#fff"
+        }
+      },
+      "sha256": "15decf7431dea911b4b3d4af486e457894acda306291db320c5c0bd4400d00b5"
+    },
+    {
+      "name": "icon_trash",
+      "group": "ui",
+      "file": "ui/icon_trash.png",
+      "w": 40,
+      "h": 40,
+      "pivot": [
+        0.475,
+        0.525
+      ],
+      "box": [
+        -5,
+        -5,
+        48,
+        48
+      ],
+      "tint": true,
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "icon",
+        "args": [
+          "i-trash"
+        ],
+        "css": {
+          "color": "#fff"
+        }
+      },
+      "sha256": "588e1dd99e43cdd63d097b5671927366a2a7ce027a6aa94c2986cea9e8e52722"
+    },
+    {
+      "name": "icon_bulb",
+      "group": "ui",
+      "file": "ui/icon_bulb.png",
+      "w": 32,
+      "h": 44,
+      "pivot": [
+        0.46875,
+        0.522727
+      ],
+      "box": [
+        -9,
+        -3,
+        48,
+        48
+      ],
+      "tint": true,
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "icon",
+        "args": [
+          "i-bulb"
+        ],
+        "css": {
+          "color": "#fff"
+        }
+      },
+      "sha256": "1c2a0b03682c8ae421373353e58125f42e7b94d297c42c230758b8be5069369d"
+    },
+    {
+      "name": "scribble",
+      "group": "ui",
+      "file": "ui/scribble.png",
+      "w": 396,
+      "h": 28,
+      "pivot": [
+        0.497475,
+        0.392857
+      ],
+      "box": [
+        -3,
+        -3,
+        400,
+        40
+      ],
+      "tint": true,
+      "source": {
+        "module": "world_tour/art/sticker.js",
+        "fn": "scribble",
+        "args": [
+          ""
+        ],
+        "css": {
+          "stroke": "#fff"
+        },
+        "note": "preserveAspectRatio none: stretch to the text width"
+      },
+      "sha256": "be958733e69668986b25ff764ad2dc90b576458ab19450f6757405b8364ed7da"
+    },
+    {
+      "name": "dog_tail",
+      "group": "dog",
+      "file": "dog/dog_tail.png",
+      "w": 84,
+      "h": 108,
+      "pivot": [
+        -0.464286,
+        -0.555556
+      ],
+      "offset": [
+        229,
+        212
+      ],
+      "part": "tail",
+      "layer": "art",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "idle",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "tail",
+        "layer": "art"
+      },
+      "sha256": "bb469174286995abf203dae1402f11474a6b1f8d1b44facc17e847fb55648c93"
+    },
+    {
+      "name": "dog_tail_ink",
+      "group": "dog",
+      "file": "dog/dog_tail_ink.png",
+      "w": 128,
+      "h": 152,
+      "pivot": [
+        -0.171875,
+        -0.217105
+      ],
+      "offset": [
+        212,
+        195
+      ],
+      "part": "tail",
+      "layer": "ink",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "idle",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "tail",
+        "layer": "ink"
+      },
+      "sha256": "90b686ee29c2871fc1dbb20a1183c5de8fe8f3ab92a62da86cee1c2276dbc973"
+    },
+    {
+      "name": "dog_tail_pad",
+      "group": "dog",
+      "file": "dog/dog_tail_pad.png",
+      "w": 108,
+      "h": 132,
+      "pivot": [
+        -0.25,
+        -0.363636
+      ],
+      "offset": [
+        217,
+        200
+      ],
+      "part": "tail",
+      "layer": "pad",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "idle",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "tail",
+        "layer": "pad"
+      },
+      "sha256": "8017841a6ceb9c5f1d617eab889d5e66b285dceb10782bec8781680aeb8cd76f"
+    },
+    {
+      "name": "dog_body",
+      "group": "dog",
+      "file": "dog/dog_body.png",
+      "w": 188,
+      "h": 148,
+      "pivot": [
+        0.494681,
+        -0.060811
+      ],
+      "offset": [
+        97,
+        223
+      ],
+      "part": "body",
+      "layer": "art",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "idle",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "body",
+        "layer": "art"
+      },
+      "sha256": "096968596469e1f57a1fdbbe97eb831bba09795f590b8b8f27e97ee6dbea34c7"
+    },
+    {
+      "name": "dog_body_ink",
+      "group": "dog",
+      "file": "dog/dog_body_ink.png",
+      "w": 228,
+      "h": 192,
+      "pivot": [
+        0.482456,
+        0.09375
+      ],
+      "offset": [
+        80,
+        206
+      ],
+      "part": "body",
+      "layer": "ink",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "idle",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "body",
+        "layer": "ink"
+      },
+      "sha256": "5fad94fa8d404245d99fe2a9e0b0c10dd98a31f4c6697a54e87552c53d3c84e2"
+    },
+    {
+      "name": "dog_body_pad",
+      "group": "dog",
+      "file": "dog/dog_body_pad.png",
+      "w": 212,
+      "h": 172,
+      "pivot": [
+        0.495283,
+        0.017442
+      ],
+      "offset": [
+        85,
+        211
+      ],
+      "part": "body",
+      "layer": "pad",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "idle",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "body",
+        "layer": "pad"
+      },
+      "sha256": "9a3f19a1cee77483fa007f912fd3f8cc25f7f79f2c0fdf4029ff34e5584ed73b"
+    },
+    {
+      "name": "dog_head_idle",
+      "group": "dog",
+      "file": "dog/dog_head_idle.png",
+      "w": 224,
+      "h": 176,
+      "pivot": [
+        0.5,
+        -0.920455
+      ],
+      "offset": [
+        78,
+        42
+      ],
+      "part": "head",
+      "layer": "art",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "idle",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "head",
+        "layer": "art"
+      },
+      "sha256": "c29aa96258824c0828572a74fe56dc6054311d618e7f5228bf5d50a5cb77062a"
+    },
+    {
+      "name": "dog_head_idle_ink",
+      "group": "dog",
+      "file": "dog/dog_head_idle_ink.png",
+      "w": 268,
+      "h": 220,
+      "pivot": [
+        0.481343,
+        -0.613636
+      ],
+      "offset": [
+        61,
+        25
+      ],
+      "part": "head",
+      "layer": "ink",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "idle",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "head",
+        "layer": "ink"
+      },
+      "sha256": "02964400236c9324c56bbb2f18efee50731a0ef4b8af7727e64e2d294bc46572"
+    },
+    {
+      "name": "dog_head_idle_pad",
+      "group": "dog",
+      "file": "dog/dog_head_idle_pad.png",
+      "w": 248,
+      "h": 200,
+      "pivot": [
+        0.5,
+        -0.75
+      ],
+      "offset": [
+        66,
+        30
+      ],
+      "part": "head",
+      "layer": "pad",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "idle",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "head",
+        "layer": "pad"
+      },
+      "sha256": "f8851afdfb5ee5a68c8a4a55b8a971af0553ad39450bf0415679640f6129775c"
+    },
+    {
+      "name": "dog_lids_idle",
+      "group": "dog",
+      "file": "dog/dog_lids_idle.png",
+      "w": 100,
+      "h": 36,
+      "pivot": [
+        0.49,
+        -6.166667
+      ],
+      "offset": [
+        141,
+        122
+      ],
+      "part": "lids",
+      "layer": "art",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "idle",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "lids",
+        "layer": "art"
+      },
+      "sha256": "feafab99e6eaa84b2ef0bb290dfaae199d11edcedb8566e3670584168d4d75df"
+    },
+    {
+      "name": "dog_outfit_bandana",
+      "group": "dog",
+      "file": "dog/dog_outfit_bandana.png",
+      "w": 104,
+      "h": 60,
+      "pivot": [
+        0.5,
+        -1.533333
+      ],
+      "offset": [
+        138,
+        228
+      ],
+      "part": "outfit",
+      "layer": "art",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "idle",
+          {
+            "outfit": "bandana"
+          }
+        ],
+        "part": "outfit",
+        "layer": "art"
+      },
+      "sha256": "448a7a26d3e1fa55b8cc8f49f084de289d22f78233ade4361299f2fb4d6d2e98"
+    },
+    {
+      "name": "dog_outfit_bandana_ink",
+      "group": "dog",
+      "file": "dog/dog_outfit_bandana_ink.png",
+      "w": 148,
+      "h": 100,
+      "pivot": [
+        0.466216,
+        -0.69
+      ],
+      "offset": [
+        121,
+        211
+      ],
+      "part": "outfit",
+      "layer": "ink",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "idle",
+          {
+            "outfit": "bandana"
+          }
+        ],
+        "part": "outfit",
+        "layer": "ink"
+      },
+      "sha256": "dd78c059b6fcefc8e6b5e050e3f0e0ff48ec9b906e09cbb749eb215f0b7dc88c"
+    },
+    {
+      "name": "dog_outfit_bandana_pad",
+      "group": "dog",
+      "file": "dog/dog_outfit_bandana_pad.png",
+      "w": 128,
+      "h": 84,
+      "pivot": [
+        0.5,
+        -0.952381
+      ],
+      "offset": [
+        126,
+        216
+      ],
+      "part": "outfit",
+      "layer": "pad",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "idle",
+          {
+            "outfit": "bandana"
+          }
+        ],
+        "part": "outfit",
+        "layer": "pad"
+      },
+      "sha256": "605016140a026aa9e29085e04db3484f987d6941b4ae4450774b7874aab8b592"
+    },
+    {
+      "name": "dog_outfit_beanie",
+      "group": "dog",
+      "file": "dog/dog_outfit_beanie.png",
+      "w": 168,
+      "h": 112,
+      "pivot": [
+        0.494048,
+        -2.276786
+      ],
+      "offset": [
+        107,
+        13
+      ],
+      "part": "outfit",
+      "layer": "art",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "idle",
+          {
+            "outfit": "beanie"
+          }
+        ],
+        "part": "outfit",
+        "layer": "art"
+      },
+      "sha256": "b907bc8160778dc1d4dc6500ed4a89133093a460003739b1fb316394998e4b63"
+    },
+    {
+      "name": "dog_outfit_beanie_ink",
+      "group": "dog",
+      "file": "dog/dog_outfit_beanie_ink.png",
+      "w": 208,
+      "h": 152,
+      "pivot": [
+        0.480769,
+        -1.526316
+      ],
+      "offset": [
+        90,
+        -4
+      ],
+      "part": "outfit",
+      "layer": "ink",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "idle",
+          {
+            "outfit": "beanie"
+          }
+        ],
+        "part": "outfit",
+        "layer": "ink"
+      },
+      "sha256": "48e0fe619f783042f8c59cd063c54b5a306c561263f8dec16ef947a2184a03dc"
+    },
+    {
+      "name": "dog_outfit_beanie_pad",
+      "group": "dog",
+      "file": "dog/dog_outfit_beanie_pad.png",
+      "w": 192,
+      "h": 136,
+      "pivot": [
+        0.494792,
+        -1.786765
+      ],
+      "offset": [
+        95,
+        1
+      ],
+      "part": "outfit",
+      "layer": "pad",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "idle",
+          {
+            "outfit": "beanie"
+          }
+        ],
+        "part": "outfit",
+        "layer": "pad"
+      },
+      "sha256": "ceded434f8bc2f781a0a4ca0185ef5f548ea04603c310374c54e1d52225a4910"
+    },
+    {
+      "name": "dog_outfit_shades",
+      "group": "dog",
+      "file": "dog/dog_outfit_shades.png",
+      "w": 132,
+      "h": 44,
+      "pivot": [
+        0.5,
+        -5
+      ],
+      "offset": [
+        124,
+        116
+      ],
+      "part": "outfit",
+      "layer": "art",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "idle",
+          {
+            "outfit": "shades"
+          }
+        ],
+        "part": "outfit",
+        "layer": "art"
+      },
+      "sha256": "f0e8d317cdd6215277cd27e6f691fe133f8f8158ebd1cac6208af2f22eb87516"
+    },
+    {
+      "name": "dog_outfit_shades_ink",
+      "group": "dog",
+      "file": "dog/dog_outfit_shades_ink.png",
+      "w": 176,
+      "h": 88,
+      "pivot": [
+        0.471591,
+        -2.193182
+      ],
+      "offset": [
+        107,
+        99
+      ],
+      "part": "outfit",
+      "layer": "ink",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "idle",
+          {
+            "outfit": "shades"
+          }
+        ],
+        "part": "outfit",
+        "layer": "ink"
+      },
+      "sha256": "f26ecf07993f01258901d18f103e4e61f3d1eff789c9c47406608f15aa5c3c2c"
+    },
+    {
+      "name": "dog_outfit_shades_pad",
+      "group": "dog",
+      "file": "dog/dog_outfit_shades_pad.png",
+      "w": 156,
+      "h": 68,
+      "pivot": [
+        0.5,
+        -3.058824
+      ],
+      "offset": [
+        112,
+        104
+      ],
+      "part": "outfit",
+      "layer": "pad",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "idle",
+          {
+            "outfit": "shades"
+          }
+        ],
+        "part": "outfit",
+        "layer": "pad"
+      },
+      "sha256": "fd77d5a6c40d654870ab258540a59f331c6cb5f17c013b15379a930707af8c6a"
+    },
+    {
+      "name": "dog_outfit_phones",
+      "group": "dog",
+      "file": "dog/dog_outfit_phones.png",
+      "w": 220,
+      "h": 152,
+      "pivot": [
+        0.495455,
+        -1.296053
+      ],
+      "offset": [
+        81,
+        31
+      ],
+      "part": "outfit",
+      "layer": "art",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "idle",
+          {
+            "outfit": "phones"
+          }
+        ],
+        "part": "outfit",
+        "layer": "art"
+      },
+      "sha256": "9943999db44a547f6930f08e539df3b2c6ac92968e8ec6b23b7dace4faa9d951"
+    },
+    {
+      "name": "dog_outfit_phones_ink",
+      "group": "dog",
+      "file": "dog/dog_outfit_phones_ink.png",
+      "w": 260,
+      "h": 192,
+      "pivot": [
+        0.484615,
+        -0.90625
+      ],
+      "offset": [
+        64,
+        14
+      ],
+      "part": "outfit",
+      "layer": "ink",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "idle",
+          {
+            "outfit": "phones"
+          }
+        ],
+        "part": "outfit",
+        "layer": "ink"
+      },
+      "sha256": "595939aa2df8dbf28da6205bc1deb5eb3683397fd7b1ce1594a43fd584faa31b"
+    },
+    {
+      "name": "dog_outfit_phones_pad",
+      "group": "dog",
+      "file": "dog/dog_outfit_phones_pad.png",
+      "w": 244,
+      "h": 176,
+      "pivot": [
+        0.495902,
+        -1.051136
+      ],
+      "offset": [
+        69,
+        19
+      ],
+      "part": "outfit",
+      "layer": "pad",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "idle",
+          {
+            "outfit": "phones"
+          }
+        ],
+        "part": "outfit",
+        "layer": "pad"
+      },
+      "sha256": "7453409896840e0e664a2469fb6d163d05c12e07ee7bf2702da9d156f0213528"
+    },
+    {
+      "name": "dog_outfit_collar",
+      "group": "dog",
+      "file": "dog/dog_outfit_collar.png",
+      "w": 120,
+      "h": 48,
+      "pivot": [
+        0.491667,
+        -2.291667
+      ],
+      "offset": [
+        131,
+        222
+      ],
+      "part": "outfit",
+      "layer": "art",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "idle",
+          {
+            "outfit": "collar"
+          }
+        ],
+        "part": "outfit",
+        "layer": "art"
+      },
+      "sha256": "ec0d33d61fa31c8d1417d5c4959a17c8c8a879e83015f41f9a7ec98a171794e8"
+    },
+    {
+      "name": "dog_outfit_collar_ink",
+      "group": "dog",
+      "file": "dog/dog_outfit_collar_ink.png",
+      "w": 160,
+      "h": 92,
+      "pivot": [
+        0.475,
+        -0.902174
+      ],
+      "offset": [
+        114,
+        205
+      ],
+      "part": "outfit",
+      "layer": "ink",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "idle",
+          {
+            "outfit": "collar"
+          }
+        ],
+        "part": "outfit",
+        "layer": "ink"
+      },
+      "sha256": "cc47f96d0af195fa90f05aecff6d222f31d290ac56ca2cc936b45b9b32dd8234"
+    },
+    {
+      "name": "dog_outfit_collar_pad",
+      "group": "dog",
+      "file": "dog/dog_outfit_collar_pad.png",
+      "w": 144,
+      "h": 72,
+      "pivot": [
+        0.493056,
+        -1.361111
+      ],
+      "offset": [
+        119,
+        210
+      ],
+      "part": "outfit",
+      "layer": "pad",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "idle",
+          {
+            "outfit": "collar"
+          }
+        ],
+        "part": "outfit",
+        "layer": "pad"
+      },
+      "sha256": "7eacf6d2565b8d8b60fe24438ef49edfe49f7b4ce2991d04c9c40b93a48dba7f"
+    },
+    {
+      "name": "dog_arms_cheer",
+      "group": "dog",
+      "file": "dog/dog_arms_cheer.png",
+      "w": 208,
+      "h": 116,
+      "pivot": [
+        0.5,
+        -0.965517
+      ],
+      "offset": [
+        86,
+        152
+      ],
+      "part": "arms",
+      "layer": "art",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "cheer",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "arms",
+        "layer": "art"
+      },
+      "sha256": "51dbc1a54a2b8396e0d7e0fffa54270279c8c56bbce4a68cb986a400f1d66cc6"
+    },
+    {
+      "name": "dog_arms_cheer_ink",
+      "group": "dog",
+      "file": "dog/dog_arms_cheer_ink.png",
+      "w": 252,
+      "h": 160,
+      "pivot": [
+        0.480159,
+        -0.53125
+      ],
+      "offset": [
+        69,
+        135
+      ],
+      "part": "arms",
+      "layer": "ink",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "cheer",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "arms",
+        "layer": "ink"
+      },
+      "sha256": "724f6ca43479b174d35ac1b01789aab14bc392cd92ae84be3f2ffeeaf570637d"
+    },
+    {
+      "name": "dog_arms_cheer_pad",
+      "group": "dog",
+      "file": "dog/dog_arms_cheer_pad.png",
+      "w": 232,
+      "h": 140,
+      "pivot": [
+        0.5,
+        -0.714286
+      ],
+      "offset": [
+        74,
+        140
+      ],
+      "part": "arms",
+      "layer": "pad",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "cheer",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "arms",
+        "layer": "pad"
+      },
+      "sha256": "0bc4a3d58d78ef7cb66d5e8753b539925135a2726e9b992c503c34a4b5a53daa"
+    },
+    {
+      "name": "dog_head_cheer",
+      "group": "dog",
+      "file": "dog/dog_head_cheer.png",
+      "w": 184,
+      "h": 200,
+      "pivot": [
+        0.494565,
+        -0.805
+      ],
+      "offset": [
+        99,
+        19
+      ],
+      "part": "head",
+      "layer": "art",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "cheer",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "head",
+        "layer": "art"
+      },
+      "sha256": "bd4de3beeeb47359d89637bff773c904fb3133742d69d4c1e9d43f8a354ec4b2"
+    },
+    {
+      "name": "dog_head_cheer_ink",
+      "group": "dog",
+      "file": "dog/dog_head_cheer_ink.png",
+      "w": 224,
+      "h": 240,
+      "pivot": [
+        0.482143,
+        -0.575
+      ],
+      "offset": [
+        82,
+        2
+      ],
+      "part": "head",
+      "layer": "ink",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "cheer",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "head",
+        "layer": "ink"
+      },
+      "sha256": "2775cdf23d99716fc80cc4b655e3dfe50ebb0d282e472deab59a77ac6b9b9639"
+    },
+    {
+      "name": "dog_head_cheer_pad",
+      "group": "dog",
+      "file": "dog/dog_head_cheer_pad.png",
+      "w": 208,
+      "h": 224,
+      "pivot": [
+        0.495192,
+        -0.665179
+      ],
+      "offset": [
+        87,
+        7
+      ],
+      "part": "head",
+      "layer": "pad",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "cheer",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "head",
+        "layer": "pad"
+      },
+      "sha256": "1d9a7319aaa1a7c84d316b60e49f1d5aa8568ec88f3d9696afa67ebf3988aa38"
+    },
+    {
+      "name": "dog_fx_cheer",
+      "group": "dog",
+      "file": "dog/dog_fx_cheer.png",
+      "w": 288,
+      "h": 200,
+      "pivot": [
+        0.486111,
+        -0.585
+      ],
+      "offset": [
+        50,
+        63
+      ],
+      "part": "fx",
+      "layer": "art",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "cheer",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "fx",
+        "layer": "art"
+      },
+      "sha256": "b14f4aef939666c426576268fc3756d75b40ed484122d5d85668b67ed92dc959"
+    },
+    {
+      "name": "dog_fx_cheer_ink",
+      "group": "dog",
+      "file": "dog/dog_fx_cheer_ink.png",
+      "w": 328,
+      "h": 240,
+      "pivot": [
+        0.478659,
+        -0.391667
+      ],
+      "offset": [
+        33,
+        46
+      ],
+      "part": "fx",
+      "layer": "ink",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "cheer",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "fx",
+        "layer": "ink"
+      },
+      "sha256": "87e5d979d8d5a4bac1b26ef236281096ac3045c3b7e4f5323d300fbb41d8f4b6"
+    },
+    {
+      "name": "dog_fx_cheer_pad",
+      "group": "dog",
+      "file": "dog/dog_fx_cheer_pad.png",
+      "w": 312,
+      "h": 224,
+      "pivot": [
+        0.487179,
+        -0.46875
+      ],
+      "offset": [
+        38,
+        51
+      ],
+      "part": "fx",
+      "layer": "pad",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "cheer",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "fx",
+        "layer": "pad"
+      },
+      "sha256": "e9e4c127e3b07c304c4b5fb78dd33b2f74a3a876a06393658e0d195bfb6be0b4"
+    },
+    {
+      "name": "dog_head_think",
+      "group": "dog",
+      "file": "dog/dog_head_think.png",
+      "w": 228,
+      "h": 180,
+      "pivot": [
+        0.5,
+        -0.866667
+      ],
+      "offset": [
+        76,
+        44
+      ],
+      "part": "head",
+      "layer": "art",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "think",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "head",
+        "layer": "art"
+      },
+      "sha256": "a13975502eb61edb2208c04af13b4bcfb5ee17d504bae03c4e92bea2cf834782"
+    },
+    {
+      "name": "dog_head_think_ink",
+      "group": "dog",
+      "file": "dog/dog_head_think_ink.png",
+      "w": 268,
+      "h": 220,
+      "pivot": [
+        0.488806,
+        -0.604545
+      ],
+      "offset": [
+        59,
+        27
+      ],
+      "part": "head",
+      "layer": "ink",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "think",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "head",
+        "layer": "ink"
+      },
+      "sha256": "96953bfee0ffaeb8a76d48f71e941b1f8e5cde352055e9f9d4e011e660264e5d"
+    },
+    {
+      "name": "dog_head_think_pad",
+      "group": "dog",
+      "file": "dog/dog_head_think_pad.png",
+      "w": 252,
+      "h": 204,
+      "pivot": [
+        0.5,
+        -0.705882
+      ],
+      "offset": [
+        64,
+        32
+      ],
+      "part": "head",
+      "layer": "pad",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "think",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "head",
+        "layer": "pad"
+      },
+      "sha256": "c59eefb5899b46c13b46c44d9317b74bc7c209631978c1acf22b25e5aab8da7b"
+    },
+    {
+      "name": "dog_arms_think",
+      "group": "dog",
+      "file": "dog/dog_arms_think.png",
+      "w": 68,
+      "h": 84,
+      "pivot": [
+        0.176471,
+        -1.285714
+      ],
+      "offset": [
+        178,
+        188
+      ],
+      "part": "arms",
+      "layer": "art",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "think",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "arms",
+        "layer": "art"
+      },
+      "sha256": "62ce1be4bfb3ca7c037022c64f3cf04f60c736209f4d31a57b822ce181f33f0e"
+    },
+    {
+      "name": "dog_arms_think_ink",
+      "group": "dog",
+      "file": "dog/dog_arms_think_ink.png",
+      "w": 108,
+      "h": 128,
+      "pivot": [
+        0.268519,
+        -0.632812
+      ],
+      "offset": [
+        161,
+        171
+      ],
+      "part": "arms",
+      "layer": "ink",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "think",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "arms",
+        "layer": "ink"
+      },
+      "sha256": "476b1a996fbb5b04c4e931df5fff0957a170a6391e5e99283250add707ac7a34"
+    },
+    {
+      "name": "dog_arms_think_pad",
+      "group": "dog",
+      "file": "dog/dog_arms_think_pad.png",
+      "w": 92,
+      "h": 108,
+      "pivot": [
+        0.26087,
+        -0.888889
+      ],
+      "offset": [
+        166,
+        176
+      ],
+      "part": "arms",
+      "layer": "pad",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "think",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "arms",
+        "layer": "pad"
+      },
+      "sha256": "97215f13559256527d1fd6624905b8b1bbd1ca781576bc6a64f9316daa4800e8"
+    },
+    {
+      "name": "dog_fx_think",
+      "group": "dog",
+      "file": "dog/dog_fx_think.png",
+      "w": 88,
+      "h": 88,
+      "pivot": [
+        -0.954545,
+        -3.136364
+      ],
+      "offset": [
+        274,
+        16
+      ],
+      "part": "fx",
+      "layer": "art",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "think",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "fx",
+        "layer": "art"
+      },
+      "sha256": "ebb646b955c8ffc273f96bfdeecb2179faafaf30ee7822edd20064b98db1c3e7"
+    },
+    {
+      "name": "dog_fx_think_ink",
+      "group": "dog",
+      "file": "dog/dog_fx_think_ink.png",
+      "w": 128,
+      "h": 128,
+      "pivot": [
+        -0.523437,
+        -1.976562
+      ],
+      "offset": [
+        257,
+        -1
+      ],
+      "part": "fx",
+      "layer": "ink",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "think",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "fx",
+        "layer": "ink"
+      },
+      "sha256": "af49beee6648b833146656d337bedaa9e833f184e62384ef2b78caef3881abb7"
+    },
+    {
+      "name": "dog_fx_think_pad",
+      "group": "dog",
+      "file": "dog/dog_fx_think_pad.png",
+      "w": 112,
+      "h": 112,
+      "pivot": [
+        -0.642857,
+        -2.357143
+      ],
+      "offset": [
+        262,
+        4
+      ],
+      "part": "fx",
+      "layer": "pad",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "think",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "fx",
+        "layer": "pad"
+      },
+      "sha256": "1b9baa794b911b8fd68265084a7b5eef9d9603ef959f67292204403fc5f09ef1"
+    },
+    {
+      "name": "dog_outfit_beanie_think",
+      "group": "dog",
+      "file": "dog/dog_outfit_beanie_think.png",
+      "w": 164,
+      "h": 124,
+      "pivot": [
+        0.560976,
+        -1.943548
+      ],
+      "offset": [
+        98,
+        15
+      ],
+      "part": "outfit",
+      "layer": "art",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "think",
+          {
+            "outfit": "beanie"
+          }
+        ],
+        "part": "outfit",
+        "layer": "art"
+      },
+      "sha256": "e432771fd55bcbfdda81870e64d385fbb7702e7ff489e725cc961d111827bd32"
+    },
+    {
+      "name": "dog_outfit_beanie_think_ink",
+      "group": "dog",
+      "file": "dog/dog_outfit_beanie_think_ink.png",
+      "w": 208,
+      "h": 164,
+      "pivot": [
+        0.524038,
+        -1.329268
+      ],
+      "offset": [
+        81,
+        -2
+      ],
+      "part": "outfit",
+      "layer": "ink",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "think",
+          {
+            "outfit": "beanie"
+          }
+        ],
+        "part": "outfit",
+        "layer": "ink"
+      },
+      "sha256": "6db9d81ae47ac1f4abaeda7ed9c37b8c3164bf3e3334d061e06d88d14d78a67b"
+    },
+    {
+      "name": "dog_outfit_beanie_think_pad",
+      "group": "dog",
+      "file": "dog/dog_outfit_beanie_think_pad.png",
+      "w": 188,
+      "h": 148,
+      "pivot": [
+        0.553191,
+        -1.547297
+      ],
+      "offset": [
+        86,
+        3
+      ],
+      "part": "outfit",
+      "layer": "pad",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "think",
+          {
+            "outfit": "beanie"
+          }
+        ],
+        "part": "outfit",
+        "layer": "pad"
+      },
+      "sha256": "d8444d9c0e8aa57cbab5d102ed50959dd9cbf4d5ae7e27d28bf362d15ee1fd02"
+    },
+    {
+      "name": "dog_outfit_shades_think",
+      "group": "dog",
+      "file": "dog/dog_outfit_shades_think.png",
+      "w": 132,
+      "h": 60,
+      "pivot": [
+        0.537879,
+        -3.533333
+      ],
+      "offset": [
+        119,
+        108
+      ],
+      "part": "outfit",
+      "layer": "art",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "think",
+          {
+            "outfit": "shades"
+          }
+        ],
+        "part": "outfit",
+        "layer": "art"
+      },
+      "sha256": "fd476a569b5ea2b74cdc4b62490409eb258bc2cd31c98bbe001b835a6ff645d9"
+    },
+    {
+      "name": "dog_outfit_shades_think_ink",
+      "group": "dog",
+      "file": "dog/dog_outfit_shades_think_ink.png",
+      "w": 176,
+      "h": 104,
+      "pivot": [
+        0.5,
+        -1.778846
+      ],
+      "offset": [
+        102,
+        91
+      ],
+      "part": "outfit",
+      "layer": "ink",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "think",
+          {
+            "outfit": "shades"
+          }
+        ],
+        "part": "outfit",
+        "layer": "ink"
+      },
+      "sha256": "aca8129f324f57feab95ad4309efc13ed51f36ad04001064f9f803617d07a00a"
+    },
+    {
+      "name": "dog_outfit_shades_think_pad",
+      "group": "dog",
+      "file": "dog/dog_outfit_shades_think_pad.png",
+      "w": 156,
+      "h": 84,
+      "pivot": [
+        0.532051,
+        -2.380952
+      ],
+      "offset": [
+        107,
+        96
+      ],
+      "part": "outfit",
+      "layer": "pad",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "think",
+          {
+            "outfit": "shades"
+          }
+        ],
+        "part": "outfit",
+        "layer": "pad"
+      },
+      "sha256": "6155119d7b63e149b946161b1bb59e2c389f3c9e20ef59d0bbd7db4199237511"
+    },
+    {
+      "name": "dog_outfit_phones_think",
+      "group": "dog",
+      "file": "dog/dog_outfit_phones_think.png",
+      "w": 220,
+      "h": 168,
+      "pivot": [
+        0.513636,
+        -1.077381
+      ],
+      "offset": [
+        77,
+        31
+      ],
+      "part": "outfit",
+      "layer": "art",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "think",
+          {
+            "outfit": "phones"
+          }
+        ],
+        "part": "outfit",
+        "layer": "art"
+      },
+      "sha256": "2d8d4414ca25092ba517ffc95cd57160096c6fd6d3f702dd75e9eb42ac1970b2"
+    },
+    {
+      "name": "dog_outfit_phones_think_ink",
+      "group": "dog",
+      "file": "dog/dog_outfit_phones_think_ink.png",
+      "w": 264,
+      "h": 208,
+      "pivot": [
+        0.492424,
+        -0.759615
+      ],
+      "offset": [
+        60,
+        14
+      ],
+      "part": "outfit",
+      "layer": "ink",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "think",
+          {
+            "outfit": "phones"
+          }
+        ],
+        "part": "outfit",
+        "layer": "ink"
+      },
+      "sha256": "b51daa2f9474e23b9f5c1add122d18eaff32e0b103693be6f33d9771e0e638d8"
+    },
+    {
+      "name": "dog_outfit_phones_think_pad",
+      "group": "dog",
+      "file": "dog/dog_outfit_phones_think_pad.png",
+      "w": 244,
+      "h": 192,
+      "pivot": [
+        0.512295,
+        -0.880208
+      ],
+      "offset": [
+        65,
+        19
+      ],
+      "part": "outfit",
+      "layer": "pad",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "think",
+          {
+            "outfit": "phones"
+          }
+        ],
+        "part": "outfit",
+        "layer": "pad"
+      },
+      "sha256": "d6e728d7ca69e6ace928e0d53061a7a09c4c7a0da2c18b68bdea46bc581b80bf"
+    },
+    {
+      "name": "dog_head_oops",
+      "group": "dog",
+      "file": "dog/dog_head_oops.png",
+      "w": 288,
+      "h": 176,
+      "pivot": [
+        0.496528,
+        -0.880682
+      ],
+      "offset": [
+        47,
+        49
+      ],
+      "part": "head",
+      "layer": "art",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "oops",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "head",
+        "layer": "art"
+      },
+      "sha256": "76f7ddf5ff1da214a7217e15f54daed4dcfb03b2eeb33f0a8bc7640d6f99e4c6"
+    },
+    {
+      "name": "dog_head_oops_ink",
+      "group": "dog",
+      "file": "dog/dog_head_oops_ink.png",
+      "w": 328,
+      "h": 220,
+      "pivot": [
+        0.487805,
+        -0.581818
+      ],
+      "offset": [
+        30,
+        32
+      ],
+      "part": "head",
+      "layer": "ink",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "oops",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "head",
+        "layer": "ink"
+      },
+      "sha256": "bf164a5730a022643fd9c6458af28e5f1aaeb0ac20d140449eff7dbd849a73ed"
+    },
+    {
+      "name": "dog_head_oops_pad",
+      "group": "dog",
+      "file": "dog/dog_head_oops_pad.png",
+      "w": 312,
+      "h": 200,
+      "pivot": [
+        0.496795,
+        -0.715
+      ],
+      "offset": [
+        35,
+        37
+      ],
+      "part": "head",
+      "layer": "pad",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "oops",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "head",
+        "layer": "pad"
+      },
+      "sha256": "9aaadd119e839143a29e681b8877d3eb8a2b0cfbccc1a6a2b92ff6464d8174bd"
+    },
+    {
+      "name": "dog_outfit_beanie_oops",
+      "group": "dog",
+      "file": "dog/dog_outfit_beanie_oops.png",
+      "w": 168,
+      "h": 112,
+      "pivot": [
+        0.494048,
+        -2.214286
+      ],
+      "offset": [
+        107,
+        20
+      ],
+      "part": "outfit",
+      "layer": "art",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "oops",
+          {
+            "outfit": "beanie"
+          }
+        ],
+        "part": "outfit",
+        "layer": "art"
+      },
+      "sha256": "84441d17f866aa44255bd1db8d7c3bc26c945ec60b2004ef40f7eaed3a0b4ed8"
+    },
+    {
+      "name": "dog_outfit_beanie_oops_ink",
+      "group": "dog",
+      "file": "dog/dog_outfit_beanie_oops_ink.png",
+      "w": 208,
+      "h": 152,
+      "pivot": [
+        0.480769,
+        -1.480263
+      ],
+      "offset": [
+        90,
+        3
+      ],
+      "part": "outfit",
+      "layer": "ink",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "oops",
+          {
+            "outfit": "beanie"
+          }
+        ],
+        "part": "outfit",
+        "layer": "ink"
+      },
+      "sha256": "333b14c148ca64cfead8bb2d9e3d64e5fd0aae65c346ebab7b42bf44cdb2f52a"
+    },
+    {
+      "name": "dog_outfit_beanie_oops_pad",
+      "group": "dog",
+      "file": "dog/dog_outfit_beanie_oops_pad.png",
+      "w": 192,
+      "h": 136,
+      "pivot": [
+        0.494792,
+        -1.735294
+      ],
+      "offset": [
+        95,
+        8
+      ],
+      "part": "outfit",
+      "layer": "pad",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "oops",
+          {
+            "outfit": "beanie"
+          }
+        ],
+        "part": "outfit",
+        "layer": "pad"
+      },
+      "sha256": "c77523c5829c5633c5b48bef1dd81af82c09123d79b13a582f727eb9a426dd48"
+    },
+    {
+      "name": "dog_outfit_shades_oops",
+      "group": "dog",
+      "file": "dog/dog_outfit_shades_oops.png",
+      "w": 132,
+      "h": 44,
+      "pivot": [
+        0.5,
+        -4.840909
+      ],
+      "offset": [
+        124,
+        123
+      ],
+      "part": "outfit",
+      "layer": "art",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "oops",
+          {
+            "outfit": "shades"
+          }
+        ],
+        "part": "outfit",
+        "layer": "art"
+      },
+      "sha256": "aedafd9ea08f57d15af48a53906321b75b34e15eae0cf661b23e1eeaeb75cef5"
+    },
+    {
+      "name": "dog_outfit_shades_oops_ink",
+      "group": "dog",
+      "file": "dog/dog_outfit_shades_oops_ink.png",
+      "w": 176,
+      "h": 88,
+      "pivot": [
+        0.471591,
+        -2.113636
+      ],
+      "offset": [
+        107,
+        106
+      ],
+      "part": "outfit",
+      "layer": "ink",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "oops",
+          {
+            "outfit": "shades"
+          }
+        ],
+        "part": "outfit",
+        "layer": "ink"
+      },
+      "sha256": "fba15518603c1fe0bb7892407fcb11ec91f13d069f7680358aa84697b06a03bb"
+    },
+    {
+      "name": "dog_outfit_shades_oops_pad",
+      "group": "dog",
+      "file": "dog/dog_outfit_shades_oops_pad.png",
+      "w": 156,
+      "h": 68,
+      "pivot": [
+        0.5,
+        -2.955882
+      ],
+      "offset": [
+        112,
+        111
+      ],
+      "part": "outfit",
+      "layer": "pad",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "oops",
+          {
+            "outfit": "shades"
+          }
+        ],
+        "part": "outfit",
+        "layer": "pad"
+      },
+      "sha256": "cd100dff07f0efb49b73c06353b3992ed67e2e4e165ed9638450585d35c766ee"
+    },
+    {
+      "name": "dog_outfit_phones_oops",
+      "group": "dog",
+      "file": "dog/dog_outfit_phones_oops.png",
+      "w": 220,
+      "h": 152,
+      "pivot": [
+        0.495455,
+        -1.25
+      ],
+      "offset": [
+        81,
+        38
+      ],
+      "part": "outfit",
+      "layer": "art",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "oops",
+          {
+            "outfit": "phones"
+          }
+        ],
+        "part": "outfit",
+        "layer": "art"
+      },
+      "sha256": "3f56e81775b6eb51f4ee86c82d6130d70d605e8f168b4d5c98084155114282ef"
+    },
+    {
+      "name": "dog_outfit_phones_oops_ink",
+      "group": "dog",
+      "file": "dog/dog_outfit_phones_oops_ink.png",
+      "w": 260,
+      "h": 192,
+      "pivot": [
+        0.484615,
+        -0.869792
+      ],
+      "offset": [
+        64,
+        21
+      ],
+      "part": "outfit",
+      "layer": "ink",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "oops",
+          {
+            "outfit": "phones"
+          }
+        ],
+        "part": "outfit",
+        "layer": "ink"
+      },
+      "sha256": "61646a71db7e348bb1ae9b8721206ba8c50af1dfded6f64cbe6125f1dd283003"
+    },
+    {
+      "name": "dog_outfit_phones_oops_pad",
+      "group": "dog",
+      "file": "dog/dog_outfit_phones_oops_pad.png",
+      "w": 244,
+      "h": 176,
+      "pivot": [
+        0.495902,
+        -1.011364
+      ],
+      "offset": [
+        69,
+        26
+      ],
+      "part": "outfit",
+      "layer": "pad",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "oops",
+          {
+            "outfit": "phones"
+          }
+        ],
+        "part": "outfit",
+        "layer": "pad"
+      },
+      "sha256": "a12e135692d70cf2692a0b72b0d6084ad0a42853735ddaf7e2f407d4b1b1e4cf"
+    },
+    {
+      "name": "dog_sleepy_tail",
+      "group": "dog",
+      "file": "dog/dog_sleepy_tail.png",
+      "w": 72,
+      "h": 80,
+      "pivot": [
+        -1.291667,
+        -0.625
+      ],
+      "offset": [
+        283,
+        250
+      ],
+      "part": "tail",
+      "layer": "art",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "sleepy",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "tail",
+        "layer": "art"
+      },
+      "sha256": "f5df096d015a2d0abec1bf42f75692f27afc1ef2db2638205346f72afda79d5f"
+    },
+    {
+      "name": "dog_sleepy_tail_ink",
+      "group": "dog",
+      "file": "dog/dog_sleepy_tail_ink.png",
+      "w": 116,
+      "h": 124,
+      "pivot": [
+        -0.655172,
+        -0.185484
+      ],
+      "offset": [
+        266,
+        233
+      ],
+      "part": "tail",
+      "layer": "ink",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "sleepy",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "tail",
+        "layer": "ink"
+      },
+      "sha256": "8dea42c20f610db11ffba05d694be23493cce09684e1b247beb1ab2e8073eb07"
+    },
+    {
+      "name": "dog_sleepy_tail_pad",
+      "group": "dog",
+      "file": "dog/dog_sleepy_tail_pad.png",
+      "w": 96,
+      "h": 104,
+      "pivot": [
+        -0.84375,
+        -0.365385
+      ],
+      "offset": [
+        271,
+        238
+      ],
+      "part": "tail",
+      "layer": "pad",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "sleepy",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "tail",
+        "layer": "pad"
+      },
+      "sha256": "7ac640229f7ea71661b4c8590983bf7fac181014cf94bd47c74239e91a73e302"
+    },
+    {
+      "name": "dog_sleepy_body",
+      "group": "dog",
+      "file": "dog/dog_sleepy_body.png",
+      "w": 244,
+      "h": 116,
+      "pivot": [
+        0.409836,
+        -0.068966
+      ],
+      "offset": [
+        90,
+        256
+      ],
+      "part": "body",
+      "layer": "art",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "sleepy",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "body",
+        "layer": "art"
+      },
+      "sha256": "fa17274a0d495e9f8adfcc7da6687dc9c7cb0c9d92c22d7ce6fb4889edd9a7f9"
+    },
+    {
+      "name": "dog_sleepy_body_ink",
+      "group": "dog",
+      "file": "dog/dog_sleepy_body_ink.png",
+      "w": 284,
+      "h": 156,
+      "pivot": [
+        0.411972,
+        0.096154
+      ],
+      "offset": [
+        73,
+        239
+      ],
+      "part": "body",
+      "layer": "ink",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "sleepy",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "body",
+        "layer": "ink"
+      },
+      "sha256": "556380fc486309125ea64bd7fe95a3cb8426b6b5c3c536fcccb434974dcc1587"
+    },
+    {
+      "name": "dog_sleepy_body_pad",
+      "group": "dog",
+      "file": "dog/dog_sleepy_body_pad.png",
+      "w": 268,
+      "h": 140,
+      "pivot": [
+        0.41791,
+        0.028571
+      ],
+      "offset": [
+        78,
+        244
+      ],
+      "part": "body",
+      "layer": "pad",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "sleepy",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "body",
+        "layer": "pad"
+      },
+      "sha256": "60f1629ca93d449137d494b83a4e7b731095f3fc618ebad99991abeeeb9b7c21"
+    },
+    {
+      "name": "dog_sleepy_head",
+      "group": "dog",
+      "file": "dog/dog_sleepy_head.png",
+      "w": 208,
+      "h": 164,
+      "pivot": [
+        0.817308,
+        -0.219512
+      ],
+      "offset": [
+        20,
+        180
+      ],
+      "part": "head",
+      "layer": "art",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "sleepy",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "head",
+        "layer": "art"
+      },
+      "sha256": "8302400913745d2b13943f8281063980c756addfe838f8b3aa011cb4654ac581"
+    },
+    {
+      "name": "dog_sleepy_head_ink",
+      "group": "dog",
+      "file": "dog/dog_sleepy_head_ink.png",
+      "w": 248,
+      "h": 204,
+      "pivot": [
+        0.754032,
+        -0.063725
+      ],
+      "offset": [
+        3,
+        163
+      ],
+      "part": "head",
+      "layer": "ink",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "sleepy",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "head",
+        "layer": "ink"
+      },
+      "sha256": "4b8e1d6309cc32f4723771b4a5fae2e2c0e776c3e1da30f684e73361133295cb"
+    },
+    {
+      "name": "dog_sleepy_head_pad",
+      "group": "dog",
+      "file": "dog/dog_sleepy_head_pad.png",
+      "w": 232,
+      "h": 188,
+      "pivot": [
+        0.784483,
+        -0.12766
+      ],
+      "offset": [
+        8,
+        168
+      ],
+      "part": "head",
+      "layer": "pad",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "sleepy",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "head",
+        "layer": "pad"
+      },
+      "sha256": "70f730e6bbbe4b4969ae31c3daa71515030549ede3c52ae990d67ef314e47616"
+    },
+    {
+      "name": "dog_sleepy_paws",
+      "group": "dog",
+      "file": "dog/dog_sleepy_paws.png",
+      "w": 144,
+      "h": 48,
+      "pivot": [
+        0.895833,
+        -0.104167
+      ],
+      "offset": [
+        61,
+        327
+      ],
+      "part": "paws",
+      "layer": "art",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "sleepy",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "paws",
+        "layer": "art"
+      },
+      "sha256": "cf4f184c78d7ae37c6517365107f1a87a83514b180106a858ef7d8940772c53f"
+    },
+    {
+      "name": "dog_sleepy_paws_ink",
+      "group": "dog",
+      "file": "dog/dog_sleepy_paws_ink.png",
+      "w": 188,
+      "h": 88,
+      "pivot": [
+        0.776596,
+        0.204545
+      ],
+      "offset": [
+        44,
+        310
+      ],
+      "part": "paws",
+      "layer": "ink",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "sleepy",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "paws",
+        "layer": "ink"
+      },
+      "sha256": "2262bcb52298abfbd78447b8c9e91746e1ae08133dd76148697de2b768cca10f"
+    },
+    {
+      "name": "dog_sleepy_paws_pad",
+      "group": "dog",
+      "file": "dog/dog_sleepy_paws_pad.png",
+      "w": 168,
+      "h": 72,
+      "pivot": [
+        0.839286,
+        0.097222
+      ],
+      "offset": [
+        49,
+        315
+      ],
+      "part": "paws",
+      "layer": "pad",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "sleepy",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "paws",
+        "layer": "pad"
+      },
+      "sha256": "5e85c0bb190594a9eda9ed0fc415720bee9bea4fb4abaf64c0d53667f86c6b9f"
+    },
+    {
+      "name": "dog_sleepy_z1",
+      "group": "dog",
+      "file": "dog/dog_sleepy_z1.png",
+      "w": 20,
+      "h": 20,
+      "pivot": [
+        -2.15,
+        -9.65
+      ],
+      "offset": [
+        233,
+        167
+      ],
+      "part": "z1",
+      "layer": "art",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "sleepy",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "z1",
+        "layer": "art"
+      },
+      "sha256": "c5e41d4d855c546228697e63f6cfd1b6513dc2b148344619240725813bd42488"
+    },
+    {
+      "name": "dog_sleepy_z1_ink",
+      "group": "dog",
+      "file": "dog/dog_sleepy_z1_ink.png",
+      "w": 60,
+      "h": 64,
+      "pivot": [
+        -0.433333,
+        -2.59375
+      ],
+      "offset": [
+        216,
+        150
+      ],
+      "part": "z1",
+      "layer": "ink",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "sleepy",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "z1",
+        "layer": "ink"
+      },
+      "sha256": "80579e4f355371a01e7769e3cb62cd68af465ea43b49dfeea3c62b08b3922e9d"
+    },
+    {
+      "name": "dog_sleepy_z1_pad",
+      "group": "dog",
+      "file": "dog/dog_sleepy_z1_pad.png",
+      "w": 44,
+      "h": 44,
+      "pivot": [
+        -0.704545,
+        -4.113636
+      ],
+      "offset": [
+        221,
+        155
+      ],
+      "part": "z1",
+      "layer": "pad",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "sleepy",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "z1",
+        "layer": "pad"
+      },
+      "sha256": "8dddd94b0ab972406fc893a8c9cca4ecac248bf02e976d4413b4028c4c0f989b"
+    },
+    {
+      "name": "dog_sleepy_z2",
+      "group": "dog",
+      "file": "dog/dog_sleepy_z2.png",
+      "w": 24,
+      "h": 28,
+      "pivot": [
+        -3.166667,
+        -8.5
+      ],
+      "offset": [
+        266,
+        114
+      ],
+      "part": "z2",
+      "layer": "art",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "sleepy",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "z2",
+        "layer": "art"
+      },
+      "sha256": "603580cf64c8094995a389a8fdca561215c418cdac0d563d8f6b25d94cca405e"
+    },
+    {
+      "name": "dog_sleepy_z2_ink",
+      "group": "dog",
+      "file": "dog/dog_sleepy_z2_ink.png",
+      "w": 68,
+      "h": 72,
+      "pivot": [
+        -0.867647,
+        -2.930556
+      ],
+      "offset": [
+        249,
+        97
+      ],
+      "part": "z2",
+      "layer": "ink",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "sleepy",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "z2",
+        "layer": "ink"
+      },
+      "sha256": "2d2060db8126b6fc51705732341d33547ac07c547a22cd48b8f7b1ccbdc07802"
+    },
+    {
+      "name": "dog_sleepy_z2_pad",
+      "group": "dog",
+      "file": "dog/dog_sleepy_z2_pad.png",
+      "w": 48,
+      "h": 52,
+      "pivot": [
+        -1.333333,
+        -4.346154
+      ],
+      "offset": [
+        254,
+        102
+      ],
+      "part": "z2",
+      "layer": "pad",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "sleepy",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "z2",
+        "layer": "pad"
+      },
+      "sha256": "d657f4c64837e6b3759f5d7759f4e8ceb3b24447b6ed88da8df9933e93fcf1c5"
+    },
+    {
+      "name": "dog_sleepy_z3",
+      "group": "dog",
+      "file": "dog/dog_sleepy_z3.png",
+      "w": 32,
+      "h": 36,
+      "pivot": [
+        -3.59375,
+        -8.194444
+      ],
+      "offset": [
+        305,
+        49
+      ],
+      "part": "z3",
+      "layer": "art",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "sleepy",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "z3",
+        "layer": "art"
+      },
+      "sha256": "22c99f0e4a809476e08cc1865d09769415414581cd67aa11db5967eab0a4b175"
+    },
+    {
+      "name": "dog_sleepy_z3_ink",
+      "group": "dog",
+      "file": "dog/dog_sleepy_z3_ink.png",
+      "w": 72,
+      "h": 80,
+      "pivot": [
+        -1.361111,
+        -3.35
+      ],
+      "offset": [
+        288,
+        32
+      ],
+      "part": "z3",
+      "layer": "ink",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "sleepy",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "z3",
+        "layer": "ink"
+      },
+      "sha256": "8e2849cccc8ec544221191c13e8c2b57e002b4be3665a32f1b533e4673325b3f"
+    },
+    {
+      "name": "dog_sleepy_z3_pad",
+      "group": "dog",
+      "file": "dog/dog_sleepy_z3_pad.png",
+      "w": 56,
+      "h": 60,
+      "pivot": [
+        -1.839286,
+        -4.716667
+      ],
+      "offset": [
+        293,
+        37
+      ],
+      "part": "z3",
+      "layer": "pad",
+      "source": {
+        "module": "world_tour/art/dog.js",
+        "fn": "dog",
+        "args": [
+          "sleepy",
+          {
+            "outfit": ""
+          }
+        ],
+        "part": "z3",
+        "layer": "pad"
+      },
+      "sha256": "6765f4419f27109c6cc93fc4f37b71a11dbe69e4fed9d5d0b406aef1ba67414f"
+    },
+    {
+      "name": "u2736",
+      "group": "glyphs",
+      "file": "glyphs/u2736.png",
+      "w": 80,
+      "h": 92,
+      "pivot": [
+        0,
+        0.086957
+      ],
+      "tint": true,
+      "glyph": {
+        "unicode": 10038,
+        "emPx": 128,
+        "width": 80,
+        "height": 92,
+        "bearingX": 0,
+        "bearingY": 84,
+        "advance": 76.8
+      },
+      "source": {
+        "drawn": "team geometry in Tools/export_sprites.mjs (GLYPHS)",
+        "what": "six-pointed star",
+        "svg": "<polygon style=\"fill:#fff;stroke:none\" points=\"0.3000,0.5400 0.2350,0.4026 0.0835,0.4150 0.1700,0.2900 0.0835,0.1650 0.2350,0.1774 0.3000,0.0400 0.3650,0.1774 0.5165,0.1650 0.4300,0.2900 0.5165,0.4150 0.3650,0.4026\"/>"
+      },
+      "sha256": "b3d3f487ab14c45ca1ae41dc040e862522331ccd8be9f3f1e7a9fc0a732703d5"
+    },
+    {
+      "name": "u2605",
+      "group": "glyphs",
+      "file": "glyphs/u2605.png",
+      "w": 80,
+      "h": 92,
+      "pivot": [
+        0,
+        0.086957
+      ],
+      "tint": true,
+      "glyph": {
+        "unicode": 9733,
+        "emPx": 128,
+        "width": 80,
+        "height": 92,
+        "bearingX": 0,
+        "bearingY": 84,
+        "advance": 76.8
+      },
+      "source": {
+        "drawn": "team geometry in Tools/export_sprites.mjs (GLYPHS)",
+        "what": "star",
+        "svg": "<polygon style=\"fill:#fff;stroke:none;stroke:#fff;stroke-width:.02;stroke-linejoin:round\" points=\"0.3000,0.5400 0.2383,0.3500 0.0385,0.3500 0.2001,0.2325 0.1384,0.0425 0.3000,0.1600 0.4616,0.0425 0.3999,0.2325 0.5615,0.3500 0.3617,0.3500\"/>"
+      },
+      "sha256": "ffcd536bd530cddc71a7e2c7e53353a2fc38e9335c6b0b6ae85ab200fe771828"
+    },
+    {
+      "name": "u2606",
+      "group": "glyphs",
+      "file": "glyphs/u2606.png",
+      "w": 80,
+      "h": 92,
+      "pivot": [
+        0,
+        0.086957
+      ],
+      "tint": true,
+      "glyph": {
+        "unicode": 9734,
+        "emPx": 128,
+        "width": 80,
+        "height": 92,
+        "bearingX": 0,
+        "bearingY": 84,
+        "advance": 76.8
+      },
+      "source": {
+        "drawn": "team geometry in Tools/export_sprites.mjs (GLYPHS)",
+        "what": "outline star",
+        "svg": "<polygon style=\"fill:none;stroke:#fff;stroke-width:0.07;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.059500000000000004\" points=\"0.3000,0.5250 0.2427,0.3488 0.0575,0.3488 0.2074,0.2399 0.1501,0.0637 0.3000,0.1726 0.4499,0.0637 0.3926,0.2399 0.5425,0.3488 0.3573,0.3488\"/>"
+      },
+      "sha256": "3b6beb9941c8281b2e16e889b8b27ad5ffb66a1f45bd7663ded16898a3fdf0f0"
+    },
+    {
+      "name": "u2665",
+      "group": "glyphs",
+      "file": "glyphs/u2665.png",
+      "w": 80,
+      "h": 92,
+      "pivot": [
+        0,
+        0.086957
+      ],
+      "tint": true,
+      "glyph": {
+        "unicode": 9829,
+        "emPx": 128,
+        "width": 80,
+        "height": 92,
+        "bearingX": 0,
+        "bearingY": 84,
+        "advance": 76.8
+      },
+      "source": {
+        "drawn": "team geometry in Tools/export_sprites.mjs (GLYPHS)",
+        "what": "heart",
+        "svg": "<path style=\"fill:#fff;stroke:none\" d=\"M.3 .03C.14 .16 .05 .27 .05 .39C.05 .5 .13 .57 .21 .57C.26 .57 .29 .54 .3 .5C.31 .54 .34 .57 .39 .57C.47 .57 .55 .5 .55 .39C.55 .27 .46 .16 .3 .03Z\"/>"
+      },
+      "sha256": "2f779fc68a064a7518a313db49acc98dcd09ac9ac1d57ef3c1c840bfca2c5c16"
+    },
+    {
+      "name": "u2190",
+      "group": "glyphs",
+      "file": "glyphs/u2190.png",
+      "w": 80,
+      "h": 92,
+      "pivot": [
+        0,
+        0.086957
+      ],
+      "tint": true,
+      "glyph": {
+        "unicode": 8592,
+        "emPx": 128,
+        "width": 80,
+        "height": 92,
+        "bearingX": 0,
+        "bearingY": 84,
+        "advance": 76.8
+      },
+      "source": {
+        "drawn": "team geometry in Tools/export_sprites.mjs (GLYPHS)",
+        "what": "left arrow",
+        "svg": "<path style=\"fill:none;stroke:#fff;stroke-width:0.07;stroke-linecap:round;stroke-linejoin:round\" d=\"M0.482 0.284H0.11800000000000001M0.278 0.44399999999999995L0.11800000000000001 0.284L0.278 0.12399999999999997\"/>"
+      },
+      "sha256": "dc54f21d0e2c6900be833510c5061ff93fc67edf5f71ee405d441c46904047f3"
+    },
+    {
+      "name": "u2191",
+      "group": "glyphs",
+      "file": "glyphs/u2191.png",
+      "w": 80,
+      "h": 92,
+      "pivot": [
+        0,
+        0.086957
+      ],
+      "tint": true,
+      "glyph": {
+        "unicode": 8593,
+        "emPx": 128,
+        "width": 80,
+        "height": 92,
+        "bearingX": 0,
+        "bearingY": 84,
+        "advance": 76.8
+      },
+      "source": {
+        "drawn": "team geometry in Tools/export_sprites.mjs (GLYPHS)",
+        "what": "up arrow",
+        "svg": "<path style=\"fill:none;stroke:#fff;stroke-width:0.07;stroke-linecap:round;stroke-linejoin:round\" d=\"M0.3 0.035V0.5449999999999999M0.13999999999999999 0.3849999999999999L0.3 0.5449999999999999L0.45999999999999996 0.3849999999999999\"/>"
+      },
+      "sha256": "88b4e2424c0cccfdaa12b1f1871c5e31f56e9e314217175d62b99dbec4612a07"
+    },
+    {
+      "name": "u2192",
+      "group": "glyphs",
+      "file": "glyphs/u2192.png",
+      "w": 80,
+      "h": 92,
+      "pivot": [
+        0,
+        0.086957
+      ],
+      "tint": true,
+      "glyph": {
+        "unicode": 8594,
+        "emPx": 128,
+        "width": 80,
+        "height": 92,
+        "bearingX": 0,
+        "bearingY": 84,
+        "advance": 76.8
+      },
+      "source": {
+        "drawn": "team geometry in Tools/export_sprites.mjs (GLYPHS)",
+        "what": "right arrow",
+        "svg": "<path style=\"fill:none;stroke:#fff;stroke-width:0.07;stroke-linecap:round;stroke-linejoin:round\" d=\"M0.11800000000000001 0.284H0.482M0.32199999999999995 0.44399999999999995L0.482 0.284L0.32199999999999995 0.12399999999999997\"/>"
+      },
+      "sha256": "86034ac2a147c1c89b9dd843240011c23b431a2db99b0a66522fc358c873a1cb"
+    },
+    {
+      "name": "u2193",
+      "group": "glyphs",
+      "file": "glyphs/u2193.png",
+      "w": 80,
+      "h": 92,
+      "pivot": [
+        0,
+        0.086957
+      ],
+      "tint": true,
+      "glyph": {
+        "unicode": 8595,
+        "emPx": 128,
+        "width": 80,
+        "height": 92,
+        "bearingX": 0,
+        "bearingY": 84,
+        "advance": 76.8
+      },
+      "source": {
+        "drawn": "team geometry in Tools/export_sprites.mjs (GLYPHS)",
+        "what": "down arrow",
+        "svg": "<path style=\"fill:none;stroke:#fff;stroke-width:0.07;stroke-linecap:round;stroke-linejoin:round\" d=\"M0.3 0.5449999999999999V0.035M0.13999999999999999 0.195L0.3 0.035L0.45999999999999996 0.195\"/>"
+      },
+      "sha256": "55d4aae02bcfb3a11e3515a61a93bd10829c9949cd7cd0e9657fbd357647b922"
+    },
+    {
+      "name": "u25b6",
+      "group": "glyphs",
+      "file": "glyphs/u25b6.png",
+      "w": 80,
+      "h": 92,
+      "pivot": [
+        0,
+        0.086957
+      ],
+      "tint": true,
+      "glyph": {
+        "unicode": 9654,
+        "emPx": 128,
+        "width": 80,
+        "height": 92,
+        "bearingX": 0,
+        "bearingY": 84,
+        "advance": 76.8
+      },
+      "source": {
+        "drawn": "team geometry in Tools/export_sprites.mjs (GLYPHS)",
+        "what": "play triangle",
+        "svg": "<polygon style=\"fill:#fff;stroke:none;stroke:#fff;stroke-width:.03;stroke-linejoin:round\" points=\".1,.045 .1,.523 .53,.284\"/>"
+      },
+      "sha256": "869e401306c4314abd7cd09d26cd535dddd1f7979cec12c303822b23299e90ef"
+    },
+    {
+      "name": "u25a2",
+      "group": "glyphs",
+      "file": "glyphs/u25a2.png",
+      "w": 80,
+      "h": 92,
+      "pivot": [
+        0,
+        0.086957
+      ],
+      "tint": true,
+      "glyph": {
+        "unicode": 9634,
+        "emPx": 128,
+        "width": 80,
+        "height": 92,
+        "bearingX": 0,
+        "bearingY": 84,
+        "advance": 76.8
+      },
+      "source": {
+        "drawn": "team geometry in Tools/export_sprites.mjs (GLYPHS)",
+        "what": "rounded hollow square",
+        "svg": "<rect style=\"fill:none;stroke:#fff;stroke-width:0.07;stroke-linecap:round;stroke-linejoin:round\" x=\".07\" y=\".054\" width=\".46\" height=\".46\" rx=\".07\"/>"
+      },
+      "sha256": "961dc56b72f932cc4402af18e1044ef07d526c0be0da2dc157e67d9d7fe4664e"
+    },
+    {
+      "name": "paper_torn",
+      "group": "decor",
+      "file": "decor/paper_torn.png",
+      "w": 164,
+      "h": 116,
+      "pivot": [
+        0.463415,
+        0.551724
+      ],
+      "box": [
+        0,
+        0,
+        152,
+        104
+      ],
+      "border": [
+        16,
+        36,
+        28,
+        40
+      ],
+      "drawMode": "tiled",
+      "tilePx": [
+        120,
+        40
+      ],
+      "source": {
+        "css": "world_tour/css (tokens, base, paper, components, screens)",
+        "html": "<div class=\"scrap\" style=\"width:76px\"><div data-b21 class=\"torn\" style=\"width:76px;height:52px;padding:0\"></div></div>",
+        "note": ".scrap > .torn: white paper, torn top and bottom, 6px hard shadow. Draw Tiled: the edge repeats every 60 css px"
+      },
+      "sha256": "fa0f38c8e676f72e1ec60c1b2592bea74f7138f8ab519dfa2c0dc2c1871cecdf"
+    },
+    {
+      "name": "paper_lined",
+      "group": "decor",
+      "file": "decor/paper_lined.png",
+      "w": 228,
+      "h": 140,
+      "pivot": [
+        0.473684,
+        0.542857
+      ],
+      "box": [
+        0,
+        0,
+        216,
+        128
+      ],
+      "border": [
+        80,
+        36,
+        28,
+        40
+      ],
+      "drawMode": "tiled",
+      "tilePx": [
+        120,
+        64
+      ],
+      "source": {
+        "css": "world_tour/css (tokens, base, paper, components, screens)",
+        "html": "<div class=\"scrap\" style=\"width:108px\"><div data-b21 class=\"torn lined\" style=\"width:108px;height:64px;padding:0\"></div></div>",
+        "note": ".torn.lined: notebook lines every 32 css px and the margin line at 34-36px. Draw Tiled"
+      },
+      "sha256": "e14f4af1e101ca08d90576cc5872a99e55da6de5710038a9091011f99cd9e7b9"
+    },
+    {
+      "name": "paper_map",
+      "group": "decor",
+      "file": "decor/paper_map.png",
+      "w": 884,
+      "h": 132,
+      "pivot": [
+        0.493213,
+        0.545455
+      ],
+      "box": [
+        0,
+        0,
+        872,
+        120
+      ],
+      "border": [
+        16,
+        36,
+        28,
+        40
+      ],
+      "drawMode": "tiled",
+      "tilePx": [
+        840,
+        56
+      ],
+      "source": {
+        "css": "world_tour/css (tokens, base, paper, components, screens)",
+        "html": "<div class=\"scrap\" style=\"width:436px\"><div data-b21 class=\"torn map\" style=\"width:436px;height:60px;padding:0\"></div></div>",
+        "note": ".torn.map: the map paper with its 28px grid (420 = lcm of 28 and the 60px edge). Draw Tiled"
+      },
+      "sha256": "87f7ad97a30da94f00eefd92d01fa5a15f506250c6c62ad56416deb3854031a1"
+    },
+    {
+      "name": "tape_a",
+      "group": "decor",
+      "file": "decor/tape_a.png",
+      "w": 192,
+      "h": 52,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "box": [
+        0,
+        0,
+        192,
+        52
+      ],
+      "source": {
+        "css": "world_tour/css (tokens, base, paper, components, screens)",
+        "html": "<span data-b21 class=\"tape\" style=\"position:absolute;left:0;top:0;right:auto;bottom:auto;margin:0;transform:none\"></span>",
+        "note": ".tape: 96x26 fixed in the web, placed with .tl (top -10, left 14, rotate -8), .tr (top -10, right 14, rotate 7), .tc (top -12, centred, rotate -3). The web multiplies it over what is below (mix-blend-mode multiply); this PNG is the plain colour"
+      },
+      "sha256": "7eb041b55e6fda4dc0b562f0a42a9e11b8627c942fecee893845f68d5c0feda8"
+    },
+    {
+      "name": "tape_b",
+      "group": "decor",
+      "file": "decor/tape_b.png",
+      "w": 192,
+      "h": 52,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "box": [
+        0,
+        0,
+        192,
+        52
+      ],
+      "source": {
+        "css": "world_tour/css (tokens, base, paper, components, screens)",
+        "html": "<span data-b21 class=\"tape b\" style=\"position:absolute;left:0;top:0;right:auto;bottom:auto;margin:0;transform:none\"></span>",
+        "note": ".tape.b: opacity .9 is baked in"
+      },
+      "sha256": "15c359063b98b8be9fc8a369447e9b64fd71de029d42f9b48eb5513d095899cc"
+    },
+    {
+      "name": "tape_c",
+      "group": "decor",
+      "file": "decor/tape_c.png",
+      "w": 192,
+      "h": 52,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "box": [
+        0,
+        0,
+        192,
+        52
+      ],
+      "source": {
+        "css": "world_tour/css (tokens, base, paper, components, screens)",
+        "html": "<span data-b21 class=\"tape c\" style=\"position:absolute;left:0;top:0;right:auto;bottom:auto;margin:0;transform:none\"></span>",
+        "note": ".tape.c: dotted pink tape"
+      },
+      "sha256": "f8e7aaa884753a6f4e84121b9ab7119ba5d26a2bcf4d7d84213f820ac819fc67"
+    },
+    {
+      "name": "ticket_stub",
+      "group": "decor",
+      "file": "decor/ticket_stub.png",
+      "w": 652,
+      "h": 476,
+      "pivot": [
+        0.490798,
+        0.512605
+      ],
+      "box": [
+        0,
+        32,
+        640,
+        400
+      ],
+      "border": [
+        24,
+        84,
+        224,
+        72
+      ],
+      "drawMode": "sliced",
+      "source": {
+        "css": "world_tour/css (tokens, base, paper, components, screens)",
+        "html": "<div class=\"scrap ticketwrap\" style=\"margin:0;width:320px\"><div data-b21 class=\"ticket\" style=\"height:200px\"><div class=\"tk-main\"></div><div class=\"tk-stub perf\"></div></div></div>",
+        "note": ".ticket with .tk-stub.perf: the 88px stub with its dashed seam and paper-coloured bites; 6px hard shadow. Draw Sliced. Text and the per-show barcode (ticket.js barcode()) are not in it"
+      },
+      "sha256": "71a3e4d13247c67c70578d623193c51a9367ed48f01a6efb8639260ca3db4851"
+    },
+    {
+      "name": "stamp",
+      "group": "decor",
+      "file": "decor/stamp.png",
+      "w": 168,
+      "h": 168,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "box": [
+        0,
+        0,
+        168,
+        168
+      ],
+      "source": {
+        "css": "world_tour/css (tokens, base, paper, components, screens)",
+        "html": "<span data-b21 class=\"stamp\" style=\"position:absolute;left:0;top:0;right:auto;bottom:auto;margin:0;transform:none\"></span>",
+        "note": ".stamp without its text (\"sold out\" in the hand font, accent-2); the web rotates it -14 deg"
+      },
+      "sha256": "2a434762cb64fa906c5db21a67c6670564ae961f7ea26dfc20568ab097c99689"
+    },
+    {
+      "name": "desk",
+      "group": "decor",
+      "file": "decor/desk.png",
+      "w": 1516,
+      "h": 560,
+      "pivot": [
+        0.496042,
+        0.510714
+      ],
+      "box": [
+        0,
+        0,
+        1504,
+        548
+      ],
+      "border": [
+        44,
+        56,
+        56,
+        44
+      ],
+      "drawMode": "sliced",
+      "source": {
+        "css": "world_tour/css (tokens, base, paper, components, screens)",
+        "html": "<div data-b21 class=\"desk\" style=\"margin:0;transform:none;width:752px;height:274px\"></div>",
+        "note": ".desk at its remix size (752x274 css at 1920). Other heights stretch its dots and gradient; for those use desk_plain plus desk_dots tiled inside it. The web tilts it -.5 deg"
+      },
+      "sha256": "f1be33de288a1a2ba863410d15fc87532edd98ff415c7e719c1636fc79e13b80"
+    },
+    {
+      "name": "desk_plain",
+      "group": "decor",
+      "file": "decor/desk_plain.png",
+      "w": 1516,
+      "h": 560,
+      "pivot": [
+        0.496042,
+        0.510714
+      ],
+      "box": [
+        0,
+        0,
+        1504,
+        548
+      ],
+      "border": [
+        44,
+        56,
+        56,
+        44
+      ],
+      "drawMode": "sliced",
+      "source": {
+        "css": "world_tour/css (tokens, base, paper, components, screens)",
+        "html": "<div data-b21 class=\"desk\" style=\"margin:0;transform:none;width:752px;height:274px;background-size:0 0,auto\"></div>",
+        "note": ".desk with only its gradient layer (the dot layer sized to 0). Sliced; the gradient runs top to bottom, ink from 60%"
+      },
+      "sha256": "c1313d9a5972d28dc6c365d5a68db769dcd7ffa75e8579698ed304fe83e92545"
+    },
+    {
+      "name": "desk_dots",
+      "group": "decor",
+      "file": "decor/desk_dots.png",
+      "w": 18,
+      "h": 18,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "box": [
+        0,
+        0,
+        18,
+        18
+      ],
+      "drawMode": "tiled-whole",
+      "source": {
+        "css": "world_tour/css (tokens, base, paper, components, screens)",
+        "html": "<div data-b21 class=\"desk\" style=\"margin:0;transform:none;width:9px;height:9px;padding:0;border:0;border-radius:0;box-shadow:none;background-size:9px 9px,0 0\"></div>",
+        "note": "the .desk dot layer as one 9px tile (white at 13%); tile it inside desk_plain, clipped to its rounded inside"
+      },
+      "sha256": "6572b99c835fed5fe123c805d7ae8eff14fbe33c66ddc31b21cbd3e04d6c6976"
+    },
+    {
+      "name": "bubble",
+      "group": "decor",
+      "file": "decor/bubble.png",
+      "w": 246,
+      "h": 166,
+      "pivot": [
+        0.487805,
+        0.518072
+      ],
+      "box": [
+        0,
+        0,
+        240,
+        160
+      ],
+      "border": [
+        52,
+        58,
+        58,
+        52
+      ],
+      "drawMode": "sliced",
+      "source": {
+        "css": "world_tour/css (tokens, base, paper, components, screens)",
+        "html": "<div class=\"stagewrap\" style=\"display:block\"><div class=\"coach\" style=\"display:block;margin:0\"><div data-b21 class=\"bubble b21-notail\" style=\"width:120px;height:80px;min-height:0;padding:0\"></div></div></div>",
+        "note": "the coach speech bubble at 900px and wider (both coach bubbles at 1920 share this shape). Sliced; add bubble_tail on top"
+      },
+      "sha256": "ba6345e098756ef7408f930a765ee13a1504afa1b7576463f5dad420d30c6864"
+    },
+    {
+      "name": "bubble_tail",
+      "group": "decor",
+      "file": "decor/bubble_tail.png",
+      "w": 60,
+      "h": 44,
+      "pivot": [
+        0.2,
+        0.590909
+      ],
+      "offset": [
+        -12,
+        -18
+      ],
+      "source": {
+        "css": "world_tour/css (tokens, base, paper, components, screens)",
+        "html": "<div class=\"stagewrap\" style=\"display:block\"><div class=\"coach\" style=\"display:block;margin:0\"><div data-b21 class=\"bubble\" style=\"width:120px;height:80px;min-height:0;padding:0;background:transparent;border-color:transparent;box-shadow:none\"></div></div></div>",
+        "note": "the .bubble::before tail; offset is from the bubble bottom centre (show coach: left 50%; home coach: left 48% of the bubble width). Draw after bubble: it covers the bubble border where they meet"
+      },
+      "sha256": "096789eaa1e7efedd42bcbf542d0e3e76cd27567607033ead516df008c39aa47"
+    },
+    {
+      "name": "halftone_tr",
+      "group": "decor",
+      "file": "decor/halftone_tr.png",
+      "w": 960,
+      "h": 960,
+      "pivot": [
+        1,
+        1
+      ],
+      "source": {
+        "css": "world_tour/css/base.css",
+        "note": "body::before: 560px dot patch at top -80, right -80, fading out from the top-right window corner; opacity .75 baked in"
+      },
+      "sha256": "fc8d6023b4f4fbb0abc320e62bb2bc82b712106d1b1e619861ff5c2e0b835a20"
+    },
+    {
+      "name": "halftone_bl",
+      "group": "decor",
+      "file": "decor/halftone_bl.png",
+      "w": 920,
+      "h": 920,
+      "pivot": [
+        0,
+        0
+      ],
+      "source": {
+        "css": "world_tour/css/base.css",
+        "note": "body::after: 560px dot patch at bottom -100, left -100, fading out from the bottom-left window corner; opacity .75 baked in"
+      },
+      "sha256": "88d4744f8b46555b0bdccfde2ace78e9aa354c9cef8795ac513cd5755bca5aab"
+    }
+  ],
+  "dog": {
+    "poses": [
+      "idle",
+      "cheer",
+      "think",
+      "oops",
+      "sleepy"
+    ],
+    "outfits": [
+      "bandana",
+      "beanie",
+      "shades",
+      "phones",
+      "collar"
+    ],
+    "stacks": {
+      "idle": {
+        "none": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_head_idle_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_head_idle_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_head_idle",
+          "dog_lids_idle"
+        ],
+        "bandana": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_outfit_bandana_ink",
+          "dog_head_idle_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_outfit_bandana_pad",
+          "dog_head_idle_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_outfit_bandana",
+          "dog_head_idle",
+          "dog_lids_idle"
+        ],
+        "beanie": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_head_idle_ink",
+          "dog_outfit_beanie_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_head_idle_pad",
+          "dog_outfit_beanie_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_head_idle",
+          "dog_lids_idle",
+          "dog_outfit_beanie"
+        ],
+        "shades": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_head_idle_ink",
+          "dog_outfit_shades_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_head_idle_pad",
+          "dog_outfit_shades_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_head_idle",
+          "dog_lids_idle",
+          "dog_outfit_shades"
+        ],
+        "phones": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_head_idle_ink",
+          "dog_outfit_phones_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_head_idle_pad",
+          "dog_outfit_phones_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_head_idle",
+          "dog_lids_idle",
+          "dog_outfit_phones"
+        ],
+        "collar": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_outfit_collar_ink",
+          "dog_head_idle_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_outfit_collar_pad",
+          "dog_head_idle_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_outfit_collar",
+          "dog_head_idle",
+          "dog_lids_idle"
+        ]
+      },
+      "cheer": {
+        "none": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_arms_cheer_ink",
+          "dog_head_cheer_ink",
+          "dog_fx_cheer_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_arms_cheer_pad",
+          "dog_head_cheer_pad",
+          "dog_fx_cheer_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_arms_cheer",
+          "dog_head_cheer",
+          "dog_fx_cheer"
+        ],
+        "bandana": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_outfit_bandana_ink",
+          "dog_arms_cheer_ink",
+          "dog_head_cheer_ink",
+          "dog_fx_cheer_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_outfit_bandana_pad",
+          "dog_arms_cheer_pad",
+          "dog_head_cheer_pad",
+          "dog_fx_cheer_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_outfit_bandana",
+          "dog_arms_cheer",
+          "dog_head_cheer",
+          "dog_fx_cheer"
+        ],
+        "beanie": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_arms_cheer_ink",
+          "dog_head_cheer_ink",
+          "dog_outfit_beanie_ink",
+          "dog_fx_cheer_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_arms_cheer_pad",
+          "dog_head_cheer_pad",
+          "dog_outfit_beanie_pad",
+          "dog_fx_cheer_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_arms_cheer",
+          "dog_head_cheer",
+          "dog_outfit_beanie",
+          "dog_fx_cheer"
+        ],
+        "shades": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_arms_cheer_ink",
+          "dog_head_cheer_ink",
+          "dog_outfit_shades_ink",
+          "dog_fx_cheer_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_arms_cheer_pad",
+          "dog_head_cheer_pad",
+          "dog_outfit_shades_pad",
+          "dog_fx_cheer_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_arms_cheer",
+          "dog_head_cheer",
+          "dog_outfit_shades",
+          "dog_fx_cheer"
+        ],
+        "phones": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_arms_cheer_ink",
+          "dog_head_cheer_ink",
+          "dog_outfit_phones_ink",
+          "dog_fx_cheer_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_arms_cheer_pad",
+          "dog_head_cheer_pad",
+          "dog_outfit_phones_pad",
+          "dog_fx_cheer_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_arms_cheer",
+          "dog_head_cheer",
+          "dog_outfit_phones",
+          "dog_fx_cheer"
+        ],
+        "collar": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_outfit_collar_ink",
+          "dog_arms_cheer_ink",
+          "dog_head_cheer_ink",
+          "dog_fx_cheer_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_outfit_collar_pad",
+          "dog_arms_cheer_pad",
+          "dog_head_cheer_pad",
+          "dog_fx_cheer_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_outfit_collar",
+          "dog_arms_cheer",
+          "dog_head_cheer",
+          "dog_fx_cheer"
+        ]
+      },
+      "think": {
+        "none": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_head_think_ink",
+          "dog_arms_think_ink",
+          "dog_fx_think_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_head_think_pad",
+          "dog_arms_think_pad",
+          "dog_fx_think_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_head_think",
+          "dog_arms_think",
+          "dog_fx_think"
+        ],
+        "bandana": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_outfit_bandana_ink",
+          "dog_head_think_ink",
+          "dog_arms_think_ink",
+          "dog_fx_think_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_outfit_bandana_pad",
+          "dog_head_think_pad",
+          "dog_arms_think_pad",
+          "dog_fx_think_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_outfit_bandana",
+          "dog_head_think",
+          "dog_arms_think",
+          "dog_fx_think"
+        ],
+        "beanie": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_head_think_ink",
+          "dog_outfit_beanie_think_ink",
+          "dog_arms_think_ink",
+          "dog_fx_think_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_head_think_pad",
+          "dog_outfit_beanie_think_pad",
+          "dog_arms_think_pad",
+          "dog_fx_think_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_head_think",
+          "dog_outfit_beanie_think",
+          "dog_arms_think",
+          "dog_fx_think"
+        ],
+        "shades": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_head_think_ink",
+          "dog_outfit_shades_think_ink",
+          "dog_arms_think_ink",
+          "dog_fx_think_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_head_think_pad",
+          "dog_outfit_shades_think_pad",
+          "dog_arms_think_pad",
+          "dog_fx_think_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_head_think",
+          "dog_outfit_shades_think",
+          "dog_arms_think",
+          "dog_fx_think"
+        ],
+        "phones": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_head_think_ink",
+          "dog_outfit_phones_think_ink",
+          "dog_arms_think_ink",
+          "dog_fx_think_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_head_think_pad",
+          "dog_outfit_phones_think_pad",
+          "dog_arms_think_pad",
+          "dog_fx_think_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_head_think",
+          "dog_outfit_phones_think",
+          "dog_arms_think",
+          "dog_fx_think"
+        ],
+        "collar": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_outfit_collar_ink",
+          "dog_head_think_ink",
+          "dog_arms_think_ink",
+          "dog_fx_think_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_outfit_collar_pad",
+          "dog_head_think_pad",
+          "dog_arms_think_pad",
+          "dog_fx_think_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_outfit_collar",
+          "dog_head_think",
+          "dog_arms_think",
+          "dog_fx_think"
+        ]
+      },
+      "oops": {
+        "none": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_head_oops_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_head_oops_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_head_oops"
+        ],
+        "bandana": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_outfit_bandana_ink",
+          "dog_head_oops_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_outfit_bandana_pad",
+          "dog_head_oops_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_outfit_bandana",
+          "dog_head_oops"
+        ],
+        "beanie": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_head_oops_ink",
+          "dog_outfit_beanie_oops_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_head_oops_pad",
+          "dog_outfit_beanie_oops_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_head_oops",
+          "dog_outfit_beanie_oops"
+        ],
+        "shades": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_head_oops_ink",
+          "dog_outfit_shades_oops_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_head_oops_pad",
+          "dog_outfit_shades_oops_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_head_oops",
+          "dog_outfit_shades_oops"
+        ],
+        "phones": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_head_oops_ink",
+          "dog_outfit_phones_oops_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_head_oops_pad",
+          "dog_outfit_phones_oops_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_head_oops",
+          "dog_outfit_phones_oops"
+        ],
+        "collar": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_outfit_collar_ink",
+          "dog_head_oops_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_outfit_collar_pad",
+          "dog_head_oops_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_outfit_collar",
+          "dog_head_oops"
+        ]
+      },
+      "sleepy": {
+        "none": [
+          "dog_sleepy_tail_ink",
+          "dog_sleepy_body_ink",
+          "dog_sleepy_head_ink",
+          "dog_sleepy_paws_ink",
+          "dog_sleepy_z1_ink",
+          "dog_sleepy_z2_ink",
+          "dog_sleepy_z3_ink",
+          "dog_sleepy_tail_pad",
+          "dog_sleepy_body_pad",
+          "dog_sleepy_head_pad",
+          "dog_sleepy_paws_pad",
+          "dog_sleepy_z1_pad",
+          "dog_sleepy_z2_pad",
+          "dog_sleepy_z3_pad",
+          "dog_sleepy_tail",
+          "dog_sleepy_body",
+          "dog_sleepy_head",
+          "dog_sleepy_paws",
+          "dog_sleepy_z1",
+          "dog_sleepy_z2",
+          "dog_sleepy_z3"
+        ]
+      }
+    },
+    "stackList": [
+      {
+        "pose": "idle",
+        "outfit": "none",
+        "layers": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_head_idle_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_head_idle_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_head_idle",
+          "dog_lids_idle"
+        ]
+      },
+      {
+        "pose": "idle",
+        "outfit": "bandana",
+        "layers": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_outfit_bandana_ink",
+          "dog_head_idle_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_outfit_bandana_pad",
+          "dog_head_idle_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_outfit_bandana",
+          "dog_head_idle",
+          "dog_lids_idle"
+        ]
+      },
+      {
+        "pose": "idle",
+        "outfit": "beanie",
+        "layers": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_head_idle_ink",
+          "dog_outfit_beanie_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_head_idle_pad",
+          "dog_outfit_beanie_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_head_idle",
+          "dog_lids_idle",
+          "dog_outfit_beanie"
+        ]
+      },
+      {
+        "pose": "idle",
+        "outfit": "shades",
+        "layers": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_head_idle_ink",
+          "dog_outfit_shades_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_head_idle_pad",
+          "dog_outfit_shades_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_head_idle",
+          "dog_lids_idle",
+          "dog_outfit_shades"
+        ]
+      },
+      {
+        "pose": "idle",
+        "outfit": "phones",
+        "layers": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_head_idle_ink",
+          "dog_outfit_phones_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_head_idle_pad",
+          "dog_outfit_phones_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_head_idle",
+          "dog_lids_idle",
+          "dog_outfit_phones"
+        ]
+      },
+      {
+        "pose": "idle",
+        "outfit": "collar",
+        "layers": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_outfit_collar_ink",
+          "dog_head_idle_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_outfit_collar_pad",
+          "dog_head_idle_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_outfit_collar",
+          "dog_head_idle",
+          "dog_lids_idle"
+        ]
+      },
+      {
+        "pose": "cheer",
+        "outfit": "none",
+        "layers": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_arms_cheer_ink",
+          "dog_head_cheer_ink",
+          "dog_fx_cheer_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_arms_cheer_pad",
+          "dog_head_cheer_pad",
+          "dog_fx_cheer_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_arms_cheer",
+          "dog_head_cheer",
+          "dog_fx_cheer"
+        ]
+      },
+      {
+        "pose": "cheer",
+        "outfit": "bandana",
+        "layers": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_outfit_bandana_ink",
+          "dog_arms_cheer_ink",
+          "dog_head_cheer_ink",
+          "dog_fx_cheer_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_outfit_bandana_pad",
+          "dog_arms_cheer_pad",
+          "dog_head_cheer_pad",
+          "dog_fx_cheer_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_outfit_bandana",
+          "dog_arms_cheer",
+          "dog_head_cheer",
+          "dog_fx_cheer"
+        ]
+      },
+      {
+        "pose": "cheer",
+        "outfit": "beanie",
+        "layers": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_arms_cheer_ink",
+          "dog_head_cheer_ink",
+          "dog_outfit_beanie_ink",
+          "dog_fx_cheer_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_arms_cheer_pad",
+          "dog_head_cheer_pad",
+          "dog_outfit_beanie_pad",
+          "dog_fx_cheer_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_arms_cheer",
+          "dog_head_cheer",
+          "dog_outfit_beanie",
+          "dog_fx_cheer"
+        ]
+      },
+      {
+        "pose": "cheer",
+        "outfit": "shades",
+        "layers": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_arms_cheer_ink",
+          "dog_head_cheer_ink",
+          "dog_outfit_shades_ink",
+          "dog_fx_cheer_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_arms_cheer_pad",
+          "dog_head_cheer_pad",
+          "dog_outfit_shades_pad",
+          "dog_fx_cheer_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_arms_cheer",
+          "dog_head_cheer",
+          "dog_outfit_shades",
+          "dog_fx_cheer"
+        ]
+      },
+      {
+        "pose": "cheer",
+        "outfit": "phones",
+        "layers": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_arms_cheer_ink",
+          "dog_head_cheer_ink",
+          "dog_outfit_phones_ink",
+          "dog_fx_cheer_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_arms_cheer_pad",
+          "dog_head_cheer_pad",
+          "dog_outfit_phones_pad",
+          "dog_fx_cheer_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_arms_cheer",
+          "dog_head_cheer",
+          "dog_outfit_phones",
+          "dog_fx_cheer"
+        ]
+      },
+      {
+        "pose": "cheer",
+        "outfit": "collar",
+        "layers": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_outfit_collar_ink",
+          "dog_arms_cheer_ink",
+          "dog_head_cheer_ink",
+          "dog_fx_cheer_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_outfit_collar_pad",
+          "dog_arms_cheer_pad",
+          "dog_head_cheer_pad",
+          "dog_fx_cheer_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_outfit_collar",
+          "dog_arms_cheer",
+          "dog_head_cheer",
+          "dog_fx_cheer"
+        ]
+      },
+      {
+        "pose": "think",
+        "outfit": "none",
+        "layers": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_head_think_ink",
+          "dog_arms_think_ink",
+          "dog_fx_think_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_head_think_pad",
+          "dog_arms_think_pad",
+          "dog_fx_think_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_head_think",
+          "dog_arms_think",
+          "dog_fx_think"
+        ]
+      },
+      {
+        "pose": "think",
+        "outfit": "bandana",
+        "layers": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_outfit_bandana_ink",
+          "dog_head_think_ink",
+          "dog_arms_think_ink",
+          "dog_fx_think_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_outfit_bandana_pad",
+          "dog_head_think_pad",
+          "dog_arms_think_pad",
+          "dog_fx_think_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_outfit_bandana",
+          "dog_head_think",
+          "dog_arms_think",
+          "dog_fx_think"
+        ]
+      },
+      {
+        "pose": "think",
+        "outfit": "beanie",
+        "layers": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_head_think_ink",
+          "dog_outfit_beanie_think_ink",
+          "dog_arms_think_ink",
+          "dog_fx_think_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_head_think_pad",
+          "dog_outfit_beanie_think_pad",
+          "dog_arms_think_pad",
+          "dog_fx_think_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_head_think",
+          "dog_outfit_beanie_think",
+          "dog_arms_think",
+          "dog_fx_think"
+        ]
+      },
+      {
+        "pose": "think",
+        "outfit": "shades",
+        "layers": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_head_think_ink",
+          "dog_outfit_shades_think_ink",
+          "dog_arms_think_ink",
+          "dog_fx_think_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_head_think_pad",
+          "dog_outfit_shades_think_pad",
+          "dog_arms_think_pad",
+          "dog_fx_think_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_head_think",
+          "dog_outfit_shades_think",
+          "dog_arms_think",
+          "dog_fx_think"
+        ]
+      },
+      {
+        "pose": "think",
+        "outfit": "phones",
+        "layers": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_head_think_ink",
+          "dog_outfit_phones_think_ink",
+          "dog_arms_think_ink",
+          "dog_fx_think_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_head_think_pad",
+          "dog_outfit_phones_think_pad",
+          "dog_arms_think_pad",
+          "dog_fx_think_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_head_think",
+          "dog_outfit_phones_think",
+          "dog_arms_think",
+          "dog_fx_think"
+        ]
+      },
+      {
+        "pose": "think",
+        "outfit": "collar",
+        "layers": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_outfit_collar_ink",
+          "dog_head_think_ink",
+          "dog_arms_think_ink",
+          "dog_fx_think_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_outfit_collar_pad",
+          "dog_head_think_pad",
+          "dog_arms_think_pad",
+          "dog_fx_think_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_outfit_collar",
+          "dog_head_think",
+          "dog_arms_think",
+          "dog_fx_think"
+        ]
+      },
+      {
+        "pose": "oops",
+        "outfit": "none",
+        "layers": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_head_oops_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_head_oops_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_head_oops"
+        ]
+      },
+      {
+        "pose": "oops",
+        "outfit": "bandana",
+        "layers": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_outfit_bandana_ink",
+          "dog_head_oops_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_outfit_bandana_pad",
+          "dog_head_oops_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_outfit_bandana",
+          "dog_head_oops"
+        ]
+      },
+      {
+        "pose": "oops",
+        "outfit": "beanie",
+        "layers": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_head_oops_ink",
+          "dog_outfit_beanie_oops_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_head_oops_pad",
+          "dog_outfit_beanie_oops_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_head_oops",
+          "dog_outfit_beanie_oops"
+        ]
+      },
+      {
+        "pose": "oops",
+        "outfit": "shades",
+        "layers": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_head_oops_ink",
+          "dog_outfit_shades_oops_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_head_oops_pad",
+          "dog_outfit_shades_oops_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_head_oops",
+          "dog_outfit_shades_oops"
+        ]
+      },
+      {
+        "pose": "oops",
+        "outfit": "phones",
+        "layers": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_head_oops_ink",
+          "dog_outfit_phones_oops_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_head_oops_pad",
+          "dog_outfit_phones_oops_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_head_oops",
+          "dog_outfit_phones_oops"
+        ]
+      },
+      {
+        "pose": "oops",
+        "outfit": "collar",
+        "layers": [
+          "dog_tail_ink",
+          "dog_body_ink",
+          "dog_outfit_collar_ink",
+          "dog_head_oops_ink",
+          "dog_tail_pad",
+          "dog_body_pad",
+          "dog_outfit_collar_pad",
+          "dog_head_oops_pad",
+          "dog_tail",
+          "dog_body",
+          "dog_outfit_collar",
+          "dog_head_oops"
+        ]
+      },
+      {
+        "pose": "sleepy",
+        "outfit": "none",
+        "layers": [
+          "dog_sleepy_tail_ink",
+          "dog_sleepy_body_ink",
+          "dog_sleepy_head_ink",
+          "dog_sleepy_paws_ink",
+          "dog_sleepy_z1_ink",
+          "dog_sleepy_z2_ink",
+          "dog_sleepy_z3_ink",
+          "dog_sleepy_tail_pad",
+          "dog_sleepy_body_pad",
+          "dog_sleepy_head_pad",
+          "dog_sleepy_paws_pad",
+          "dog_sleepy_z1_pad",
+          "dog_sleepy_z2_pad",
+          "dog_sleepy_z3_pad",
+          "dog_sleepy_tail",
+          "dog_sleepy_body",
+          "dog_sleepy_head",
+          "dog_sleepy_paws",
+          "dog_sleepy_z1",
+          "dog_sleepy_z2",
+          "dog_sleepy_z3"
+        ]
+      }
+    ],
+    "animation": {
+      "tail": {
+        "sprites": [
+          "dog_tail",
+          "dog_tail_ink",
+          "dog_tail_pad"
+        ],
+        "rotateAboutPx": [
+          244.625,
+          304
+        ],
+        "wag": "rotate 0 -> 14 deg -> 0 over 1.1 s, ease-in-out, loop; not in sleepy"
+      },
+      "lids": {
+        "sprites": [
+          "dog_lids_idle"
+        ],
+        "scaleAboutPx": [
+          190,
+          140.125
+        ],
+        "blink": "scaleY 0 (hidden) normally; 0 at 92%, 1 at 95%, 0 at 100% of 4.2 s, loop; idle only"
+      },
+      "zzz": {
+        "sprites": [
+          "dog_sleepy_z1",
+          "dog_sleepy_z2",
+          "dog_sleepy_z3"
+        ],
+        "float": "translate (3, -5) units and opacity .55 at 50% of 2.4 s, ease-in-out, loop; delays 0, .4, .8 s (with their _ink and _pad)"
+      },
+      "head": "think and oops tilts are baked into dog_head_think / dog_head_oops and their outfit layers"
+    },
+    "compositeCheck": [
+      {
+        "pose": "idle",
+        "outfit": "none",
+        "maxd": 72,
+        "over8": 368,
+        "over32": 82,
+        "lit": 81626
+      },
+      {
+        "pose": "idle",
+        "outfit": "bandana",
+        "maxd": 72,
+        "over8": 375,
+        "over32": 85,
+        "lit": 81639
+      },
+      {
+        "pose": "idle",
+        "outfit": "beanie",
+        "maxd": 72,
+        "over8": 371,
+        "over32": 82,
+        "lit": 84219
+      },
+      {
+        "pose": "idle",
+        "outfit": "shades",
+        "maxd": 72,
+        "over8": 367,
+        "over32": 82,
+        "lit": 81626
+      },
+      {
+        "pose": "idle",
+        "outfit": "phones",
+        "maxd": 72,
+        "over8": 368,
+        "over32": 82,
+        "lit": 86805
+      },
+      {
+        "pose": "idle",
+        "outfit": "collar",
+        "maxd": 72,
+        "over8": 370,
+        "over32": 82,
+        "lit": 81708
+      },
+      {
+        "pose": "cheer",
+        "outfit": "none",
+        "maxd": 76,
+        "over8": 499,
+        "over32": 103,
+        "lit": 95408
+      },
+      {
+        "pose": "cheer",
+        "outfit": "bandana",
+        "maxd": 76,
+        "over8": 499,
+        "over32": 103,
+        "lit": 95408
+      },
+      {
+        "pose": "cheer",
+        "outfit": "beanie",
+        "maxd": 76,
+        "over8": 512,
+        "over32": 108,
+        "lit": 97452
+      },
+      {
+        "pose": "cheer",
+        "outfit": "shades",
+        "maxd": 76,
+        "over8": 499,
+        "over32": 103,
+        "lit": 95408
+      },
+      {
+        "pose": "cheer",
+        "outfit": "phones",
+        "maxd": 76,
+        "over8": 500,
+        "over32": 108,
+        "lit": 97317
+      },
+      {
+        "pose": "cheer",
+        "outfit": "collar",
+        "maxd": 76,
+        "over8": 479,
+        "over32": 99,
+        "lit": 95408
+      },
+      {
+        "pose": "think",
+        "outfit": "none",
+        "maxd": 62,
+        "over8": 334,
+        "over32": 60,
+        "lit": 90407
+      },
+      {
+        "pose": "think",
+        "outfit": "bandana",
+        "maxd": 63,
+        "over8": 341,
+        "over32": 64,
+        "lit": 90407
+      },
+      {
+        "pose": "think",
+        "outfit": "beanie",
+        "maxd": 78,
+        "over8": 500,
+        "over32": 87,
+        "lit": 93027
+      },
+      {
+        "pose": "think",
+        "outfit": "shades",
+        "maxd": 62,
+        "over8": 338,
+        "over32": 61,
+        "lit": 90407
+      },
+      {
+        "pose": "think",
+        "outfit": "phones",
+        "maxd": 62,
+        "over8": 399,
+        "over32": 67,
+        "lit": 95562
+      },
+      {
+        "pose": "think",
+        "outfit": "collar",
+        "maxd": 62,
+        "over8": 338,
+        "over32": 60,
+        "lit": 90408
+      },
+      {
+        "pose": "oops",
+        "outfit": "none",
+        "maxd": 62,
+        "over8": 192,
+        "over32": 15,
+        "lit": 83222
+      },
+      {
+        "pose": "oops",
+        "outfit": "bandana",
+        "maxd": 62,
+        "over8": 196,
+        "over32": 20,
+        "lit": 83237
+      },
+      {
+        "pose": "oops",
+        "outfit": "beanie",
+        "maxd": 62,
+        "over8": 189,
+        "over32": 15,
+        "lit": 85998
+      },
+      {
+        "pose": "oops",
+        "outfit": "shades",
+        "maxd": 62,
+        "over8": 192,
+        "over32": 15,
+        "lit": 83222
+      },
+      {
+        "pose": "oops",
+        "outfit": "phones",
+        "maxd": 62,
+        "over8": 146,
+        "over32": 16,
+        "lit": 88937
+      },
+      {
+        "pose": "oops",
+        "outfit": "collar",
+        "maxd": 62,
+        "over8": 196,
+        "over32": 17,
+        "lit": 83369
+      },
+      {
+        "pose": "sleepy",
+        "outfit": "none",
+        "maxd": 81,
+        "over8": 154,
+        "over32": 43,
+        "lit": 78387
+      }
+    ]
+  },
+  "map": {
+    "layout": {
+      "name": "landscape",
+      "w": 1000,
+      "h": 610,
+      "pts": [
+        [
+          120,
+          150
+        ],
+        [
+          370,
+          128
+        ],
+        [
+          628,
+          158
+        ],
+        [
+          880,
+          136
+        ],
+        [
+          880,
+          446
+        ],
+        [
+          628,
+          470
+        ],
+        [
+          370,
+          446
+        ],
+        [
+          120,
+          462
+        ]
+      ],
+      "via": {
+        "3": [
+          985,
+          291
+        ]
+      },
+      "decor": [
+        [
+          "note",
+          248,
+          300,
+          12
+        ],
+        [
+          "heart",
+          505,
+          340,
+          -8
+        ],
+        [
+          "bolt",
+          752,
+          302,
+          10
+        ],
+        [
+          "vinyl",
+          40,
+          300,
+          -6
+        ],
+        [
+          "star",
+          496,
+          40,
+          8
+        ],
+        [
+          "pick",
+          246,
+          568,
+          -14
+        ],
+        [
+          "phones",
+          754,
+          580,
+          6
+        ]
+      ]
+    },
+    "venueOrder": [
+      {
+        "id": "coffee",
+        "art": "coffee"
+      },
+      {
+        "id": "records",
+        "art": "records"
+      },
+      {
+        "id": "rec",
+        "art": "rec"
+      },
+      {
+        "id": "rooftop",
+        "art": "rooftop"
+      },
+      {
+        "id": "club",
+        "art": "club"
+      },
+      {
+        "id": "theater",
+        "art": "theater"
+      },
+      {
+        "id": "festival",
+        "art": "festival"
+      },
+      {
+        "id": "arena",
+        "art": "arena"
+      }
+    ],
+    "route": "not exported as sprites: draw it from these curves (SVG path data in layout units, stretched to the map rect, preserveAspectRatio none). Web order: under (curveAll), then done (curveDone[reached], none when reached is 0), then dash (curveAll)",
+    "routeStrokes": {
+      "under": "fill:none;stroke:var(--card);stroke-width:18;stroke-linecap:round;opacity:.9",
+      "done": "fill:none;stroke:var(--accent);stroke-width:12;stroke-linecap:round",
+      "dash": "fill:none;stroke:var(--ink);stroke-width:3.5;stroke-linecap:round;stroke-dasharray:10 11"
+    },
+    "curveAll": "M120 150 C161.7 146.3 285.3 126.7 370 128 C454.7 129.3 543.0 156.7 628 158 C713.0 159.3 820.5 113.8 880 136 C939.5 158.2 985.0 239.3 985 291 C985.0 342.7 939.5 416.2 880 446 C820.5 475.8 713.0 470.0 628 470 C543.0 470.0 454.7 447.3 370 446 C285.3 444.7 161.7 459.3 120 462",
+    "curveDone": [
+      "",
+      "M120 150 C161.7 146.3 328.3 131.7 370 128",
+      "M120 150 C161.7 146.3 285.3 126.7 370 128 C454.7 129.3 585.0 153.0 628 158",
+      "M120 150 C161.7 146.3 285.3 126.7 370 128 C454.7 129.3 543.0 156.7 628 158 C713.0 159.3 838.0 139.7 880 136",
+      "M120 150 C161.7 146.3 285.3 126.7 370 128 C454.7 129.3 543.0 156.7 628 158 C713.0 159.3 820.5 113.8 880 136 C939.5 158.2 985.0 239.3 985 291 C985.0 342.7 897.5 420.2 880 446",
+      "M120 150 C161.7 146.3 285.3 126.7 370 128 C454.7 129.3 543.0 156.7 628 158 C713.0 159.3 820.5 113.8 880 136 C939.5 158.2 985.0 239.3 985 291 C985.0 342.7 939.5 416.2 880 446 C820.5 475.8 670.0 466.0 628 470",
+      "M120 150 C161.7 146.3 285.3 126.7 370 128 C454.7 129.3 543.0 156.7 628 158 C713.0 159.3 820.5 113.8 880 136 C939.5 158.2 985.0 239.3 985 291 C985.0 342.7 939.5 416.2 880 446 C820.5 475.8 713.0 470.0 628 470 C543.0 470.0 413.0 450.0 370 446",
+      "M120 150 C161.7 146.3 285.3 126.7 370 128 C454.7 129.3 543.0 156.7 628 158 C713.0 159.3 820.5 113.8 880 136 C939.5 158.2 985.0 239.3 985 291 C985.0 342.7 939.5 416.2 880 446 C820.5 475.8 713.0 470.0 628 470 C543.0 470.0 454.7 447.3 370 446 C285.3 444.7 161.7 459.3 120 462"
+    ]
+  }
+}

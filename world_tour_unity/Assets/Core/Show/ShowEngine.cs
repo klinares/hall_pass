@@ -399,10 +399,22 @@ namespace WorldTour.Core.Shows
 
         // ---------- guards ----------
 
+        /// <summary>
+        /// Every listener hears every event, even if an earlier one throws (the save must not miss an answer because the
+        /// dog's handler failed). The engine's own state is already updated. The first error is rethrown once all have
+        /// run, so the caller still sees it.
+        /// </summary>
         private void Raise(ShowEvent e)
         {
             var h = Raised;
-            if (h != null) h(e);
+            if (h == null) return;
+            Exception first = null;
+            foreach (Delegate d in h.GetInvocationList())
+            {
+                try { ((Action<ShowEvent>)d)(e); }
+                catch (Exception ex) { if (first == null) first = ex; }
+            }
+            if (first != null) System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(first).Throw();
         }
 
         private void RequireLive()

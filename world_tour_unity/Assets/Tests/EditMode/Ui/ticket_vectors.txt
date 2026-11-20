@@ -1,0 +1,3151 @@
+# ticket_vectors.txt: written by world_tour_unity/Tools/ticket_vectors.mjs from world_tour/screens/ticket.js; do not edit by hand
+case 0
+in.date=2026-01-01
+in.mode=remix
+in.modeName=remix
+in.week=week 1
+in.encore=0
+in.venue=coffee
+in.n=10
+in.fans=15504
+in.first=10
+in.hintOnly=0
+in.best=3
+in.hintTotal=2
+in.songs=answer:0:0,favorite:0:0,beautiful:0:0,business:0:0,because:0:0,february:0:0,believe:0:0,different:0:0,island:0:0,definitely:0:0
+in.stickers=
+in.unlocks=
+out.pct=1
+out.pctRound=100
+out.eyebrow=week 1 \u2736 remix
+out.head=sold out
+out.sub=natalia, you\u2019re so ready for that test.
+out.top=admit one \u2665
+out.venue=live at the corner coffee shop
+out.fansNum=15,504
+out.fans=15,504 fans
+out.rows=first try:10/10|best streak:3|hints:2
+out.class=vip
+out.bars=
+out.barSeed=2026-01-01remix15504
+out.date=2026-01-01
+out.stamp=sold\u000aout
+out.stkTitle=
+out.stkNames=
+out.stkArt=0
+out.unlockTitle=
+out.unlock=
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:answer:nailed it|ok:favorite:nailed it|ok:beautiful:nailed it|ok:business:nailed it|ok:because:nailed it|ok:february:nailed it|ok:believe:nailed it|ok:different:nailed it|ok:island:nailed it|ok:definitely:nailed it
+out.button=again:play again
+out.back=back to the map
+out.bubble=that\u2019s a vip night. framing this ticket.
+end
+case 1
+in.date=2027-06-08
+in.mode=slots
+in.modeName=missing letters
+in.week=week of nov 17
+in.encore=0
+in.venue=records
+in.n=10
+in.fans=792
+in.first=0
+in.hintOnly=10
+in.best=6
+in.hintTotal=10
+in.songs=different:0:1,library:0:1,friend:0:1,necessary:0:1,island:0:1,through:0:1,beautiful:0:1,business:0:1,weird:0:1,believe:0:1
+in.stickers=venue-records
+in.unlocks=club
+out.pct=0.5
+out.pctRound=50
+out.eyebrow=week of nov 17 \u2736 missing letters
+out.head=rehearsal night
+out.sub=every star rehearses. run it back.
+out.top=admit one \u2665
+out.venue=live at record store basement
+out.fansNum=792
+out.fans=792 fans
+out.rows=first try:0/10|best streak:6|hints:10
+out.class=ga
+out.bars=0:4
+out.barSeed=2027-06-08slots792
+out.date=2027-06-08
+out.stamp=
+out.stkTitle=new for your tour journal
+out.stkNames=record store
+out.stkArt=1
+out.unlockTitle=new venue unlocked
+out.unlock=the fuzz, downtown
+out.setTitle=tonight\u2019s setlist
+out.setlist=hint:different:used a hint|hint:library:used a hint|hint:friend:used a hint|hint:necessary:used a hint|hint:island:used a hint|hint:through:used a hint|hint:beautiful:used a hint|hint:business:used a hint|hint:weird:used a hint|hint:believe:used a hint
+out.button=again:play again
+out.back=back to the map
+out.bubble=good show. the bus leaves when you\u2019re ready.
+end
+case 2
+in.date=2026-11-15
+in.mode=vowels
+in.modeName=missing vowels
+in.week=Week 12: Tricky Ones
+in.encore=0
+in.venue=rec
+in.n=10
+in.fans=0
+in.first=8
+in.hintOnly=0
+in.best=5
+in.hintTotal=2
+in.songs=necessary:1:1,definitely:0:0,february:0:0,library:1:0,calendar:0:0,island:0:0,receive:0:0,different:0:0,enough:0:0,because:0:0
+in.stickers=streak-3,streak-5,ten-shows
+in.unlocks=rec,arena
+out.pct=0.8
+out.pctRound=80
+out.eyebrow=Week 12: Tricky Ones \u2736 missing vowels
+out.head=what a show
+out.sub=a couple more run-throughs and it\u2019s perfect.
+out.top=admit one \u2665
+out.venue=live at rec center battle of the bands
+out.fansNum=0
+out.fans=0 fans
+out.rows=first try:8/10|best streak:5|hints:2
+out.class=ga
+out.bars=0:1,41:3,45:4,70:2,73:3,89:2
+out.barSeed=2026-11-15vowels0
+out.date=2026-11-15
+out.stamp=
+out.stkTitle=new for your tour journal
+out.stkNames=three-day streak, five-day streak, ten shows
+out.stkArt=3
+out.unlockTitle=new venue unlocked
+out.unlock=the arena
+out.setTitle=tonight\u2019s setlist
+out.setlist=miss:necessary:rehearse again|ok:definitely:nailed it|ok:february:nailed it|miss:library:rehearse again|ok:calendar:nailed it|ok:island:nailed it|ok:receive:nailed it|ok:different:nailed it|ok:enough:nailed it|ok:because:nailed it
+out.button=encore:encore: 2 to rehearse
+out.back=back to the map
+out.bubble=the encore replays the 2 you missed. half fans, zero pressure.
+end
+case 3
+in.date=2027-04-22
+in.mode=fanmail
+in.modeName=fan mail
+in.week=b & c <words>
+in.encore=1
+in.venue=rooftop
+in.n=2
+in.fans=59187
+in.first=2
+in.hintOnly=0
+in.best=2
+in.hintTotal=0
+in.songs=receive:1:0,enough:0:0
+in.stickers=master-any,venue-festival,master-spell,clean-run,venue-arena
+in.unlocks=
+out.pct=1
+out.pctRound=100
+out.eyebrow=b & c <words> \u2736 fan mail encore
+out.head=sold out
+out.sub=natalia, you\u2019re so ready for that test.
+out.top=admit one \u2665
+out.venue=live at rooftop party
+out.fansNum=59,187
+out.fans=59,187 fans
+out.rows=first try:2/2|best streak:2|hints:0
+out.class=vip
+out.bars=
+out.barSeed=2027-04-22fanmail59187
+out.date=2027-04-22
+out.stamp=sold\u000aout
+out.stkTitle=new for your tour journal
+out.stkNames=mastered a skill, festival, spelling headliner + 2 more
+out.stkArt=3
+out.unlockTitle=
+out.unlock=
+out.setTitle=tonight\u2019s setlist
+out.setlist=miss:receive:rehearse again|ok:enough:nailed it
+out.button=again:play again
+out.back=back to the map
+out.bubble=that\u2019s a vip night. framing this ticket.
+end
+case 4
+in.date=2026-09-01
+in.mode=remix
+in.modeName=remix
+in.week=it\u2019s week 4
+in.encore=0
+in.venue=club
+in.n=10
+in.fans=545
+in.first=10
+in.hintOnly=0
+in.best=4
+in.hintTotal=1
+in.songs=separate:0:0,library:0:0,calendar:0:0,weird:0:0,definitely:0:0,because:0:0,beautiful:0:0,answer:0:0,february:0:0,business:0:0
+in.stickers=sold-out,venue-rec
+in.unlocks=
+out.pct=1
+out.pctRound=100
+out.eyebrow=it\u2019s week 4 \u2736 remix
+out.head=sold out
+out.sub=natalia, you\u2019re so ready for that test.
+out.top=admit one \u2665
+out.venue=live at the fuzz, downtown
+out.fansNum=545
+out.fans=545 fans
+out.rows=first try:10/10|best streak:4|hints:1
+out.class=vip
+out.bars=
+out.barSeed=2026-09-01remix545
+out.date=2026-09-01
+out.stamp=sold\u000aout
+out.stkTitle=new for your tour journal
+out.stkNames=first sold-out show, rec center
+out.stkArt=2
+out.unlockTitle=
+out.unlock=
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:separate:nailed it|ok:library:nailed it|ok:calendar:nailed it|ok:weird:nailed it|ok:definitely:nailed it|ok:because:nailed it|ok:beautiful:nailed it|ok:answer:nailed it|ok:february:nailed it|ok:business:nailed it
+out.button=again:play again
+out.back=back to the map
+out.bubble=that\u2019s a vip night. framing this ticket.
+end
+case 5
+in.date=2027-02-08
+in.mode=slots
+in.modeName=missing letters
+in.week=week 1
+in.encore=0
+in.venue=theater
+in.n=10
+in.fans=580
+in.first=8
+in.hintOnly=0
+in.best=1
+in.hintTotal=2
+in.songs=necessary:1:0,island:0:0,calendar:1:1,definitely:0:0,answer:1:1,receive:0:0,separate:0:0,friend:0:0,enough:0:0,believe:0:0
+in.stickers=ten-shows,every-mode,streak-5,venue-arena
+in.unlocks=arena
+out.pct=0.8
+out.pctRound=80
+out.eyebrow=week 1 \u2736 missing letters
+out.head=what a show
+out.sub=a couple more run-throughs and it\u2019s perfect.
+out.top=admit one \u2665
+out.venue=live at the old movie palace
+out.fansNum=580
+out.fans=580 fans
+out.rows=first try:8/10|best streak:1|hints:2
+out.class=ga
+out.bars=69:4
+out.barSeed=2027-02-08slots580
+out.date=2027-02-08
+out.stamp=
+out.stkTitle=new for your tour journal
+out.stkNames=ten shows, played every stage, five-day streak + 1 more
+out.stkArt=3
+out.unlockTitle=new venue unlocked
+out.unlock=the arena
+out.setTitle=tonight\u2019s setlist
+out.setlist=miss:necessary:rehearse again|ok:island:nailed it|miss:calendar:rehearse again|ok:definitely:nailed it|miss:answer:rehearse again|ok:receive:nailed it|ok:separate:nailed it|ok:friend:nailed it|ok:enough:nailed it|ok:believe:nailed it
+out.button=encore:encore: 3 to rehearse
+out.back=back to the map
+out.bubble=the encore replays the 3 you missed. half fans, zero pressure.
+end
+case 6
+in.date=2026-07-15
+in.mode=vowels
+in.modeName=missing vowels
+in.week=week of nov 17
+in.encore=0
+in.venue=festival
+in.n=2
+in.fans=26187
+in.first=1
+in.hintOnly=0
+in.best=0
+in.hintTotal=2
+in.songs=receive:1:0,enough:1:1
+in.stickers=
+in.unlocks=arena,records
+out.pct=0.5
+out.pctRound=50
+out.eyebrow=week of nov 17 \u2736 missing vowels
+out.head=rehearsal night
+out.sub=every star rehearses. run it back.
+out.top=admit one \u2665
+out.venue=live at summer festival side stage
+out.fansNum=26,187
+out.fans=26,187 fans
+out.rows=first try:1/2|best streak:0|hints:2
+out.class=ga
+out.bars=
+out.barSeed=2026-07-15vowels26187
+out.date=2026-07-15
+out.stamp=
+out.stkTitle=
+out.stkNames=
+out.stkArt=0
+out.unlockTitle=new venue unlocked
+out.unlock=record store basement
+out.setTitle=tonight\u2019s setlist
+out.setlist=miss:receive:rehearse again|miss:enough:rehearse again
+out.button=encore:encore: 2 to rehearse
+out.back=back to the map
+out.bubble=the encore replays the 2 you missed. half fans, zero pressure.
+end
+case 7
+in.date=2027-12-22
+in.mode=fanmail
+in.modeName=fan mail
+in.week=Week 12: Tricky Ones
+in.encore=0
+in.venue=arena
+in.n=10
+in.fans=944
+in.first=6
+in.hintOnly=0
+in.best=8
+in.hintTotal=1
+in.songs=business:0:0,receive:0:0,friend:1:1,rhythm:1:0,separate:0:0,because:1:0,different:1:0,weird:0:0,believe:0:0,favorite:1:0
+in.stickers=venue-records
+in.unlocks=
+out.pct=0.6
+out.pctRound=60
+out.eyebrow=Week 12: Tricky Ones \u2736 fan mail
+out.head=rehearsal night
+out.sub=every star rehearses. run it back.
+out.top=admit one \u2665
+out.venue=live at the arena
+out.fansNum=944
+out.fans=944 fans
+out.rows=first try:6/10|best streak:8|hints:1
+out.class=ga
+out.bars=16:4,56:2,59:3,77:1
+out.barSeed=2027-12-22fanmail944
+out.date=2027-12-22
+out.stamp=
+out.stkTitle=new for your tour journal
+out.stkNames=record store
+out.stkArt=1
+out.unlockTitle=
+out.unlock=
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:business:nailed it|ok:receive:nailed it|miss:friend:rehearse again|miss:rhythm:rehearse again|ok:separate:nailed it|miss:because:rehearse again|miss:different:rehearse again|ok:weird:nailed it|ok:believe:nailed it|miss:favorite:rehearse again
+out.button=encore:encore: 5 to rehearse
+out.back=back to the map
+out.bubble=the encore replays the 5 you missed. half fans, zero pressure.
+end
+case 8
+in.date=2026-05-01
+in.mode=remix
+in.modeName=remix
+in.week=b & c <words>
+in.encore=1
+in.venue=coffee
+in.n=4
+in.fans=547
+in.first=4
+in.hintOnly=0
+in.best=3
+in.hintTotal=2
+in.songs=island:0:0,rhythm:0:0,business:0:0,february:0:0
+in.stickers=streak-5,first-show,venue-rooftop
+in.unlocks=
+out.pct=1
+out.pctRound=100
+out.eyebrow=b & c <words> \u2736 remix encore
+out.head=sold out
+out.sub=natalia, you\u2019re so ready for that test.
+out.top=admit one \u2665
+out.venue=live at the corner coffee shop
+out.fansNum=547
+out.fans=547 fans
+out.rows=first try:4/4|best streak:3|hints:2
+out.class=vip
+out.bars=36:1,38:2
+out.barSeed=2026-05-01remix547
+out.date=2026-05-01
+out.stamp=sold\u000aout
+out.stkTitle=new for your tour journal
+out.stkNames=five-day streak, opening night, rooftop
+out.stkArt=3
+out.unlockTitle=
+out.unlock=
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:island:nailed it|ok:rhythm:nailed it|ok:business:nailed it|ok:february:nailed it
+out.button=again:play again
+out.back=back to the map
+out.bubble=that\u2019s a vip night. framing this ticket.
+end
+case 9
+in.date=2027-10-08
+in.mode=slots
+in.modeName=missing letters
+in.week=it\u2019s week 4
+in.encore=0
+in.venue=records
+in.n=10
+in.fans=15324
+in.first=5
+in.hintOnly=3
+in.best=9
+in.hintTotal=5
+in.songs=weird:1:0,definitely:0:0,february:0:1,necessary:0:0,answer:0:0,receive:0:1,beautiful:0:1,believe:0:0,because:1:0,library:1:0
+in.stickers=master-any,hour,venue-rec,streak-10,venue-theater
+in.unlocks=rooftop
+out.pct=0.65
+out.pctRound=65
+out.eyebrow=it\u2019s week 4 \u2736 missing letters
+out.head=rehearsal night
+out.sub=every star rehearses. run it back.
+out.top=admit one \u2665
+out.venue=live at record store basement
+out.fansNum=15,324
+out.fans=15,324 fans
+out.rows=first try:5/10|best streak:9|hints:5
+out.class=ga
+out.bars=26:3,83:3
+out.barSeed=2027-10-08slots15324
+out.date=2027-10-08
+out.stamp=
+out.stkTitle=new for your tour journal
+out.stkNames=mastered a skill, an hour of practice, rec center + 2 more
+out.stkArt=3
+out.unlockTitle=new venue unlocked
+out.unlock=rooftop party
+out.setTitle=tonight\u2019s setlist
+out.setlist=miss:weird:rehearse again|ok:definitely:nailed it|hint:february:used a hint|ok:necessary:nailed it|ok:answer:nailed it|hint:receive:used a hint|hint:beautiful:used a hint|ok:believe:nailed it|miss:because:rehearse again|miss:library:rehearse again
+out.button=encore:encore: 3 to rehearse
+out.back=back to the map
+out.bubble=the encore replays the 3 you missed. half fans, zero pressure.
+end
+case 10
+in.date=2026-03-15
+in.mode=vowels
+in.modeName=missing vowels
+in.week=week 1
+in.encore=0
+in.venue=rec
+in.n=10
+in.fans=0
+in.first=0
+in.hintOnly=10
+in.best=5
+in.hintTotal=12
+in.songs=necessary:0:1,favorite:0:1,business:0:1,believe:0:1,separate:0:1,library:0:1,because:0:1,through:0:1,definitely:0:1,beautiful:0:1
+in.stickers=streak-3,venue-club
+in.unlocks=theater,rooftop
+out.pct=0.5
+out.pctRound=50
+out.eyebrow=week 1 \u2736 missing vowels
+out.head=rehearsal night
+out.sub=every star rehearses. run it back.
+out.top=admit one \u2665
+out.venue=live at rec center battle of the bands
+out.fansNum=0
+out.fans=0 fans
+out.rows=first try:0/10|best streak:5|hints:12
+out.class=ga
+out.bars=11:4,16:3,83:4,88:3,92:4,97:1
+out.barSeed=2026-03-15vowels0
+out.date=2026-03-15
+out.stamp=
+out.stkTitle=new for your tour journal
+out.stkNames=three-day streak, the club
+out.stkArt=2
+out.unlockTitle=new venue unlocked
+out.unlock=rooftop party
+out.setTitle=tonight\u2019s setlist
+out.setlist=hint:necessary:used a hint|hint:favorite:used a hint|hint:business:used a hint|hint:believe:used a hint|hint:separate:used a hint|hint:library:used a hint|hint:because:used a hint|hint:through:used a hint|hint:definitely:used a hint|hint:beautiful:used a hint
+out.button=again:play again
+out.back=back to the map
+out.bubble=good show. the bus leaves when you\u2019re ready.
+end
+case 11
+in.date=2027-08-22
+in.mode=fanmail
+in.modeName=fan mail
+in.week=week of nov 17
+in.encore=0
+in.venue=rooftop
+in.n=10
+in.fans=11
+in.first=5
+in.hintOnly=3
+in.best=4
+in.hintTotal=4
+in.songs=through:0:0,beautiful:0:0,business:0:1,island:0:0,receive:0:1,february:0:0,separate:1:1,because:1:0,friend:0:0,favorite:0:1
+in.stickers=venue-theater,venue-rec,streak-10,sold-out
+in.unlocks=
+out.pct=0.65
+out.pctRound=65
+out.eyebrow=week of nov 17 \u2736 fan mail
+out.head=rehearsal night
+out.sub=every star rehearses. run it back.
+out.top=admit one \u2665
+out.venue=live at rooftop party
+out.fansNum=11
+out.fans=11 fans
+out.rows=first try:5/10|best streak:4|hints:4
+out.class=ga
+out.bars=69:2,72:1
+out.barSeed=2027-08-22fanmail11
+out.date=2027-08-22
+out.stamp=
+out.stkTitle=new for your tour journal
+out.stkNames=theater, rec center, ten-day streak + 1 more
+out.stkArt=3
+out.unlockTitle=
+out.unlock=
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:through:nailed it|ok:beautiful:nailed it|hint:business:used a hint|ok:island:nailed it|hint:receive:used a hint|ok:february:nailed it|miss:separate:rehearse again|miss:because:rehearse again|ok:friend:nailed it|hint:favorite:used a hint
+out.button=encore:encore: 2 to rehearse
+out.back=back to the map
+out.bubble=the encore replays the 2 you missed. half fans, zero pressure.
+end
+case 12
+in.date=2026-01-01
+in.mode=remix
+in.modeName=remix
+in.week=Week 12: Tricky Ones
+in.encore=0
+in.venue=club
+in.n=10
+in.fans=54040
+in.first=10
+in.hintOnly=0
+in.best=1
+in.hintTotal=1
+in.songs=believe:0:0,definitely:0:0,rhythm:0:0,island:0:0,business:0:0,library:0:0,receive:0:0,friend:0:0,favorite:0:0,separate:0:0
+in.stickers=
+in.unlocks=
+out.pct=1
+out.pctRound=100
+out.eyebrow=Week 12: Tricky Ones \u2736 remix
+out.head=sold out
+out.sub=natalia, you\u2019re so ready for that test.
+out.top=admit one \u2665
+out.venue=live at the fuzz, downtown
+out.fansNum=54,040
+out.fans=54,040 fans
+out.rows=first try:10/10|best streak:1|hints:1
+out.class=vip
+out.bars=25:3
+out.barSeed=2026-01-01remix54040
+out.date=2026-01-01
+out.stamp=sold\u000aout
+out.stkTitle=
+out.stkNames=
+out.stkArt=0
+out.unlockTitle=
+out.unlock=
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:believe:nailed it|ok:definitely:nailed it|ok:rhythm:nailed it|ok:island:nailed it|ok:business:nailed it|ok:library:nailed it|ok:receive:nailed it|ok:friend:nailed it|ok:favorite:nailed it|ok:separate:nailed it
+out.button=again:play again
+out.back=back to the map
+out.bubble=that\u2019s a vip night. framing this ticket.
+end
+case 13
+in.date=2027-06-08
+in.mode=slots
+in.modeName=missing letters
+in.week=b & c <words>
+in.encore=1
+in.venue=theater
+in.n=1
+in.fans=1132
+in.first=0
+in.hintOnly=1
+in.best=0
+in.hintTotal=3
+in.songs=separate:0:1
+in.stickers=master-math
+in.unlocks=theater
+out.pct=0.5
+out.pctRound=50
+out.eyebrow=b & c <words> \u2736 missing letters encore
+out.head=rehearsal night
+out.sub=every star rehearses. run it back.
+out.top=admit one \u2665
+out.venue=live at the old movie palace
+out.fansNum=1,132
+out.fans=1,132 fans
+out.rows=first try:0/1|best streak:0|hints:3
+out.class=ga
+out.bars=
+out.barSeed=2027-06-08slots1132
+out.date=2027-06-08
+out.stamp=
+out.stkTitle=new for your tour journal
+out.stkNames=math headliner
+out.stkArt=1
+out.unlockTitle=new venue unlocked
+out.unlock=the old movie palace
+out.setTitle=tonight\u2019s setlist
+out.setlist=hint:separate:used a hint
+out.button=again:play again
+out.back=back to the map
+out.bubble=good show. the bus leaves when you\u2019re ready.
+end
+case 14
+in.date=2026-11-15
+in.mode=vowels
+in.modeName=missing vowels
+in.week=it\u2019s week 4
+in.encore=0
+in.venue=festival
+in.n=10
+in.fans=310
+in.first=6
+in.hintOnly=1
+in.best=4
+in.hintTotal=5
+in.songs=separate:0:0,favorite:0:0,business:1:0,enough:1:1,calendar:0:0,through:0:0,believe:0:1,rhythm:0:0,definitely:0:0,beautiful:1:1
+in.stickers=venue-theater,hour,venue-festival
+in.unlocks=rooftop,theater
+out.pct=0.65
+out.pctRound=65
+out.eyebrow=it\u2019s week 4 \u2736 missing vowels
+out.head=rehearsal night
+out.sub=every star rehearses. run it back.
+out.top=admit one \u2665
+out.venue=live at summer festival side stage
+out.fansNum=310
+out.fans=310 fans
+out.rows=first try:6/10|best streak:4|hints:5
+out.class=ga
+out.bars=0:1,9:3,80:1,82:2
+out.barSeed=2026-11-15vowels310
+out.date=2026-11-15
+out.stamp=
+out.stkTitle=new for your tour journal
+out.stkNames=theater, an hour of practice, festival
+out.stkArt=3
+out.unlockTitle=new venue unlocked
+out.unlock=the old movie palace
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:separate:nailed it|ok:favorite:nailed it|miss:business:rehearse again|miss:enough:rehearse again|ok:calendar:nailed it|ok:through:nailed it|hint:believe:used a hint|ok:rhythm:nailed it|ok:definitely:nailed it|miss:beautiful:rehearse again
+out.button=encore:encore: 3 to rehearse
+out.back=back to the map
+out.bubble=the encore replays the 3 you missed. half fans, zero pressure.
+end
+case 15
+in.date=2027-04-22
+in.mode=fanmail
+in.modeName=fan mail
+in.week=week 1
+in.encore=0
+in.venue=arena
+in.n=10
+in.fans=54304
+in.first=7
+in.hintOnly=2
+in.best=8
+in.hintTotal=4
+in.songs=believe:0:0,through:0:0,february:0:0,answer:0:1,receive:0:1,weird:1:1,library:0:0,separate:0:0,favorite:0:0,friend:0:0
+in.stickers=ten-shows,venue-rec,master-math,clean-run,streak-3
+in.unlocks=
+out.pct=0.8
+out.pctRound=80
+out.eyebrow=week 1 \u2736 fan mail
+out.head=what a show
+out.sub=a couple more run-throughs and it\u2019s perfect.
+out.top=admit one \u2665
+out.venue=live at the arena
+out.fansNum=54,304
+out.fans=54,304 fans
+out.rows=first try:7/10|best streak:8|hints:4
+out.class=ga
+out.bars=0:2,54:3
+out.barSeed=2027-04-22fanmail54304
+out.date=2027-04-22
+out.stamp=
+out.stkTitle=new for your tour journal
+out.stkNames=ten shows, rec center, math headliner + 2 more
+out.stkArt=3
+out.unlockTitle=
+out.unlock=
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:believe:nailed it|ok:through:nailed it|ok:february:nailed it|hint:answer:used a hint|hint:receive:used a hint|miss:weird:rehearse again|ok:library:nailed it|ok:separate:nailed it|ok:favorite:nailed it|ok:friend:nailed it
+out.button=encore:encore: 1 to rehearse
+out.back=back to the map
+out.bubble=the encore replays the one you missed. half fans, zero pressure.
+end
+case 16
+in.date=2026-09-01
+in.mode=remix
+in.modeName=remix
+in.week=week of nov 17
+in.encore=0
+in.venue=coffee
+in.n=10
+in.fans=745
+in.first=10
+in.hintOnly=0
+in.best=8
+in.hintTotal=0
+in.songs=through:0:0,enough:0:0,receive:0:0,believe:0:0,library:0:0,business:0:0,beautiful:0:0,favorite:0:0,calendar:0:0,friend:0:0
+in.stickers=every-mode,first-show
+in.unlocks=
+out.pct=1
+out.pctRound=100
+out.eyebrow=week of nov 17 \u2736 remix
+out.head=sold out
+out.sub=natalia, you\u2019re so ready for that test.
+out.top=admit one \u2665
+out.venue=live at the corner coffee shop
+out.fansNum=745
+out.fans=745 fans
+out.rows=first try:10/10|best streak:8|hints:0
+out.class=vip
+out.bars=54:4,59:2
+out.barSeed=2026-09-01remix745
+out.date=2026-09-01
+out.stamp=sold\u000aout
+out.stkTitle=new for your tour journal
+out.stkNames=played every stage, opening night
+out.stkArt=2
+out.unlockTitle=
+out.unlock=
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:through:nailed it|ok:enough:nailed it|ok:receive:nailed it|ok:believe:nailed it|ok:library:nailed it|ok:business:nailed it|ok:beautiful:nailed it|ok:favorite:nailed it|ok:calendar:nailed it|ok:friend:nailed it
+out.button=again:play again
+out.back=back to the map
+out.bubble=that\u2019s a vip night. framing this ticket.
+end
+case 17
+in.date=2027-02-08
+in.mode=slots
+in.modeName=missing letters
+in.week=Week 12: Tricky Ones
+in.encore=0
+in.venue=records
+in.n=10
+in.fans=597
+in.first=8
+in.hintOnly=1
+in.best=6
+in.hintTotal=4
+in.songs=receive:0:0,separate:0:1,because:0:0,enough:0:0,rhythm:0:0,through:0:0,calendar:0:0,favorite:1:1,library:0:0,answer:0:0
+in.stickers=sold-out,streak-5,venue-theater,master-math
+in.unlocks=arena
+out.pct=0.85
+out.pctRound=85
+out.eyebrow=Week 12: Tricky Ones \u2736 missing letters
+out.head=what a show
+out.sub=a couple more run-throughs and it\u2019s perfect.
+out.top=admit one \u2665
+out.venue=live at record store basement
+out.fansNum=597
+out.fans=597 fans
+out.rows=first try:8/10|best streak:6|hints:4
+out.class=ga
+out.bars=19:1,88:1
+out.barSeed=2027-02-08slots597
+out.date=2027-02-08
+out.stamp=
+out.stkTitle=new for your tour journal
+out.stkNames=first sold-out show, five-day streak, theater + 1 more
+out.stkArt=3
+out.unlockTitle=new venue unlocked
+out.unlock=the arena
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:receive:nailed it|hint:separate:used a hint|ok:because:nailed it|ok:enough:nailed it|ok:rhythm:nailed it|ok:through:nailed it|ok:calendar:nailed it|miss:favorite:rehearse again|ok:library:nailed it|ok:answer:nailed it
+out.button=encore:encore: 1 to rehearse
+out.back=back to the map
+out.bubble=the encore replays the one you missed. half fans, zero pressure.
+end
+case 18
+in.date=2026-07-15
+in.mode=vowels
+in.modeName=missing vowels
+in.week=b & c <words>
+in.encore=1
+in.venue=rec
+in.n=3
+in.fans=0
+in.first=3
+in.hintOnly=0
+in.best=1
+in.hintTotal=1
+in.songs=business:1:0,february:0:0,definitely:0:0
+in.stickers=
+in.unlocks=rec,arena
+out.pct=1
+out.pctRound=100
+out.eyebrow=b & c <words> \u2736 missing vowels encore
+out.head=sold out
+out.sub=natalia, you\u2019re so ready for that test.
+out.top=admit one \u2665
+out.venue=live at rec center battle of the bands
+out.fansNum=0
+out.fans=0 fans
+out.rows=first try:3/3|best streak:1|hints:1
+out.class=vip
+out.bars=42:4,47:2
+out.barSeed=2026-07-15vowels0
+out.date=2026-07-15
+out.stamp=sold\u000aout
+out.stkTitle=
+out.stkNames=
+out.stkArt=0
+out.unlockTitle=new venue unlocked
+out.unlock=the arena
+out.setTitle=tonight\u2019s setlist
+out.setlist=miss:business:rehearse again|ok:february:nailed it|ok:definitely:nailed it
+out.button=again:play again
+out.back=back to the map
+out.bubble=that\u2019s a vip night. framing this ticket.
+end
+case 19
+in.date=2027-12-22
+in.mode=fanmail
+in.modeName=fan mail
+in.week=it\u2019s week 4
+in.encore=0
+in.venue=rooftop
+in.n=10
+in.fans=508
+in.first=0
+in.hintOnly=10
+in.best=0
+in.hintTotal=12
+in.songs=friend:0:1,through:0:1,island:0:1,library:0:1,different:0:1,business:0:1,receive:0:1,definitely:0:1,calendar:0:1,weird:0:1
+in.stickers=fifty-shows
+in.unlocks=
+out.pct=0.5
+out.pctRound=50
+out.eyebrow=it\u2019s week 4 \u2736 fan mail
+out.head=rehearsal night
+out.sub=every star rehearses. run it back.
+out.top=admit one \u2665
+out.venue=live at rooftop party
+out.fansNum=508
+out.fans=508 fans
+out.rows=first try:0/10|best streak:0|hints:12
+out.class=ga
+out.bars=17:4
+out.barSeed=2027-12-22fanmail508
+out.date=2027-12-22
+out.stamp=
+out.stkTitle=new for your tour journal
+out.stkNames=fifty shows
+out.stkArt=1
+out.unlockTitle=
+out.unlock=
+out.setTitle=tonight\u2019s setlist
+out.setlist=hint:friend:used a hint|hint:through:used a hint|hint:island:used a hint|hint:library:used a hint|hint:different:used a hint|hint:business:used a hint|hint:receive:used a hint|hint:definitely:used a hint|hint:calendar:used a hint|hint:weird:used a hint
+out.button=again:play again
+out.back=back to the map
+out.bubble=good show. the bus leaves when you\u2019re ready.
+end
+case 20
+in.date=2026-05-01
+in.mode=remix
+in.modeName=remix
+in.week=week 1
+in.encore=0
+in.venue=club
+in.n=1
+in.fans=73
+in.first=1
+in.hintOnly=0
+in.best=0
+in.hintTotal=2
+in.songs=enough:0:0
+in.stickers=sold-out,venue-theater,venue-rooftop
+in.unlocks=
+out.pct=1
+out.pctRound=100
+out.eyebrow=week 1 \u2736 remix
+out.head=sold out
+out.sub=natalia, you\u2019re so ready for that test.
+out.top=admit one \u2665
+out.venue=live at the fuzz, downtown
+out.fansNum=73
+out.fans=73 fans
+out.rows=first try:1/1|best streak:0|hints:2
+out.class=vip
+out.bars=0:1,58:3,62:4
+out.barSeed=2026-05-01remix73
+out.date=2026-05-01
+out.stamp=sold\u000aout
+out.stkTitle=new for your tour journal
+out.stkNames=first sold-out show, theater, rooftop
+out.stkArt=3
+out.unlockTitle=
+out.unlock=
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:enough:nailed it
+out.button=again:play again
+out.back=back to the map
+out.bubble=that\u2019s a vip night. framing this ticket.
+end
+case 21
+in.date=2027-10-08
+in.mode=slots
+in.modeName=missing letters
+in.week=week of nov 17
+in.encore=0
+in.venue=theater
+in.n=10
+in.fans=54327
+in.first=6
+in.hintOnly=2
+in.best=1
+in.hintTotal=6
+in.songs=enough:0:0,favorite:0:0,receive:1:0,answer:1:1,island:0:0,definitely:0:0,calendar:1:1,february:0:1,through:0:1,believe:0:0
+in.stickers=streak-3,venue-festival,fifty-shows,venue-theater,master-math
+in.unlocks=rooftop
+out.pct=0.7
+out.pctRound=70
+out.eyebrow=week of nov 17 \u2736 missing letters
+out.head=what a show
+out.sub=a couple more run-throughs and it\u2019s perfect.
+out.top=admit one \u2665
+out.venue=live at the old movie palace
+out.fansNum=54,327
+out.fans=54,327 fans
+out.rows=first try:6/10|best streak:1|hints:6
+out.class=ga
+out.bars=9:4,14:4,91:2,94:2,97:3
+out.barSeed=2027-10-08slots54327
+out.date=2027-10-08
+out.stamp=
+out.stkTitle=new for your tour journal
+out.stkNames=three-day streak, festival, fifty shows + 2 more
+out.stkArt=3
+out.unlockTitle=new venue unlocked
+out.unlock=rooftop party
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:enough:nailed it|ok:favorite:nailed it|miss:receive:rehearse again|miss:answer:rehearse again|ok:island:nailed it|ok:definitely:nailed it|miss:calendar:rehearse again|hint:february:used a hint|hint:through:used a hint|ok:believe:nailed it
+out.button=encore:encore: 3 to rehearse
+out.back=back to the map
+out.bubble=the encore replays the 3 you missed. half fans, zero pressure.
+end
+case 22
+in.date=2026-03-15
+in.mode=vowels
+in.modeName=missing vowels
+in.week=Week 12: Tricky Ones
+in.encore=0
+in.venue=festival
+in.n=10
+in.fans=1001
+in.first=3
+in.hintOnly=3
+in.best=4
+in.hintTotal=7
+in.songs=enough:0:1,february:1:0,beautiful:0:1,business:0:0,weird:1:1,calendar:0:0,definitely:0:0,island:0:1,through:1:1,because:1:0
+in.stickers=master-math,venue-rec
+in.unlocks=rooftop,club
+out.pct=0.45
+out.pctRound=45
+out.eyebrow=Week 12: Tricky Ones \u2736 missing vowels
+out.head=rehearsal night
+out.sub=every star rehearses. run it back.
+out.top=admit one \u2665
+out.venue=live at summer festival side stage
+out.fansNum=1,001
+out.fans=1,001 fans
+out.rows=first try:3/10|best streak:4|hints:7
+out.class=ga
+out.bars=8:1,10:2,21:1,91:3
+out.barSeed=2026-03-15vowels1001
+out.date=2026-03-15
+out.stamp=
+out.stkTitle=new for your tour journal
+out.stkNames=math headliner, rec center
+out.stkArt=2
+out.unlockTitle=new venue unlocked
+out.unlock=the fuzz, downtown
+out.setTitle=tonight\u2019s setlist
+out.setlist=hint:enough:used a hint|miss:february:rehearse again|hint:beautiful:used a hint|ok:business:nailed it|miss:weird:rehearse again|ok:calendar:nailed it|ok:definitely:nailed it|hint:island:used a hint|miss:through:rehearse again|miss:because:rehearse again
+out.button=encore:encore: 4 to rehearse
+out.back=back to the map
+out.bubble=the encore replays the 4 you missed. half fans, zero pressure.
+end
+case 23
+in.date=2027-08-22
+in.mode=fanmail
+in.modeName=fan mail
+in.week=b & c <words>
+in.encore=1
+in.venue=arena
+in.n=3
+in.fans=1201
+in.first=1
+in.hintOnly=1
+in.best=0
+in.hintTotal=3
+in.songs=enough:0:1,receive:1:0,rhythm:0:0
+in.stickers=venue-rooftop,master-math,master-any,ten-shows
+in.unlocks=
+out.pct=0.5
+out.pctRound=50
+out.eyebrow=b & c <words> \u2736 fan mail encore
+out.head=rehearsal night
+out.sub=every star rehearses. run it back.
+out.top=admit one \u2665
+out.venue=live at the arena
+out.fansNum=1,201
+out.fans=1,201 fans
+out.rows=first try:1/3|best streak:0|hints:3
+out.class=ga
+out.bars=
+out.barSeed=2027-08-22fanmail1201
+out.date=2027-08-22
+out.stamp=
+out.stkTitle=new for your tour journal
+out.stkNames=rooftop, math headliner, mastered a skill + 1 more
+out.stkArt=3
+out.unlockTitle=
+out.unlock=
+out.setTitle=tonight\u2019s setlist
+out.setlist=hint:enough:used a hint|miss:receive:rehearse again|ok:rhythm:nailed it
+out.button=again:play again
+out.back=back to the map
+out.bubble=good show. the bus leaves when you\u2019re ready.
+end
+case 24
+in.date=2026-01-01
+in.mode=remix
+in.modeName=remix
+in.week=it\u2019s week 4
+in.encore=0
+in.venue=coffee
+in.n=10
+in.fans=39176
+in.first=10
+in.hintOnly=0
+in.best=9
+in.hintTotal=2
+in.songs=february:0:0,believe:0:0,favorite:0:0,necessary:0:0,answer:0:0,separate:0:0,rhythm:0:0,business:0:0,island:0:0,because:0:0
+in.stickers=
+in.unlocks=
+out.pct=1
+out.pctRound=100
+out.eyebrow=it\u2019s week 4 \u2736 remix
+out.head=sold out
+out.sub=natalia, you\u2019re so ready for that test.
+out.top=admit one \u2665
+out.venue=live at the corner coffee shop
+out.fansNum=39,176
+out.fans=39,176 fans
+out.rows=first try:10/10|best streak:9|hints:2
+out.class=vip
+out.bars=62:2,65:3,69:1
+out.barSeed=2026-01-01remix39176
+out.date=2026-01-01
+out.stamp=sold\u000aout
+out.stkTitle=
+out.stkNames=
+out.stkArt=0
+out.unlockTitle=
+out.unlock=
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:february:nailed it|ok:believe:nailed it|ok:favorite:nailed it|ok:necessary:nailed it|ok:answer:nailed it|ok:separate:nailed it|ok:rhythm:nailed it|ok:business:nailed it|ok:island:nailed it|ok:because:nailed it
+out.button=again:play again
+out.back=back to the map
+out.bubble=that\u2019s a vip night. framing this ticket.
+end
+case 25
+in.date=2027-06-08
+in.mode=slots
+in.modeName=missing letters
+in.week=week 1
+in.encore=0
+in.venue=records
+in.n=10
+in.fans=487
+in.first=3
+in.hintOnly=4
+in.best=5
+in.hintTotal=5
+in.songs=through:1:0,calendar:0:0,library:1:1,beautiful:0:0,friend:0:0,believe:0:1,definitely:0:1,different:0:1,rhythm:1:0,necessary:0:1
+in.stickers=venue-theater
+in.unlocks=theater
+out.pct=0.5
+out.pctRound=50
+out.eyebrow=week 1 \u2736 missing letters
+out.head=rehearsal night
+out.sub=every star rehearses. run it back.
+out.top=admit one \u2665
+out.venue=live at record store basement
+out.fansNum=487
+out.fans=487 fans
+out.rows=first try:3/10|best streak:5|hints:5
+out.class=ga
+out.bars=0:3
+out.barSeed=2027-06-08slots487
+out.date=2027-06-08
+out.stamp=
+out.stkTitle=new for your tour journal
+out.stkNames=theater
+out.stkArt=1
+out.unlockTitle=new venue unlocked
+out.unlock=the old movie palace
+out.setTitle=tonight\u2019s setlist
+out.setlist=miss:through:rehearse again|ok:calendar:nailed it|miss:library:rehearse again|ok:beautiful:nailed it|ok:friend:nailed it|hint:believe:used a hint|hint:definitely:used a hint|hint:different:used a hint|miss:rhythm:rehearse again|hint:necessary:used a hint
+out.button=encore:encore: 3 to rehearse
+out.back=back to the map
+out.bubble=the encore replays the 3 you missed. half fans, zero pressure.
+end
+case 26
+in.date=2026-11-15
+in.mode=vowels
+in.modeName=missing vowels
+in.week=week of nov 17
+in.encore=0
+in.venue=rec
+in.n=10
+in.fans=0
+in.first=8
+in.hintOnly=2
+in.best=2
+in.hintTotal=4
+in.songs=receive:0:0,beautiful:0:0,weird:0:0,answer:0:1,friend:0:0,different:0:0,believe:0:0,because:0:1,library:0:0,february:0:0
+in.stickers=streak-10,every-mode,master-spell
+in.unlocks=rec,rooftop
+out.pct=0.9
+out.pctRound=90
+out.eyebrow=week of nov 17 \u2736 missing vowels
+out.head=sold out
+out.sub=natalia, you\u2019re so ready for that test.
+out.top=admit one \u2665
+out.venue=live at rec center battle of the bands
+out.fansNum=0
+out.fans=0 fans
+out.rows=first try:8/10|best streak:2|hints:4
+out.class=vip
+out.bars=0:1,41:3,45:4,70:2,73:3,89:2
+out.barSeed=2026-11-15vowels0
+out.date=2026-11-15
+out.stamp=sold\u000aout
+out.stkTitle=new for your tour journal
+out.stkNames=ten-day streak, played every stage, spelling headliner
+out.stkArt=3
+out.unlockTitle=new venue unlocked
+out.unlock=rooftop party
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:receive:nailed it|ok:beautiful:nailed it|ok:weird:nailed it|hint:answer:used a hint|ok:friend:nailed it|ok:different:nailed it|ok:believe:nailed it|hint:because:used a hint|ok:library:nailed it|ok:february:nailed it
+out.button=again:play again
+out.back=back to the map
+out.bubble=that\u2019s a vip night. framing this ticket.
+end
+case 27
+in.date=2027-04-22
+in.mode=fanmail
+in.modeName=fan mail
+in.week=Week 12: Tricky Ones
+in.encore=0
+in.venue=rooftop
+in.n=2
+in.fans=10062
+in.first=0
+in.hintOnly=1
+in.best=2
+in.hintTotal=3
+in.songs=favorite:1:0,friend:0:1
+in.stickers=sold-out,every-mode,venue-festival,master-math,first-show
+in.unlocks=
+out.pct=0.25
+out.pctRound=25
+out.eyebrow=Week 12: Tricky Ones \u2736 fan mail
+out.head=rehearsal night
+out.sub=every star rehearses. run it back.
+out.top=admit one \u2665
+out.venue=live at rooftop party
+out.fansNum=10,062
+out.fans=10,062 fans
+out.rows=first try:0/2|best streak:2|hints:3
+out.class=ga
+out.bars=30:1,32:2
+out.barSeed=2027-04-22fanmail10062
+out.date=2027-04-22
+out.stamp=
+out.stkTitle=new for your tour journal
+out.stkNames=first sold-out show, played every stage, festival + 2 more
+out.stkArt=3
+out.unlockTitle=
+out.unlock=
+out.setTitle=tonight\u2019s setlist
+out.setlist=miss:favorite:rehearse again|hint:friend:used a hint
+out.button=encore:encore: 1 to rehearse
+out.back=back to the map
+out.bubble=the encore replays the one you missed. half fans, zero pressure.
+end
+case 28
+in.date=2026-09-01
+in.mode=remix
+in.modeName=remix
+in.week=b & c <words>
+in.encore=1
+in.venue=club
+in.n=1
+in.fans=640
+in.first=0
+in.hintOnly=1
+in.best=0
+in.hintTotal=2
+in.songs=separate:0:1
+in.stickers=venue-theater,clean-run
+in.unlocks=
+out.pct=0.5
+out.pctRound=50
+out.eyebrow=b & c <words> \u2736 remix encore
+out.head=rehearsal night
+out.sub=every star rehearses. run it back.
+out.top=admit one \u2665
+out.venue=live at the fuzz, downtown
+out.fansNum=640
+out.fans=640 fans
+out.rows=first try:0/1|best streak:0|hints:2
+out.class=ga
+out.bars=7:4,12:4,99:3
+out.barSeed=2026-09-01remix640
+out.date=2026-09-01
+out.stamp=
+out.stkTitle=new for your tour journal
+out.stkNames=theater, ten in a row
+out.stkArt=2
+out.unlockTitle=
+out.unlock=
+out.setTitle=tonight\u2019s setlist
+out.setlist=hint:separate:used a hint
+out.button=again:play again
+out.back=back to the map
+out.bubble=good show. the bus leaves when you\u2019re ready.
+end
+case 29
+in.date=2027-02-08
+in.mode=slots
+in.modeName=missing letters
+in.week=it\u2019s week 4
+in.encore=0
+in.venue=theater
+in.n=10
+in.fans=1391
+in.first=9
+in.hintOnly=0
+in.best=3
+in.hintTotal=0
+in.songs=different:0:0,necessary:1:0,favorite:0:0,definitely:0:0,through:0:0,answer:0:0,business:0:0,rhythm:0:0,receive:0:0,island:0:0
+in.stickers=clean-run,master-any,venue-club,venue-rec
+in.unlocks=records
+out.pct=0.9
+out.pctRound=90
+out.eyebrow=it\u2019s week 4 \u2736 missing letters
+out.head=sold out
+out.sub=natalia, you\u2019re so ready for that test.
+out.top=admit one \u2665
+out.venue=live at the old movie palace
+out.fansNum=1,391
+out.fans=1,391 fans
+out.rows=first try:9/10|best streak:3|hints:0
+out.class=vip
+out.bars=28:2,44:2
+out.barSeed=2027-02-08slots1391
+out.date=2027-02-08
+out.stamp=sold\u000aout
+out.stkTitle=new for your tour journal
+out.stkNames=ten in a row, mastered a skill, the club + 1 more
+out.stkArt=3
+out.unlockTitle=new venue unlocked
+out.unlock=record store basement
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:different:nailed it|miss:necessary:rehearse again|ok:favorite:nailed it|ok:definitely:nailed it|ok:through:nailed it|ok:answer:nailed it|ok:business:nailed it|ok:rhythm:nailed it|ok:receive:nailed it|ok:island:nailed it
+out.button=encore:encore: 1 to rehearse
+out.back=back to the map
+out.bubble=the encore replays the one you missed. half fans, zero pressure.
+end
+case 30
+in.date=2026-07-15
+in.mode=vowels
+in.modeName=missing vowels
+in.week=week 1
+in.encore=0
+in.venue=festival
+in.n=10
+in.fans=41817
+in.first=7
+in.hintOnly=1
+in.best=6
+in.hintTotal=2
+in.songs=weird:0:0,receive:0:0,through:0:0,different:0:0,enough:1:1,answer:1:0,separate:0:0,library:0:1,island:0:0,calendar:0:0
+in.stickers=
+in.unlocks=rooftop,festival
+out.pct=0.75
+out.pctRound=75
+out.eyebrow=week 1 \u2736 missing vowels
+out.head=what a show
+out.sub=a couple more run-throughs and it\u2019s perfect.
+out.top=admit one \u2665
+out.venue=live at summer festival side stage
+out.fansNum=41,817
+out.fans=41,817 fans
+out.rows=first try:7/10|best streak:6|hints:2
+out.class=ga
+out.bars=40:2
+out.barSeed=2026-07-15vowels41817
+out.date=2026-07-15
+out.stamp=
+out.stkTitle=
+out.stkNames=
+out.stkArt=0
+out.unlockTitle=new venue unlocked
+out.unlock=summer festival side stage
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:weird:nailed it|ok:receive:nailed it|ok:through:nailed it|ok:different:nailed it|miss:enough:rehearse again|miss:answer:rehearse again|ok:separate:nailed it|hint:library:used a hint|ok:island:nailed it|ok:calendar:nailed it
+out.button=encore:encore: 2 to rehearse
+out.back=back to the map
+out.bubble=the encore replays the 2 you missed. half fans, zero pressure.
+end
+case 31
+in.date=2027-12-22
+in.mode=fanmail
+in.modeName=fan mail
+in.week=week of nov 17
+in.encore=0
+in.venue=arena
+in.n=10
+in.fans=125
+in.first=9
+in.hintOnly=1
+in.best=9
+in.hintTotal=2
+in.songs=enough:0:0,answer:0:1,rhythm:0:0,business:0:0,different:1:0,necessary:0:0,through:0:0,definitely:0:0,friend:0:0,calendar:0:0
+in.stickers=venue-records
+in.unlocks=
+out.pct=0.95
+out.pctRound=95
+out.eyebrow=week of nov 17 \u2736 fan mail
+out.head=sold out
+out.sub=natalia, you\u2019re so ready for that test.
+out.top=admit one \u2665
+out.venue=live at the arena
+out.fansNum=125
+out.fans=125 fans
+out.rows=first try:9/10|best streak:9|hints:2
+out.class=vip
+out.bars=23:2,39:2,63:4,68:1
+out.barSeed=2027-12-22fanmail125
+out.date=2027-12-22
+out.stamp=sold\u000aout
+out.stkTitle=new for your tour journal
+out.stkNames=record store
+out.stkArt=1
+out.unlockTitle=
+out.unlock=
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:enough:nailed it|hint:answer:used a hint|ok:rhythm:nailed it|ok:business:nailed it|miss:different:rehearse again|ok:necessary:nailed it|ok:through:nailed it|ok:definitely:nailed it|ok:friend:nailed it|ok:calendar:nailed it
+out.button=encore:encore: 1 to rehearse
+out.back=back to the map
+out.bubble=the encore replays the one you missed. half fans, zero pressure.
+end
+case 32
+in.date=2026-05-01
+in.mode=remix
+in.modeName=remix
+in.week=Week 12: Tricky Ones
+in.encore=0
+in.venue=coffee
+in.n=10
+in.fans=729
+in.first=10
+in.hintOnly=0
+in.best=7
+in.hintTotal=2
+in.songs=answer:0:0,definitely:0:0,receive:0:0,favorite:0:0,february:0:0,friend:0:0,because:0:0,business:0:0,separate:0:0,rhythm:0:0
+in.stickers=hour,venue-rec,fifty-shows
+in.unlocks=
+out.pct=1
+out.pctRound=100
+out.eyebrow=Week 12: Tricky Ones \u2736 remix
+out.head=sold out
+out.sub=natalia, you\u2019re so ready for that test.
+out.top=admit one \u2665
+out.venue=live at the corner coffee shop
+out.fansNum=729
+out.fans=729 fans
+out.rows=first try:10/10|best streak:7|hints:2
+out.class=vip
+out.bars=
+out.barSeed=2026-05-01remix729
+out.date=2026-05-01
+out.stamp=sold\u000aout
+out.stkTitle=new for your tour journal
+out.stkNames=an hour of practice, rec center, fifty shows
+out.stkArt=3
+out.unlockTitle=
+out.unlock=
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:answer:nailed it|ok:definitely:nailed it|ok:receive:nailed it|ok:favorite:nailed it|ok:february:nailed it|ok:friend:nailed it|ok:because:nailed it|ok:business:nailed it|ok:separate:nailed it|ok:rhythm:nailed it
+out.button=again:play again
+out.back=back to the map
+out.bubble=that\u2019s a vip night. framing this ticket.
+end
+case 33
+in.date=2027-10-08
+in.mode=slots
+in.modeName=missing letters
+in.week=b & c <words>
+in.encore=1
+in.venue=records
+in.n=3
+in.fans=6436
+in.first=3
+in.hintOnly=0
+in.best=2
+in.hintTotal=1
+in.songs=answer:0:0,enough:1:0,receive:0:0
+in.stickers=streak-3,venue-records,streak-5,master-spell,sold-out
+in.unlocks=theater
+out.pct=1
+out.pctRound=100
+out.eyebrow=b & c <words> \u2736 missing letters encore
+out.head=sold out
+out.sub=natalia, you\u2019re so ready for that test.
+out.top=admit one \u2665
+out.venue=live at record store basement
+out.fansNum=6,436
+out.fans=6,436 fans
+out.rows=first try:3/3|best streak:2|hints:1
+out.class=vip
+out.bars=69:4
+out.barSeed=2027-10-08slots6436
+out.date=2027-10-08
+out.stamp=sold\u000aout
+out.stkTitle=new for your tour journal
+out.stkNames=three-day streak, record store, five-day streak + 2 more
+out.stkArt=3
+out.unlockTitle=new venue unlocked
+out.unlock=the old movie palace
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:answer:nailed it|miss:enough:rehearse again|ok:receive:nailed it
+out.button=again:play again
+out.back=back to the map
+out.bubble=that\u2019s a vip night. framing this ticket.
+end
+case 34
+in.date=2026-03-15
+in.mode=vowels
+in.modeName=missing vowels
+in.week=it\u2019s week 4
+in.encore=0
+in.venue=rec
+in.n=4
+in.fans=0
+in.first=2
+in.hintOnly=2
+in.best=2
+in.hintTotal=3
+in.songs=answer:0:0,island:0:0,through:0:1,calendar:0:1
+in.stickers=every-mode,clean-run
+in.unlocks=arena,club
+out.pct=0.75
+out.pctRound=75
+out.eyebrow=it\u2019s week 4 \u2736 missing vowels
+out.head=what a show
+out.sub=a couple more run-throughs and it\u2019s perfect.
+out.top=admit one \u2665
+out.venue=live at rec center battle of the bands
+out.fansNum=0
+out.fans=0 fans
+out.rows=first try:2/4|best streak:2|hints:3
+out.class=ga
+out.bars=11:4,16:3,83:4,88:3,92:4,97:1
+out.barSeed=2026-03-15vowels0
+out.date=2026-03-15
+out.stamp=
+out.stkTitle=new for your tour journal
+out.stkNames=played every stage, ten in a row
+out.stkArt=2
+out.unlockTitle=new venue unlocked
+out.unlock=the fuzz, downtown
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:answer:nailed it|ok:island:nailed it|hint:through:used a hint|hint:calendar:used a hint
+out.button=again:play again
+out.back=back to the map
+out.bubble=good show. the bus leaves when you\u2019re ready.
+end
+case 35
+in.date=2027-08-22
+in.mode=fanmail
+in.modeName=fan mail
+in.week=week 1
+in.encore=0
+in.venue=rooftop
+in.n=10
+in.fans=215
+in.first=7
+in.hintOnly=1
+in.best=5
+in.hintTotal=6
+in.songs=beautiful:0:0,through:0:1,believe:1:1,different:1:1,calendar:0:0,island:0:0,library:1:1,receive:0:0,rhythm:0:0,enough:0:0
+in.stickers=streak-3,venue-arena,master-any,streak-10
+in.unlocks=
+out.pct=0.75
+out.pctRound=75
+out.eyebrow=week 1 \u2736 fan mail
+out.head=what a show
+out.sub=a couple more run-throughs and it\u2019s perfect.
+out.top=admit one \u2665
+out.venue=live at rooftop party
+out.fansNum=215
+out.fans=215 fans
+out.rows=first try:7/10|best streak:5|hints:6
+out.class=ga
+out.bars=0:4,62:4
+out.barSeed=2027-08-22fanmail215
+out.date=2027-08-22
+out.stamp=
+out.stkTitle=new for your tour journal
+out.stkNames=three-day streak, the arena, mastered a skill + 1 more
+out.stkArt=3
+out.unlockTitle=
+out.unlock=
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:beautiful:nailed it|hint:through:used a hint|miss:believe:rehearse again|miss:different:rehearse again|ok:calendar:nailed it|ok:island:nailed it|miss:library:rehearse again|ok:receive:nailed it|ok:rhythm:nailed it|ok:enough:nailed it
+out.button=encore:encore: 3 to rehearse
+out.back=back to the map
+out.bubble=the encore replays the 3 you missed. half fans, zero pressure.
+end
+case 36
+in.date=2026-01-01
+in.mode=remix
+in.modeName=remix
+in.week=week of nov 17
+in.encore=0
+in.venue=club
+in.n=10
+in.fans=868
+in.first=10
+in.hintOnly=0
+in.best=0
+in.hintTotal=1
+in.songs=enough:0:0,favorite:0:0,rhythm:0:0,weird:0:0,calendar:0:0,through:0:0,because:0:0,library:0:0,receive:0:0,separate:0:0
+in.stickers=
+in.unlocks=
+out.pct=1
+out.pctRound=100
+out.eyebrow=week of nov 17 \u2736 remix
+out.head=sold out
+out.sub=natalia, you\u2019re so ready for that test.
+out.top=admit one \u2665
+out.venue=live at the fuzz, downtown
+out.fansNum=868
+out.fans=868 fans
+out.rows=first try:10/10|best streak:0|hints:1
+out.class=vip
+out.bars=24:4
+out.barSeed=2026-01-01remix868
+out.date=2026-01-01
+out.stamp=sold\u000aout
+out.stkTitle=
+out.stkNames=
+out.stkArt=0
+out.unlockTitle=
+out.unlock=
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:enough:nailed it|ok:favorite:nailed it|ok:rhythm:nailed it|ok:weird:nailed it|ok:calendar:nailed it|ok:through:nailed it|ok:because:nailed it|ok:library:nailed it|ok:receive:nailed it|ok:separate:nailed it
+out.button=again:play again
+out.back=back to the map
+out.bubble=that\u2019s a vip night. framing this ticket.
+end
+case 37
+in.date=2027-06-08
+in.mode=slots
+in.modeName=missing letters
+in.week=Week 12: Tricky Ones
+in.encore=0
+in.venue=theater
+in.n=10
+in.fans=233
+in.first=0
+in.hintOnly=10
+in.best=4
+in.hintTotal=12
+in.songs=definitely:0:1,february:0:1,necessary:0:1,enough:0:1,believe:0:1,different:0:1,calendar:0:1,business:0:1,because:0:1,separate:0:1
+in.stickers=first-show
+in.unlocks=rec
+out.pct=0.5
+out.pctRound=50
+out.eyebrow=Week 12: Tricky Ones \u2736 missing letters
+out.head=rehearsal night
+out.sub=every star rehearses. run it back.
+out.top=admit one \u2665
+out.venue=live at the old movie palace
+out.fansNum=233
+out.fans=233 fans
+out.rows=first try:0/10|best streak:4|hints:12
+out.class=ga
+out.bars=0:3
+out.barSeed=2027-06-08slots233
+out.date=2027-06-08
+out.stamp=
+out.stkTitle=new for your tour journal
+out.stkNames=opening night
+out.stkArt=1
+out.unlockTitle=new venue unlocked
+out.unlock=rec center battle of the bands
+out.setTitle=tonight\u2019s setlist
+out.setlist=hint:definitely:used a hint|hint:february:used a hint|hint:necessary:used a hint|hint:enough:used a hint|hint:believe:used a hint|hint:different:used a hint|hint:calendar:used a hint|hint:business:used a hint|hint:because:used a hint|hint:separate:used a hint
+out.button=again:play again
+out.back=back to the map
+out.bubble=good show. the bus leaves when you\u2019re ready.
+end
+case 38
+in.date=2026-11-15
+in.mode=vowels
+in.modeName=missing vowels
+in.week=b & c <words>
+in.encore=1
+in.venue=festival
+in.n=1
+in.fans=458
+in.first=1
+in.hintOnly=0
+in.best=0
+in.hintTotal=1
+in.songs=definitely:1:0
+in.stickers=fifty-shows,clean-run,streak-5
+in.unlocks=theater,festival
+out.pct=1
+out.pctRound=100
+out.eyebrow=b & c <words> \u2736 missing vowels encore
+out.head=sold out
+out.sub=natalia, you\u2019re so ready for that test.
+out.top=admit one \u2665
+out.venue=live at summer festival side stage
+out.fansNum=458
+out.fans=458 fans
+out.rows=first try:1/1|best streak:0|hints:1
+out.class=vip
+out.bars=46:2,49:2,75:4,87:1,89:4
+out.barSeed=2026-11-15vowels458
+out.date=2026-11-15
+out.stamp=sold\u000aout
+out.stkTitle=new for your tour journal
+out.stkNames=fifty shows, ten in a row, five-day streak
+out.stkArt=3
+out.unlockTitle=new venue unlocked
+out.unlock=summer festival side stage
+out.setTitle=tonight\u2019s setlist
+out.setlist=miss:definitely:rehearse again
+out.button=again:play again
+out.back=back to the map
+out.bubble=that\u2019s a vip night. framing this ticket.
+end
+case 39
+in.date=2027-04-22
+in.mode=fanmail
+in.modeName=fan mail
+in.week=it\u2019s week 4
+in.encore=0
+in.venue=arena
+in.n=10
+in.fans=59950
+in.first=7
+in.hintOnly=1
+in.best=10
+in.hintTotal=2
+in.songs=definitely:0:0,rhythm:1:0,answer:0:0,weird:0:0,enough:0:0,separate:0:1,calendar:1:0,february:0:0,beautiful:0:0,favorite:0:0
+in.stickers=streak-5,venue-rec,ten-shows,master-math,venue-records
+in.unlocks=
+out.pct=0.75
+out.pctRound=75
+out.eyebrow=it\u2019s week 4 \u2736 fan mail
+out.head=what a show
+out.sub=a couple more run-throughs and it\u2019s perfect.
+out.top=admit one \u2665
+out.venue=live at the arena
+out.fansNum=59,950
+out.fans=59,950 fans
+out.rows=first try:7/10|best streak:10|hints:2
+out.class=ga
+out.bars=60:1
+out.barSeed=2027-04-22fanmail59950
+out.date=2027-04-22
+out.stamp=
+out.stkTitle=new for your tour journal
+out.stkNames=five-day streak, rec center, ten shows + 2 more
+out.stkArt=3
+out.unlockTitle=
+out.unlock=
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:definitely:nailed it|miss:rhythm:rehearse again|ok:answer:nailed it|ok:weird:nailed it|ok:enough:nailed it|hint:separate:used a hint|miss:calendar:rehearse again|ok:february:nailed it|ok:beautiful:nailed it|ok:favorite:nailed it
+out.button=encore:encore: 2 to rehearse
+out.back=back to the map
+out.bubble=the encore replays the 2 you missed. half fans, zero pressure.
+end
+case 40
+in.date=2026-09-01
+in.mode=remix
+in.modeName=remix
+in.week=week 1
+in.encore=0
+in.venue=coffee
+in.n=10
+in.fans=560
+in.first=10
+in.hintOnly=0
+in.best=9
+in.hintTotal=2
+in.songs=different:0:0,weird:0:0,library:0:0,receive:0:0,enough:0:0,because:0:0,island:0:0,february:0:0,definitely:0:0,favorite:0:0
+in.stickers=master-spell,venue-records
+in.unlocks=
+out.pct=1
+out.pctRound=100
+out.eyebrow=week 1 \u2736 remix
+out.head=sold out
+out.sub=natalia, you\u2019re so ready for that test.
+out.top=admit one \u2665
+out.venue=live at the corner coffee shop
+out.fansNum=560
+out.fans=560 fans
+out.rows=first try:10/10|best streak:9|hints:2
+out.class=vip
+out.bars=22:4,27:2,63:1,91:4,96:1
+out.barSeed=2026-09-01remix560
+out.date=2026-09-01
+out.stamp=sold\u000aout
+out.stkTitle=new for your tour journal
+out.stkNames=spelling headliner, record store
+out.stkArt=2
+out.unlockTitle=
+out.unlock=
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:different:nailed it|ok:weird:nailed it|ok:library:nailed it|ok:receive:nailed it|ok:enough:nailed it|ok:because:nailed it|ok:island:nailed it|ok:february:nailed it|ok:definitely:nailed it|ok:favorite:nailed it
+out.button=again:play again
+out.back=back to the map
+out.bubble=that\u2019s a vip night. framing this ticket.
+end
+case 41
+in.date=2027-02-08
+in.mode=slots
+in.modeName=missing letters
+in.week=week of nov 17
+in.encore=0
+in.venue=records
+in.n=2
+in.fans=1164
+in.first=2
+in.hintOnly=0
+in.best=1
+in.hintTotal=1
+in.songs=february:0:0,rhythm:0:0
+in.stickers=streak-3,venue-arena,master-spell,venue-festival
+in.unlocks=rec
+out.pct=1
+out.pctRound=100
+out.eyebrow=week of nov 17 \u2736 missing letters
+out.head=sold out
+out.sub=natalia, you\u2019re so ready for that test.
+out.top=admit one \u2665
+out.venue=live at record store basement
+out.fansNum=1,164
+out.fans=1,164 fans
+out.rows=first try:2/2|best streak:1|hints:1
+out.class=vip
+out.bars=
+out.barSeed=2027-02-08slots1164
+out.date=2027-02-08
+out.stamp=sold\u000aout
+out.stkTitle=new for your tour journal
+out.stkNames=three-day streak, the arena, spelling headliner + 1 more
+out.stkArt=3
+out.unlockTitle=new venue unlocked
+out.unlock=rec center battle of the bands
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:february:nailed it|ok:rhythm:nailed it
+out.button=again:play again
+out.back=back to the map
+out.bubble=that\u2019s a vip night. framing this ticket.
+end
+case 42
+in.date=2026-07-15
+in.mode=vowels
+in.modeName=missing vowels
+in.week=Week 12: Tricky Ones
+in.encore=0
+in.venue=rec
+in.n=10
+in.fans=0
+in.first=4
+in.hintOnly=5
+in.best=1
+in.hintTotal=5
+in.songs=believe:0:1,rhythm:0:1,definitely:0:1,friend:0:0,enough:0:0,favorite:0:1,answer:0:0,weird:0:1,through:0:0,business:1:0
+in.stickers=
+in.unlocks=arena,records
+out.pct=0.65
+out.pctRound=65
+out.eyebrow=Week 12: Tricky Ones \u2736 missing vowels
+out.head=rehearsal night
+out.sub=every star rehearses. run it back.
+out.top=admit one \u2665
+out.venue=live at rec center battle of the bands
+out.fansNum=0
+out.fans=0 fans
+out.rows=first try:4/10|best streak:1|hints:5
+out.class=ga
+out.bars=42:4,47:2
+out.barSeed=2026-07-15vowels0
+out.date=2026-07-15
+out.stamp=
+out.stkTitle=
+out.stkNames=
+out.stkArt=0
+out.unlockTitle=new venue unlocked
+out.unlock=record store basement
+out.setTitle=tonight\u2019s setlist
+out.setlist=hint:believe:used a hint|hint:rhythm:used a hint|hint:definitely:used a hint|ok:friend:nailed it|ok:enough:nailed it|hint:favorite:used a hint|ok:answer:nailed it|hint:weird:used a hint|ok:through:nailed it|miss:business:rehearse again
+out.button=encore:encore: 1 to rehearse
+out.back=back to the map
+out.bubble=the encore replays the one you missed. half fans, zero pressure.
+end
+case 43
+in.date=2027-12-22
+in.mode=fanmail
+in.modeName=fan mail
+in.week=b & c <words>
+in.encore=1
+in.venue=rooftop
+in.n=2
+in.fans=659
+in.first=1
+in.hintOnly=0
+in.best=0
+in.hintTotal=0
+in.songs=beautiful:0:0,through:1:0
+in.stickers=venue-club
+in.unlocks=
+out.pct=0.5
+out.pctRound=50
+out.eyebrow=b & c <words> \u2736 fan mail encore
+out.head=rehearsal night
+out.sub=every star rehearses. run it back.
+out.top=admit one \u2665
+out.venue=live at rooftop party
+out.fansNum=659
+out.fans=659 fans
+out.rows=first try:1/2|best streak:0|hints:0
+out.class=ga
+out.bars=33:4,38:2,41:2,44:2
+out.barSeed=2027-12-22fanmail659
+out.date=2027-12-22
+out.stamp=
+out.stkTitle=new for your tour journal
+out.stkNames=the club
+out.stkArt=1
+out.unlockTitle=
+out.unlock=
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:beautiful:nailed it|miss:through:rehearse again
+out.button=again:play again
+out.back=back to the map
+out.bubble=good show. the bus leaves when you\u2019re ready.
+end
+case 44
+in.date=2026-05-01
+in.mode=remix
+in.modeName=remix
+in.week=it\u2019s week 4
+in.encore=0
+in.venue=club
+in.n=10
+in.fans=533
+in.first=10
+in.hintOnly=0
+in.best=3
+in.hintTotal=0
+in.songs=library:0:0,different:0:0,friend:0:0,weird:0:0,answer:0:0,receive:0:0,separate:0:0,favorite:0:0,because:0:0,believe:0:0
+in.stickers=venue-theater,master-any,venue-records
+in.unlocks=
+out.pct=1
+out.pctRound=100
+out.eyebrow=it\u2019s week 4 \u2736 remix
+out.head=sold out
+out.sub=natalia, you\u2019re so ready for that test.
+out.top=admit one \u2665
+out.venue=live at the fuzz, downtown
+out.fansNum=533
+out.fans=533 fans
+out.rows=first try:10/10|best streak:3|hints:0
+out.class=vip
+out.bars=17:2,20:3,35:3,81:3,85:4,90:2
+out.barSeed=2026-05-01remix533
+out.date=2026-05-01
+out.stamp=sold\u000aout
+out.stkTitle=new for your tour journal
+out.stkNames=theater, mastered a skill, record store
+out.stkArt=3
+out.unlockTitle=
+out.unlock=
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:library:nailed it|ok:different:nailed it|ok:friend:nailed it|ok:weird:nailed it|ok:answer:nailed it|ok:receive:nailed it|ok:separate:nailed it|ok:favorite:nailed it|ok:because:nailed it|ok:believe:nailed it
+out.button=again:play again
+out.back=back to the map
+out.bubble=that\u2019s a vip night. framing this ticket.
+end
+case 45
+in.date=2027-10-08
+in.mode=slots
+in.modeName=missing letters
+in.week=week 1
+in.encore=0
+in.venue=theater
+in.n=10
+in.fans=1784
+in.first=10
+in.hintOnly=0
+in.best=3
+in.hintTotal=2
+in.songs=necessary:0:0,separate:0:0,because:0:0,through:0:0,different:0:0,rhythm:1:0,definitely:0:0,library:0:0,business:0:0,believe:0:0
+in.stickers=fifty-shows,clean-run,sold-out,ten-shows,master-spell
+in.unlocks=rec
+out.pct=1
+out.pctRound=100
+out.eyebrow=week 1 \u2736 missing letters
+out.head=sold out
+out.sub=natalia, you\u2019re so ready for that test.
+out.top=admit one \u2665
+out.venue=live at the old movie palace
+out.fansNum=1,784
+out.fans=1,784 fans
+out.rows=first try:10/10|best streak:3|hints:2
+out.class=vip
+out.bars=51:1,74:3
+out.barSeed=2027-10-08slots1784
+out.date=2027-10-08
+out.stamp=sold\u000aout
+out.stkTitle=new for your tour journal
+out.stkNames=fifty shows, ten in a row, first sold-out show + 2 more
+out.stkArt=3
+out.unlockTitle=new venue unlocked
+out.unlock=rec center battle of the bands
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:necessary:nailed it|ok:separate:nailed it|ok:because:nailed it|ok:through:nailed it|ok:different:nailed it|miss:rhythm:rehearse again|ok:definitely:nailed it|ok:library:nailed it|ok:business:nailed it|ok:believe:nailed it
+out.button=encore:encore: 1 to rehearse
+out.back=back to the map
+out.bubble=the encore replays the one you missed. half fans, zero pressure.
+end
+case 46
+in.date=2026-03-15
+in.mode=vowels
+in.modeName=missing vowels
+in.week=week of nov 17
+in.encore=0
+in.venue=festival
+in.n=10
+in.fans=1198
+in.first=0
+in.hintOnly=10
+in.best=2
+in.hintTotal=11
+in.songs=beautiful:0:1,receive:0:1,different:0:1,because:0:1,enough:0:1,believe:0:1,separate:0:1,calendar:0:1,island:0:1,necessary:0:1
+in.stickers=streak-3,venue-records
+in.unlocks=records,festival
+out.pct=0.5
+out.pctRound=50
+out.eyebrow=week of nov 17 \u2736 missing vowels
+out.head=rehearsal night
+out.sub=every star rehearses. run it back.
+out.top=admit one \u2665
+out.venue=live at summer festival side stage
+out.fansNum=1,198
+out.fans=1,198 fans
+out.rows=first try:0/10|best streak:2|hints:11
+out.class=ga
+out.bars=18:2,81:1
+out.barSeed=2026-03-15vowels1198
+out.date=2026-03-15
+out.stamp=
+out.stkTitle=new for your tour journal
+out.stkNames=three-day streak, record store
+out.stkArt=2
+out.unlockTitle=new venue unlocked
+out.unlock=summer festival side stage
+out.setTitle=tonight\u2019s setlist
+out.setlist=hint:beautiful:used a hint|hint:receive:used a hint|hint:different:used a hint|hint:because:used a hint|hint:enough:used a hint|hint:believe:used a hint|hint:separate:used a hint|hint:calendar:used a hint|hint:island:used a hint|hint:necessary:used a hint
+out.button=again:play again
+out.back=back to the map
+out.bubble=good show. the bus leaves when you\u2019re ready.
+end
+case 47
+in.date=2027-08-22
+in.mode=fanmail
+in.modeName=fan mail
+in.week=Week 12: Tricky Ones
+in.encore=0
+in.venue=arena
+in.n=10
+in.fans=897
+in.first=5
+in.hintOnly=2
+in.best=9
+in.hintTotal=3
+in.songs=calendar:0:0,answer:0:1,definitely:1:1,business:1:0,favorite:0:0,separate:0:1,friend:0:0,different:0:0,receive:0:0,through:1:0
+in.stickers=venue-festival,venue-theater,streak-3,master-spell
+in.unlocks=
+out.pct=0.6
+out.pctRound=60
+out.eyebrow=Week 12: Tricky Ones \u2736 fan mail
+out.head=rehearsal night
+out.sub=every star rehearses. run it back.
+out.top=admit one \u2665
+out.venue=live at the arena
+out.fansNum=897
+out.fans=897 fans
+out.rows=first try:5/10|best streak:9|hints:3
+out.class=ga
+out.bars=52:2
+out.barSeed=2027-08-22fanmail897
+out.date=2027-08-22
+out.stamp=
+out.stkTitle=new for your tour journal
+out.stkNames=festival, theater, three-day streak + 1 more
+out.stkArt=3
+out.unlockTitle=
+out.unlock=
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:calendar:nailed it|hint:answer:used a hint|miss:definitely:rehearse again|miss:business:rehearse again|ok:favorite:nailed it|hint:separate:used a hint|ok:friend:nailed it|ok:different:nailed it|ok:receive:nailed it|miss:through:rehearse again
+out.button=encore:encore: 3 to rehearse
+out.back=back to the map
+out.bubble=the encore replays the 3 you missed. half fans, zero pressure.
+end
+case 48
+in.date=2026-01-01
+in.mode=remix
+in.modeName=remix
+in.week=b & c <words>
+in.encore=1
+in.venue=coffee
+in.n=2
+in.fans=14729
+in.first=2
+in.hintOnly=0
+in.best=2
+in.hintTotal=1
+in.songs=definitely:0:0,island:0:0
+in.stickers=
+in.unlocks=
+out.pct=1
+out.pctRound=100
+out.eyebrow=b & c <words> \u2736 remix encore
+out.head=sold out
+out.sub=natalia, you\u2019re so ready for that test.
+out.top=admit one \u2665
+out.venue=live at the corner coffee shop
+out.fansNum=14,729
+out.fans=14,729 fans
+out.rows=first try:2/2|best streak:2|hints:1
+out.class=vip
+out.bars=15:4
+out.barSeed=2026-01-01remix14729
+out.date=2026-01-01
+out.stamp=sold\u000aout
+out.stkTitle=
+out.stkNames=
+out.stkArt=0
+out.unlockTitle=
+out.unlock=
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:definitely:nailed it|ok:island:nailed it
+out.button=again:play again
+out.back=back to the map
+out.bubble=that\u2019s a vip night. framing this ticket.
+end
+case 49
+in.date=2027-06-08
+in.mode=slots
+in.modeName=missing letters
+in.week=it\u2019s week 4
+in.encore=0
+in.venue=records
+in.n=10
+in.fans=527
+in.first=2
+in.hintOnly=3
+in.best=1
+in.hintTotal=6
+in.songs=enough:1:0,favorite:1:0,island:0:0,answer:1:1,friend:1:1,different:0:1,believe:0:1,library:1:1,calendar:0:1,because:0:0
+in.stickers=venue-rooftop
+in.unlocks=rec
+out.pct=0.35
+out.pctRound=35
+out.eyebrow=it\u2019s week 4 \u2736 missing letters
+out.head=rehearsal night
+out.sub=every star rehearses. run it back.
+out.top=admit one \u2665
+out.venue=live at record store basement
+out.fansNum=527
+out.fans=527 fans
+out.rows=first try:2/10|best streak:1|hints:6
+out.class=ga
+out.bars=0:2,46:2,91:1
+out.barSeed=2027-06-08slots527
+out.date=2027-06-08
+out.stamp=
+out.stkTitle=new for your tour journal
+out.stkNames=rooftop
+out.stkArt=1
+out.unlockTitle=new venue unlocked
+out.unlock=rec center battle of the bands
+out.setTitle=tonight\u2019s setlist
+out.setlist=miss:enough:rehearse again|miss:favorite:rehearse again|ok:island:nailed it|miss:answer:rehearse again|miss:friend:rehearse again|hint:different:used a hint|hint:believe:used a hint|miss:library:rehearse again|hint:calendar:used a hint|ok:because:nailed it
+out.button=encore:encore: 5 to rehearse
+out.back=back to the map
+out.bubble=the encore replays the 5 you missed. half fans, zero pressure.
+end
+case 50
+in.date=2026-11-15
+in.mode=vowels
+in.modeName=missing vowels
+in.week=week 1
+in.encore=0
+in.venue=rec
+in.n=10
+in.fans=0
+in.first=8
+in.hintOnly=2
+in.best=10
+in.hintTotal=4
+in.songs=weird:0:1,island:0:1,necessary:0:0,different:0:0,separate:0:0,because:0:0,library:0:0,favorite:0:0,enough:0:0,through:0:0
+in.stickers=hour,first-show,venue-club
+in.unlocks=club,rec
+out.pct=0.9
+out.pctRound=90
+out.eyebrow=week 1 \u2736 missing vowels
+out.head=sold out
+out.sub=natalia, you\u2019re so ready for that test.
+out.top=admit one \u2665
+out.venue=live at rec center battle of the bands
+out.fansNum=0
+out.fans=0 fans
+out.rows=first try:8/10|best streak:10|hints:4
+out.class=vip
+out.bars=0:1,41:3,45:4,70:2,73:3,89:2
+out.barSeed=2026-11-15vowels0
+out.date=2026-11-15
+out.stamp=sold\u000aout
+out.stkTitle=new for your tour journal
+out.stkNames=an hour of practice, opening night, the club
+out.stkArt=3
+out.unlockTitle=new venue unlocked
+out.unlock=rec center battle of the bands
+out.setTitle=tonight\u2019s setlist
+out.setlist=hint:weird:used a hint|hint:island:used a hint|ok:necessary:nailed it|ok:different:nailed it|ok:separate:nailed it|ok:because:nailed it|ok:library:nailed it|ok:favorite:nailed it|ok:enough:nailed it|ok:through:nailed it
+out.button=again:play again
+out.back=back to the map
+out.bubble=that\u2019s a vip night. framing this ticket.
+end
+case 51
+in.date=2027-04-22
+in.mode=fanmail
+in.modeName=fan mail
+in.week=week of nov 17
+in.encore=0
+in.venue=rooftop
+in.n=10
+in.fans=8333
+in.first=4
+in.hintOnly=2
+in.best=5
+in.hintTotal=2
+in.songs=believe:1:0,calendar:0:0,friend:0:0,beautiful:1:0,receive:1:0,favorite:0:0,different:1:0,business:0:1,definitely:0:0,separate:0:1
+in.stickers=venue-club,streak-3,sold-out,master-spell,ten-shows
+in.unlocks=
+out.pct=0.5
+out.pctRound=50
+out.eyebrow=week of nov 17 \u2736 fan mail
+out.head=rehearsal night
+out.sub=every star rehearses. run it back.
+out.top=admit one \u2665
+out.venue=live at rooftop party
+out.fansNum=8,333
+out.fans=8,333 fans
+out.rows=first try:4/10|best streak:5|hints:2
+out.class=ga
+out.bars=10:2
+out.barSeed=2027-04-22fanmail8333
+out.date=2027-04-22
+out.stamp=
+out.stkTitle=new for your tour journal
+out.stkNames=the club, three-day streak, first sold-out show + 2 more
+out.stkArt=3
+out.unlockTitle=
+out.unlock=
+out.setTitle=tonight\u2019s setlist
+out.setlist=miss:believe:rehearse again|ok:calendar:nailed it|ok:friend:nailed it|miss:beautiful:rehearse again|miss:receive:rehearse again|ok:favorite:nailed it|miss:different:rehearse again|hint:business:used a hint|ok:definitely:nailed it|hint:separate:used a hint
+out.button=encore:encore: 4 to rehearse
+out.back=back to the map
+out.bubble=the encore replays the 4 you missed. half fans, zero pressure.
+end
+case 52
+in.date=2026-09-01
+in.mode=remix
+in.modeName=remix
+in.week=Week 12: Tricky Ones
+in.encore=0
+in.venue=club
+in.n=10
+in.fans=414
+in.first=10
+in.hintOnly=0
+in.best=9
+in.hintTotal=0
+in.songs=weird:0:0,island:0:0,rhythm:0:0,february:0:0,separate:0:0,business:0:0,necessary:0:0,through:0:0,friend:0:0,definitely:0:0
+in.stickers=streak-5,venue-festival
+in.unlocks=
+out.pct=1
+out.pctRound=100
+out.eyebrow=Week 12: Tricky Ones \u2736 remix
+out.head=sold out
+out.sub=natalia, you\u2019re so ready for that test.
+out.top=admit one \u2665
+out.venue=live at the fuzz, downtown
+out.fansNum=414
+out.fans=414 fans
+out.rows=first try:10/10|best streak:9|hints:0
+out.class=vip
+out.bars=24:2,27:2,55:2,58:1,87:4
+out.barSeed=2026-09-01remix414
+out.date=2026-09-01
+out.stamp=sold\u000aout
+out.stkTitle=new for your tour journal
+out.stkNames=five-day streak, festival
+out.stkArt=2
+out.unlockTitle=
+out.unlock=
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:weird:nailed it|ok:island:nailed it|ok:rhythm:nailed it|ok:february:nailed it|ok:separate:nailed it|ok:business:nailed it|ok:necessary:nailed it|ok:through:nailed it|ok:friend:nailed it|ok:definitely:nailed it
+out.button=again:play again
+out.back=back to the map
+out.bubble=that\u2019s a vip night. framing this ticket.
+end
+case 53
+in.date=2027-02-08
+in.mode=slots
+in.modeName=missing letters
+in.week=b & c <words>
+in.encore=1
+in.venue=theater
+in.n=2
+in.fans=923
+in.first=2
+in.hintOnly=0
+in.best=1
+in.hintTotal=1
+in.songs=beautiful:0:0,definitely:0:0
+in.stickers=master-spell,venue-arena,streak-10,venue-records
+in.unlocks=arena
+out.pct=1
+out.pctRound=100
+out.eyebrow=b & c <words> \u2736 missing letters encore
+out.head=sold out
+out.sub=natalia, you\u2019re so ready for that test.
+out.top=admit one \u2665
+out.venue=live at the old movie palace
+out.fansNum=923
+out.fans=923 fans
+out.rows=first try:2/2|best streak:1|hints:1
+out.class=vip
+out.bars=
+out.barSeed=2027-02-08slots923
+out.date=2027-02-08
+out.stamp=sold\u000aout
+out.stkTitle=new for your tour journal
+out.stkNames=spelling headliner, the arena, ten-day streak + 1 more
+out.stkArt=3
+out.unlockTitle=new venue unlocked
+out.unlock=the arena
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:beautiful:nailed it|ok:definitely:nailed it
+out.button=again:play again
+out.back=back to the map
+out.bubble=that\u2019s a vip night. framing this ticket.
+end
+case 54
+in.date=2026-07-15
+in.mode=vowels
+in.modeName=missing vowels
+in.week=it\u2019s week 4
+in.encore=0
+in.venue=festival
+in.n=10
+in.fans=2847
+in.first=6
+in.hintOnly=2
+in.best=10
+in.hintTotal=4
+in.songs=favorite:0:0,definitely:0:0,answer:1:0,receive:1:1,separate:0:0,calendar:0:1,february:0:0,business:0:0,library:1:1,island:0:1
+in.stickers=
+in.unlocks=arena,festival
+out.pct=0.7
+out.pctRound=70
+out.eyebrow=it\u2019s week 4 \u2736 missing vowels
+out.head=what a show
+out.sub=a couple more run-throughs and it\u2019s perfect.
+out.top=admit one \u2665
+out.venue=live at summer festival side stage
+out.fansNum=2,847
+out.fans=2,847 fans
+out.rows=first try:6/10|best streak:10|hints:4
+out.class=ga
+out.bars=94:2
+out.barSeed=2026-07-15vowels2847
+out.date=2026-07-15
+out.stamp=
+out.stkTitle=
+out.stkNames=
+out.stkArt=0
+out.unlockTitle=new venue unlocked
+out.unlock=summer festival side stage
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:favorite:nailed it|ok:definitely:nailed it|miss:answer:rehearse again|miss:receive:rehearse again|ok:separate:nailed it|hint:calendar:used a hint|ok:february:nailed it|ok:business:nailed it|miss:library:rehearse again|hint:island:used a hint
+out.button=encore:encore: 3 to rehearse
+out.back=back to the map
+out.bubble=the encore replays the 3 you missed. half fans, zero pressure.
+end
+case 55
+in.date=2027-12-22
+in.mode=fanmail
+in.modeName=fan mail
+in.week=week 1
+in.encore=0
+in.venue=arena
+in.n=1
+in.fans=593
+in.first=0
+in.hintOnly=1
+in.best=1
+in.hintTotal=2
+in.songs=different:0:1
+in.stickers=every-mode
+in.unlocks=
+out.pct=0.5
+out.pctRound=50
+out.eyebrow=week 1 \u2736 fan mail
+out.head=rehearsal night
+out.sub=every star rehearses. run it back.
+out.top=admit one \u2665
+out.venue=live at the arena
+out.fansNum=593
+out.fans=593 fans
+out.rows=first try:0/1|best streak:1|hints:2
+out.class=ga
+out.bars=0:3,4:3,69:2
+out.barSeed=2027-12-22fanmail593
+out.date=2027-12-22
+out.stamp=
+out.stkTitle=new for your tour journal
+out.stkNames=played every stage
+out.stkArt=1
+out.unlockTitle=
+out.unlock=
+out.setTitle=tonight\u2019s setlist
+out.setlist=hint:different:used a hint
+out.button=again:play again
+out.back=back to the map
+out.bubble=good show. the bus leaves when you\u2019re ready.
+end
+case 56
+in.date=2026-05-01
+in.mode=remix
+in.modeName=remix
+in.week=week of nov 17
+in.encore=0
+in.venue=coffee
+in.n=10
+in.fans=1408
+in.first=10
+in.hintOnly=0
+in.best=8
+in.hintTotal=2
+in.songs=favorite:0:0,library:0:0,definitely:0:0,weird:0:0,answer:0:0,separate:0:0,enough:0:0,beautiful:0:0,because:0:0,through:0:0
+in.stickers=master-any,first-show,venue-arena
+in.unlocks=
+out.pct=1
+out.pctRound=100
+out.eyebrow=week of nov 17 \u2736 remix
+out.head=sold out
+out.sub=natalia, you\u2019re so ready for that test.
+out.top=admit one \u2665
+out.venue=live at the corner coffee shop
+out.fansNum=1,408
+out.fans=1,408 fans
+out.rows=first try:10/10|best streak:8|hints:2
+out.class=vip
+out.bars=
+out.barSeed=2026-05-01remix1408
+out.date=2026-05-01
+out.stamp=sold\u000aout
+out.stkTitle=new for your tour journal
+out.stkNames=mastered a skill, opening night, the arena
+out.stkArt=3
+out.unlockTitle=
+out.unlock=
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:favorite:nailed it|ok:library:nailed it|ok:definitely:nailed it|ok:weird:nailed it|ok:answer:nailed it|ok:separate:nailed it|ok:enough:nailed it|ok:beautiful:nailed it|ok:because:nailed it|ok:through:nailed it
+out.button=again:play again
+out.back=back to the map
+out.bubble=that\u2019s a vip night. framing this ticket.
+end
+case 57
+in.date=2027-10-08
+in.mode=slots
+in.modeName=missing letters
+in.week=Week 12: Tricky Ones
+in.encore=0
+in.venue=records
+in.n=10
+in.fans=32405
+in.first=7
+in.hintOnly=1
+in.best=3
+in.hintTotal=1
+in.songs=calendar:0:1,business:0:0,favorite:1:0,believe:0:0,different:0:0,answer:1:0,separate:0:0,rhythm:0:0,beautiful:0:0,enough:0:0
+in.stickers=master-any,clean-run,streak-5,venue-theater,every-mode
+in.unlocks=club
+out.pct=0.75
+out.pctRound=75
+out.eyebrow=Week 12: Tricky Ones \u2736 missing letters
+out.head=what a show
+out.sub=a couple more run-throughs and it\u2019s perfect.
+out.top=admit one \u2665
+out.venue=live at record store basement
+out.fansNum=32,405
+out.fans=32,405 fans
+out.rows=first try:7/10|best streak:3|hints:1
+out.class=ga
+out.bars=
+out.barSeed=2027-10-08slots32405
+out.date=2027-10-08
+out.stamp=
+out.stkTitle=new for your tour journal
+out.stkNames=mastered a skill, ten in a row, five-day streak + 2 more
+out.stkArt=3
+out.unlockTitle=new venue unlocked
+out.unlock=the fuzz, downtown
+out.setTitle=tonight\u2019s setlist
+out.setlist=hint:calendar:used a hint|ok:business:nailed it|miss:favorite:rehearse again|ok:believe:nailed it|ok:different:nailed it|miss:answer:rehearse again|ok:separate:nailed it|ok:rhythm:nailed it|ok:beautiful:nailed it|ok:enough:nailed it
+out.button=encore:encore: 2 to rehearse
+out.back=back to the map
+out.bubble=the encore replays the 2 you missed. half fans, zero pressure.
+end
+case 58
+in.date=2026-03-15
+in.mode=vowels
+in.modeName=missing vowels
+in.week=b & c <words>
+in.encore=1
+in.venue=rec
+in.n=3
+in.fans=0
+in.first=3
+in.hintOnly=0
+in.best=2
+in.hintTotal=1
+in.songs=answer:0:0,receive:0:0,beautiful:0:0
+in.stickers=venue-rooftop,venue-club
+in.unlocks=theater,records
+out.pct=1
+out.pctRound=100
+out.eyebrow=b & c <words> \u2736 missing vowels encore
+out.head=sold out
+out.sub=natalia, you\u2019re so ready for that test.
+out.top=admit one \u2665
+out.venue=live at rec center battle of the bands
+out.fansNum=0
+out.fans=0 fans
+out.rows=first try:3/3|best streak:2|hints:1
+out.class=vip
+out.bars=11:4,16:3,83:4,88:3,92:4,97:1
+out.barSeed=2026-03-15vowels0
+out.date=2026-03-15
+out.stamp=sold\u000aout
+out.stkTitle=new for your tour journal
+out.stkNames=rooftop, the club
+out.stkArt=2
+out.unlockTitle=new venue unlocked
+out.unlock=record store basement
+out.setTitle=tonight\u2019s setlist
+out.setlist=ok:answer:nailed it|ok:receive:nailed it|ok:beautiful:nailed it
+out.button=again:play again
+out.back=back to the map
+out.bubble=that\u2019s a vip night. framing this ticket.
+end
+case 59
+in.date=2027-08-22
+in.mode=fanmail
+in.modeName=fan mail
+in.week=it\u2019s week 4
+in.encore=0
+in.venue=rooftop
+in.n=10
+in.fans=449
+in.first=5
+in.hintOnly=4
+in.best=10
+in.hintTotal=4
+in.songs=rhythm:0:1,library:0:0,enough:1:0,favorite:1:0,because:0:1,through:0:1,friend:0:0,believe:0:0,weird:0:1,different:0:0
+in.stickers=streak-10,venue-festival,master-math,master-spell
+in.unlocks=
+out.pct=0.7
+out.pctRound=70
+out.eyebrow=it\u2019s week 4 \u2736 fan mail
+out.head=what a show
+out.sub=a couple more run-throughs and it\u2019s perfect.
+out.top=admit one \u2665
+out.venue=live at rooftop party
+out.fansNum=449
+out.fans=449 fans
+out.rows=first try:5/10|best streak:10|hints:4
+out.class=ga
+out.bars=0:1,94:3
+out.barSeed=2027-08-22fanmail449
+out.date=2027-08-22
+out.stamp=
+out.stkTitle=new for your tour journal
+out.stkNames=ten-day streak, festival, math headliner + 1 more
+out.stkArt=3
+out.unlockTitle=
+out.unlock=
+out.setTitle=tonight\u2019s setlist
+out.setlist=hint:rhythm:used a hint|ok:library:nailed it|miss:enough:rehearse again|miss:favorite:rehearse again|hint:because:used a hint|hint:through:used a hint|ok:friend:nailed it|ok:believe:nailed it|hint:weird:used a hint|ok:different:nailed it
+out.button=encore:encore: 2 to rehearse
+out.back=back to the map
+out.bubble=the encore replays the 2 you missed. half fans, zero pressure.
+end
+barcode 
+bars=
+end
+barcode a
+bars=0:4,13:4,18:4
+end
+barcode 2026-11-20remix0
+bars=24:4,47:3
+end
+barcode 2026-11-20remix1
+bars=45:4
+end
+barcode 2026-11-20remix999999
+bars=40:1,53:3,57:3
+end
+barcode 2027-02-28fanmail123456
+bars=
+end
+barcode 2026-01-01slots42
+bars=83:4
+end
+barcode zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+bars=7:4,32:3,50:2,53:1,72:3
+end
+barcode \u00e9t\u00e9
+bars=36:4,41:3
+end
+barcode \ud83c\udfb8x
+bars=0:2,80:4
+end
+barcode 2026-06-02remix174001
+bars=0:1,56:4,78:3,82:1,84:2,97:1,99:2
+end
+barcode 2026-06-04slots206527
+bars=0:3,62:4,67:4,72:2
+end
+barcode 2026-11-22vowels13991
+bars=0:1,2:1,78:2
+end
+barcode 2026-03-26fanmail145979
+bars=0:2,3:2,24:3,33:2,36:1,53:2,76:2,87:1,89:1
+end
+barcode 2026-06-20remix105527
+bars=0:3,4:4,26:2,29:4,71:4,76:4,98:2
+end
+barcode 2026-01-04slots18708
+bars=
+end
+barcode 2026-05-15vowels244137
+bars=0:2,3:1,92:2,95:2
+end
+barcode 2026-01-09fanmail62368
+bars=18:3,30:4
+end
+barcode 2026-02-06remix54501
+bars=
+end
+barcode 2026-01-23slots130268
+bars=70:1,72:4,77:4,82:3,86:4
+end
+barcode 2026-06-17vowels75944
+bars=79:4,84:4
+end
+barcode 2026-04-17fanmail68950
+bars=0:4,27:4,32:1
+end
+barcode 2026-09-13remix156299
+bars=32:2,35:1,63:2
+end
+barcode 2026-08-12slots29107
+bars=66:1,68:1
+end
+barcode 2026-04-16vowels1715
+bars=49:3,53:3
+end
+barcode 2026-12-04fanmail226677
+bars=0:1
+end
+barcode 2026-06-23remix79410
+bars=35:3,39:2,84:1
+end
+barcode 2026-05-08slots162602
+bars=25:2,28:2,56:3,60:4
+end
+barcode 2026-11-12vowels97288
+bars=24:4,54:4,99:1
+end
+barcode 2026-07-09fanmail190433
+bars=22:4,27:2,30:3,34:3,76:1,78:4
+end
+barcode 2026-05-12remix84548
+bars=31:4,98:1
+end
+barcode 2026-06-18slots136345
+bars=0:4,5:4,10:1,12:4,17:2,20:3,80:3
+end
+barcode 2026-10-15vowels130287
+bars=0:4,5:2,8:1,75:1
+end
+barcode 2026-07-11fanmail117607
+bars=9:1,32:1,62:3,66:2,69:2,72:3,88:2
+end
+barcode 2026-08-17remix87646
+bars=80:3,84:1
+end
+barcode 2026-06-03slots29172
+bars=0:3,4:4,23:4,28:3,63:3
+end
+barcode 2026-01-12vowels77406
+bars=9:1,31:1,33:4,76:1,78:4,83:2,86:2
+end
+barcode 2026-06-07fanmail77871
+bars=0:3,4:1,6:2,9:2,41:1,43:3,47:4,98:3
+end
+barcode 2026-08-02remix112940
+bars=27:4
+end
+barcode 2026-10-19slots136228
+bars=69:2
+end
+barcode 2026-08-09vowels201857
+bars=63:4,68:2
+end
+barcode 2026-07-28fanmail72669
+bars=32:4,37:4
+end
+barcode 2026-01-23remix37118
+bars=0:3,4:1,32:4
+end
+barcode 2026-01-12slots2968
+bars=31:1,33:4
+end
+barcode 2026-10-14vowels20965
+bars=0:1
+end
+barcode 2026-08-11fanmail23226
+bars=79:1
+end
+barcode 2026-03-03remix64533
+bars=75:2,78:2,81:3,85:3,89:1,91:3
+end
+barcode 2026-10-23slots39582
+bars=
+end
+barcode 2026-07-27vowels128160
+bars=4:4,85:1
+end
+barcode 2026-10-17fanmail131349
+bars=
+end
+barcode 2026-03-01remix58861
+bars=
+end
+barcode 2026-03-14slots181024
+bars=0:4,5:2,8:3,12:3,16:2,56:3,60:3
+end
+barcode 2026-10-22vowels18901
+bars=97:3
+end
+barcode 2026-03-22fanmail85650
+bars=88:3
+end
+barcode 2026-07-14remix4294
+bars=0:1,2:3,6:2,56:3,60:3
+end
+barcode 2026-12-07slots95337
+bars=12:3,21:4,26:4,85:4,90:2
+end
+barcode 2026-10-04vowels194042
+bars=29:4,61:4,66:2
+end
+barcode 2026-11-23fanmail96128
+bars=0:4,70:4,75:3,91:2
+end
+barcode 2026-04-18remix234020
+bars=44:2,47:3,51:4,56:4,61:2,98:2
+end
+barcode 2026-09-01slots142345
+bars=0:2,52:3,66:3,70:1,90:4,95:4
+end
+barcode 2026-01-12vowels234103
+bars=15:3,19:3,71:4
+end
+barcode 2026-06-18fanmail92998
+bars=0:1,2:1
+end
+barcode 2026-09-12remix242450
+bars=10:3
+end
+barcode 2026-12-25slots148529
+bars=
+end
+barcode 2026-04-12vowels121817
+bars=0:2,3:1
+end
+barcode 2026-07-26fanmail178365
+bars=
+end
+barcode 2026-08-16remix56321
+bars=12:4,17:1,97:4
+end
+barcode 2026-09-05slots181093
+bars=54:4
+end
+barcode 2026-04-03vowels172743
+bars=17:1,19:3,43:3,75:3,79:3,83:1
+end
+barcode 2026-10-14fanmail118228
+bars=82:4
+end
+barcode 2026-07-23remix113463
+bars=14:1,16:4
+end
+barcode 2026-06-19slots52976
+bars=13:1,15:1
+end
+barcode 2026-12-09vowels233129
+bars=7:3,11:3
+end
+barcode 2026-03-04fanmail53756
+bars=8:4
+end
+barcode 2026-06-08remix151670
+bars=
+end
+barcode 2026-04-13slots201988
+bars=24:1
+end
+barcode 2026-08-18vowels51781
+bars=57:2,60:1,62:3
+end
+barcode 2026-01-14fanmail229992
+bars=13:4,29:4,47:4,59:3
+end
+barcode 2026-03-03remix51822
+bars=29:4,86:4
+end
+barcode 2026-04-20slots4940
+bars=0:3
+end
+barcode 2026-11-02vowels33815
+bars=31:3,35:3,39:1,99:3
+end
+barcode 2026-12-17fanmail78282
+bars=
+end
+barcode 2026-09-28remix81415
+bars=0:2,3:1,5:3
+end
+barcode 2026-10-11slots186714
+bars=17:2,60:2,63:1,65:3,69:1,71:2,74:3
+end
+barcode 2026-08-28vowels30496
+bars=97:2
+end
+barcode 2026-03-14fanmail231413
+bars=10:3,88:1
+end
+barcode 2026-08-19remix143435
+bars=0:2,3:1,5:4,25:2
+end
+barcode 2026-11-21slots126135
+bars=42:4
+end
+barcode 2026-12-20vowels60313
+bars=52:1,79:2
+end
+barcode 2026-03-03fanmail11565
+bars=
+end
+barcode 2026-07-03remix158754
+bars=
+end
+barcode 2026-09-21slots143996
+bars=0:3,4:4,9:2
+end
+barcode 2026-03-21vowels65771
+bars=10:3
+end
+barcode 2026-11-12fanmail188158
+bars=
+end
+barcode 2026-05-15remix18253
+bars=20:2,23:1
+end
+barcode 2026-03-16slots110486
+bars=0:1,2:4
+end
+barcode 2026-07-05vowels141419
+bars=0:4,84:1,93:3
+end
+barcode 2026-07-05fanmail168242
+bars=0:1
+end
+barcode 2026-10-23remix198264
+bars=13:3,61:1,63:3,67:3,71:2
+end
+barcode 2026-08-25slots93992
+bars=
+end
+barcode 2026-02-27vowels245000
+bars=12:2,38:2,41:1
+end
+barcode 2026-12-18fanmail131711
+bars=97:2
+end
+barcode 2026-06-08remix96167
+bars=86:1
+end
+barcode 2026-03-23slots44768
+bars=25:4,85:1,87:3
+end
+barcode 2026-10-17vowels117843
+bars=52:2,55:4,67:2,70:1
+end
+barcode 2026-02-04fanmail235152
+bars=58:3,62:2,65:2,78:3,82:1
+end
+barcode 2026-11-18remix107056
+bars=95:3,99:4
+end
+barcode 2026-04-04slots153778
+bars=
+end
+barcode 2026-12-04vowels86000
+bars=
+end
+barcode 2026-03-15fanmail62970
+bars=13:2
+end
+barcode 2026-12-09remix133014
+bars=12:4,41:1,43:4
+end
+barcode 2026-05-24slots169488
+bars=48:1
+end
+barcode 2026-04-06vowels234970
+bars=19:1,21:2,98:2
+end
+barcode 2026-09-15fanmail45367
+bars=
+end
+barcode 2026-05-21remix9220
+bars=0:4,15:2,48:3,52:2
+end
+barcode 2026-12-27slots60206
+bars=54:1,56:3,60:3,72:3
+end
+barcode 2026-04-23vowels78628
+bars=
+end
+barcode 2026-04-18fanmail146179
+bars=3:4,14:1,43:3,47:1,49:3,68:4
+end
+barcode 2026-08-03remix187634
+bars=34:3,38:1,64:1
+end
+barcode 2026-09-20slots206174
+bars=82:4
+end
+barcode 2026-09-12vowels224226
+bars=59:3
+end
+barcode 2026-07-27fanmail195267
+bars=0:3,37:2
+end
+barcode 2026-11-26remix211898
+bars=6:4,11:4
+end
+barcode 2026-10-08slots37274
+bars=
+end
+barcode 2026-03-28vowels184092
+bars=22:3,43:2,46:1,48:2,51:2,96:2,99:2
+end
+barcode 2026-07-27fanmail160980
+bars=
+end
+barcode 2026-06-22remix235018
+bars=0:1,2:4,7:3,11:1
+end
+barcode 2026-10-17slots248730
+bars=0:1,40:3,44:4,97:1,99:3
+end
+barcode 2026-03-08vowels135595
+bars=0:1,15:3,99:3
+end
+barcode 2026-05-28fanmail41466
+bars=0:3,15:3,19:3,23:1,25:3,67:3,89:3
+end
+barcode 2026-04-02remix13607
+bars=0:3,41:1
+end
+barcode 2026-04-20slots39235
+bars=0:3,4:1,48:2,51:3,55:1,57:4,62:4,91:3
+end
+barcode 2026-02-05vowels41276
+bars=0:1,49:1,80:2,83:3
+end
+barcode 2026-02-24fanmail42811
+bars=11:1,13:4,62:3,66:3,96:2
+end
+barcode 2026-06-21remix32120
+bars=
+end
+barcode 2026-03-05slots39801
+bars=98:4
+end
+barcode 2026-12-26vowels120633
+bars=90:4
+end
+barcode 2026-08-16fanmail247705
+bars=
+end
+barcode 2026-03-18remix100848
+bars=22:3,26:4
+end
+barcode 2026-07-09slots188123
+bars=9:4
+end
+barcode 2026-07-18vowels118616
+bars=
+end
+barcode 2026-05-18fanmail32766
+bars=
+end
+barcode 2026-04-28remix58750
+bars=
+end
+barcode 2026-08-13slots69094
+bars=0:3,4:1,6:2,9:4,14:4
+end
+barcode 2026-02-02vowels29321
+bars=11:3,15:3,19:4,24:1,26:3,57:4
+end
+barcode 2026-05-17fanmail178403
+bars=86:3
+end
+barcode 2026-01-19remix149078
+bars=
+end
+barcode 2026-09-20slots140455
+bars=0:3,4:3,14:2,64:3,68:2,80:3
+end
+barcode 2026-06-19vowels85748
+bars=16:3,20:4,25:2
+end
+barcode 2026-10-14fanmail242122
+bars=0:1,68:4,80:4,85:4
+end
+barcode 2026-09-05remix212593
+bars=32:2
+end
+barcode 2026-09-26slots246939
+bars=0:3,38:2,41:1
+end
+barcode 2026-03-12vowels182425
+bars=90:2
+end
+barcode 2026-07-27fanmail104044
+bars=0:2,99:3
+end
+barcode 2026-10-08remix11107
+bars=81:1,83:3
+end
+barcode 2026-07-07slots172198
+bars=55:2
+end
+barcode 2026-06-03vowels4124
+bars=0:2,48:2
+end
+barcode 2026-08-03fanmail22350
+bars=0:3,4:1,6:2,9:4,45:3,49:2,82:1
+end
+barcode 2026-07-08remix96937
+bars=81:1,83:3,87:3
+end
+barcode 2026-11-01slots131273
+bars=0:3,4:1,55:4,60:2,72:1
+end
+barcode 2026-05-20vowels109446
+bars=36:4,51:1,53:4,58:1,60:1,77:1,79:3,83:4,88:4,93:1
+end
+barcode 2026-04-27fanmail112222
+bars=
+end
+barcode 2026-12-12remix207239
+bars=9:3,13:1,71:2,74:2
+end
+barcode 2026-06-18slots247808
+bars=0:2,3:4,8:3
+end
+barcode 2026-06-17vowels88417
+bars=27:1,29:4,66:1,74:1
+end
+barcode 2026-06-09fanmail120905
+bars=71:2,84:1,86:2
+end
+barcode 2026-07-27remix163872
+bars=37:3,75:4
+end
+barcode 2026-12-23slots194682
+bars=12:3
+end
+barcode 2026-11-01vowels125728
+bars=9:4,14:4,32:4
+end
+barcode 2026-04-22fanmail115896
+bars=24:2,40:1,42:3,93:2,96:2,99:1
+end
+barcode 2026-05-26remix113672
+bars=
+end
+barcode 2026-06-07slots217197
+bars=0:3,73:4,78:2
+end
+barcode 2026-11-21vowels33301
+bars=0:1,2:1
+end
+barcode 2026-10-12fanmail156393
+bars=0:1,2:1,4:4,9:1,11:4,16:2
+end
+barcode 2026-11-25remix175095
+bars=
+end
+barcode 2026-02-14slots19128
+bars=34:4,97:3
+end
+barcode 2026-05-01vowels128534
+bars=
+end
+barcode 2026-12-22fanmail25680
+bars=19:3,23:1,44:3,48:1,50:2,53:3,57:3,61:1,63:4,68:4
+end
+barcode 2026-02-03remix229734
+bars=0:2,91:1
+end
+barcode 2026-11-15slots69099
+bars=89:4,94:3
+end
+barcode 2026-04-02vowels182633
+bars=19:1,21:4,48:4,64:4
+end
+barcode 2026-06-25fanmail11195
+bars=
+end
+barcode 2026-03-27remix149718
+bars=
+end
+barcode 2026-01-08slots123875
+bars=75:4
+end
+barcode 2026-08-10vowels385
+bars=73:1,75:2
+end
+barcode 2026-01-11fanmail103186
+bars=
+end
+barcode 2026-03-22remix32411
+bars=0:3,37:2
+end
+barcode 2026-07-13slots90458
+bars=55:4
+end
+barcode 2026-12-14vowels13430
+bars=7:3
+end
+barcode 2026-02-17fanmail148801
+bars=28:1,30:1,51:2,54:3
+end
+barcode 2026-10-16remix49753
+bars=16:4,57:3
+end
+barcode 2026-01-24slots113393
+bars=
+end
+barcode 2026-03-10vowels96772
+bars=0:4,5:4,41:4
+end
+barcode 2026-12-27fanmail109354
+bars=20:2
+end
+barcode 2026-12-22remix92950
+bars=
+end
+barcode 2026-04-15slots134381
+bars=33:4,38:2,81:2
+end
+barcode 2026-12-03vowels109209
+bars=58:4,63:2,66:3,91:2
+end
+barcode 2026-01-22fanmail211599
+bars=0:2
+end
+barcode 2026-11-14remix153837
+bars=88:4
+end
+barcode 2026-01-13slots31875
+bars=47:1,89:3,99:2
+end
+barcode 2026-11-26vowels248761
+bars=
+end
+barcode 2026-11-14fanmail169887
+bars=0:2,3:1,38:1,40:1,54:3
+end
+barcode 2026-05-19remix188939
+bars=0:3
+end
+barcode 2026-03-17slots211104
+bars=0:2,7:3,11:1,13:4,18:2,21:4
+end
+barcode 2026-06-01vowels67410
+bars=0:3,4:2,31:1
+end
+barcode 2026-11-02fanmail27518
+bars=
+end
+barcode 2026-03-10remix93485
+bars=0:3,4:3
+end
+barcode 2026-04-26slots159818
+bars=6:1,22:4,38:2,48:3
+end
+barcode 2026-12-07vowels16964
+bars=0:4,5:4,10:1,27:2
+end
+barcode 2026-02-28fanmail115574
+bars=57:3,61:3
+end

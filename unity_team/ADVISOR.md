@@ -2,6 +2,25 @@
 
 The advisor reads `REPORT.md`, `QUESTIONS.md`, `DECISIONS.md` and the plan about every 30 minutes and writes here. Lead: re-read this file and `QUESTIONS.md` before starting each task and before you stop for any reason. Notes are instructions unless marked "FYI". Newest first. Answers to numbered questions go under the question in `QUESTIONS.md`, not here.
 
+## 2026-11-20 08:03 - owner says: fix it and keep going. This replaces the stop order below
+
+The owner has seen the status and wants the build to continue. Do not stop after 2.7. Work in this order:
+
+1. **Finish 2.7.** Complete the fix round, tester pass, rebuild `tour/`, commit locally, write the phase 2 REPORT.md.
+2. **Apply answers 7 to 11 in the Unity Core** (they are in QUESTIONS.md under each entry, plus the clean-run sticker answer). Soundcheck's wrong-digits hint first. One task, with the general hint tests described in answers 8, 9 and 11. Rebuild and commit.
+3. **Patch the web game's hint faults.** The owner's daughter can play `world_tour/` today, so this one-time change to that folder is approved, for these three faults only: (a) soundcheck decimal-point hint that prints wrong digits (answer 9 item 1); (b) hints 1 and 2 that state the answer in ticket sales and pack the truck (answers 8 and 9); (c) the syllable hint that spells out two-syllable words (answer 11). Use the same wording as the Unity fixes. Before touching anything, confirm the backup at `D:\repos\_backups\world_tour_2026-11-20\` is intact. Change only the generator and hint code and their tests; run `node --test world_tour/tests/math/` and the chromium math and spelling browser suites in the foreground; regenerate nothing else. Do not stage or commit `world_tour/`; list the changed files in the report for the owner to commit.
+4. **Then phase 3** (the six remaining spelling modes), phase 4, 5 and 6, as in the brief.
+
+Usage: the owner is watching his allowance. Run at most two builders at a time, plus the tester. Prefer one build and one browser run per task over one per fix. Keep the two-fix-round cap.
+
+Advisor checks are back on, every 30 minutes. Questions go in QUESTIONS.md and are answered there; corrections come here.
+
+## 2026-11-20 07:58 - owner is awake: finish 2.7, then stop. Questions 7 to 11 ARE answered
+
+1. **Stop point.** The owner is concerned about usage. Finish the current 2.7 fix round with a single builder (no parallel builders from here on), get the tester's pass, rebuild `tour/`, commit locally, rewrite REPORT.md, and then STOP. Do not start phase 3 or any further work until the owner says so. If the fix round has not passed after one more round, stop anyway and report what is still broken.
+2. **Questions 7 to 11 were answered overnight in QUESTIONS.md**, directly under each entry (01:48, 02:08, 02:22, 02:53, and the sticker addendum just now). The phase 1 report lists them as open and says the advisor was silent: answers go in QUESTIONS.md, not here, so re-read that file. Do not apply them now. In REPORT.md, list them under "Next session, first tasks", with the soundcheck wrong-digits hint (answer 9, item 1) first, and state plainly that the current build still has the web game's hint text.
+3. **Advisor checks.** My checks stopped at 03:22 because the scheduled check did not reach me until the owner's message at 07:52. That is why nothing was written here between 00:45 and now. Checks are off while the owner is present; he will relay.
+
 ## 2026-11-20 00:45 - pace, the deleted staging folder, and a backup of world_tour/
 
 The allowlist for BuildWeb is the right fix and the tester was right to probe `-buildOut ../world_tour`. Three instructions:

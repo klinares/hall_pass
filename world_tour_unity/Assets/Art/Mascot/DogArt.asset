@@ -1,0 +1,984 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20a2ee8bba2c3914d923f742f397dd4b, type: 3}
+  m_Name: DogArt
+  m_EditorClassIdentifier: WorldTour.Game::WorldTour.Game.Mascot.DogArt
+  framePx: {x: 380, y: 380}
+  unitsToPx: 2.375
+  tailPivotPx: {x: 244.625, y: 304}
+  lidPivotPx: {x: 190, y: 140.125}
+  layers:
+  - name: dog_tail
+    sprite: {fileID: 21300000, guid: 64e35b02fb2882c469235364b4a43259, type: 3}
+    offset: {x: 229, y: 212}
+    size: {x: 84, y: 108}
+    part: tail
+    layer: art
+  - name: dog_tail_ink
+    sprite: {fileID: 21300000, guid: 0c1279dd473c12c44bf1efa98eedd5a2, type: 3}
+    offset: {x: 212, y: 195}
+    size: {x: 128, y: 152}
+    part: tail
+    layer: ink
+  - name: dog_tail_pad
+    sprite: {fileID: 21300000, guid: e317ca6386f7f47458b446697362ea17, type: 3}
+    offset: {x: 217, y: 200}
+    size: {x: 108, y: 132}
+    part: tail
+    layer: pad
+  - name: dog_body
+    sprite: {fileID: 21300000, guid: 8d71dd32412480f4a84f0b9e56af202d, type: 3}
+    offset: {x: 97, y: 223}
+    size: {x: 188, y: 148}
+    part: body
+    layer: art
+  - name: dog_body_ink
+    sprite: {fileID: 21300000, guid: fa1813c5f6ef6984dad37184f0cec0f3, type: 3}
+    offset: {x: 80, y: 206}
+    size: {x: 228, y: 192}
+    part: body
+    layer: ink
+  - name: dog_body_pad
+    sprite: {fileID: 21300000, guid: 182bc73c5282d6749a7791e62653f07d, type: 3}
+    offset: {x: 85, y: 211}
+    size: {x: 212, y: 172}
+    part: body
+    layer: pad
+  - name: dog_head_idle
+    sprite: {fileID: 21300000, guid: 5a12e416f3292744dbe5d98460ec575d, type: 3}
+    offset: {x: 78, y: 42}
+    size: {x: 224, y: 176}
+    part: head
+    layer: art
+  - name: dog_head_idle_ink
+    sprite: {fileID: 21300000, guid: f96f515633b1ada42a2479a2112d1ffb, type: 3}
+    offset: {x: 61, y: 25}
+    size: {x: 268, y: 220}
+    part: head
+    layer: ink
+  - name: dog_head_idle_pad
+    sprite: {fileID: 21300000, guid: f39e89f5f751df347b438326534bb2d8, type: 3}
+    offset: {x: 66, y: 30}
+    size: {x: 248, y: 200}
+    part: head
+    layer: pad
+  - name: dog_lids_idle
+    sprite: {fileID: 21300000, guid: b45639dd706bff4498afb91164a52e88, type: 3}
+    offset: {x: 141, y: 122}
+    size: {x: 100, y: 36}
+    part: lids
+    layer: art
+  - name: dog_outfit_bandana
+    sprite: {fileID: 21300000, guid: fad0588f7e7882145b936f96a9d40fcc, type: 3}
+    offset: {x: 138, y: 228}
+    size: {x: 104, y: 60}
+    part: outfit
+    layer: art
+  - name: dog_outfit_bandana_ink
+    sprite: {fileID: 21300000, guid: 5558573db44c79f4f947c390a3ba19fb, type: 3}
+    offset: {x: 121, y: 211}
+    size: {x: 148, y: 100}
+    part: outfit
+    layer: ink
+  - name: dog_outfit_bandana_pad
+    sprite: {fileID: 21300000, guid: 0ef92c14216db4c47a298a025077ae16, type: 3}
+    offset: {x: 126, y: 216}
+    size: {x: 128, y: 84}
+    part: outfit
+    layer: pad
+  - name: dog_outfit_beanie
+    sprite: {fileID: 21300000, guid: 9b7049cdb21468f49ab6648979417139, type: 3}
+    offset: {x: 107, y: 13}
+    size: {x: 168, y: 112}
+    part: outfit
+    layer: art
+  - name: dog_outfit_beanie_ink
+    sprite: {fileID: 21300000, guid: 804ba0915c7ea6049a251f11d9d700ac, type: 3}
+    offset: {x: 90, y: -4}
+    size: {x: 208, y: 152}
+    part: outfit
+    layer: ink
+  - name: dog_outfit_beanie_pad
+    sprite: {fileID: 21300000, guid: e968559b0a3a8b541be035067e34d386, type: 3}
+    offset: {x: 95, y: 1}
+    size: {x: 192, y: 136}
+    part: outfit
+    layer: pad
+  - name: dog_outfit_shades
+    sprite: {fileID: 21300000, guid: bfe41ddc88733ad4eba416214977e642, type: 3}
+    offset: {x: 124, y: 116}
+    size: {x: 132, y: 44}
+    part: outfit
+    layer: art
+  - name: dog_outfit_shades_ink
+    sprite: {fileID: 21300000, guid: 44e5d9b0e233fc4488493e561b7309f0, type: 3}
+    offset: {x: 107, y: 99}
+    size: {x: 176, y: 88}
+    part: outfit
+    layer: ink
+  - name: dog_outfit_shades_pad
+    sprite: {fileID: 21300000, guid: 5526e229296766f4d843b69d9ea4050d, type: 3}
+    offset: {x: 112, y: 104}
+    size: {x: 156, y: 68}
+    part: outfit
+    layer: pad
+  - name: dog_outfit_phones
+    sprite: {fileID: 21300000, guid: 88738f7352110c3439818f6edc7a0419, type: 3}
+    offset: {x: 81, y: 31}
+    size: {x: 220, y: 152}
+    part: outfit
+    layer: art
+  - name: dog_outfit_phones_ink
+    sprite: {fileID: 21300000, guid: 899a6dc00c0611247a327c91a989a639, type: 3}
+    offset: {x: 64, y: 14}
+    size: {x: 260, y: 192}
+    part: outfit
+    layer: ink
+  - name: dog_outfit_phones_pad
+    sprite: {fileID: 21300000, guid: da81492cac95831498f4b2f710961bbd, type: 3}
+    offset: {x: 69, y: 19}
+    size: {x: 244, y: 176}
+    part: outfit
+    layer: pad
+  - name: dog_outfit_collar
+    sprite: {fileID: 21300000, guid: bb7f7923fe4abf3439d2f1086cc29103, type: 3}
+    offset: {x: 131, y: 222}
+    size: {x: 120, y: 48}
+    part: outfit
+    layer: art
+  - name: dog_outfit_collar_ink
+    sprite: {fileID: 21300000, guid: 0d59e4291c71a9f459b7bbcd8a5a1e16, type: 3}
+    offset: {x: 114, y: 205}
+    size: {x: 160, y: 92}
+    part: outfit
+    layer: ink
+  - name: dog_outfit_collar_pad
+    sprite: {fileID: 21300000, guid: 6383d01fcf9a7314eb7cfcc84c2286dd, type: 3}
+    offset: {x: 119, y: 210}
+    size: {x: 144, y: 72}
+    part: outfit
+    layer: pad
+  - name: dog_arms_cheer
+    sprite: {fileID: 21300000, guid: 23a9fffcf78e48e4aac3a5d101f5aa8c, type: 3}
+    offset: {x: 86, y: 152}
+    size: {x: 208, y: 116}
+    part: arms
+    layer: art
+  - name: dog_arms_cheer_ink
+    sprite: {fileID: 21300000, guid: a570911dcf8a27241a293926e6ae82f7, type: 3}
+    offset: {x: 69, y: 135}
+    size: {x: 252, y: 160}
+    part: arms
+    layer: ink
+  - name: dog_arms_cheer_pad
+    sprite: {fileID: 21300000, guid: 2ed1982a2549f1744af5f788ba6cb253, type: 3}
+    offset: {x: 74, y: 140}
+    size: {x: 232, y: 140}
+    part: arms
+    layer: pad
+  - name: dog_head_cheer
+    sprite: {fileID: 21300000, guid: 42266d1863c9ab748bb39e8333253745, type: 3}
+    offset: {x: 99, y: 19}
+    size: {x: 184, y: 200}
+    part: head
+    layer: art
+  - name: dog_head_cheer_ink
+    sprite: {fileID: 21300000, guid: 76e97fff07a5cda4fa2b20687ace133f, type: 3}
+    offset: {x: 82, y: 2}
+    size: {x: 224, y: 240}
+    part: head
+    layer: ink
+  - name: dog_head_cheer_pad
+    sprite: {fileID: 21300000, guid: cdc04665edddbb645b483d564fe3a33d, type: 3}
+    offset: {x: 87, y: 7}
+    size: {x: 208, y: 224}
+    part: head
+    layer: pad
+  - name: dog_fx_cheer
+    sprite: {fileID: 21300000, guid: a660113c46b512940ab6b9e5514b0ac4, type: 3}
+    offset: {x: 50, y: 63}
+    size: {x: 288, y: 200}
+    part: fx
+    layer: art
+  - name: dog_fx_cheer_ink
+    sprite: {fileID: 21300000, guid: 0112909b09cd5e347873781e5f4a3f41, type: 3}
+    offset: {x: 33, y: 46}
+    size: {x: 328, y: 240}
+    part: fx
+    layer: ink
+  - name: dog_fx_cheer_pad
+    sprite: {fileID: 21300000, guid: f27168fb343f5ac478b4a760667cdf5f, type: 3}
+    offset: {x: 38, y: 51}
+    size: {x: 312, y: 224}
+    part: fx
+    layer: pad
+  - name: dog_head_think
+    sprite: {fileID: 21300000, guid: 656b907ade14a1f47a602c6c392c53a2, type: 3}
+    offset: {x: 76, y: 44}
+    size: {x: 228, y: 180}
+    part: head
+    layer: art
+  - name: dog_head_think_ink
+    sprite: {fileID: 21300000, guid: 5478c03c86772fd478aa589a34cdcd4f, type: 3}
+    offset: {x: 59, y: 27}
+    size: {x: 268, y: 220}
+    part: head
+    layer: ink
+  - name: dog_head_think_pad
+    sprite: {fileID: 21300000, guid: 35061494a919dd341b62e292171b31ee, type: 3}
+    offset: {x: 64, y: 32}
+    size: {x: 252, y: 204}
+    part: head
+    layer: pad
+  - name: dog_arms_think
+    sprite: {fileID: 21300000, guid: c4ba2c66138c89544abe5483f7bbb78f, type: 3}
+    offset: {x: 178, y: 188}
+    size: {x: 68, y: 84}
+    part: arms
+    layer: art
+  - name: dog_arms_think_ink
+    sprite: {fileID: 21300000, guid: 0dc63984fb89f2340ac7d2e4c3d4e6c8, type: 3}
+    offset: {x: 161, y: 171}
+    size: {x: 108, y: 128}
+    part: arms
+    layer: ink
+  - name: dog_arms_think_pad
+    sprite: {fileID: 21300000, guid: b2874ef451be2ba41a010dc9a681339b, type: 3}
+    offset: {x: 166, y: 176}
+    size: {x: 92, y: 108}
+    part: arms
+    layer: pad
+  - name: dog_fx_think
+    sprite: {fileID: 21300000, guid: 731db7ae84586e24dad663355aa21615, type: 3}
+    offset: {x: 274, y: 16}
+    size: {x: 88, y: 88}
+    part: fx
+    layer: art
+  - name: dog_fx_think_ink
+    sprite: {fileID: 21300000, guid: 262118c9bcafa1549b69b03390e2bdb6, type: 3}
+    offset: {x: 257, y: -1}
+    size: {x: 128, y: 128}
+    part: fx
+    layer: ink
+  - name: dog_fx_think_pad
+    sprite: {fileID: 21300000, guid: 61d3207315adeb9478c957370cfbb87f, type: 3}
+    offset: {x: 262, y: 4}
+    size: {x: 112, y: 112}
+    part: fx
+    layer: pad
+  - name: dog_outfit_beanie_think
+    sprite: {fileID: 21300000, guid: a0dae31d394efe24c8110462e7310bd7, type: 3}
+    offset: {x: 98, y: 15}
+    size: {x: 164, y: 124}
+    part: outfit
+    layer: art
+  - name: dog_outfit_beanie_think_ink
+    sprite: {fileID: 21300000, guid: 1385b1e64da138c4e86b0d598dc55e6c, type: 3}
+    offset: {x: 81, y: -2}
+    size: {x: 208, y: 164}
+    part: outfit
+    layer: ink
+  - name: dog_outfit_beanie_think_pad
+    sprite: {fileID: 21300000, guid: 990540a567b9eec4db347ee38d7d3994, type: 3}
+    offset: {x: 86, y: 3}
+    size: {x: 188, y: 148}
+    part: outfit
+    layer: pad
+  - name: dog_outfit_shades_think
+    sprite: {fileID: 21300000, guid: 5fb89bf2bde2ab74c981f8f27182f8d9, type: 3}
+    offset: {x: 119, y: 108}
+    size: {x: 132, y: 60}
+    part: outfit
+    layer: art
+  - name: dog_outfit_shades_think_ink
+    sprite: {fileID: 21300000, guid: d9125124f5655134fb18c71046bd0fb3, type: 3}
+    offset: {x: 102, y: 91}
+    size: {x: 176, y: 104}
+    part: outfit
+    layer: ink
+  - name: dog_outfit_shades_think_pad
+    sprite: {fileID: 21300000, guid: f6cf227415f2d3b46b9f965d3a52af38, type: 3}
+    offset: {x: 107, y: 96}
+    size: {x: 156, y: 84}
+    part: outfit
+    layer: pad
+  - name: dog_outfit_phones_think
+    sprite: {fileID: 21300000, guid: f43ffa915853e654781334aa585c9942, type: 3}
+    offset: {x: 77, y: 31}
+    size: {x: 220, y: 168}
+    part: outfit
+    layer: art
+  - name: dog_outfit_phones_think_ink
+    sprite: {fileID: 21300000, guid: c589f9cd1eb2bf048a7e3a95a0732441, type: 3}
+    offset: {x: 60, y: 14}
+    size: {x: 264, y: 208}
+    part: outfit
+    layer: ink
+  - name: dog_outfit_phones_think_pad
+    sprite: {fileID: 21300000, guid: 422c408fe953c7c49942851464f2813a, type: 3}
+    offset: {x: 65, y: 19}
+    size: {x: 244, y: 192}
+    part: outfit
+    layer: pad
+  - name: dog_head_oops
+    sprite: {fileID: 21300000, guid: aeb4c374417e0d6418325454c7b1a05f, type: 3}
+    offset: {x: 47, y: 49}
+    size: {x: 288, y: 176}
+    part: head
+    layer: art
+  - name: dog_head_oops_ink
+    sprite: {fileID: 21300000, guid: 6ef0c9fa01df636479344c49566d0132, type: 3}
+    offset: {x: 30, y: 32}
+    size: {x: 328, y: 220}
+    part: head
+    layer: ink
+  - name: dog_head_oops_pad
+    sprite: {fileID: 21300000, guid: 27369bb6246a74846a2bfff39fd2f6cf, type: 3}
+    offset: {x: 35, y: 37}
+    size: {x: 312, y: 200}
+    part: head
+    layer: pad
+  - name: dog_outfit_beanie_oops
+    sprite: {fileID: 21300000, guid: 680a5646d91ec7249bbb86a1ae921cf1, type: 3}
+    offset: {x: 107, y: 20}
+    size: {x: 168, y: 112}
+    part: outfit
+    layer: art
+  - name: dog_outfit_beanie_oops_ink
+    sprite: {fileID: 21300000, guid: 6199464160f223642aacd3619630ca9f, type: 3}
+    offset: {x: 90, y: 3}
+    size: {x: 208, y: 152}
+    part: outfit
+    layer: ink
+  - name: dog_outfit_beanie_oops_pad
+    sprite: {fileID: 21300000, guid: c7609f9ae7379ed448b30be451346632, type: 3}
+    offset: {x: 95, y: 8}
+    size: {x: 192, y: 136}
+    part: outfit
+    layer: pad
+  - name: dog_outfit_shades_oops
+    sprite: {fileID: 21300000, guid: c369e765595801c4fbca984fe466cf44, type: 3}
+    offset: {x: 124, y: 123}
+    size: {x: 132, y: 44}
+    part: outfit
+    layer: art
+  - name: dog_outfit_shades_oops_ink
+    sprite: {fileID: 21300000, guid: 65d813947069f1c4f8d295949cfc3eb6, type: 3}
+    offset: {x: 107, y: 106}
+    size: {x: 176, y: 88}
+    part: outfit
+    layer: ink
+  - name: dog_outfit_shades_oops_pad
+    sprite: {fileID: 21300000, guid: 6ba56515a4a04b14ba9bf7a434e5f373, type: 3}
+    offset: {x: 112, y: 111}
+    size: {x: 156, y: 68}
+    part: outfit
+    layer: pad
+  - name: dog_outfit_phones_oops
+    sprite: {fileID: 21300000, guid: d64777f44a908da4f87ccd5e9f6a218c, type: 3}
+    offset: {x: 81, y: 38}
+    size: {x: 220, y: 152}
+    part: outfit
+    layer: art
+  - name: dog_outfit_phones_oops_ink
+    sprite: {fileID: 21300000, guid: c81dbf851d045ef4cab0c17c47e1bbe7, type: 3}
+    offset: {x: 64, y: 21}
+    size: {x: 260, y: 192}
+    part: outfit
+    layer: ink
+  - name: dog_outfit_phones_oops_pad
+    sprite: {fileID: 21300000, guid: 194f3707df5e84641b831b5d5cf29cd2, type: 3}
+    offset: {x: 69, y: 26}
+    size: {x: 244, y: 176}
+    part: outfit
+    layer: pad
+  - name: dog_sleepy_tail
+    sprite: {fileID: 21300000, guid: 1b44705d8a7e6a34cba406b2da79e1de, type: 3}
+    offset: {x: 283, y: 250}
+    size: {x: 72, y: 80}
+    part: tail
+    layer: art
+  - name: dog_sleepy_tail_ink
+    sprite: {fileID: 21300000, guid: e07239b9013401149a178dedea6583e8, type: 3}
+    offset: {x: 266, y: 233}
+    size: {x: 116, y: 124}
+    part: tail
+    layer: ink
+  - name: dog_sleepy_tail_pad
+    sprite: {fileID: 21300000, guid: 3131f5715e1f0fb4d9b95c374ec229a7, type: 3}
+    offset: {x: 271, y: 238}
+    size: {x: 96, y: 104}
+    part: tail
+    layer: pad
+  - name: dog_sleepy_body
+    sprite: {fileID: 21300000, guid: 17d3793800dbc3d48a373e3d7ecdeb23, type: 3}
+    offset: {x: 90, y: 256}
+    size: {x: 244, y: 116}
+    part: body
+    layer: art
+  - name: dog_sleepy_body_ink
+    sprite: {fileID: 21300000, guid: 84406471f3a0f164fbf6f3c59964c799, type: 3}
+    offset: {x: 73, y: 239}
+    size: {x: 284, y: 156}
+    part: body
+    layer: ink
+  - name: dog_sleepy_body_pad
+    sprite: {fileID: 21300000, guid: b46e50d4f2151914cbfd2d1f4266a06a, type: 3}
+    offset: {x: 78, y: 244}
+    size: {x: 268, y: 140}
+    part: body
+    layer: pad
+  - name: dog_sleepy_head
+    sprite: {fileID: 21300000, guid: 47bbc618e6766cd4ebed8a53db857bd0, type: 3}
+    offset: {x: 20, y: 180}
+    size: {x: 208, y: 164}
+    part: head
+    layer: art
+  - name: dog_sleepy_head_ink
+    sprite: {fileID: 21300000, guid: 7f593de2c4c9ee74da2f8656327415d6, type: 3}
+    offset: {x: 3, y: 163}
+    size: {x: 248, y: 204}
+    part: head
+    layer: ink
+  - name: dog_sleepy_head_pad
+    sprite: {fileID: 21300000, guid: c2ca365a41edffe4b8fa65fe15083878, type: 3}
+    offset: {x: 8, y: 168}
+    size: {x: 232, y: 188}
+    part: head
+    layer: pad
+  - name: dog_sleepy_paws
+    sprite: {fileID: 21300000, guid: 293ccf21e3174da4991d78c0deec7883, type: 3}
+    offset: {x: 61, y: 327}
+    size: {x: 144, y: 48}
+    part: paws
+    layer: art
+  - name: dog_sleepy_paws_ink
+    sprite: {fileID: 21300000, guid: 3b954d3bf2f6d9c489eadfb84f7fd086, type: 3}
+    offset: {x: 44, y: 310}
+    size: {x: 188, y: 88}
+    part: paws
+    layer: ink
+  - name: dog_sleepy_paws_pad
+    sprite: {fileID: 21300000, guid: f7cdbe6babb16184bb38b8d53c4383d3, type: 3}
+    offset: {x: 49, y: 315}
+    size: {x: 168, y: 72}
+    part: paws
+    layer: pad
+  - name: dog_sleepy_z1
+    sprite: {fileID: 21300000, guid: f9e3bdc93768374449106203be15bb9e, type: 3}
+    offset: {x: 233, y: 167}
+    size: {x: 20, y: 20}
+    part: z1
+    layer: art
+  - name: dog_sleepy_z1_ink
+    sprite: {fileID: 21300000, guid: cac8bb6a8b8879f4abec0656cd9db9cd, type: 3}
+    offset: {x: 216, y: 150}
+    size: {x: 60, y: 64}
+    part: z1
+    layer: ink
+  - name: dog_sleepy_z1_pad
+    sprite: {fileID: 21300000, guid: 3820e9dfa64d86a43b23375df6d2008a, type: 3}
+    offset: {x: 221, y: 155}
+    size: {x: 44, y: 44}
+    part: z1
+    layer: pad
+  - name: dog_sleepy_z2
+    sprite: {fileID: 21300000, guid: 0b145796c8d0e314ab7b682ee9a22812, type: 3}
+    offset: {x: 266, y: 114}
+    size: {x: 24, y: 28}
+    part: z2
+    layer: art
+  - name: dog_sleepy_z2_ink
+    sprite: {fileID: 21300000, guid: 573db565c673eee4eba8410abc37c136, type: 3}
+    offset: {x: 249, y: 97}
+    size: {x: 68, y: 72}
+    part: z2
+    layer: ink
+  - name: dog_sleepy_z2_pad
+    sprite: {fileID: 21300000, guid: c9485d4c4d7e30044b16bccb0310638f, type: 3}
+    offset: {x: 254, y: 102}
+    size: {x: 48, y: 52}
+    part: z2
+    layer: pad
+  - name: dog_sleepy_z3
+    sprite: {fileID: 21300000, guid: bf19587a445df504fb2788877092c3e2, type: 3}
+    offset: {x: 305, y: 49}
+    size: {x: 32, y: 36}
+    part: z3
+    layer: art
+  - name: dog_sleepy_z3_ink
+    sprite: {fileID: 21300000, guid: bfcc73a4c0dcfed478b69cd595a07fb7, type: 3}
+    offset: {x: 288, y: 32}
+    size: {x: 72, y: 80}
+    part: z3
+    layer: ink
+  - name: dog_sleepy_z3_pad
+    sprite: {fileID: 21300000, guid: 2403b19bc4da8cc4cbfa1e5416115e8b, type: 3}
+    offset: {x: 293, y: 37}
+    size: {x: 56, y: 60}
+    part: z3
+    layer: pad
+  stacks:
+  - pose: idle
+    outfit: none
+    layers:
+    - dog_tail_ink
+    - dog_body_ink
+    - dog_head_idle_ink
+    - dog_tail_pad
+    - dog_body_pad
+    - dog_head_idle_pad
+    - dog_tail
+    - dog_body
+    - dog_head_idle
+    - dog_lids_idle
+  - pose: idle
+    outfit: bandana
+    layers:
+    - dog_tail_ink
+    - dog_body_ink
+    - dog_outfit_bandana_ink
+    - dog_head_idle_ink
+    - dog_tail_pad
+    - dog_body_pad
+    - dog_outfit_bandana_pad
+    - dog_head_idle_pad
+    - dog_tail
+    - dog_body
+    - dog_outfit_bandana
+    - dog_head_idle
+    - dog_lids_idle
+  - pose: idle
+    outfit: beanie
+    layers:
+    - dog_tail_ink
+    - dog_body_ink
+    - dog_head_idle_ink
+    - dog_outfit_beanie_ink
+    - dog_tail_pad
+    - dog_body_pad
+    - dog_head_idle_pad
+    - dog_outfit_beanie_pad
+    - dog_tail
+    - dog_body
+    - dog_head_idle
+    - dog_lids_idle
+    - dog_outfit_beanie
+  - pose: idle
+    outfit: shades
+    layers:
+    - dog_tail_ink
+    - dog_body_ink
+    - dog_head_idle_ink
+    - dog_outfit_shades_ink
+    - dog_tail_pad
+    - dog_body_pad
+    - dog_head_idle_pad
+    - dog_outfit_shades_pad
+    - dog_tail
+    - dog_body
+    - dog_head_idle
+    - dog_lids_idle
+    - dog_outfit_shades
+  - pose: idle
+    outfit: phones
+    layers:
+    - dog_tail_ink
+    - dog_body_ink
+    - dog_head_idle_ink
+    - dog_outfit_phones_ink
+    - dog_tail_pad
+    - dog_body_pad
+    - dog_head_idle_pad
+    - dog_outfit_phones_pad
+    - dog_tail
+    - dog_body
+    - dog_head_idle
+    - dog_lids_idle
+    - dog_outfit_phones
+  - pose: idle
+    outfit: collar
+    layers:
+    - dog_tail_ink
+    - dog_body_ink
+    - dog_outfit_collar_ink
+    - dog_head_idle_ink
+    - dog_tail_pad
+    - dog_body_pad
+    - dog_outfit_collar_pad
+    - dog_head_idle_pad
+    - dog_tail
+    - dog_body
+    - dog_outfit_collar
+    - dog_head_idle
+    - dog_lids_idle
+  - pose: cheer
+    outfit: none
+    layers:
+    - dog_tail_ink
+    - dog_body_ink
+    - dog_arms_cheer_ink
+    - dog_head_cheer_ink
+    - dog_fx_cheer_ink
+    - dog_tail_pad
+    - dog_body_pad
+    - dog_arms_cheer_pad
+    - dog_head_cheer_pad
+    - dog_fx_cheer_pad
+    - dog_tail
+    - dog_body
+    - dog_arms_cheer
+    - dog_head_cheer
+    - dog_fx_cheer
+  - pose: cheer
+    outfit: bandana
+    layers:
+    - dog_tail_ink
+    - dog_body_ink
+    - dog_outfit_bandana_ink
+    - dog_arms_cheer_ink
+    - dog_head_cheer_ink
+    - dog_fx_cheer_ink
+    - dog_tail_pad
+    - dog_body_pad
+    - dog_outfit_bandana_pad
+    - dog_arms_cheer_pad
+    - dog_head_cheer_pad
+    - dog_fx_cheer_pad
+    - dog_tail
+    - dog_body
+    - dog_outfit_bandana
+    - dog_arms_cheer
+    - dog_head_cheer
+    - dog_fx_cheer
+  - pose: cheer
+    outfit: beanie
+    layers:
+    - dog_tail_ink
+    - dog_body_ink
+    - dog_arms_cheer_ink
+    - dog_head_cheer_ink
+    - dog_outfit_beanie_ink
+    - dog_fx_cheer_ink
+    - dog_tail_pad
+    - dog_body_pad
+    - dog_arms_cheer_pad
+    - dog_head_cheer_pad
+    - dog_outfit_beanie_pad
+    - dog_fx_cheer_pad
+    - dog_tail
+    - dog_body
+    - dog_arms_cheer
+    - dog_head_cheer
+    - dog_outfit_beanie
+    - dog_fx_cheer
+  - pose: cheer
+    outfit: shades
+    layers:
+    - dog_tail_ink
+    - dog_body_ink
+    - dog_arms_cheer_ink
+    - dog_head_cheer_ink
+    - dog_outfit_shades_ink
+    - dog_fx_cheer_ink
+    - dog_tail_pad
+    - dog_body_pad
+    - dog_arms_cheer_pad
+    - dog_head_cheer_pad
+    - dog_outfit_shades_pad
+    - dog_fx_cheer_pad
+    - dog_tail
+    - dog_body
+    - dog_arms_cheer
+    - dog_head_cheer
+    - dog_outfit_shades
+    - dog_fx_cheer
+  - pose: cheer
+    outfit: phones
+    layers:
+    - dog_tail_ink
+    - dog_body_ink
+    - dog_arms_cheer_ink
+    - dog_head_cheer_ink
+    - dog_outfit_phones_ink
+    - dog_fx_cheer_ink
+    - dog_tail_pad
+    - dog_body_pad
+    - dog_arms_cheer_pad
+    - dog_head_cheer_pad
+    - dog_outfit_phones_pad
+    - dog_fx_cheer_pad
+    - dog_tail
+    - dog_body
+    - dog_arms_cheer
+    - dog_head_cheer
+    - dog_outfit_phones
+    - dog_fx_cheer
+  - pose: cheer
+    outfit: collar
+    layers:
+    - dog_tail_ink
+    - dog_body_ink
+    - dog_outfit_collar_ink
+    - dog_arms_cheer_ink
+    - dog_head_cheer_ink
+    - dog_fx_cheer_ink
+    - dog_tail_pad
+    - dog_body_pad
+    - dog_outfit_collar_pad
+    - dog_arms_cheer_pad
+    - dog_head_cheer_pad
+    - dog_fx_cheer_pad
+    - dog_tail
+    - dog_body
+    - dog_outfit_collar
+    - dog_arms_cheer
+    - dog_head_cheer
+    - dog_fx_cheer
+  - pose: think
+    outfit: none
+    layers:
+    - dog_tail_ink
+    - dog_body_ink
+    - dog_head_think_ink
+    - dog_arms_think_ink
+    - dog_fx_think_ink
+    - dog_tail_pad
+    - dog_body_pad
+    - dog_head_think_pad
+    - dog_arms_think_pad
+    - dog_fx_think_pad
+    - dog_tail
+    - dog_body
+    - dog_head_think
+    - dog_arms_think
+    - dog_fx_think
+  - pose: think
+    outfit: bandana
+    layers:
+    - dog_tail_ink
+    - dog_body_ink
+    - dog_outfit_bandana_ink
+    - dog_head_think_ink
+    - dog_arms_think_ink
+    - dog_fx_think_ink
+    - dog_tail_pad
+    - dog_body_pad
+    - dog_outfit_bandana_pad
+    - dog_head_think_pad
+    - dog_arms_think_pad
+    - dog_fx_think_pad
+    - dog_tail
+    - dog_body
+    - dog_outfit_bandana
+    - dog_head_think
+    - dog_arms_think
+    - dog_fx_think
+  - pose: think
+    outfit: beanie
+    layers:
+    - dog_tail_ink
+    - dog_body_ink
+    - dog_head_think_ink
+    - dog_outfit_beanie_think_ink
+    - dog_arms_think_ink
+    - dog_fx_think_ink
+    - dog_tail_pad
+    - dog_body_pad
+    - dog_head_think_pad
+    - dog_outfit_beanie_think_pad
+    - dog_arms_think_pad
+    - dog_fx_think_pad
+    - dog_tail
+    - dog_body
+    - dog_head_think
+    - dog_outfit_beanie_think
+    - dog_arms_think
+    - dog_fx_think
+  - pose: think
+    outfit: shades
+    layers:
+    - dog_tail_ink
+    - dog_body_ink
+    - dog_head_think_ink
+    - dog_outfit_shades_think_ink
+    - dog_arms_think_ink
+    - dog_fx_think_ink
+    - dog_tail_pad
+    - dog_body_pad
+    - dog_head_think_pad
+    - dog_outfit_shades_think_pad
+    - dog_arms_think_pad
+    - dog_fx_think_pad
+    - dog_tail
+    - dog_body
+    - dog_head_think
+    - dog_outfit_shades_think
+    - dog_arms_think
+    - dog_fx_think
+  - pose: think
+    outfit: phones
+    layers:
+    - dog_tail_ink
+    - dog_body_ink
+    - dog_head_think_ink
+    - dog_outfit_phones_think_ink
+    - dog_arms_think_ink
+    - dog_fx_think_ink
+    - dog_tail_pad
+    - dog_body_pad
+    - dog_head_think_pad
+    - dog_outfit_phones_think_pad
+    - dog_arms_think_pad
+    - dog_fx_think_pad
+    - dog_tail
+    - dog_body
+    - dog_head_think
+    - dog_outfit_phones_think
+    - dog_arms_think
+    - dog_fx_think
+  - pose: think
+    outfit: collar
+    layers:
+    - dog_tail_ink
+    - dog_body_ink
+    - dog_outfit_collar_ink
+    - dog_head_think_ink
+    - dog_arms_think_ink
+    - dog_fx_think_ink
+    - dog_tail_pad
+    - dog_body_pad
+    - dog_outfit_collar_pad
+    - dog_head_think_pad
+    - dog_arms_think_pad
+    - dog_fx_think_pad
+    - dog_tail
+    - dog_body
+    - dog_outfit_collar
+    - dog_head_think
+    - dog_arms_think
+    - dog_fx_think
+  - pose: oops
+    outfit: none
+    layers:
+    - dog_tail_ink
+    - dog_body_ink
+    - dog_head_oops_ink
+    - dog_tail_pad
+    - dog_body_pad
+    - dog_head_oops_pad
+    - dog_tail
+    - dog_body
+    - dog_head_oops
+  - pose: oops
+    outfit: bandana
+    layers:
+    - dog_tail_ink
+    - dog_body_ink
+    - dog_outfit_bandana_ink
+    - dog_head_oops_ink
+    - dog_tail_pad
+    - dog_body_pad
+    - dog_outfit_bandana_pad
+    - dog_head_oops_pad
+    - dog_tail
+    - dog_body
+    - dog_outfit_bandana
+    - dog_head_oops
+  - pose: oops
+    outfit: beanie
+    layers:
+    - dog_tail_ink
+    - dog_body_ink
+    - dog_head_oops_ink
+    - dog_outfit_beanie_oops_ink
+    - dog_tail_pad
+    - dog_body_pad
+    - dog_head_oops_pad
+    - dog_outfit_beanie_oops_pad
+    - dog_tail
+    - dog_body
+    - dog_head_oops
+    - dog_outfit_beanie_oops
+  - pose: oops
+    outfit: shades
+    layers:
+    - dog_tail_ink
+    - dog_body_ink
+    - dog_head_oops_ink
+    - dog_outfit_shades_oops_ink
+    - dog_tail_pad
+    - dog_body_pad
+    - dog_head_oops_pad
+    - dog_outfit_shades_oops_pad
+    - dog_tail
+    - dog_body
+    - dog_head_oops
+    - dog_outfit_shades_oops
+  - pose: oops
+    outfit: phones
+    layers:
+    - dog_tail_ink
+    - dog_body_ink
+    - dog_head_oops_ink
+    - dog_outfit_phones_oops_ink
+    - dog_tail_pad
+    - dog_body_pad
+    - dog_head_oops_pad
+    - dog_outfit_phones_oops_pad
+    - dog_tail
+    - dog_body
+    - dog_head_oops
+    - dog_outfit_phones_oops
+  - pose: oops
+    outfit: collar
+    layers:
+    - dog_tail_ink
+    - dog_body_ink
+    - dog_outfit_collar_ink
+    - dog_head_oops_ink
+    - dog_tail_pad
+    - dog_body_pad
+    - dog_outfit_collar_pad
+    - dog_head_oops_pad
+    - dog_tail
+    - dog_body
+    - dog_outfit_collar
+    - dog_head_oops
+  - pose: sleepy
+    outfit: none
+    layers:
+    - dog_sleepy_tail_ink
+    - dog_sleepy_body_ink
+    - dog_sleepy_head_ink
+    - dog_sleepy_paws_ink
+    - dog_sleepy_z1_ink
+    - dog_sleepy_z2_ink
+    - dog_sleepy_z3_ink
+    - dog_sleepy_tail_pad
+    - dog_sleepy_body_pad
+    - dog_sleepy_head_pad
+    - dog_sleepy_paws_pad
+    - dog_sleepy_z1_pad
+    - dog_sleepy_z2_pad
+    - dog_sleepy_z3_pad
+    - dog_sleepy_tail
+    - dog_sleepy_body
+    - dog_sleepy_head
+    - dog_sleepy_paws
+    - dog_sleepy_z1
+    - dog_sleepy_z2
+    - dog_sleepy_z3
+  bubble: {fileID: 21300000, guid: 46a9671ba2404ff42a044f7a85d0b791, type: 3}
+  bubbleTail: {fileID: 21300000, guid: b3bb14011966e704a950b58a4ef6850c, type: 3}
+  bubbleBoxPx: {x: 0, y: 0, z: 240, w: 160}
+  bubbleTailOffsetPx: {x: -12, y: -18}

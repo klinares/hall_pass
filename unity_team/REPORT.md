@@ -1,51 +1,54 @@
 # World Tour (Unity): report
 
+## For the owner
+
+- **The live web game in `world_tour/` shows wrong digits in about one in ten level 3 soundcheck problems.** For example, "8.82 × 10: the digits stay 441" should be 882. A patch is ready and tested on a copy (five files, all its tests pass). It is applied next, after the Unity fixes are committed; you commit `world_tour/` yourself.
+- **Please listen once:** the game should make sound after "start". Headless tests can't hear it.
+- **Correction:** the phase 1 report said questions 7–11 were open and the advisor was silent. Both were wrong: the answers were in QUESTIONS.md all along.
+
 ## Phase and status
 
-Phase 1 (core logic) is **done** and committed locally. Phase 2 (look and feel, remix mode) is being placed next; most of it is already written in staging.
+Phase 2 (look and feel, map, remix, ticket) is **done** and committed locally. Next: apply answers 7–12 in Unity, patch the web game's three hint faults, then phase 3.
 
 ## What now works
 
-- All game rules are in plain C#, matching the real JavaScript: all seven math generators (105,000 problems identical byte for byte), answer checking, shows (misses, encore, fans, levels), progress, review, shop, stickers and the parent office.
-- `tour/StreamingAssets/weeks.json` is the master word list (22 words); a broken week is skipped. `node world_tour_unity/Tools/validate_data.mjs` checks an edited week before you push.
-- The save survives a reload. An unreadable save is backed up, not lost. With storage blocked, the game still runs. Export and import are by code or file.
-- Dates use the browser's local date.
+- Start card, tour map with the route and venues, venue card, remix spelling mode, show bar, ticket, encore and back to the map.
+- riff, the dog: idle, cheering, thinking and oops, with the web game's lines.
+- Sound effects, a mute button that is remembered, reduce motion, the "progress won't save on this device" notice, and the brand fonts and art.
+- Play by mouse (click or drag), or by keyboard alone (Tab, Enter, Space, typing).
 
 ## Test results
 
-- Edit-mode: 945 run, 945 passed. Play-mode: 6 run, 6 passed.
-- Browser, real build, plain static server: 14 run, 14 passed. They cover words loading, an edited week appearing on reload, a broken week skipped, the time zone, save and reload, an unreadable save, storage blocked, and the size budget.
-- Compile: 0 errors, 0 warnings.
-- Download 11.88 MB (largest file 7.41 MB). Cold load 0.6–1.2 s on localhost; repeat visit 59 KB.
+- Edit-mode 1071/1071; play-mode 7/7 (including a full remix show with a miss, a hint and the encore); browser 16/16. Compile has 0 warnings.
+- Mouse, keyboard, reduced-motion and storage-blocked playthroughs at 1366x768, 1440x900 and 1920x1080 all reached the ticket with 0 console errors. 240 freeze-repro runs found 0 freezes.
+- Download 12.77 MB (budget 20 MB; largest file 7.68 MB). Cold load 0.7–1.2 s on localhost.
 
 ## What the tester looked at
 
-Every task, against the JavaScript, with inputs the builders didn't pick: rule reviews, fuzzing of the JSON reader and export codes, 33,000 random play sequences (nothing earned ever lost), every shop and sticker text (no real names), and screenshots at both sizes. No new screens this phase.
+Every screen at three sizes, all player text, the feel rules, saving across a reload, and the code against the web game.
 
 ## Not done or not verified
 
-- Screens: still only the title; phase 2 adds them.
-- The advisor has been silent since 00:43; I followed the standing notes. A usage limit paused work from 03:22 to 04:20.
-- Some builds ran in the background, against the foreground rule (moved by the tool, and once by a builder). All finished; summary files decide.
-- Unity still sometimes crashes at shutdown after finishing (D1); results files decide.
+- **Sound:** inferred from the scenes and logs, not heard.
+- **Remix hints:** still the web wording until the next task.
+- **Polish list:** win toast, confetti and crowd; low-contrast pink text; the no-save notice covers a map label; a very fast sideways drag can pick the next tile.
+- **Advisor checks** paused 03:22–07:52, and a usage limit paused work 03:22–04:20.
 
 ## Departures from the brief
 
-None. Where the web game breaks a learning rule, the port stays exact until answered (questions below).
+- 2.1–2.6 were tested in one combined pass, not one per task, to have a playable build by morning.
+- Some builds ran in the background, moved by the tool.
 
-## Open questions (none block)
+## Open questions
 
-- 7: typed-answer quirks. Fix messages only.
-- 8, 9, 11: hints that give the answer away, and one with wrong digits ("8.82 × 10: the digits stay 441"). Fix.
-- 10: misses beyond two return only in the encore; the "clean run" sticker. Keep the cap, document it.
+None. Answers 7–12 are in QUESTIONS.md and are applied next.
 
 ## How to try it
 
-From the repo root, run `node world_tour_unity/Tests/Web/server.mjs tour` and open the address in Chrome. It shows the title only for now.
+From the repo root, run `node world_tour_unity/Tests/Web/server.mjs tour`, open the address in Chrome, and press start.
 
 ## Files changed
 
-- `world_tour_unity/Assets/`: Core/Math, Gen, Show, Progress, Meta and Data; Game/Boot, Data, Save and Util; Plugins/WebGL; StreamingAssets; tests.
-- `world_tour_unity/Tools/`: JS cross-check scripts and the validator.
-- `tour/`: the rebuilt build, plus StreamingAssets.
-- `unity_team/`: decisions, questions, to-do list and this report.
+- `world_tour_unity/Assets/`: Art, Fonts, Game (Ui, Motion, Audio, Map, Mascot, Modes, Show, Ticket, Flow), Editor builders, scenes, tests.
+- `world_tour_unity/Tools/` and `Tests/Web/`.
+- `tour/` (the rebuilt game) and `unity_team/`.

@@ -14,8 +14,8 @@ namespace WorldTour.Game
     /// Boot scene entry point. Sets the title label from Core (proving Core runs in the player),
     /// then logs WT_BOOT_READY exactly once. The browser test times "label visible" from that line.
     /// It then loads weeks.json and math_config.json (DataLoader) and logs one WT_DATA_READY line, then opens and writes
-    /// the save (SaveStore) and logs one WT_SAVE_READY line, for the browser tests. No UI yet: the click-to-start card is
-    /// phase 2.2. Data and save problems are warnings, never errors, and never stop the game.
+    /// the save (SaveStore) and logs one WT_SAVE_READY line, for the browser tests. Then it sets Ready and shows the
+    /// start card (StartCard), whose click loads Main. Data and save problems are warnings, never errors, and never stop the game.
     /// </summary>
     public sealed class Boot : MonoBehaviour
     {
@@ -27,13 +27,16 @@ namespace WorldTour.Game
         public static SaveStore Store { get; private set; }
 
         [SerializeField] TMP_Text label;
+        [SerializeField] StartCard startCard;
+        /// <summary>True once data and save are loaded and the start card is showing.</summary>
+        public static bool Ready { get; private set; }
 
         static bool s_Announced;
         static bool s_DataAnnounced;
         static bool s_SaveAnnounced;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        static void ResetStatics() { s_Announced = false; s_DataAnnounced = false; s_SaveAnnounced = false; Store = null; }
+        static void ResetStatics() { s_Announced = false; s_DataAnnounced = false; s_SaveAnnounced = false; Store = null; Ready = false; }
 
         void Start()
         {
@@ -60,6 +63,9 @@ namespace WorldTour.Game
                 Debug.LogWarning("boot: could not summarize the data: " + e.Message);
             }
             OpenSave();
+            Ready = true;
+            if (startCard != null) startCard.Show();
+            else Debug.LogWarning("boot: the start card is not assigned.");
         }
 
         /// <summary>

@@ -1,0 +1,180 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f564e7bbaa27544e884ebb273c95d26, type: 3}
+  m_Name: MapArt
+  m_EditorClassIdentifier: WorldTour.Game::WorldTour.Game.Map.MapArt
+  manifest: {fileID: 4900000, guid: b6332ec539355ac4c9a03d9eb7a5d8bf, type: 3}
+  sprites:
+  - name: guitar
+    sprite: {fileID: 21300000, guid: 4f48aec9173898141b2a3c7a34faacf8, type: 3}
+  - name: guitar_sm
+    sprite: {fileID: 21300000, guid: ce9f6b2f21e43e143bf890e51adeaa66, type: 3}
+  - name: amp
+    sprite: {fileID: 21300000, guid: a77dd00c6f4928f4381fc413014e6282, type: 3}
+  - name: amp_sm
+    sprite: {fileID: 21300000, guid: f54b82ee4f81600448b10a9d7200c47a, type: 3}
+  - name: mic
+    sprite: {fileID: 21300000, guid: 84847190249a3344b9d6dfe2047e385c, type: 3}
+  - name: mic_sm
+    sprite: {fileID: 21300000, guid: a197ae9fe4a67ea45b4876e6937b3800, type: 3}
+  - name: bus
+    sprite: {fileID: 21300000, guid: ff975b95b50628a44abd0005007508b7, type: 3}
+  - name: bus_sm
+    sprite: {fileID: 21300000, guid: c25d8bff4bd915b4baec6f175bf7261a, type: 3}
+  - name: tee
+    sprite: {fileID: 21300000, guid: 582fc92fa9f156643b0a42ee7e82da09, type: 3}
+  - name: tee_sm
+    sprite: {fileID: 21300000, guid: 024b5a5118d3e604bb3467fe912b0039, type: 3}
+  - name: vinyl
+    sprite: {fileID: 21300000, guid: 8480266828e5764409aff408477c1306, type: 3}
+  - name: vinyl_sm
+    sprite: {fileID: 21300000, guid: 73e74e6d67df84a43beaa5b8e5df23b5, type: 3}
+  - name: lights
+    sprite: {fileID: 21300000, guid: f19a0dee0346c51469dc749adbbc1b3d, type: 3}
+  - name: lights_sm
+    sprite: {fileID: 21300000, guid: 3a273cde481d9be4ab8cb3e0c8d2aed7, type: 3}
+  - name: crate
+    sprite: {fileID: 21300000, guid: 24d2f9e53e53a0f42b28ac0af9ea3251, type: 3}
+  - name: crate_sm
+    sprite: {fileID: 21300000, guid: 4f4b7167cd76d484098df954e7decf6f, type: 3}
+  - name: star
+    sprite: {fileID: 21300000, guid: aa8691c0e1db08e48b350a188ec017b1, type: 3}
+  - name: star_sm
+    sprite: {fileID: 21300000, guid: 16529a0d1b46ed24ba702434315e4477, type: 3}
+  - name: heart
+    sprite: {fileID: 21300000, guid: e3722deda577b134892bf4ce10e0b088, type: 3}
+  - name: heart_sm
+    sprite: {fileID: 21300000, guid: 3154465856afabc42b3cde48d176e4e3, type: 3}
+  - name: bolt
+    sprite: {fileID: 21300000, guid: 66f59207ff1c3d641a0187f22f089696, type: 3}
+  - name: bolt_sm
+    sprite: {fileID: 21300000, guid: e63af2c1c386de641b10dc432771e087, type: 3}
+  - name: ticket
+    sprite: {fileID: 21300000, guid: fb3ec335dce820b4cb24345da1df41a2, type: 3}
+  - name: ticket_sm
+    sprite: {fileID: 21300000, guid: ef5cb9bab6886b1468ad622f3313d9b9, type: 3}
+  - name: cassette
+    sprite: {fileID: 21300000, guid: f31244929965bdb49a5a2d277fae3af0, type: 3}
+  - name: cassette_sm
+    sprite: {fileID: 21300000, guid: c96b6d74f4ee5c84f81e98027dd716cd, type: 3}
+  - name: phones
+    sprite: {fileID: 21300000, guid: e4344515dfcc9314e985e39fd65f0015, type: 3}
+  - name: phones_sm
+    sprite: {fileID: 21300000, guid: 8b5e0e0f4c33fab40b995476a9c141f8, type: 3}
+  - name: setlist
+    sprite: {fileID: 21300000, guid: bf111b3d636066e4e8d9e33f6d170bde, type: 3}
+  - name: setlist_sm
+    sprite: {fileID: 21300000, guid: 2327a41a186163a43817de335d986c48, type: 3}
+  - name: pass
+    sprite: {fileID: 21300000, guid: 0b44438205d17f343bc81b4e474c9ed5, type: 3}
+  - name: pass_sm
+    sprite: {fileID: 21300000, guid: 47e8ddcd42cc0c34a927c72a7d7f1512, type: 3}
+  - name: pick
+    sprite: {fileID: 21300000, guid: a97831f12a952cb4ca5c94a441919a5a, type: 3}
+  - name: pick_sm
+    sprite: {fileID: 21300000, guid: f9382bfb432eb74419cab85dff52a156, type: 3}
+  - name: note
+    sprite: {fileID: 21300000, guid: 9f3934420454bb34b81e035583edbf4a, type: 3}
+  - name: note_sm
+    sprite: {fileID: 21300000, guid: bb2aef50d95bded42add967caa5b39f2, type: 3}
+  - name: coffee
+    sprite: {fileID: 21300000, guid: 9b025950ba57fc0489d2ce22343a7bd2, type: 3}
+  - name: coffee_sm
+    sprite: {fileID: 21300000, guid: 9059d165ce628e749aed0c9749dcfdec, type: 3}
+  - name: trophy
+    sprite: {fileID: 21300000, guid: e4c77be54cb5bfb4cb5f63fc161d84f3, type: 3}
+  - name: trophy_sm
+    sprite: {fileID: 21300000, guid: 4c668b7f035fc9f4f9b031ef8ac6652d, type: 3}
+  - name: guitar_lilac
+    sprite: {fileID: 21300000, guid: 621141978ba997e41a6dfb77c39e153e, type: 3}
+  - name: guitar_lilac_sm
+    sprite: {fileID: 21300000, guid: 8013d1ee2eb65fc4d9cfde9171d34159, type: 3}
+  - name: guitar_sunburst
+    sprite: {fileID: 21300000, guid: ce80966599faea349ad03edbd5ad0d10, type: 3}
+  - name: guitar_sunburst_sm
+    sprite: {fileID: 21300000, guid: e4bfccfee2641ae4f9f337003b4f4a42, type: 3}
+  - name: guitar_mint
+    sprite: {fileID: 21300000, guid: 81752bc9d53a59443b1d04d6bc288f17, type: 3}
+  - name: guitar_mint_sm
+    sprite: {fileID: 21300000, guid: 26ede90d9a97b404b9dbccc2388e9234, type: 3}
+  - name: guitar_midnight
+    sprite: {fileID: 21300000, guid: 5844e99c3e617b843ba43399cdcb9c90, type: 3}
+  - name: guitar_midnight_sm
+    sprite: {fileID: 21300000, guid: 03c7d4f7e68fe6a48a033e0ea461b06f, type: 3}
+  - name: guitar_cherry
+    sprite: {fileID: 21300000, guid: 2c108af435426824c9c3ff0f56c44be2, type: 3}
+  - name: guitar_cherry_sm
+    sprite: {fileID: 21300000, guid: b23ddb4d942744d46b7a6b2f633f56e3, type: 3}
+  - name: venue_coffee
+    sprite: {fileID: 21300000, guid: 5fdf3e2e15778024fa75e0aecd6fc6a3, type: 3}
+  - name: venue_records
+    sprite: {fileID: 21300000, guid: 4cd0d8fc42e988b47ad40deada1de2f2, type: 3}
+  - name: venue_rec
+    sprite: {fileID: 21300000, guid: a4ec1dbc5c96b0b4aa616994a9d5f186, type: 3}
+  - name: venue_rooftop
+    sprite: {fileID: 21300000, guid: cc3ca1418cc2ca24d880eec2fca3e3dc, type: 3}
+  - name: venue_club
+    sprite: {fileID: 21300000, guid: b6774479901e61942aa9ae8da06eadec, type: 3}
+  - name: venue_theater
+    sprite: {fileID: 21300000, guid: 5ab344056538c4e4b83e09807bd18fe8, type: 3}
+  - name: venue_festival
+    sprite: {fileID: 21300000, guid: ad4f82bc4d1a0334a91d64eb33bfc86f, type: 3}
+  - name: venue_arena
+    sprite: {fileID: 21300000, guid: 79e1e10f9740172439e3d516a22f62bb, type: 3}
+  - name: icon_sound
+    sprite: {fileID: 21300000, guid: 62607c0cfd51fb8408db0d14c4157c6e, type: 3}
+  - name: icon_mute
+    sprite: {fileID: 21300000, guid: 41da0ed30efd6f94dbf7f1d242d30a5d, type: 3}
+  - name: icon_x
+    sprite: {fileID: 21300000, guid: 959db361f7cafd247aba5fa7a50629ff, type: 3}
+  - name: icon_back
+    sprite: {fileID: 21300000, guid: 44c595e4514316f48aa08b85f3f41b40, type: 3}
+  - name: icon_lock
+    sprite: {fileID: 21300000, guid: 48bfc68d985aafe4e8824cc484a8f4f8, type: 3}
+  - name: icon_undo
+    sprite: {fileID: 21300000, guid: b25a3f13138f07249bc8535983162529, type: 3}
+  - name: icon_trash
+    sprite: {fileID: 21300000, guid: 13b8dd586663eb34a9baded9b2c196a7, type: 3}
+  - name: icon_bulb
+    sprite: {fileID: 21300000, guid: a02d3effa4e5d014b910a4fcab2e17f6, type: 3}
+  - name: scribble
+    sprite: {fileID: 21300000, guid: c1e7dd147b3033f4c924e475cd1de58e, type: 3}
+  - name: paper_torn
+    sprite: {fileID: 21300000, guid: c4a2248ea0b5c5543bf27e1acfdc3330, type: 3}
+  - name: paper_lined
+    sprite: {fileID: 21300000, guid: 0a2f2ff8e79077d46ac72bfae3b2198a, type: 3}
+  - name: paper_map
+    sprite: {fileID: 21300000, guid: 5dc4b63a0576c554aa35dbc6d5349ccc, type: 3}
+  - name: tape_a
+    sprite: {fileID: 21300000, guid: f75d118fe490bbe4fadd0f36a742462a, type: 3}
+  - name: tape_b
+    sprite: {fileID: 21300000, guid: 1b119c8e86024b640bce1b3bfe1c6cde, type: 3}
+  - name: tape_c
+    sprite: {fileID: 21300000, guid: 5c91c36bafeef2e46b27942476afc5c6, type: 3}
+  - name: ticket_stub
+    sprite: {fileID: 21300000, guid: db9ce939fa6b7b4459836520d0caffb7, type: 3}
+  - name: stamp
+    sprite: {fileID: 21300000, guid: 4eca5becb31439445987d6dc69a73278, type: 3}
+  - name: desk
+    sprite: {fileID: 21300000, guid: b857ab7955108d74a8a2b7ddbefa702c, type: 3}
+  - name: desk_plain
+    sprite: {fileID: 21300000, guid: e7f8d6244be370e4f97885235a672ad5, type: 3}
+  - name: desk_dots
+    sprite: {fileID: 21300000, guid: 527077382dfaee64d860a35314f8b69f, type: 3}
+  - name: bubble
+    sprite: {fileID: 21300000, guid: 46a9671ba2404ff42a044f7a85d0b791, type: 3}
+  - name: bubble_tail
+    sprite: {fileID: 21300000, guid: b3bb14011966e704a950b58a4ef6850c, type: 3}
+  - name: halftone_tr
+    sprite: {fileID: 21300000, guid: 641a0b6274f45bb408c42f7f609cbe91, type: 3}
+  - name: halftone_bl
+    sprite: {fileID: 21300000, guid: 5e6375a078e108c4d80e52c345d1d7d6, type: 3}

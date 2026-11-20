@@ -167,3 +167,16 @@ Pin the changed last-song case with its own test and list it as an intended diff
 List it as an intended difference in the phase 1 report.
 
 **Addendum to question 10 (03:00, from task 1.6):** because a clean bonus replay counts as a first try (web rule, kept), a show with a miss can still earn the **"clean run"** sticker, whose text says *"play a whole show with no misses and no hints"* (JS show scenario A: one miss, replayed right, `first` = 10/10). Nothing earned is taken away, but the sticker's text and its rule disagree. Options: (a) keep it; (b) reword the sticker ("finish a show with every song right in the end"); (c) award "clean run" only when the show had no misses (needs a "missed" count in the summary, which the engine already tracks as MissedKids). **Recommendation:** (c) if the advisor wants the sticker to mean what it says, otherwise (b). Kept exact until answered.
+
+**Answer to the question 10 addendum (advisor, 2026-11-20 07:58):** Option (c). "clean run" is awarded only when the show had no misses and no hints, so the sticker means what it says. Scoring and the VIP ticket keep the web rule. List it as an intended difference.
+
+## 12. New wording added while applying answers 7–11 (asked 2026-11-20 08:40, FYI, not blocking)
+
+Applying the answers needed three short bits of new copy that the web game doesn't have. They're in the Unity version now; easy to change:
+1. Typed point answers that can't be read: "doesn't read as a number yet", with the shape example **"(4, 4)"** instead of answer 7's "(3, 5)". A diagonal point is never a stage-designer answer, so the example can't give one away.
+2. Remix, when the hint floor (answer 11) stops lighting more letters: **"the last letters are yours to find. sound it out."** and **"i cleared the wrong letters. the last ones are yours to find."**
+3. The terminal validator's warning for very short words: **"it is only N letters long, so the hints have almost nothing to hide"** (shown to the owner, not the child).
+
+**Recommendation:** keep them. Reply here with changes if the voice is off.
+
+**Answer (advisor, 2026-11-20 09:08):** Keep all three as written. "(4, 4)" is a better example than mine, for the reason you give. The two remix lines fit the voice.

@@ -6,7 +6,7 @@
 //   --out        results file, default <project>/Temp/web-results.json (the results file is the evidence)
 //   --shots      screenshot folder, default <project>/Temp/web-shots
 //   --site       folder to serve instead of tour/ (used to prove the tests can fail)
-//   --only       comma list of: cold, reload, storage, broken, size, data, edit, skip, clock, save   (default: all)
+//   --only       comma list of: cold, reload, storage, broken, size, data, edit, skip, clock, save, start   (default: all)
 //   --budget-mb  size ceiling in MB (10^6 bytes), default 20; over 12 MB or a cold load over 8 s only warns
 //
 // Exits 1 if any test fails, 2 if the runner itself breaks. Server and browser are closed in finally.
@@ -31,7 +31,7 @@ const opt = (name, def) => { const i = argv.indexOf(name); return i >= 0 && i + 
 const outFile = path.resolve(opt('--out', path.join(project, 'Temp', 'web-results.json')));
 const shotsDir = path.resolve(opt('--shots', path.join(project, 'Temp', 'web-shots')));
 const site = path.resolve(opt('--site', path.join(repo, 'tour')));
-const TEST_NAMES = ['cold', 'reload', 'storage', 'broken', 'size', 'data', 'edit', 'skip', 'clock', 'save'];
+const TEST_NAMES = ['cold', 'reload', 'storage', 'broken', 'size', 'data', 'edit', 'skip', 'clock', 'save', 'start'];
 const only = new Set((opt('--only', TEST_NAMES.join(','))).split(',').map(s => s.trim()));
 const budgetMb = Number(opt('--budget-mb', '20'));
 const WARN_MB = 12, WARN_MS = 8000, READY_TIMEOUT_MS = 60000, RELOAD_MAX_BYTES = 200 * 1024;
@@ -440,6 +440,62 @@ try {
       if (backup !== null) f.push(`the backup key holds ${JSON.stringify(backup)} though its write was refused`);
       if (!r.warnings.some(w => w.includes('[save]') && w.includes("couldn't be copied"))) f.push('no [save] warning about the failed copy');
       record('save_backup_fails_keeps_main', f, { saveLine: r.saveLine, main, consoleErrors: r.errors });
+      await ctx.close();
+    }
+  }
+
+  // 6. Start card (task 2.2): Boot shows the card once data and save are ready; Enter (the button has focus) or a click on
+  // the button is the gesture that unlocks sound and loads Main. Screenshots of the card and of the empty Main screen.
+  if (only.has('start')) {
+    for (const [how, vw, vh] of [['enter', 1366, 768], ['click', 1920, 1080]]) {
+      const name = `start_card_${how}`;
+      const ctx = await browser.newContext({ viewport: { width: vw, height: vh } });
+      const page = await ctx.newPage();
+      const lines = [], errors = [], warnings = [];
+      page.on('console', m => {
+        const text = m.text().trim();
+        lines.push(text);
+        if (m.type() === 'error') errors.push(text);
+        if (m.type() === 'warning') warnings.push(text);
+      });
+      page.on('pageerror', e => errors.push('pageerror: ' + e.message));
+      const has = prefix => lines.some(l => l === prefix || l.startsWith(prefix + ' '));
+      const waitFor = async (pred, ms) => { const end = Date.now() + ms; while (!pred() && Date.now() < end) await page.waitForTimeout(50); return pred(); };
+      const f = [];
+      server.resetCounters();
+      await page.goto(server.url, { waitUntil: 'load' });
+      if (!await waitFor(() => has('WT_START_SHOWN'), READY_TIMEOUT_MS)) f.push(`no WT_START_SHOWN within ${READY_TIMEOUT_MS} ms`);
+      else {
+        await page.waitForTimeout(600); // the card's peel-on (380 ms) has settled
+        const cardShot = path.join(shotsDir, `start_card_${vw}x${vh}.png`);
+        fs.mkdirSync(shotsDir, { recursive: true });
+        await page.screenshot({ path: cardShot });
+        results.screenshots.push(cardShot);
+        if (has('WT_SOUND_UNLOCKED')) f.push('sound unlocked before any gesture');
+        if (how === 'enter') {
+          await page.evaluate(() => { const c = document.getElementById('unity-canvas'); if (c) c.focus(); });
+          await page.keyboard.press('Enter');
+        } else {
+          // The button sits at the card's lower quarter: 85 canvas units below centre at the 1366x768 reference,
+          // scaled by Scale With Screen Size (match 0.5).
+          const scale = Math.sqrt((vw / 1366) * (vh / 768));
+          await page.mouse.click(vw / 2, vh / 2 + 85 * scale);
+        }
+        for (const line of ['WT_STARTED', 'WT_SOUND_UNLOCKED', 'WT_MAIN_READY'])
+          if (!await waitFor(() => has(line), 30000)) f.push(`no ${line} after the ${how}`);
+        if (!await waitFor(() => has('WT_SOUND_READY') || warnings.some(w => w.startsWith('WT_SOUND_UNVERIFIED')), 10000))
+          f.push('neither WT_SOUND_READY nor a WT_SOUND_UNVERIFIED warning');
+        await page.waitForTimeout(600); // the first screen is placed without a transition; let a few frames draw
+        const mainShot = path.join(shotsDir, `main_${vw}x${vh}.png`);
+        await page.screenshot({ path: mainShot });
+        results.screenshots.push(mainShot);
+      }
+      if (errors.length) f.push(`${errors.length} console error(s): ${errors.slice(0, 3).join(' | ')}`);
+      const pick = prefix => lines.find(l => l.startsWith(prefix)) || null;
+      record(name, f, {
+        viewport: `${vw}x${vh}`, mainLine: pick('WT_MAIN_READY'), soundLine: pick('WT_SOUND_READY') || warnings.find(w => w.startsWith('WT_SOUND_UNVERIFIED')) || null,
+        consoleErrors: errors, consoleWarnings: warnings.slice(0, 10),
+      });
       await ctx.close();
     }
   }

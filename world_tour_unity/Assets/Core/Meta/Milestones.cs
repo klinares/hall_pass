@@ -1,0 +1,186 @@
+using System;
+using System.Collections.Generic;
+using WorldTour.Core.Progress;
+using WorldTour.Core.Shows;
+
+namespace WorldTour.Core.Meta
+{
+    /// <summary>
+    /// A playable mode as the journal and the office see it: the fields of a world_tour/modes/index.js
+    /// <c>MODES</c> entry that meta.js reads (<c>{ id, name, kind, skill }</c>). The Game layer builds the list.
+    /// </summary>
+    public sealed class ModeInfo
+    {
+        public const string Spelling = "spelling";
+        public const string Math = "math";
+
+        public readonly string Id;
+        public readonly string Name;
+        /// <summary>"spelling" or "math".</summary>
+        public readonly string Kind;
+        /// <summary>Math modes: the generator skill ("dec", "frac", ...); null for spelling.</summary>
+        public readonly string Skill;
+
+        public ModeInfo(string id, string name, string kind, string skill = null)
+        {
+            Id = id; Name = name; Kind = kind; Skill = skill;
+        }
+    }
+
+    /// <summary>
+    /// One tour journal sticker (world_tour/data/milestones.js). <see cref="Test"/> reads saved progress and says
+    /// whether it is earned. Earned stickers are kept forever, even if the thing that earned them changes later.
+    /// </summary>
+    public sealed class Milestone
+    {
+        public readonly string Id;
+        /// <summary>A sticker art id, or "venue:&lt;id&gt;" for a venue drawing.</summary>
+        public readonly string Art;
+        public readonly string Name;
+        /// <summary>How to earn it, shown on the empty slot.</summary>
+        public readonly string How;
+        /// <summary>JS <c>test(s, ctx)</c>, with <c>ctx.modes</c> passed directly.</summary>
+        public readonly Func<SaveBlob, IReadOnlyList<ModeInfo>, bool> Test;
+
+        public Milestone(string id, string art, string name, string how, Func<SaveBlob, IReadOnlyList<ModeInfo>, bool> test)
+        {
+            Id = id; Art = art; Name = name; How = how; Test = test;
+        }
+    }
+
+    /// <summary>The tour journal stickers and their rules, ported from world_tour/data/milestones.js.</summary>
+    public static class Milestones
+    {
+        /// <summary>
+        /// milestones.js:8: mastered means at level 3 with 10 right answers there (one hot show can reach level 3,
+        /// so that alone isn't enough).
+        /// </summary>
+        public const int MasterAt3 = 10;
+
+        /// <summary>milestones.js:11 <c>skillKey</c>: the key a mode's level is saved under; math by skill, spelling as "spell:&lt;mode&gt;".</summary>
+        public static string SkillKey(ModeInfo m)
+        {
+            return m.Kind == ModeInfo.Math ? m.Skill : "spell:" + m.Id;
+        }
+
+        /// <summary>milestones.js:5 <c>showsDone</c>: finished shows that are not encores.</summary>
+        private static IEnumerable<ShowRecord> ShowsDone(SaveBlob s)
+        {
+            foreach (ShowRecord x in s.Shows) if (!x.Encore) yield return x;
+        }
+
+        /// <summary>milestones.js:6 <c>soldOut</c>: <c>x.sold || (x.n &gt;= 5 &amp;&amp; x.first / x.n &gt;= .9)</c>.</summary>
+        private static bool SoldOut(ShowRecord x)
+        {
+            return x.Sold || (x.N >= 5 && (double)x.First / x.N >= .9);
+        }
+
+        private static int CountDone(SaveBlob s)
+        {
+            int n = 0;
+            foreach (ShowRecord x in ShowsDone(s)) n++;
+            return n;
+        }
+
+        private static bool AnyDone(SaveBlob s, Func<ShowRecord, bool> f)
+        {
+            foreach (ShowRecord x in ShowsDone(s)) if (f(x)) return true;
+            return false;
+        }
+
+        /// <summary>
+        /// milestones.js:9 <c>maxLevel</c>: some key is at level 3 with byLevel[3][1] (right answers at level 3)
+        /// of at least <see cref="MasterAt3"/>. A missing record or row counts as 0.
+        /// </summary>
+        private static bool MaxLevel(SaveBlob s, IEnumerable<string> ids)
+        {
+            foreach (string id in ids)
+            {
+                SkillRecord k;
+                if (id == null || !s.Skills.TryGetValue(id, out k) || k == null || k.Level != 3) continue;
+                int[] row;
+                int right = k.ByLevel != null && k.ByLevel.TryGetValue(3, out row) && row != null && row.Length > 1 ? row[1] : 0;
+                if (right >= MasterAt3) return true;
+            }
+            return false;
+        }
+
+        private static IEnumerable<string> Keys(IReadOnlyList<ModeInfo> modes, string kind)
+        {
+            foreach (ModeInfo m in modes) if (kind == null || m.Kind == kind) yield return SkillKey(m);
+        }
+
+        private static long TotalTime(SaveBlob s)
+        {
+            long t = 0;
+            foreach (int v in s.Time.Values) t += v;
+            return t;
+        }
+
+        private static bool EveryMode(SaveBlob s, IReadOnlyList<ModeInfo> modes)
+        {
+            if (modes.Count == 0) return false;
+            foreach (ModeInfo m in modes)
+            {
+                bool played = false;
+                /* all shows, encores included, as the JS reads s.shows here (not showsDone) */
+                foreach (ShowRecord x in s.Shows) if (x.Mode == m.Id) { played = true; break; }
+                if (!played) return false;
+            }
+            return true;
+        }
+
+        private static Milestone Venue(string v, string name)
+        {
+            return new Milestone("venue-" + v, "venue:" + v, name,
+                "unlock " + (name.StartsWith("the ", StringComparison.Ordinal) ? name : "the " + name),
+                (s, c) => s.Venues.Unlocked.Contains(v));
+        }
+
+        /// <summary>milestones.js:13 <c>MILESTONES</c>, in journal order.</summary>
+        public static readonly IReadOnlyList<Milestone> All = new[]
+        {
+            new Milestone("first-show", "ticket", "opening night", "finish your first show",
+                (s, c) => CountDone(s) >= 1),
+            new Milestone("sold-out", "star", "first sold-out show", "get 9 of 10 right on the first try",
+                (s, c) => AnyDone(s, SoldOut)),
+            new Milestone("clean-run", "bolt", "ten in a row", "play a whole show with no misses and no hints",
+                (s, c) => AnyDone(s, x => x.N >= 10 && x.First >= x.N)),
+            new Milestone("streak-3", "heart", "three-day streak", "play three days in a row",
+                (s, c) => s.Streak.Best >= 3),
+            new Milestone("streak-5", "lights", "five-day streak", "play five days in a row",
+                (s, c) => s.Streak.Best >= 5),
+            new Milestone("streak-10", "vinyl", "ten-day streak", "play ten days in a row",
+                (s, c) => s.Streak.Best >= 10),
+            new Milestone("master-any", "trophy", "mastered a skill", "get 10 right at level 3 in any mode",
+                (s, c) => MaxLevel(s, Keys(c, null))),
+            new Milestone("master-spell", "mic", "spelling headliner", "get 10 right at level 3 in a spelling mode",
+                (s, c) => MaxLevel(s, Keys(c, ModeInfo.Spelling))),
+            new Milestone("master-math", "amp", "math headliner", "get 10 right at level 3 in a math mode",
+                (s, c) => MaxLevel(s, Keys(c, ModeInfo.Math))),
+            new Milestone("every-mode", "bus", "played every stage", "finish a show in every mode",
+                EveryMode),
+            new Milestone("ten-shows", "setlist", "ten shows", "finish ten shows",
+                (s, c) => CountDone(s) >= 10),
+            new Milestone("fifty-shows", "guitar", "fifty shows", "finish fifty shows",
+                (s, c) => CountDone(s) >= 50),
+            new Milestone("hour", "cassette", "an hour of practice", "play for an hour in total",
+                (s, c) => TotalTime(s) >= 3600),
+            /* one per venue after the first (milestones.js:41) */
+            Venue("records", "record store"),
+            Venue("rec", "rec center"),
+            Venue("rooftop", "rooftop"),
+            Venue("club", "the club"),
+            Venue("theater", "theater"),
+            Venue("festival", "festival"),
+            Venue("arena", "the arena"),
+        };
+
+        /// <summary>milestones.js:48 <c>milestoneById</c>: the milestone, or null for an unknown id.</summary>
+        public static Milestone ById(string id)
+        {
+            foreach (Milestone m in All) if (m.Id == id) return m;
+            return null;
+        }
+    }
+}

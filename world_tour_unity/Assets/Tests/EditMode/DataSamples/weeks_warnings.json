@@ -1,0 +1,32 @@
+{
+  "weeks": [
+    {
+      "id": "2026-11-23",
+      "label": "warnings",
+      "words": [
+        {
+          "w": "monument",
+          "s": "mon-u-mint",
+          "h": "a statue to remember someone",
+          "x": "they built a ___ in the park."
+        },
+        {
+          "w": "temple",
+          "s": "tem-ple",
+          "h": "a temple is a sacred building",
+          "x": "the temple is old, a real ___."
+        },
+        {
+          "w": "unhappy",
+          "s": "un-hap-py",
+          "h": "not glad",
+          "prefix": {
+            "p": "un",
+            "root": "happy",
+            "means": "not"
+          }
+        }
+      ]
+    }
+  ]
+}

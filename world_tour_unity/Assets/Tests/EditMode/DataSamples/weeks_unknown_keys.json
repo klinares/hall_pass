@@ -1,0 +1,38 @@
+{
+  "weeks": [
+    {
+      "id": "2026-11-23",
+      "label": "keys",
+      "words": [
+        {
+          "W": "echo",
+          "s": "ech-o",
+          "h": "a sound that comes back"
+        },
+        {
+          "w": "chorus",
+          "s": "cho-rus",
+          "h": "the part that repeats",
+          "prefx": {
+            "p": "x",
+            "root": "y",
+            "means": "z"
+          }
+        },
+        {
+          "w": "unhappy",
+          "s": "un-hap-py",
+          "h": "not glad",
+          "prefix": {
+            "p": "un",
+            "root": "happy",
+            "means": "not",
+            "Means": "not"
+          }
+        }
+      ],
+      "words2": []
+    }
+  ],
+  "version": 2
+}

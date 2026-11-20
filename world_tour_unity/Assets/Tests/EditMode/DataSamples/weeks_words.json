@@ -1,0 +1,61 @@
+{
+  "weeks": [
+    {
+      "id": "2026-11-23",
+      "label": "word problems",
+      "words": [
+        {
+          "w": "",
+          "s": "x",
+          "h": "empty word"
+        },
+        {
+          "s": "no-w",
+          "h": "no w at all"
+        },
+        {
+          "w": "Capital",
+          "s": "Cap-i-tal",
+          "h": "a big city"
+        },
+        {
+          "w": "spaced ",
+          "s": "spaced",
+          "h": "has a space at the end"
+        },
+        {
+          "w": "echo",
+          "h": "no syllables"
+        },
+        {
+          "w": "quiet",
+          "s": "qui-et",
+          "h": "   "
+        },
+        {
+          "w": "echo",
+          "s": "ech-o",
+          "h": "twice in the week"
+        },
+        {
+          "w": "lyric",
+          "s": "lyr-ic",
+          "h": "song words",
+          "x": "no blank here"
+        },
+        {
+          "w": "chorus",
+          "s": "cho-rus",
+          "h": "the part that repeats",
+          "x": "___ and ___ again"
+        },
+        {
+          "w": "stage",
+          "s": "stage",
+          "h": "where the band plays",
+          "x": ""
+        }
+      ]
+    }
+  ]
+}

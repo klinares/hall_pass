@@ -1,0 +1,37 @@
+{
+  "weeks": [
+    {
+      "id": "2026-11-23",
+      "label": "new copy (top)",
+      "words": [
+        {
+          "w": "echo",
+          "s": "ech-o",
+          "h": "a sound that comes back"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-23",
+      "label": "old copy",
+      "words": [
+        {
+          "w": "tempo",
+          "s": "tem-po",
+          "h": "the speed of a song"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-09",
+      "label": "week of nov 9, 2026",
+      "words": [
+        {
+          "w": "pyramid",
+          "s": "pyr-a-mid",
+          "h": "an old stone building with triangle sides"
+        }
+      ]
+    }
+  ]
+}

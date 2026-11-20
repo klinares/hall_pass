@@ -6,7 +6,7 @@
 //   --out        results file, default <project>/Temp/web-results.json (the results file is the evidence)
 //   --shots      screenshot folder, default <project>/Temp/web-shots
 //   --site       folder to serve instead of tour/ (used to prove the tests can fail)
-//   --only       comma list of: cold, reload, storage, broken, size   (default: all)
+//   --only       comma list of: cold, reload, storage, broken, size, data, edit, skip, clock, save   (default: all)
 //   --budget-mb  size ceiling in MB (10^6 bytes), default 20; over 12 MB or a cold load over 8 s only warns
 //
 // Exits 1 if any test fails, 2 if the runner itself breaks. Server and browser are closed in finally.
@@ -14,8 +14,10 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { createRequire } from 'node:module';
+import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { startServer } from './server.mjs';
+import { loadWeeks } from '../../Tools/validate_data.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const project = path.resolve(here, '..', '..');           // world_tour_unity/
@@ -29,7 +31,8 @@ const opt = (name, def) => { const i = argv.indexOf(name); return i >= 0 && i + 
 const outFile = path.resolve(opt('--out', path.join(project, 'Temp', 'web-results.json')));
 const shotsDir = path.resolve(opt('--shots', path.join(project, 'Temp', 'web-shots')));
 const site = path.resolve(opt('--site', path.join(repo, 'tour')));
-const only = new Set((opt('--only', 'cold,reload,storage,broken,size')).split(',').map(s => s.trim()));
+const TEST_NAMES = ['cold', 'reload', 'storage', 'broken', 'size', 'data', 'edit', 'skip', 'clock', 'save'];
+const only = new Set((opt('--only', TEST_NAMES.join(','))).split(',').map(s => s.trim()));
 const budgetMb = Number(opt('--budget-mb', '20'));
 const WARN_MB = 12, WARN_MS = 8000, READY_TIMEOUT_MS = 60000, RELOAD_MAX_BYTES = 200 * 1024;
 const MB = 1e6;
@@ -46,31 +49,35 @@ function record(name, failures, details = {}) {
   console.log(`${pass ? 'PASS' : 'FAIL'} ${name}${pass ? '' : ': ' + failures.join('; ')}`);
 }
 
-/** Loads the page in `context` and waits for WT_BOOT_READY (or a visible failure message, or a timeout). */
-async function load(context, server, { shot, initScript } = {}) {
+/** Loads the page in `context` and waits for WT_BOOT_READY (or a visible failure message, or a timeout).
+ *  With waitData it also waits for the WT_DATA_READY line (task 1.7). */
+async function load(context, server, { shot, initScript, waitData, waitSave } = {}) {
   const page = await context.newPage();
   if (initScript) await page.addInitScript(initScript);
   const origin = new URL(server.url).origin;
-  const errors = [], warnings = [], external = [], unityCache = [];
-  let readyMs = null, t0 = 0;
+  const errors = [], warnings = [], external = [], unityCache = [], dataRequests = [];
+  let readyMs = null, t0 = 0, dataLine = null, saveLine = null;
   page.on('console', m => {
     const text = m.text();
     if (m.type() === 'error') errors.push(text);
     if (m.type() === 'warning') warnings.push(text);
     if (text.startsWith('[UnityCache]')) unityCache.push(text);
     if (readyMs === null && text.trim() === 'WT_BOOT_READY') readyMs = Date.now() - t0;
+    if (dataLine === null && text.trim().startsWith('WT_DATA_READY ')) dataLine = text.trim();
+    if (saveLine === null && text.trim().startsWith('WT_SAVE_READY ')) saveLine = text.trim();
   });
   page.on('pageerror', e => errors.push('pageerror: ' + e.message));
   page.on('request', r => {
     const u = r.url();
     // data: URLs never leave the browser; everything else must be the local server or a blob.
     if (!u.startsWith(origin + '/') && !u.startsWith('blob:') && !u.startsWith('data:')) external.push(u);
+    if (/\/StreamingAssets\/(weeks|math_config)\.json/.test(u)) dataRequests.push({ url: u, cacheControl: r.headers()['cache-control'] || null });
   });
   server.resetCounters();
   t0 = Date.now();
   await page.goto(server.url, { waitUntil: 'load' });
   const deadline = Date.now() + READY_TIMEOUT_MS;
-  while (readyMs === null && Date.now() < deadline) {
+  while ((readyMs === null || (waitData && dataLine === null) || (waitSave && saveLine === null)) && Date.now() < deadline) {
     const failed = await page.evaluate(() => {
       const m = document.getElementById('message');
       return !!m && getComputedStyle(m).display !== 'none';
@@ -95,7 +102,92 @@ async function load(context, server, { shot, initScript } = {}) {
   }
   const files = server.files;
   const largest = files.reduce((a, f) => (!a || f.bytes > a.bytes ? f : a), null);
-  return { page, readyMs, errors, warnings, external, unityCache, layout, bytes: server.bytesServed, files, largest };
+  return { page, readyMs, errors, warnings, external, unityCache, layout, bytes: server.bytesServed, files, largest, dataLine, data: parseData(dataLine), dataRequests, saveLine, save: parseData(saveLine) };
+}
+
+/** "WT_DATA_READY weeks=2 words=22 week=2026-10-26 config=ok skipped=0" -> { weeks: 2, words: 22, week: '2026-10-26', ... } */
+function parseData(line) {
+  if (!line) return null;
+  const o = {};
+  for (const part of line.split(' ').slice(1)) { const [k, v] = part.split('='); o[k] = /^[0-9]+$/.test(v) ? Number(v) : v; }
+  return o;
+}
+
+/** The page's own local date, YYYY-MM-DD, from new Date() with local getters (what clock.jslib returns). */
+const browserToday = page => page.evaluate(() => {
+  const d = new Date(), p = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+});
+
+/** What the player should report for a weeks.json on `today`, from the Node validator (the same rules as Core, held together by the parity test). */
+function expectedData(weeksFile, today) {
+  const r = loadWeeks(fs.readFileSync(weeksFile, 'utf8'));
+  const weeks = r.model ? r.model.weeks : [];
+  const newest = [...weeks].sort((a, b) => (a.id < b.id ? 1 : a.id > b.id ? -1 : 0));
+  const week = (newest.find(w => w.id <= today) || newest[newest.length - 1] || { id: 'none' }).id;
+  return { weeks: weeks.length, words: weeks.reduce((n, w) => n + w.words.length, 0), skipped: r.skipped.length, week, today };
+}
+
+/** Compares a WT_DATA_READY line with what is expected. */
+function dataFailures(r, exp) {
+  const f = [];
+  if (!r.data) { f.push('no WT_DATA_READY line'); return f; }
+  for (const k of ['weeks', 'words', 'skipped', 'week', 'today']) if (r.data[k] !== exp[k]) f.push(`${k}=${r.data[k]}, expected ${exp[k]}`);
+  if (r.data.config !== 'ok') f.push(`config=${r.data.config}, expected ok`);
+  return f;
+}
+
+/** Every request for weeks.json or math_config.json must carry the ?v= cache-buster (or a no-store header). */
+function cacheBusterFailures(r) {
+  const f = [];
+  for (const name of ['weeks.json', 'math_config.json']) {
+    const reqs = r.dataRequests.filter(q => q.url.includes('/StreamingAssets/' + name));
+    if (!reqs.length) f.push(`no request for ${name}`);
+    for (const q of reqs) if (!/[?&]v=[0-9]+/.test(q.url) && !/no-store/.test(q.cacheControl || '')) f.push(`${name} requested without ?v= or no-store: ${q.url}`);
+  }
+  return f;
+}
+
+/** A temp copy of the site under the system temp folder; finally removes it. */
+function siteCopy(prefix) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), prefix));
+  tempDirs.push(dir);
+  fs.cpSync(site, dir, { recursive: true });
+  return dir;
+}
+
+const FOUR_WORDS = [
+  { w: 'echo', s: 'ech-o', h: 'a sound that bounces back to you' },
+  { w: 'tempo', s: 'tem-po', h: 'how fast a song goes' },
+  { w: 'chorus', s: 'cho-rus', h: 'the part of a song that repeats' },
+  { w: 'stage', s: 'stage', h: 'the raised floor where the band plays' },
+];
+
+/** Compares a WT_SAVE_READY line ("persistent=true fans=0 unlocked=1 v=1 recovered=false") with what is expected. */
+function saveFailures(r, exp) {
+  if (!r.save) return ['no WT_SAVE_READY line'];
+  return Object.keys(exp).filter(k => String(r.save[k]) !== String(exp[k])).map(k => `${k}=${r.save[k]}, expected ${exp[k]}`);
+}
+
+const readStorage = (page, key) => page.evaluate(k => localStorage.getItem(k), key);
+const writeStorage = (page, key, value) => page.evaluate(([k, v]) => localStorage.setItem(k, v), [key, value]);
+const SAVE_KEY = 'worldtour.v1';
+
+/** A save made by the real web game (world_tour/js/store.js migrate, imported read only) in a child process, as
+ *  Tools/save/save_vectors.mjs does, so the browser stand-ins it needs never touch this runner. */
+function webGameSave(raw) {
+  const script = [
+    "globalThis.window = {}; globalThis.document = { visibilityState: 'hidden', dispatchEvent() {} }; globalThis.addEventListener = () => {};",
+    `const store = await import(${JSON.stringify(new URL('../../../world_tour/js/store.js', import.meta.url).href)});`,
+    `process.stdout.write(JSON.stringify(store.migrate(${JSON.stringify(raw)})));`,
+  ].join('\n');
+  return execFileSync(process.execPath, ['--input-type=module', '-e', script], { encoding: 'utf8' });
+}
+
+function addWeekAtTop(weeksFile, week) {
+  const data = JSON.parse(fs.readFileSync(weeksFile, 'utf8'));
+  data.weeks.unshift(week);
+  fs.writeFileSync(weeksFile, JSON.stringify(data, null, 2) + '\n');
 }
 
 function layoutFailures(l, vw, vh) {
@@ -162,7 +254,7 @@ try {
   // 3. Storage blocked: indexedDB.open and localStorage throw; the game must still start cleanly.
   if (only.has('storage')) {
     const ctx = await browser.newContext({ viewport: { width: 1366, height: 768 } });
-    const r = await load(ctx, server, { initScript: STORAGE_BLOCKED, shot: path.join(shotsDir, 'storage_blocked.png') });
+    const r = await load(ctx, server, { initScript: STORAGE_BLOCKED, shot: path.join(shotsDir, 'storage_blocked.png'), waitData: true, waitSave: true });
     const blocked = await r.page.evaluate(() => {
       const throws = fn => { try { fn(); return false; } catch (e) { return true; } };
       return { indexedDB: throws(() => indexedDB.open('probe')), localStorage: throws(() => localStorage.getItem('probe')) };
@@ -170,7 +262,9 @@ try {
     const f = loadFailures(r);
     if (!blocked.indexedDB) f.push('indexedDB.open did not throw, so the block was not in effect');
     if (!blocked.localStorage) f.push('localStorage did not throw, so the block was not in effect');
-    record('storage_blocked', f, { readyMs: r.readyMs, blocked, consoleErrors: r.errors, consoleWarnings: r.warnings.slice(0, 10) });
+    if (!r.dataLine) f.push('no WT_DATA_READY line with storage blocked');
+    f.push(...saveFailures(r, { persistent: false }));
+    record('storage_blocked', f, { readyMs: r.readyMs, blocked, dataLine: r.dataLine, saveLine: r.saveLine, consoleErrors: r.errors, consoleWarnings: r.warnings.slice(0, 10) });
     await ctx.close();
   }
 
@@ -208,6 +302,148 @@ try {
     await ctx.close();
   }
 
+  // 6-9. Word data (task 1.7): weeks.json and math_config.json load in the stripped player, an edit shows on reload,
+  // a broken week is skipped, and "today" is the browser's local date. data_loads and local_date read tour/ as served;
+  // the edit and skip tests use temp copies.
+  if (only.has('data')) {
+    const ctx = await browser.newContext({ viewport: { width: 1366, height: 768 } });
+    const r = await load(ctx, server, { waitData: true });
+    const exp = expectedData(path.join(site, 'StreamingAssets', 'weeks.json'), await browserToday(r.page));
+    const f = [...loadFailures(r), ...dataFailures(r, exp), ...cacheBusterFailures(r)];
+    record('data_loads', f, { dataLine: r.dataLine, expected: exp, dataRequests: r.dataRequests, consoleErrors: r.errors });
+    await ctx.close();
+  }
+
+  if (only.has('edit')) {
+    const dir = siteCopy('wt-weeks-edit-');
+    const weeksFile = path.join(dir, 'StreamingAssets', 'weeks.json');
+    const copy = await startServer(dir);
+    servers.push(copy);
+    const ctx = await browser.newContext({ viewport: { width: 1366, height: 768 } });
+    const first = await load(ctx, copy, { waitData: true });
+    const today = await browserToday(first.page);
+    const f = [...loadFailures(first), ...dataFailures(first, expectedData(weeksFile, today))].map(x => 'first load: ' + x);
+    await first.page.close();
+    addWeekAtTop(weeksFile, { id: today, label: 'week added by the reload test', words: FOUR_WORDS });
+    const exp = expectedData(weeksFile, today);
+    const second = await load(ctx, copy, { waitData: true });
+    f.push(...loadFailures(second), ...dataFailures(second, exp), ...cacheBusterFailures(second));
+    if (second.data && second.data.week !== today) f.push(`week=${second.data.week}, expected the added week ${today}`);
+    record('weeks_edit_shows_on_reload', f, { before: first.dataLine, after: second.dataLine, addedWeek: today, expected: exp, dataRequests: second.dataRequests });
+    await ctx.close();
+  }
+
+  if (only.has('skip')) {
+    const dir = siteCopy('wt-weeks-skip-');
+    const weeksFile = path.join(dir, 'StreamingAssets', 'weeks.json');
+    const goodWeeks = loadWeeks(fs.readFileSync(weeksFile, 'utf8')).model.weeks.length;
+    addWeekAtTop(weeksFile, { id: '2026-11-30', label: 'broken week', words: [{ w: 'Echo', s: 'ech-o', h: 'a capital letter can never be typed right' }] });
+    const copy = await startServer(dir);
+    servers.push(copy);
+    const ctx = await browser.newContext({ viewport: { width: 1366, height: 768 } });
+    const r = await load(ctx, copy, { waitData: true });
+    const exp = expectedData(weeksFile, await browserToday(r.page));
+    const f = [...loadFailures(r), ...dataFailures(r, exp)];
+    if (exp.skipped !== 1) f.push(`the Node rules did not skip the test's broken week (skipped=${exp.skipped})`);
+    if (r.data && r.data.weeks !== goodWeeks) f.push(`weeks=${r.data.weeks}, expected the ${goodWeeks} good weeks`);
+    if (!r.warnings.some(w => w.includes('[data]') && w.includes('2026-11-30'))) f.push('no [data] console warning naming the skipped week');
+    record('weeks_broken_week_skipped', f, { dataLine: r.dataLine, expected: exp, consoleErrors: r.errors, dataWarnings: r.warnings.filter(w => w.includes('[data]')).slice(0, 5) });
+    await ctx.close();
+  }
+
+  // local_date: the date the game uses must be the browser's local date, not UTC. The browser's Date is pinned to
+  // 2026-11-21 03:30 UTC (clock.setFixedTime fakes Date only; timers and animation frames run normally, so the Unity
+  // loader is untouched). Then New York (UTC-5) is still on Nov 20 and Kiritimati (UTC+14) is already on Nov 21, so a
+  // game reading UTC fails one of them, whatever time the test runs.
+  if (only.has('clock')) {
+    const f = [], seen = {};
+    const PINNED = '2026-11-21T03:30:00Z';
+    for (const [timezoneId, expected] of [['America/New_York', '2026-11-20'], ['Pacific/Kiritimati', '2026-11-21']]) {
+      const ctx = await browser.newContext({ viewport: { width: 1366, height: 768 }, timezoneId });
+      let pinned = true;
+      try { await ctx.clock.setFixedTime(new Date(PINNED)); } catch (e) { pinned = false; f.push(`${timezoneId}: could not pin the browser clock: ${e.message}`); }
+      const r = await load(ctx, server, { waitData: true });
+      const local = await browserToday(r.page);
+      seen[timezoneId] = { pinnedUtc: pinned ? PINNED : null, gameUsed: r.data ? r.data.today : null, browserLocal: local, expected };
+      f.push(...loadFailures(r).map(x => `${timezoneId}: ${x}`));
+      if (!r.data) f.push(`${timezoneId}: no WT_DATA_READY line`);
+      else {
+        if (r.data.today !== local) f.push(`${timezoneId}: the game used ${r.data.today}, the browser's local date is ${local}`);
+        if (pinned && r.data.today !== expected) f.push(`${timezoneId}: the game used ${r.data.today}, expected ${expected} at ${PINNED}`);
+      }
+      if (pinned && local !== expected) f.push(`${timezoneId}: the pinned browser date is ${local}, expected ${expected} (clock pin not in effect)`);
+      await ctx.close();
+    }
+    record('local_date', f, { dates: seen });
+  }
+
+  // 10-12. The save (task 1.5, ADVISOR 23:37 #1): written on first run, read back after a reload (a save made by the
+  // web game itself, read through the StrictJson/JsonValue mapping in the stripped player), and an unreadable save kept.
+  if (only.has('save')) {
+    {
+      const ctx = await browser.newContext({ viewport: { width: 1366, height: 768 } });
+      const r = await load(ctx, server, { waitData: true, waitSave: true });
+      const f = [...loadFailures(r), ...saveFailures(r, { persistent: true, fans: 0, unlocked: 1, v: 1, recovered: false })];
+      const text = await readStorage(r.page, SAVE_KEY);
+      let saved = null;
+      try { saved = JSON.parse(text); } catch (e) { f.push(`localStorage['${SAVE_KEY}'] is not JSON: ${String(text).slice(0, 80)}`); }
+      if (saved && saved.v !== 1) f.push(`saved v=${saved.v}, expected 1`);
+      if (saved && !(saved.venues && Array.isArray(saved.venues.unlocked) && saved.venues.unlocked.includes('coffee'))) f.push('saved venues.unlocked does not include coffee');
+      record('save_first_run', f, { saveLine: r.saveLine, savedBytes: text ? text.length : 0, consoleErrors: r.errors });
+      await ctx.close();
+    }
+    {
+      const fixture = webGameSave({ fans: { balance: 500, lifetime: 1234 }, venues: { unlocked: ['coffee', 'records'], seen: ['coffee', 'records'] } });
+      const ctx = await browser.newContext({ viewport: { width: 1366, height: 768 } });
+      const first = await load(ctx, server, { waitSave: true });
+      await writeStorage(first.page, SAVE_KEY, fixture);
+      await first.page.close();
+      const r = await load(ctx, server, { waitData: true, waitSave: true });
+      const f = [...loadFailures(r), ...saveFailures(r, { persistent: true, fans: 1234, unlocked: 2, v: 1, recovered: false })];
+      record('save_survives_reload', f, { saveLine: r.saveLine, fixtureBytes: fixture.length, consoleErrors: r.errors });
+      await ctx.close();
+    }
+    {
+      const ctx = await browser.newContext({ viewport: { width: 1366, height: 768 } });
+      const first = await load(ctx, server, { waitSave: true });
+      await writeStorage(first.page, SAVE_KEY, '{not json');
+      await first.page.close();
+      const r = await load(ctx, server, { waitData: true, waitSave: true });
+      const f = [...loadFailures(r), ...saveFailures(r, { persistent: true, fans: 0, recovered: true })];
+      const rescued = await readStorage(r.page, SAVE_KEY + '.unreadable');
+      if (rescued !== '{not json') f.push(`localStorage['${SAVE_KEY}.unreadable'] is ${JSON.stringify(rescued)}, expected "{not json"`);
+      const fresh = await readStorage(r.page, SAVE_KEY);
+      try { if (JSON.parse(fresh).v !== 1) f.push('the fresh save has no v: 1'); } catch (e) { f.push(`the main key does not hold a fresh valid save: ${String(fresh).slice(0, 80)}`); }
+      record('save_unreadable_backed_up', f, { saveLine: r.saveLine, rescued, consoleErrors: r.errors });
+      await ctx.close();
+    }
+    {
+      // The backup write fails (storage full for that key): the unreadable save must stay in the main key, untouched,
+      // and the session plays in memory (1.5/1.6 tester D5). Filling the real quota is slow and browser-dependent, so
+      // setItem throws QuotaExceededError for the backup key only; the storage probe and other keys work normally.
+      const QUOTA_ON_BACKUP = `(() => {
+        const set = Storage.prototype.setItem;
+        Storage.prototype.setItem = function (k, v) {
+          if (String(k).startsWith('${SAVE_KEY}.unreadable')) throw new DOMException('quota exceeded (test)', 'QuotaExceededError');
+          return set.call(this, k, v);
+        };
+      })();`;
+      const ctx = await browser.newContext({ viewport: { width: 1366, height: 768 } });
+      const first = await load(ctx, server, { waitSave: true });
+      await writeStorage(first.page, SAVE_KEY, '{not json');
+      await first.page.close();
+      const r = await load(ctx, server, { waitData: true, waitSave: true, initScript: QUOTA_ON_BACKUP });
+      const f = [...loadFailures(r), ...saveFailures(r, { persistent: false, recovered: false })];
+      const main = await readStorage(r.page, SAVE_KEY);
+      if (main !== '{not json') f.push(`the main key was changed to ${JSON.stringify(String(main).slice(0, 60))}; it must stay "{not json"`);
+      const backup = await readStorage(r.page, SAVE_KEY + '.unreadable');
+      if (backup !== null) f.push(`the backup key holds ${JSON.stringify(backup)} though its write was refused`);
+      if (!r.warnings.some(w => w.includes('[save]') && w.includes("couldn't be copied"))) f.push('no [save] warning about the failed copy');
+      record('save_backup_fails_keeps_main', f, { saveLine: r.saveLine, main, consoleErrors: r.errors });
+      await ctx.close();
+    }
+  }
+
   // 5. Size budget, from the 1366x768 cold load.
   if (only.has('size')) {
     const f = [];
@@ -226,7 +462,7 @@ try {
   for (const s of servers) await s.close().catch(() => {});
   for (const d of tempDirs) fs.rmSync(d, { recursive: true, force: true });
   // A typo in --only must never read as a pass: unknown names, or no tests run at all, fail the run.
-  const unknown = [...only].filter(n => !['cold', 'reload', 'storage', 'broken', 'size'].includes(n));
+  const unknown = [...only].filter(n => !TEST_NAMES.includes(n));
   if (unknown.length) results.tests.push({ name: 'arguments', pass: false, failures: [`unknown --only name(s): ${unknown.join(', ')}`] });
   if (!results.tests.some(t => t.name !== 'arguments')) results.tests.push({ name: 'arguments', pass: false, failures: ['no tests ran'] });
   results.total = results.tests.length;

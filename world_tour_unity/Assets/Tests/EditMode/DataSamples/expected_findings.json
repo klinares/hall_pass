@@ -1,0 +1,299 @@
+{
+ "note": "written by Tools/validate_data.mjs --parity; the C# loader must give the same findings",
+ "samples": {
+  "config_12_0.json": [
+   "E|13|0|BOUNDS: \"maxDenominator\" should be a whole number, but it is 12.0"
+  ],
+  "config_12_5.json": [
+   "E|13|0|BOUNDS: \"maxDenominator\" should be a whole number, but it is 12.5"
+  ],
+  "config_Frac.json": [
+   "E|10|0|ENABLED_SKILLS: \"Frac\" is not a field the game knows (did you mean \"frac\"? names are case-sensitive)"
+  ],
+  "config_big.json": [
+   "E|12|0|BOUNDS: \"moneyCents\" is 99999999999, which is too big (the largest allowed is 2147483647)"
+  ],
+  "config_big_negative.json": [
+   "E|12|0|BOUNDS: \"moneyCents\" is -99999999999, which is too small (the smallest allowed is -2147483648)"
+  ],
+  "config_bool_as_number.json": [
+   "E|5|0|ENABLED_SKILLS: \"frac\" should be true or false (without quotes), but it is 0"
+  ],
+  "config_bound_as_string.json": [
+   "E|14|0|BOUNDS: \"coordMax\" should be a whole number, but it is the text \"10\""
+  ],
+  "config_coordmax_minus_one.json": [
+   "E|14|0|BOUNDS: \"coordMax\" should be a whole number above 0, but it is -1"
+  ],
+  "config_empty.json": [
+   "E|0|0|the file is empty"
+  ],
+  "config_exp.json": [
+   "E|15|0|BOUNDS: \"maxVolume\" should be a whole number, but it is 1e3"
+  ],
+  "config_frac_off.json": [],
+  "config_fracc.json": [
+   "E|10|0|ENABLED_SKILLS: \"fracc\" is not a field the game knows (fields here: dec, md, frac, xy, vol, ops, flu)"
+  ],
+  "config_good.json": [],
+  "config_int_max.json": [],
+  "config_int_max_plus_one.json": [
+   "E|15|0|BOUNDS: \"maxVolume\" is 2147483648, which is too big (the largest allowed is 2147483647)"
+  ],
+  "config_malformed.json": [
+   "E|5|5|a comma is missing before this field"
+  ],
+  "config_missing_bound.json": [
+   "E|0|0|BOUNDS.maxVolume is missing."
+  ],
+  "config_negative.json": [
+   "E|14|0|BOUNDS: \"coordMax\" should be a whole number above 0, but it is -3"
+  ],
+  "config_no.json": [
+   "E|5|0|ENABLED_SKILLS: \"frac\" should be true or false (without quotes), but it is the text \"no\""
+  ],
+  "config_no_bounds.json": [
+   "E|0|0|BOUNDS.moneyCents is missing.",
+   "E|0|0|BOUNDS.maxDenominator is missing.",
+   "E|0|0|BOUNDS.coordMax is missing.",
+   "E|0|0|BOUNDS.maxVolume is missing."
+  ],
+  "config_no_unquoted.json": [
+   "E|5|13|\"no\" is not a value: text needs double quotes, and true, false and null are lowercase"
+  ],
+  "config_skills_not_block.json": [
+   "E|2|0|the top level: \"ENABLED_SKILLS\" should be a { } block, but it is true"
+  ],
+  "config_some_missing.json": [],
+  "config_syntax_too_deep.json": [
+   "E|1|82|the data is too deeply nested (more than 64 levels of { } and [ ])"
+  ],
+  "config_top_array.json": [
+   "E|1|0|the file should be a { } block holding \"ENABLED_SKILLS\" and \"BOUNDS\""
+  ],
+  "config_trailing_comma.json": [
+   "E|15|22|there is an extra comma here, before }"
+  ],
+  "config_unclosed.json": [
+   "E|1|1|this { is never closed"
+  ],
+  "config_unknown_top.json": [
+   "E|17|0|the top level: \"BOUND\" is not a field the game knows (fields here: ENABLED_SKILLS, BOUNDS)"
+  ],
+  "config_zero.json": [
+   "E|14|0|BOUNDS: \"coordMax\" should be a whole number above 0, but it is 0"
+  ],
+  "weeks_all_bad.json": [
+   "E|3|0|week 2026-11-23: the label is missing; it is the name shown in the week menu",
+   "E|14|0|week nov 9: the id \"nov 9\" should be the test date written as YYYY-MM-DD, like 2026-11-23",
+   "E|0|0|none of the weeks can be used, so the game has no words to show"
+  ],
+  "weeks_depth_64.json": [
+   "E|1|0|the file should be a { } block holding \"weeks\": [ ... ]"
+  ],
+  "weeks_dup_first_broken.json": [
+   "E|7|0|week 2026-11-23, word \"Echo\": the word must be lowercase letters a to z only, or a typed answer can never match it (it has \"E\")",
+   "W|7|0|week 2026-11-23, word \"Echo\": the syllables \"ech-o\" don't spell the word",
+   "W|0|0|the game skips week 2026-11-23 (line 3) until it is fixed; the other weeks load"
+  ],
+  "weeks_dup_keeps_first.json": [
+   "E|14|0|week 2026-11-23: a week higher in the file already uses the id 2026-11-23; each week needs its own date",
+   "W|0|0|the game skips week 2026-11-23 (line 14) until it is fixed; the other weeks load"
+  ],
+  "weeks_good.json": [],
+  "weeks_good_bom.json": [],
+  "weeks_ids.json": [
+   "E|14|0|week 2026-11-23: a week higher in the file already uses the id 2026-11-23; each week needs its own date",
+   "E|25|0|week 11/23/2026: the id \"11/23/2026\" should be the test date written as YYYY-MM-DD, like 2026-11-23",
+   "E|36|0|week 2026-02-30: the id \"2026-02-30\" is not a real date",
+   "E|58|0|week #6: the id is missing; it should be the test date, like 2026-11-23",
+   "E|58|0|week #6: the label is missing; it is the name shown in the week menu",
+   "E|69|0|week #7: the id is missing; it should be the test date, like 2026-11-23",
+   "E|69|0|week #7: there are no words in this week",
+   "E|73|0|week 2026-12-07: there are no words in this week",
+   "W|0|0|the game skips week 2026-11-23 (line 14), week 11/23/2026 (line 25), week 2026-02-30 (line 36), week #6 (line 58), week #7 (line 69), week 2026-12-07 (line 73) until they are fixed; the other weeks load"
+  ],
+  "weeks_label_only_nbsp.json": [
+   "E|3|0|week 2026-11-23: the label is missing; it is the name shown in the week menu",
+   "W|0|0|the game skips week 2026-11-23 (line 3) until it is fixed; the other weeks load"
+  ],
+  "weeks_missing_weeks.json": [
+   "E|2|0|the top level: \"week\" is not a field the game knows (fields here: weeks)",
+   "E|1|0|the top level: \"weeks\" is missing"
+  ],
+  "weeks_no_weeks.json": [
+   "E|0|0|there are no weeks in the file"
+  ],
+  "weeks_one_bad_week.json": [
+   "E|62|0|week 2026-11-16, word \"echo\": the syllables (s) are missing; write them like ex-am-ple",
+   "W|0|0|the game skips week 2026-11-16 (line 58) until it is fixed; the other weeks load"
+  ],
+  "weeks_one_bad_week_raw.json": [
+   "E|66|0|week 2026-11-16, word \"echo\": \"W\" is not a field the game knows (did you mean \"w\"? names are case-sensitive)",
+   "W|0|0|the game skips week 2026-11-16 (line 58) until it is fixed; the other weeks load"
+  ],
+  "weeks_prefix.json": [
+   "E|7|0|week 2026-11-23, word \"illegal\": the prefix is missing \"means\" (what the prefix adds, like not)",
+   "E|16|0|week 2026-11-23, word \"irregular\": the prefix is missing \"means\" (what the prefix adds, like not)",
+   "E|26|0|week 2026-11-23, word \"international\": the prefix \"inter\" plus the root \"nation\" makes \"internation\", not \"international\"",
+   "E|36|0|week 2026-11-23, word \"impossible\": the prefix is missing \"p\" (the prefix itself, like ir)",
+   "E|36|0|week 2026-11-23, word \"impossible\": the prefix is missing \"root\" (the word it is added to)",
+   "E|36|0|week 2026-11-23, word \"impossible\": the prefix is missing \"means\" (what the prefix adds, like not)",
+   "W|3|0|week 2026-11-23: only 1 word has a prefix, so prefix mixer is hidden that week (it needs 4)",
+   "E|0|0|none of the weeks can be used, so the game has no words to show"
+  ],
+  "weeks_syntax_True.json": [
+   "E|2|12|\"True\" is not a value: text needs double quotes, and true, false and null are lowercase"
+  ],
+  "weeks_syntax_bad_escape.json": [
+   "E|2|25|\"\\q\" is not allowed inside quotes; to write a backslash, type two of them"
+  ],
+  "weeks_syntax_bad_number.json": [
+   "E|2|14|\"007\" is not a valid number"
+  ],
+  "weeks_syntax_blank.json": [
+   "E|0|0|the file is empty"
+  ],
+  "weeks_syntax_comment.json": [
+   "E|2|3|JSON files can't have comments"
+  ],
+  "weeks_syntax_double_comma.json": [
+   "E|2|16|expected a value here, but found \",\""
+  ],
+  "weeks_syntax_dup_key.json": [
+   "E|2|36|\"id\" appears twice in the same { }"
+  ],
+  "weeks_syntax_empty.json": [
+   "E|0|0|the file is empty"
+  ],
+  "weeks_syntax_extra_brace.json": [
+   "E|4|1|there is extra text after the end of the data"
+  ],
+  "weeks_syntax_missing_colon.json": [
+   "E|2|11|expected : after \"weeks\""
+  ],
+  "weeks_syntax_missing_comma.json": [
+   "E|3|26|a comma is missing before this field"
+  ],
+  "weeks_syntax_missing_comma_list.json": [
+   "E|4|5|a comma is missing before this item"
+  ],
+  "weeks_syntax_single_quote_value.json": [
+   "E|2|13|use double quotes (\") around text, not single quotes"
+  ],
+  "weeks_syntax_single_quotes.json": [
+   "E|2|3|use double quotes (\") around text, not single quotes"
+  ],
+  "weeks_syntax_tab_in_string.json": [
+   "E|2|47|a tab or other control character can't go inside quotes"
+  ],
+  "weeks_syntax_too_deep.json": [
+   "E|1|65|the data is too deeply nested (more than 64 levels of { } and [ ])"
+  ],
+  "weeks_syntax_trailing_comma.json": [
+   "E|3|82|there is an extra comma here, before }"
+  ],
+  "weeks_syntax_trailing_comma_list.json": [
+   "E|3|54|there is an extra comma here, before ]"
+  ],
+  "weeks_syntax_unclosed.json": [
+   "E|2|12|this [ is never closed"
+  ],
+  "weeks_syntax_unclosed_list.json": [
+   "E|4|1|found } where ] was expected; the [ on line 2 is not closed"
+  ],
+  "weeks_syntax_unclosed_string.json": [
+   "E|2|36|expected , or } here, but found \"l\"; check the quotes just before it"
+  ],
+  "weeks_syntax_unclosed_string_eol.json": [
+   "E|2|22|this text has no closing quote"
+  ],
+  "weeks_syntax_unicode.json": [
+   "E|2|56|a backslash-u code inside quotes needs 4 hex digits"
+  ],
+  "weeks_syntax_unquoted_key.json": [
+   "E|2|3|field names need double quotes, like \"weeks\""
+  ],
+  "weeks_top_array.json": [
+   "E|1|0|the file should be a { } block holding \"weeks\": [ ... ]"
+  ],
+  "weeks_types.json": [
+   "E|4|0|week #1: \"id\" should be text in double quotes, but it is 20261123",
+   "E|8|0|week #1, word #1: \"w\" should be text in double quotes, but it is 12",
+   "E|14|0|week #1, word \"echo\": \"s\" should be text in double quotes, but it is a list [ ]",
+   "E|18|0|week #1, word \"echo\": \"h\" should be text in double quotes, but it is true",
+   "E|19|0|week #1, word \"echo\": \"x\" should be text in double quotes, but it is null",
+   "E|25|0|week #1, word \"unhappy\": \"prefix\" should be a { } block, but it is the text \"un\"",
+   "E|27|0|week #1, word #4 should be a { } block, but it is the text \"just a string\"",
+   "E|38|0|week 2026-11-09: \"words\" should be a list in [ ], but it is a { } block",
+   "E|42|0|week #3 should be a { } block, but it is 42",
+   "E|0|0|none of the weeks can be used, so the game has no words to show"
+  ],
+  "weeks_unknown_keys.json": [
+   "E|37|0|the top level: \"version\" is not a field the game knows (fields here: weeks)",
+   "E|34|0|week 2026-11-23: \"words2\" is not a field the game knows (fields here: id, label, words)",
+   "E|8|0|week 2026-11-23, word #1: \"W\" is not a field the game knows (did you mean \"w\"? names are case-sensitive)",
+   "E|16|0|week 2026-11-23, word \"chorus\": \"prefx\" is not a field the game knows (fields here: w, s, h, x, prefix)",
+   "E|30|0|week 2026-11-23, word \"unhappy\", prefix: \"Means\" is not a field the game knows (did you mean \"means\"? names are case-sensitive)",
+   "E|0|0|none of the weeks can be used, so the game has no words to show"
+  ],
+  "weeks_unknown_top_key.json": [
+   "E|15|0|the top level: \"version\" is not a field the game knows (fields here: weeks)"
+  ],
+  "weeks_w_bom_at_end.json": [
+   "E|7|0|week 2026-11-23, word \"interceptU+FEFF\": the word must be lowercase letters a to z only, or a typed answer can never match it (it has U+FEFF)",
+   "W|7|0|week 2026-11-23, word \"interceptU+FEFF\": the syllables \"in-ter-cept\" don't spell the word",
+   "W|0|0|the game skips week 2026-11-23 (line 3) until it is fixed; the other weeks load"
+  ],
+  "weeks_w_digit.json": [
+   "E|7|0|week 2026-11-23, word \"intercept2\": the word must be lowercase letters a to z only, or a typed answer can never match it (it has \"2\")",
+   "W|7|0|week 2026-11-23, word \"intercept2\": the syllables \"in-ter-cept\" don't spell the word",
+   "W|0|0|the game skips week 2026-11-23 (line 3) until it is fixed; the other weeks load"
+  ],
+  "weeks_w_dotted_capital_i.json": [
+   "E|7|0|week 2026-11-23, word \"\u0130ntercept\": the word must be lowercase letters a to z only, or a typed answer can never match it (it has U+0130)",
+   "W|7|0|week 2026-11-23, word \"\u0130ntercept\": the syllables \"in-ter-cept\" don't spell the word",
+   "W|0|0|the game skips week 2026-11-23 (line 3) until it is fixed; the other weeks load"
+  ],
+  "weeks_w_inner_space.json": [
+   "E|7|0|week 2026-11-23, word \"inter cept\": the word must be lowercase letters a to z only, or a typed answer can never match it (it has a space)",
+   "W|7|0|week 2026-11-23, word \"inter cept\": the syllables \"in-ter-cept\" don't spell the word",
+   "W|0|0|the game skips week 2026-11-23 (line 3) until it is fixed; the other weeks load"
+  ],
+  "weeks_w_nbsp.json": [
+   "E|7|0|week 2026-11-23, word \"interU+00A0cept\": the word must be lowercase letters a to z only, or a typed answer can never match it (it has U+00A0)",
+   "W|7|0|week 2026-11-23, word \"interU+00A0cept\": the syllables \"in-ter-cept\" don't spell the word",
+   "W|0|0|the game skips week 2026-11-23 (line 3) until it is fixed; the other weeks load"
+  ],
+  "weeks_w_zero_width_space.json": [
+   "E|7|0|week 2026-11-23, word \"interU+200Bcept\": the word must be lowercase letters a to z only, or a typed answer can never match it (it has U+200B)",
+   "W|7|0|week 2026-11-23, word \"interU+200Bcept\": the syllables \"in-ter-cept\" don't spell the word",
+   "W|0|0|the game skips week 2026-11-23 (line 3) until it is fixed; the other weeks load"
+  ],
+  "weeks_warnings.json": [
+   "W|7|0|week 2026-11-23, word \"monument\": the syllables \"mon-u-mint\" don't spell the word",
+   "W|13|0|week 2026-11-23, word \"temple\": the sentence (x) gives the word away",
+   "W|13|0|week 2026-11-23, word \"temple\": the clue (h) gives the word away",
+   "W|3|0|week 2026-11-23: only 2 words have a sentence (x), so lyric writer is hidden that week (it needs 4)",
+   "W|3|0|week 2026-11-23: only 1 word has a prefix, so prefix mixer is hidden that week (it needs 4)"
+  ],
+  "weeks_weeks_not_list.json": [
+   "E|2|0|the top level: \"weeks\" should be a list in [ ], but it is a { } block"
+  ],
+  "weeks_words.json": [
+   "E|7|0|week 2026-11-23, word #1: the word (w) is missing",
+   "E|12|0|week 2026-11-23, word #2: the word (w) is missing",
+   "E|16|0|week 2026-11-23, word \"Capital\": the word must be lowercase letters a to z only, or a typed answer can never match it (it has \"C\")",
+   "E|21|0|week 2026-11-23, word \"spaced \": the word must be lowercase letters a to z only, or a typed answer can never match it (it has a space)",
+   "W|21|0|week 2026-11-23, word \"spaced \": the syllables \"spaced\" don't spell the word",
+   "E|26|0|week 2026-11-23, word \"echo\": the syllables (s) are missing; write them like ex-am-ple",
+   "E|30|0|week 2026-11-23, word \"quiet\": the clue (h) is missing",
+   "E|35|0|week 2026-11-23, word \"echo\": this word is already in this week",
+   "E|40|0|week 2026-11-23, word \"lyric\": the sentence (x) has no ___ to show where the word goes",
+   "E|46|0|week 2026-11-23, word \"chorus\": the sentence (x) has 2 blanks (___); it needs exactly one",
+   "E|52|0|week 2026-11-23, word \"stage\": the sentence (x) has no ___ to show where the word goes",
+   "W|3|0|week 2026-11-23: only 1 word has a sentence (x), so lyric writer is hidden that week (it needs 4)",
+   "E|0|0|none of the weeks can be used, so the game has no words to show"
+  ]
+ }
+}

@@ -1,0 +1,9 @@
+{
+  "ENABLED_SKILLS": true,
+  "BOUNDS": {
+    "moneyCents": 10000,
+    "maxDenominator": 12,
+    "coordMax": 10,
+    "maxVolume": 1000
+  }
+}

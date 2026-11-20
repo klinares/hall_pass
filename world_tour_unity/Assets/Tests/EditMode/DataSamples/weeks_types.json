@@ -1,0 +1,44 @@
+{
+  "weeks": [
+    {
+      "id": 20261123,
+      "label": "types",
+      "words": [
+        {
+          "w": 12,
+          "s": "twelve",
+          "h": "a number"
+        },
+        {
+          "w": "echo",
+          "s": [
+            "ech",
+            "o"
+          ],
+          "h": true,
+          "x": null
+        },
+        {
+          "w": "unhappy",
+          "s": "un-hap-py",
+          "h": "not glad",
+          "prefix": "un"
+        },
+        "just a string",
+        {
+          "w": "chorus",
+          "s": "cho-rus",
+          "h": "the part that repeats; this clue is long enough to be cut short in the message"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-09",
+      "label": "words is not a list",
+      "words": {
+        "w": "x"
+      }
+    },
+    42
+  ]
+}

@@ -1,0 +1,350 @@
+{
+ "today": "2026-11-20",
+ "defaultsText": "{\"v\":1,\"created\":\"2026-11-20\",\"updated\":0,\"settings\":{\"sound\":true,\"theme\":\"tour-pink\",\"motion\":\"auto\"},\"fans\":{\"balance\":0,\"lifetime\":0},\"streak\":{\"days\":0,\"best\":0,\"last\":null},\"venues\":{\"unlocked\":[\"coffee\"],\"seen\":[\"coffee\"]},\"skills\":{},\"words\":{},\"review\":{\"words\":[],\"math\":[]},\"shows\":[],\"time\":{},\"inventory\":{\"owned\":[\"theme:tour-pink\",\"guitar:classic\",\"dog:none\"],\"equipped\":{\"theme\":\"tour-pink\",\"guitar\":\"classic\",\"dog\":\"none\"}},\"journal\":{\"stickers\":{},\"layout\":{}}}",
+ "note": "made by Tools/save/save_vectors.mjs from the web game; created = today for inputs without one",
+ "replay": {
+  "ops": [
+   [
+    "addFans",
+    25000
+   ],
+   [
+    "markSeen",
+    "records"
+   ],
+   [
+    "addFans",
+    40000
+   ],
+   [
+    "recordSkill",
+    "dec",
+    true,
+    false,
+    null
+   ],
+   [
+    "recordSkill",
+    "dec",
+    true,
+    true,
+    null
+   ],
+   [
+    "recordSkill",
+    "dec",
+    true,
+    false,
+    null
+   ],
+   [
+    "recordSkill",
+    "dec",
+    true,
+    false,
+    null
+   ],
+   [
+    "recordSkill",
+    "dec",
+    false,
+    false,
+    "no-borrow"
+   ],
+   [
+    "noteMistake",
+    "dec",
+    "gave-total"
+   ],
+   [
+    "recordSkill",
+    "spell:remix",
+    false,
+    false,
+    null
+   ],
+   [
+    "recordSkill",
+    "spell:remix",
+    false,
+    true,
+    null
+   ],
+   [
+    "recordWord",
+    "because",
+    false,
+    true,
+    true,
+    false
+   ],
+   [
+    "recordWord",
+    "because",
+    true,
+    false,
+    false,
+    true
+   ],
+   [
+    "recordWord",
+    "friend",
+    true,
+    false,
+    false,
+    false
+   ],
+   [
+    "recordWord",
+    "island",
+    false,
+    false,
+    true,
+    false
+   ],
+   [
+    "recordWord",
+    "island",
+    true,
+    false,
+    false,
+    false
+   ],
+   [
+    "recordMath",
+    "dec",
+    "dec",
+    2,
+    12345,
+    false,
+    true,
+    false
+   ],
+   [
+    "recordMath",
+    "ops",
+    "ops",
+    3,
+    77,
+    false,
+    true,
+    false
+   ],
+   [
+    "recordMath",
+    "frac",
+    "frac",
+    1,
+    5,
+    false,
+    true,
+    false
+   ],
+   [
+    "recordMath",
+    "frac",
+    "frac",
+    1,
+    5,
+    true,
+    false,
+    true
+   ],
+   [
+    "recordMath",
+    "xy",
+    "xy",
+    2,
+    9,
+    false,
+    true,
+    false
+   ],
+   [
+    "recordMath",
+    "dec",
+    "dec",
+    2,
+    12345,
+    true,
+    false,
+    false
+   ],
+   [
+    "recordMath",
+    "vol",
+    "vol",
+    3,
+    31,
+    false,
+    true,
+    false
+   ],
+   [
+    "recordMath",
+    "flu",
+    "flu",
+    1,
+    8,
+    false,
+    true,
+    false
+   ],
+   [
+    "recordMath",
+    "md",
+    "md",
+    2,
+    4242,
+    false,
+    true,
+    false
+   ],
+   [
+    "finishShow",
+    {
+     "mode": "remix",
+     "venue": "coffee",
+     "n": 10,
+     "first": 9,
+     "hinted": 1,
+     "fans": 30000,
+     "secs": 300,
+     "best": 6,
+     "sold": true
+    }
+   ],
+   [
+    "finishShow",
+    {
+     "mode": "remix",
+     "venue": "coffee",
+     "n": 1,
+     "first": 1,
+     "hinted": 0,
+     "fans": 500,
+     "secs": 20,
+     "best": 1,
+     "encore": true
+    }
+   ],
+   [
+    "finishShow",
+    {
+     "mode": "merch",
+     "venue": "records",
+     "n": 10,
+     "first": 5,
+     "hinted": 3,
+     "fans": 12000,
+     "secs": 610,
+     "best": 3
+    }
+   ],
+   [
+    "setSetting",
+    "motion",
+    "reduced"
+   ],
+   [
+    "setSetting",
+    "sound",
+    false
+   ]
+  ],
+  "out": "{\"created\":\"2026-11-20\",\"fans\":{\"balance\":65000,\"lifetime\":65000},\"inventory\":{\"equipped\":{\"dog\":\"none\",\"guitar\":\"classic\",\"theme\":\"tour-pink\"},\"owned\":[\"theme:tour-pink\",\"guitar:classic\",\"dog:none\"]},\"journal\":{\"layout\":{},\"stickers\":{}},\"review\":{\"math\":[{\"level\":3,\"prob\":{\"accept\":{\"simplest\":false},\"answer\":{\"type\":\"int\",\"value\":63},\"choices\":[{\"correct\":false,\"value\":\"(3 + 6) \\u00d7 19\",\"why\":\"wrong-grouping\"},{\"correct\":false,\"value\":\"3 \\u00d7 (19 + 6)\",\"why\":\"extra-parentheses\"},{\"correct\":false,\"value\":\"3 + 19 + 6\",\"why\":\"added-all\"},{\"correct\":true,\"value\":\"3 \\u00d7 19 + 6\",\"why\":null}],\"kind\":\"story\",\"label\":\"3 \\u00d7 19 + 6\",\"level\":3,\"params\":{\"expr\":\"3 \\u00d7 19 + 6\",\"states\":[\"3 \\u00d7 19 + 6\",\"57 + 6\",\"63\"]},\"prompt\":\"the crew unpacks 3 boxes with 19 shirts each, plus 6 loose shirts. how many shirts?\",\"seed\":77,\"skill\":\"ops\",\"steps\":[\"first pick the expression that matches the story, then work it out: parentheses, then \\u00d7 and \\u00f7, then + and \\u2212.\",\"it\\u2019s <b>3 \\u00d7 19 + 6</b>. first: 3 \\u00d7 19 = 57.\",\"3 \\u00d7 19 + 6 \\u2192 57 + 6 \\u2192 <b>63</b>\"],\"traps\":[]},\"seed\":77,\"skill\":\"ops\"},{\"level\":1,\"prob\":{\"accept\":{\"simplest\":false},\"answer\":{\"type\":\"fraction\",\"value\":{\"d\":8,\"n\":3}},\"builder\":true,\"choices\":null,\"kind\":\"fill\",\"label\":\"fill [[1]] measure\",\"level\":1,\"params\":{\"bars\":1,\"grid\":8,\"palette\":[2,4,8],\"pre\":[8,2],\"removable\":false,\"target\":{\"d\":1,\"n\":1}},\"prompt\":\"finish the measure: add notes until it\\u2019s exactly one whole.\",\"seed\":5,\"skill\":\"frac\",\"steps\":[\"the measure holds one whole. how much is already written? count it in eighths.\",\"written so far: [[5/8]]. you need [[3/8]] more.\",\"[[1/4]] + [[1/8]] = [[3/8]]. that fills it to one whole.\"],\"traps\":[]},\"seed\":5,\"skill\":\"frac\"},{\"level\":2,\"prob\":{\"accept\":{\"simplest\":false},\"answer\":{\"type\":\"point\",\"value\":{\"x\":1,\"y\":9}},\"choices\":null,\"kind\":\"place\",\"label\":\"place (1, 9)\",\"level\":2,\"params\":{\"dx\":0,\"dy\":0,\"gear\":\"drum riser\",\"icon\":\"star\",\"max\":10,\"point\":null,\"start\":null},\"prompt\":\"put the drum riser at (1, 9). tap that spot on the stage.\",\"seed\":9,\"skill\":\"xy\",\"steps\":[\"the first number goes across, the second goes up. start at (0, 0).\",\"go across to <b>1</b> on the bottom line. now go up from there.\",\"across 1, up 9. that\\u2019s <b>(1, 9)</b>.\"],\"traps\":[{\"value\":{\"x\":9,\"y\":1},\"why\":\"swapped\"}]},\"seed\":9,\"skill\":\"xy\"},{\"level\":3,\"prob\":{\"accept\":{\"simplest\":false},\"answer\":{\"type\":\"int\",\"value\":2},\"builder\":false,\"choices\":null,\"kind\":\"missing\",\"label\":\"missing height of 154\",\"level\":3,\"params\":{\"boxes\":[{\"h\":2,\"l\":11,\"w\":7}],\"hideH\":true},\"prompt\":\"a speaker case holds 154 cubic units. it\\u2019s 11 long and 7 wide. how tall is it?\",\"seed\":31,\"skill\":\"vol\",\"steps\":[\"length \\u00d7 width \\u00d7 height = 154. you know two of the three.\",\"the floor is 11 \\u00d7 7 = 77. what times 77 makes 154?\",\"154 \\u00f7 77 = <b>2</b>.\"],\"traps\":[{\"value\":77,\"why\":\"subtracted\"},{\"value\":14,\"why\":\"divided-once\"}]},\"seed\":31,\"skill\":\"vol\"},{\"level\":1,\"prob\":{\"accept\":{\"simplest\":false},\"answer\":{\"type\":\"int\",\"value\":28},\"choices\":[{\"correct\":false,\"value\":11,\"why\":\"added\"},{\"correct\":true,\"value\":28,\"why\":null},{\"correct\":false,\"value\":35,\"why\":\"neighbor-fact\"},{\"correct\":false,\"value\":21,\"why\":\"neighbor-fact\"}],\"kind\":\"mul\",\"label\":\"7 \\u00d7 4\",\"level\":1,\"params\":{\"seconds\":8},\"prompt\":\"7 \\u00d7 4 = ?\",\"seed\":8,\"skill\":\"flu\",\"steps\":[\"think of 7 groups of 4.\",\"7 \\u00d7 3 = 21. one more 7\\u2026\",\"7 \\u00d7 4 = <b>28</b>\"],\"traps\":[{\"value\":11,\"why\":\"added\"},{\"value\":35,\"why\":\"neighbor-fact\"},{\"value\":21,\"why\":\"neighbor-fact\"}]},\"seed\":8,\"skill\":\"flu\"},{\"level\":2,\"prob\":{\"accept\":{\"simplest\":false},\"answer\":{\"type\":\"int\",\"value\":45},\"choices\":null,\"kind\":\"div\",\"label\":\"945 \\u00f7 21\",\"level\":2,\"params\":{\"N\":945,\"d\":21,\"op\":\"\\u00f7\"},\"prompt\":\"the crew packs 945 wristbands into 21 equal bags. how many in each bag?\",\"seed\":4242,\"skill\":\"md\",\"steps\":[\"how many tens of 21 fit in 945? one ten of 21 is 21 \\u00d7 10 = 210.\",\"4 tens of 21 fit: 21 \\u00d7 40 = 840. 945 \\u2212 840 = 105. running total: 40. now how many 21s fit in 105?\",\"21 \\u00d7 5 = 105, and 105 \\u2212 105 = 0. running total: 40 + 5 = <b>45</b>.\"],\"traps\":[{\"value\":450,\"why\":\"place-value\"},{\"value\":924,\"why\":\"subtracted-instead\"}],\"work\":{\"N\":945,\"chunks\":[{\"c\":40,\"left\":105,\"take\":840},{\"c\":5,\"left\":0,\"take\":105}],\"d\":21,\"kind\":\"chunks\"}},\"seed\":4242,\"skill\":\"md\"}],\"words\":[\"because\"]},\"settings\":{\"motion\":\"reduced\",\"sound\":false,\"theme\":\"tour-pink\"},\"shows\":[{\"best\":6,\"d\":\"2026-11-20\",\"fans\":30000,\"first\":9,\"hinted\":1,\"mode\":\"remix\",\"n\":10,\"secs\":300,\"sold\":true,\"venue\":\"coffee\"},{\"best\":1,\"d\":\"2026-11-20\",\"encore\":true,\"fans\":500,\"first\":1,\"hinted\":0,\"mode\":\"remix\",\"n\":1,\"secs\":20,\"venue\":\"coffee\"},{\"best\":3,\"d\":\"2026-11-20\",\"fans\":12000,\"first\":5,\"hinted\":3,\"mode\":\"merch\",\"n\":10,\"secs\":610,\"venue\":\"records\"}],\"skills\":{\"dec\":{\"a\":5,\"byLevel\":{\"1\":[4,4],\"2\":[1,0],\"3\":[0,0]},\"c\":4,\"h\":1,\"level\":2,\"missRun\":1,\"mistakes\":{\"gave-total\":1,\"no-borrow\":1},\"run\":0},\"spell:remix\":{\"a\":2,\"byLevel\":{\"1\":[2,0],\"2\":[0,0],\"3\":[0,0]},\"c\":0,\"h\":1,\"level\":1,\"missRun\":2,\"mistakes\":{},\"run\":0}},\"streak\":{\"best\":1,\"days\":1,\"last\":\"2026-11-20\"},\"time\":{},\"updated\":0,\"v\":1,\"venues\":{\"seen\":[\"coffee\",\"records\"],\"unlocked\":[\"coffee\",\"records\",\"rec\"]},\"words\":{\"because\":{\"a\":2,\"c\":1,\"first\":1,\"h\":1,\"last\":\"2026-11-20\",\"miss\":1},\"friend\":{\"a\":1,\"c\":1,\"first\":1,\"h\":0,\"last\":\"2026-11-20\",\"miss\":0},\"island\":{\"a\":2,\"c\":1,\"first\":1,\"h\":0,\"last\":\"2026-11-20\",\"miss\":1}}}",
+  "text": "{\"v\":1,\"created\":\"2026-11-20\",\"updated\":0,\"settings\":{\"sound\":false,\"theme\":\"tour-pink\",\"motion\":\"reduced\"},\"fans\":{\"balance\":65000,\"lifetime\":65000},\"streak\":{\"days\":1,\"best\":1,\"last\":\"2026-11-20\"},\"venues\":{\"unlocked\":[\"coffee\",\"records\",\"rec\"],\"seen\":[\"coffee\",\"records\"]},\"skills\":{\"dec\":{\"level\":2,\"run\":0,\"missRun\":1,\"a\":5,\"c\":4,\"h\":1,\"byLevel\":{\"1\":[4,4],\"2\":[1,0],\"3\":[0,0]},\"mistakes\":{\"no-borrow\":1,\"gave-total\":1}},\"spell:remix\":{\"level\":1,\"run\":0,\"missRun\":2,\"a\":2,\"c\":0,\"h\":1,\"byLevel\":{\"1\":[2,0],\"2\":[0,0],\"3\":[0,0]},\"mistakes\":{}}},\"words\":{\"because\":{\"a\":2,\"c\":1,\"first\":1,\"h\":1,\"miss\":1,\"last\":\"2026-11-20\"},\"friend\":{\"a\":1,\"c\":1,\"first\":1,\"h\":0,\"miss\":0,\"last\":\"2026-11-20\"},\"island\":{\"a\":2,\"c\":1,\"first\":1,\"h\":0,\"miss\":1,\"last\":\"2026-11-20\"}},\"review\":{\"words\":[\"because\"],\"math\":[{\"skill\":\"ops\",\"level\":3,\"seed\":77,\"prob\":{\"skill\":\"ops\",\"level\":3,\"kind\":\"story\",\"seed\":77,\"params\":{\"expr\":\"3 \\u00d7 19 + 6\",\"states\":[\"3 \\u00d7 19 + 6\",\"57 + 6\",\"63\"]},\"prompt\":\"the crew unpacks 3 boxes with 19 shirts each, plus 6 loose shirts. how many shirts?\",\"label\":\"3 \\u00d7 19 + 6\",\"answer\":{\"type\":\"int\",\"value\":63},\"accept\":{\"simplest\":false},\"choices\":[{\"value\":\"(3 + 6) \\u00d7 19\",\"correct\":false,\"why\":\"wrong-grouping\"},{\"value\":\"3 \\u00d7 (19 + 6)\",\"correct\":false,\"why\":\"extra-parentheses\"},{\"value\":\"3 + 19 + 6\",\"correct\":false,\"why\":\"added-all\"},{\"value\":\"3 \\u00d7 19 + 6\",\"correct\":true,\"why\":null}],\"traps\":[],\"steps\":[\"first pick the expression that matches the story, then work it out: parentheses, then \\u00d7 and \\u00f7, then + and \\u2212.\",\"it\\u2019s <b>3 \\u00d7 19 + 6</b>. first: 3 \\u00d7 19 = 57.\",\"3 \\u00d7 19 + 6 \\u2192 57 + 6 \\u2192 <b>63</b>\"]}},{\"skill\":\"frac\",\"level\":1,\"seed\":5,\"prob\":{\"skill\":\"frac\",\"level\":1,\"kind\":\"fill\",\"seed\":5,\"params\":{\"target\":{\"n\":1,\"d\":1},\"grid\":8,\"bars\":1,\"pre\":[8,2],\"palette\":[2,4,8],\"removable\":false},\"prompt\":\"finish the measure: add notes until it\\u2019s exactly one whole.\",\"label\":\"fill [[1]] measure\",\"answer\":{\"type\":\"fraction\",\"value\":{\"n\":3,\"d\":8}},\"accept\":{\"simplest\":false},\"choices\":null,\"traps\":[],\"steps\":[\"the measure holds one whole. how much is already written? count it in eighths.\",\"written so far: [[5/8]]. you need [[3/8]] more.\",\"[[1/4]] + [[1/8]] = [[3/8]]. that fills it to one whole.\"],\"builder\":true}},{\"skill\":\"xy\",\"level\":2,\"seed\":9,\"prob\":{\"skill\":\"xy\",\"level\":2,\"kind\":\"place\",\"seed\":9,\"params\":{\"max\":10,\"gear\":\"drum riser\",\"icon\":\"star\",\"start\":null,\"dx\":0,\"dy\":0,\"point\":null},\"prompt\":\"put the drum riser at (1, 9). tap that spot on the stage.\",\"label\":\"place (1, 9)\",\"answer\":{\"type\":\"point\",\"value\":{\"x\":1,\"y\":9}},\"accept\":{\"simplest\":false},\"choices\":null,\"traps\":[{\"value\":{\"x\":9,\"y\":1},\"why\":\"swapped\"}],\"steps\":[\"the first number goes across, the second goes up. start at (0, 0).\",\"go across to <b>1</b> on the bottom line. now go up from there.\",\"across 1, up 9. that\\u2019s <b>(1, 9)</b>.\"]}},{\"skill\":\"vol\",\"level\":3,\"seed\":31,\"prob\":{\"skill\":\"vol\",\"level\":3,\"kind\":\"missing\",\"seed\":31,\"params\":{\"hideH\":true,\"boxes\":[{\"l\":11,\"w\":7,\"h\":2}]},\"prompt\":\"a speaker case holds 154 cubic units. it\\u2019s 11 long and 7 wide. how tall is it?\",\"label\":\"missing height of 154\",\"answer\":{\"type\":\"int\",\"value\":2},\"accept\":{\"simplest\":false},\"choices\":null,\"traps\":[{\"value\":77,\"why\":\"subtracted\"},{\"value\":14,\"why\":\"divided-once\"}],\"steps\":[\"length \\u00d7 width \\u00d7 height = 154. you know two of the three.\",\"the floor is 11 \\u00d7 7 = 77. what times 77 makes 154?\",\"154 \\u00f7 77 = <b>2</b>.\"],\"builder\":false}},{\"skill\":\"flu\",\"level\":1,\"seed\":8,\"prob\":{\"skill\":\"flu\",\"level\":1,\"kind\":\"mul\",\"seed\":8,\"params\":{\"seconds\":8},\"prompt\":\"7 \\u00d7 4 = ?\",\"label\":\"7 \\u00d7 4\",\"answer\":{\"type\":\"int\",\"value\":28},\"accept\":{\"simplest\":false},\"choices\":[{\"value\":11,\"correct\":false,\"why\":\"added\"},{\"value\":28,\"correct\":true,\"why\":null},{\"value\":35,\"correct\":false,\"why\":\"neighbor-fact\"},{\"value\":21,\"correct\":false,\"why\":\"neighbor-fact\"}],\"traps\":[{\"value\":11,\"why\":\"added\"},{\"value\":35,\"why\":\"neighbor-fact\"},{\"value\":21,\"why\":\"neighbor-fact\"}],\"steps\":[\"think of 7 groups of 4.\",\"7 \\u00d7 3 = 21. one more 7\\u2026\",\"7 \\u00d7 4 = <b>28</b>\"]}},{\"skill\":\"md\",\"level\":2,\"seed\":4242,\"prob\":{\"skill\":\"md\",\"level\":2,\"kind\":\"div\",\"seed\":4242,\"params\":{\"N\":945,\"d\":21,\"op\":\"\\u00f7\"},\"prompt\":\"the crew packs 945 wristbands into 21 equal bags. how many in each bag?\",\"label\":\"945 \\u00f7 21\",\"answer\":{\"type\":\"int\",\"value\":45},\"accept\":{\"simplest\":false},\"choices\":null,\"traps\":[{\"value\":450,\"why\":\"place-value\"},{\"value\":924,\"why\":\"subtracted-instead\"}],\"steps\":[\"how many tens of 21 fit in 945? one ten of 21 is 21 \\u00d7 10 = 210.\",\"4 tens of 21 fit: 21 \\u00d7 40 = 840. 945 \\u2212 840 = 105. running total: 40. now how many 21s fit in 105?\",\"21 \\u00d7 5 = 105, and 105 \\u2212 105 = 0. running total: 40 + 5 = <b>45</b>.\"],\"work\":{\"kind\":\"chunks\",\"d\":21,\"N\":945,\"chunks\":[{\"c\":40,\"take\":840,\"left\":105},{\"c\":5,\"take\":105,\"left\":0}]}}}]},\"shows\":[{\"d\":\"2026-11-20\",\"mode\":\"remix\",\"venue\":\"coffee\",\"n\":10,\"first\":9,\"hinted\":1,\"fans\":30000,\"secs\":300,\"best\":6,\"sold\":true},{\"d\":\"2026-11-20\",\"mode\":\"remix\",\"venue\":\"coffee\",\"n\":1,\"first\":1,\"hinted\":0,\"fans\":500,\"secs\":20,\"best\":1,\"encore\":true},{\"d\":\"2026-11-20\",\"mode\":\"merch\",\"venue\":\"records\",\"n\":10,\"first\":5,\"hinted\":3,\"fans\":12000,\"secs\":610,\"best\":3}],\"time\":{},\"inventory\":{\"owned\":[\"theme:tour-pink\",\"guitar:classic\",\"dog:none\"],\"equipped\":{\"theme\":\"tour-pink\",\"guitar\":\"classic\",\"dog\":\"none\"}},\"journal\":{\"stickers\":{},\"layout\":{}}}",
+  "unlocked": [
+   "coffee",
+   "records",
+   "rec"
+  ],
+  "streak": {
+   "days": 1,
+   "best": 1,
+   "last": "2026-11-20"
+  }
+ },
+ "migrate": [
+  {
+   "name": "null",
+   "raw": "null",
+   "out": "{\"created\":\"2026-11-20\",\"fans\":{\"balance\":0,\"lifetime\":0},\"inventory\":{\"equipped\":{\"dog\":\"none\",\"guitar\":\"classic\",\"theme\":\"tour-pink\"},\"owned\":[\"theme:tour-pink\",\"guitar:classic\",\"dog:none\"]},\"journal\":{\"layout\":{},\"stickers\":{}},\"review\":{\"math\":[],\"words\":[]},\"settings\":{\"motion\":\"auto\",\"sound\":true,\"theme\":\"tour-pink\"},\"shows\":[],\"skills\":{},\"streak\":{\"best\":0,\"days\":0,\"last\":null},\"time\":{},\"updated\":0,\"v\":1,\"venues\":{\"seen\":[\"coffee\"],\"unlocked\":[\"coffee\"]},\"words\":{}}"
+  },
+  {
+   "name": "number",
+   "raw": "5",
+   "out": "{\"created\":\"2026-11-20\",\"fans\":{\"balance\":0,\"lifetime\":0},\"inventory\":{\"equipped\":{\"dog\":\"none\",\"guitar\":\"classic\",\"theme\":\"tour-pink\"},\"owned\":[\"theme:tour-pink\",\"guitar:classic\",\"dog:none\"]},\"journal\":{\"layout\":{},\"stickers\":{}},\"review\":{\"math\":[],\"words\":[]},\"settings\":{\"motion\":\"auto\",\"sound\":true,\"theme\":\"tour-pink\"},\"shows\":[],\"skills\":{},\"streak\":{\"best\":0,\"days\":0,\"last\":null},\"time\":{},\"updated\":0,\"v\":1,\"venues\":{\"seen\":[\"coffee\"],\"unlocked\":[\"coffee\"]},\"words\":{}}"
+  },
+  {
+   "name": "string",
+   "raw": "\"x\"",
+   "out": "{\"created\":\"2026-11-20\",\"fans\":{\"balance\":0,\"lifetime\":0},\"inventory\":{\"equipped\":{\"dog\":\"none\",\"guitar\":\"classic\",\"theme\":\"tour-pink\"},\"owned\":[\"theme:tour-pink\",\"guitar:classic\",\"dog:none\"]},\"journal\":{\"layout\":{},\"stickers\":{}},\"review\":{\"math\":[],\"words\":[]},\"settings\":{\"motion\":\"auto\",\"sound\":true,\"theme\":\"tour-pink\"},\"shows\":[],\"skills\":{},\"streak\":{\"best\":0,\"days\":0,\"last\":null},\"time\":{},\"updated\":0,\"v\":1,\"venues\":{\"seen\":[\"coffee\"],\"unlocked\":[\"coffee\"]},\"words\":{}}"
+  },
+  {
+   "name": "true",
+   "raw": "true",
+   "out": "{\"created\":\"2026-11-20\",\"fans\":{\"balance\":0,\"lifetime\":0},\"inventory\":{\"equipped\":{\"dog\":\"none\",\"guitar\":\"classic\",\"theme\":\"tour-pink\"},\"owned\":[\"theme:tour-pink\",\"guitar:classic\",\"dog:none\"]},\"journal\":{\"layout\":{},\"stickers\":{}},\"review\":{\"math\":[],\"words\":[]},\"settings\":{\"motion\":\"auto\",\"sound\":true,\"theme\":\"tour-pink\"},\"shows\":[],\"skills\":{},\"streak\":{\"best\":0,\"days\":0,\"last\":null},\"time\":{},\"updated\":0,\"v\":1,\"venues\":{\"seen\":[\"coffee\"],\"unlocked\":[\"coffee\"]},\"words\":{}}"
+  },
+  {
+   "name": "empty array",
+   "raw": "[]",
+   "out": "{\"created\":\"2026-11-20\",\"fans\":{\"balance\":0,\"lifetime\":0},\"inventory\":{\"equipped\":{\"dog\":\"none\",\"guitar\":\"classic\",\"theme\":\"tour-pink\"},\"owned\":[\"theme:tour-pink\",\"guitar:classic\",\"dog:none\"]},\"journal\":{\"layout\":{},\"stickers\":{}},\"review\":{\"math\":[],\"words\":[]},\"settings\":{\"motion\":\"auto\",\"sound\":true,\"theme\":\"tour-pink\"},\"shows\":[],\"skills\":{},\"streak\":{\"best\":0,\"days\":0,\"last\":null},\"time\":{},\"updated\":0,\"v\":1,\"venues\":{\"seen\":[\"coffee\"],\"unlocked\":[\"coffee\"]},\"words\":{}}"
+  },
+  {
+   "name": "array",
+   "raw": "[1,2]",
+   "out": "{\"0\":1,\"1\":2,\"created\":\"2026-11-20\",\"fans\":{\"balance\":0,\"lifetime\":0},\"inventory\":{\"equipped\":{\"dog\":\"none\",\"guitar\":\"classic\",\"theme\":\"tour-pink\"},\"owned\":[\"theme:tour-pink\",\"guitar:classic\",\"dog:none\"]},\"journal\":{\"layout\":{},\"stickers\":{}},\"review\":{\"math\":[],\"words\":[]},\"settings\":{\"motion\":\"auto\",\"sound\":true,\"theme\":\"tour-pink\"},\"shows\":[],\"skills\":{},\"streak\":{\"best\":0,\"days\":0,\"last\":null},\"time\":{},\"updated\":0,\"v\":1,\"venues\":{\"seen\":[\"coffee\"],\"unlocked\":[\"coffee\"]},\"words\":{}}"
+  },
+  {
+   "name": "empty object",
+   "raw": "{}",
+   "out": "{\"created\":\"2026-11-20\",\"fans\":{\"balance\":0,\"lifetime\":0},\"inventory\":{\"equipped\":{\"dog\":\"none\",\"guitar\":\"classic\",\"theme\":\"tour-pink\"},\"owned\":[\"theme:tour-pink\",\"guitar:classic\",\"dog:none\"]},\"journal\":{\"layout\":{},\"stickers\":{}},\"review\":{\"math\":[],\"words\":[]},\"settings\":{\"motion\":\"auto\",\"sound\":true,\"theme\":\"tour-pink\"},\"shows\":[],\"skills\":{},\"streak\":{\"best\":0,\"days\":0,\"last\":null},\"time\":{},\"updated\":0,\"v\":1,\"venues\":{\"seen\":[\"coffee\"],\"unlocked\":[\"coffee\"]},\"words\":{}}"
+  },
+  {
+   "name": "partial: fans and a venue, no coffee",
+   "raw": "{\"fans\":{\"lifetime\":30000},\"venues\":{\"unlocked\":[\"records\"]}}",
+   "out": "{\"created\":\"2026-11-20\",\"fans\":{\"balance\":0,\"lifetime\":30000},\"inventory\":{\"equipped\":{\"dog\":\"none\",\"guitar\":\"classic\",\"theme\":\"tour-pink\"},\"owned\":[\"theme:tour-pink\",\"guitar:classic\",\"dog:none\"]},\"journal\":{\"layout\":{},\"stickers\":{}},\"review\":{\"math\":[],\"words\":[]},\"settings\":{\"motion\":\"auto\",\"sound\":true,\"theme\":\"tour-pink\"},\"shows\":[],\"skills\":{},\"streak\":{\"best\":0,\"days\":0,\"last\":null},\"time\":{},\"updated\":0,\"v\":1,\"venues\":{\"seen\":[\"coffee\"],\"unlocked\":[\"coffee\",\"records\"]},\"words\":{}}"
+  },
+  {
+   "name": "partial: wrong containers",
+   "raw": "{\"review\":{\"words\":\"x\"},\"settings\":{\"sound\":false},\"shows\":{},\"skills\":[],\"time\":{\"2026-11-01\":300},\"v\":0,\"words\":null}",
+   "out": "{\"created\":\"2026-11-20\",\"fans\":{\"balance\":0,\"lifetime\":0},\"inventory\":{\"equipped\":{\"dog\":\"none\",\"guitar\":\"classic\",\"theme\":\"tour-pink\"},\"owned\":[\"theme:tour-pink\",\"guitar:classic\",\"dog:none\"]},\"journal\":{\"layout\":{},\"stickers\":{}},\"review\":{\"math\":[],\"words\":[]},\"settings\":{\"motion\":\"auto\",\"sound\":false,\"theme\":\"tour-pink\"},\"shows\":[],\"skills\":{},\"streak\":{\"best\":0,\"days\":0,\"last\":null},\"time\":{\"2026-11-01\":300},\"updated\":0,\"v\":1,\"venues\":{\"seen\":[\"coffee\"],\"unlocked\":[\"coffee\"]},\"words\":{}}"
+  },
+  {
+   "name": "old: no journal, short inventory",
+   "raw": "{\"created\":\"2026-09-01\",\"fans\":{\"balance\":5,\"lifetime\":9},\"inventory\":{\"equipped\":{\"dog\":\"cap\"},\"owned\":[\"theme:tour-pink\"]},\"v\":1}",
+   "out": "{\"created\":\"2026-09-01\",\"fans\":{\"balance\":5,\"lifetime\":9},\"inventory\":{\"equipped\":{\"dog\":\"cap\",\"guitar\":\"classic\",\"theme\":\"tour-pink\"},\"owned\":[\"theme:tour-pink\"]},\"journal\":{\"layout\":{},\"stickers\":{}},\"review\":{\"math\":[],\"words\":[]},\"settings\":{\"motion\":\"auto\",\"sound\":true,\"theme\":\"tour-pink\"},\"shows\":[],\"skills\":{},\"streak\":{\"best\":0,\"days\":0,\"last\":null},\"time\":{},\"updated\":0,\"v\":1,\"venues\":{\"seen\":[\"coffee\"],\"unlocked\":[\"coffee\"]},\"words\":{}}"
+  },
+  {
+   "name": "duplicates kept when coffee is there",
+   "raw": "{\"venues\":{\"seen\":[\"coffee\"],\"unlocked\":[\"coffee\",\"records\",\"records\"]}}",
+   "out": "{\"created\":\"2026-11-20\",\"fans\":{\"balance\":0,\"lifetime\":0},\"inventory\":{\"equipped\":{\"dog\":\"none\",\"guitar\":\"classic\",\"theme\":\"tour-pink\"},\"owned\":[\"theme:tour-pink\",\"guitar:classic\",\"dog:none\"]},\"journal\":{\"layout\":{},\"stickers\":{}},\"review\":{\"math\":[],\"words\":[]},\"settings\":{\"motion\":\"auto\",\"sound\":true,\"theme\":\"tour-pink\"},\"shows\":[],\"skills\":{},\"streak\":{\"best\":0,\"days\":0,\"last\":null},\"time\":{},\"updated\":0,\"v\":1,\"venues\":{\"seen\":[\"coffee\"],\"unlocked\":[\"coffee\",\"records\",\"records\"]},\"words\":{}}"
+  },
+  {
+   "name": "duplicates dropped when coffee is added",
+   "raw": "{\"venues\":{\"unlocked\":[\"records\",\"records\"]}}",
+   "out": "{\"created\":\"2026-11-20\",\"fans\":{\"balance\":0,\"lifetime\":0},\"inventory\":{\"equipped\":{\"dog\":\"none\",\"guitar\":\"classic\",\"theme\":\"tour-pink\"},\"owned\":[\"theme:tour-pink\",\"guitar:classic\",\"dog:none\"]},\"journal\":{\"layout\":{},\"stickers\":{}},\"review\":{\"math\":[],\"words\":[]},\"settings\":{\"motion\":\"auto\",\"sound\":true,\"theme\":\"tour-pink\"},\"shows\":[],\"skills\":{},\"streak\":{\"best\":0,\"days\":0,\"last\":null},\"time\":{},\"updated\":0,\"v\":1,\"venues\":{\"seen\":[\"coffee\"],\"unlocked\":[\"coffee\",\"records\"]},\"words\":{}}"
+  },
+  {
+   "name": "nested arrays for groups",
+   "raw": "{\"fans\":[],\"journal\":{\"layout\":{\"first-show\":{\"r\":-3,\"x\":0.5,\"y\":0.25}},\"stickers\":{\"first-show\":\"2026-11-18\"}},\"settings\":[],\"streak\":{\"best\":4,\"days\":3,\"last\":\"2026-11-18\"}}",
+   "out": "{\"created\":\"2026-11-20\",\"fans\":{\"balance\":0,\"lifetime\":0},\"inventory\":{\"equipped\":{\"dog\":\"none\",\"guitar\":\"classic\",\"theme\":\"tour-pink\"},\"owned\":[\"theme:tour-pink\",\"guitar:classic\",\"dog:none\"]},\"journal\":{\"layout\":{\"first-show\":{\"r\":-3,\"x\":0.5,\"y\":0.25}},\"stickers\":{\"first-show\":\"2026-11-18\"}},\"review\":{\"math\":[],\"words\":[]},\"settings\":{\"motion\":\"auto\",\"sound\":true,\"theme\":\"tour-pink\"},\"shows\":[],\"skills\":{},\"streak\":{\"best\":4,\"days\":3,\"last\":\"2026-11-18\"},\"time\":{},\"updated\":0,\"v\":1,\"venues\":{\"seen\":[\"coffee\"],\"unlocked\":[\"coffee\"]},\"words\":{}}"
+  },
+  {
+   "name": "old seed-only review entry and a damaged one",
+   "raw": "{\"review\":{\"math\":[{\"level\":2,\"seed\":12345,\"skill\":\"dec\"},{\"level\":2,\"prob\":{\"prompt\":\"x\"},\"seed\":9,\"skill\":\"dec\"}],\"words\":[\"because\"]}}",
+   "out": "{\"created\":\"2026-11-20\",\"fans\":{\"balance\":0,\"lifetime\":0},\"inventory\":{\"equipped\":{\"dog\":\"none\",\"guitar\":\"classic\",\"theme\":\"tour-pink\"},\"owned\":[\"theme:tour-pink\",\"guitar:classic\",\"dog:none\"]},\"journal\":{\"layout\":{},\"stickers\":{}},\"review\":{\"math\":[{\"level\":2,\"seed\":12345,\"skill\":\"dec\"},{\"level\":2,\"prob\":{\"prompt\":\"x\"},\"seed\":9,\"skill\":\"dec\"}],\"words\":[\"because\"]},\"settings\":{\"motion\":\"auto\",\"sound\":true,\"theme\":\"tour-pink\"},\"shows\":[],\"skills\":{},\"streak\":{\"best\":0,\"days\":0,\"last\":null},\"time\":{},\"updated\":0,\"v\":1,\"venues\":{\"seen\":[\"coffee\"],\"unlocked\":[\"coffee\"]},\"words\":{}}"
+  },
+  {
+   "name": "the replayed save",
+   "raw": "{\"created\":\"2026-11-20\",\"fans\":{\"balance\":65000,\"lifetime\":65000},\"inventory\":{\"equipped\":{\"dog\":\"none\",\"guitar\":\"classic\",\"theme\":\"tour-pink\"},\"owned\":[\"theme:tour-pink\",\"guitar:classic\",\"dog:none\"]},\"journal\":{\"layout\":{},\"stickers\":{}},\"review\":{\"math\":[{\"level\":3,\"prob\":{\"accept\":{\"simplest\":false},\"answer\":{\"type\":\"int\",\"value\":63},\"choices\":[{\"correct\":false,\"value\":\"(3 + 6) \\u00d7 19\",\"why\":\"wrong-grouping\"},{\"correct\":false,\"value\":\"3 \\u00d7 (19 + 6)\",\"why\":\"extra-parentheses\"},{\"correct\":false,\"value\":\"3 + 19 + 6\",\"why\":\"added-all\"},{\"correct\":true,\"value\":\"3 \\u00d7 19 + 6\",\"why\":null}],\"kind\":\"story\",\"label\":\"3 \\u00d7 19 + 6\",\"level\":3,\"params\":{\"expr\":\"3 \\u00d7 19 + 6\",\"states\":[\"3 \\u00d7 19 + 6\",\"57 + 6\",\"63\"]},\"prompt\":\"the crew unpacks 3 boxes with 19 shirts each, plus 6 loose shirts. how many shirts?\",\"seed\":77,\"skill\":\"ops\",\"steps\":[\"first pick the expression that matches the story, then work it out: parentheses, then \\u00d7 and \\u00f7, then + and \\u2212.\",\"it\\u2019s <b>3 \\u00d7 19 + 6</b>. first: 3 \\u00d7 19 = 57.\",\"3 \\u00d7 19 + 6 \\u2192 57 + 6 \\u2192 <b>63</b>\"],\"traps\":[]},\"seed\":77,\"skill\":\"ops\"},{\"level\":1,\"prob\":{\"accept\":{\"simplest\":false},\"answer\":{\"type\":\"fraction\",\"value\":{\"d\":8,\"n\":3}},\"builder\":true,\"choices\":null,\"kind\":\"fill\",\"label\":\"fill [[1]] measure\",\"level\":1,\"params\":{\"bars\":1,\"grid\":8,\"palette\":[2,4,8],\"pre\":[8,2],\"removable\":false,\"target\":{\"d\":1,\"n\":1}},\"prompt\":\"finish the measure: add notes until it\\u2019s exactly one whole.\",\"seed\":5,\"skill\":\"frac\",\"steps\":[\"the measure holds one whole. how much is already written? count it in eighths.\",\"written so far: [[5/8]]. you need [[3/8]] more.\",\"[[1/4]] + [[1/8]] = [[3/8]]. that fills it to one whole.\"],\"traps\":[]},\"seed\":5,\"skill\":\"frac\"},{\"level\":2,\"prob\":{\"accept\":{\"simplest\":false},\"answer\":{\"type\":\"point\",\"value\":{\"x\":1,\"y\":9}},\"choices\":null,\"kind\":\"place\",\"label\":\"place (1, 9)\",\"level\":2,\"params\":{\"dx\":0,\"dy\":0,\"gear\":\"drum riser\",\"icon\":\"star\",\"max\":10,\"point\":null,\"start\":null},\"prompt\":\"put the drum riser at (1, 9). tap that spot on the stage.\",\"seed\":9,\"skill\":\"xy\",\"steps\":[\"the first number goes across, the second goes up. start at (0, 0).\",\"go across to <b>1</b> on the bottom line. now go up from there.\",\"across 1, up 9. that\\u2019s <b>(1, 9)</b>.\"],\"traps\":[{\"value\":{\"x\":9,\"y\":1},\"why\":\"swapped\"}]},\"seed\":9,\"skill\":\"xy\"},{\"level\":3,\"prob\":{\"accept\":{\"simplest\":false},\"answer\":{\"type\":\"int\",\"value\":2},\"builder\":false,\"choices\":null,\"kind\":\"missing\",\"label\":\"missing height of 154\",\"level\":3,\"params\":{\"boxes\":[{\"h\":2,\"l\":11,\"w\":7}],\"hideH\":true},\"prompt\":\"a speaker case holds 154 cubic units. it\\u2019s 11 long and 7 wide. how tall is it?\",\"seed\":31,\"skill\":\"vol\",\"steps\":[\"length \\u00d7 width \\u00d7 height = 154. you know two of the three.\",\"the floor is 11 \\u00d7 7 = 77. what times 77 makes 154?\",\"154 \\u00f7 77 = <b>2</b>.\"],\"traps\":[{\"value\":77,\"why\":\"subtracted\"},{\"value\":14,\"why\":\"divided-once\"}]},\"seed\":31,\"skill\":\"vol\"},{\"level\":1,\"prob\":{\"accept\":{\"simplest\":false},\"answer\":{\"type\":\"int\",\"value\":28},\"choices\":[{\"correct\":false,\"value\":11,\"why\":\"added\"},{\"correct\":true,\"value\":28,\"why\":null},{\"correct\":false,\"value\":35,\"why\":\"neighbor-fact\"},{\"correct\":false,\"value\":21,\"why\":\"neighbor-fact\"}],\"kind\":\"mul\",\"label\":\"7 \\u00d7 4\",\"level\":1,\"params\":{\"seconds\":8},\"prompt\":\"7 \\u00d7 4 = ?\",\"seed\":8,\"skill\":\"flu\",\"steps\":[\"think of 7 groups of 4.\",\"7 \\u00d7 3 = 21. one more 7\\u2026\",\"7 \\u00d7 4 = <b>28</b>\"],\"traps\":[{\"value\":11,\"why\":\"added\"},{\"value\":35,\"why\":\"neighbor-fact\"},{\"value\":21,\"why\":\"neighbor-fact\"}]},\"seed\":8,\"skill\":\"flu\"},{\"level\":2,\"prob\":{\"accept\":{\"simplest\":false},\"answer\":{\"type\":\"int\",\"value\":45},\"choices\":null,\"kind\":\"div\",\"label\":\"945 \\u00f7 21\",\"level\":2,\"params\":{\"N\":945,\"d\":21,\"op\":\"\\u00f7\"},\"prompt\":\"the crew packs 945 wristbands into 21 equal bags. how many in each bag?\",\"seed\":4242,\"skill\":\"md\",\"steps\":[\"how many tens of 21 fit in 945? one ten of 21 is 21 \\u00d7 10 = 210.\",\"4 tens of 21 fit: 21 \\u00d7 40 = 840. 945 \\u2212 840 = 105. running total: 40. now how many 21s fit in 105?\",\"21 \\u00d7 5 = 105, and 105 \\u2212 105 = 0. running total: 40 + 5 = <b>45</b>.\"],\"traps\":[{\"value\":450,\"why\":\"place-value\"},{\"value\":924,\"why\":\"subtracted-instead\"}],\"work\":{\"N\":945,\"chunks\":[{\"c\":40,\"left\":105,\"take\":840},{\"c\":5,\"left\":0,\"take\":105}],\"d\":21,\"kind\":\"chunks\"}},\"seed\":4242,\"skill\":\"md\"}],\"words\":[\"because\"]},\"settings\":{\"motion\":\"reduced\",\"sound\":false,\"theme\":\"tour-pink\"},\"shows\":[{\"best\":6,\"d\":\"2026-11-20\",\"fans\":30000,\"first\":9,\"hinted\":1,\"mode\":\"remix\",\"n\":10,\"secs\":300,\"sold\":true,\"venue\":\"coffee\"},{\"best\":1,\"d\":\"2026-11-20\",\"encore\":true,\"fans\":500,\"first\":1,\"hinted\":0,\"mode\":\"remix\",\"n\":1,\"secs\":20,\"venue\":\"coffee\"},{\"best\":3,\"d\":\"2026-11-20\",\"fans\":12000,\"first\":5,\"hinted\":3,\"mode\":\"merch\",\"n\":10,\"secs\":610,\"venue\":\"records\"}],\"skills\":{\"dec\":{\"a\":5,\"byLevel\":{\"1\":[4,4],\"2\":[1,0],\"3\":[0,0]},\"c\":4,\"h\":1,\"level\":2,\"missRun\":1,\"mistakes\":{\"gave-total\":1,\"no-borrow\":1},\"run\":0},\"spell:remix\":{\"a\":2,\"byLevel\":{\"1\":[2,0],\"2\":[0,0],\"3\":[0,0]},\"c\":0,\"h\":1,\"level\":1,\"missRun\":2,\"mistakes\":{},\"run\":0}},\"streak\":{\"best\":1,\"days\":1,\"last\":\"2026-11-20\"},\"time\":{},\"updated\":0,\"v\":1,\"venues\":{\"seen\":[\"coffee\",\"records\"],\"unlocked\":[\"coffee\",\"records\",\"rec\"]},\"words\":{\"because\":{\"a\":2,\"c\":1,\"first\":1,\"h\":1,\"last\":\"2026-11-20\",\"miss\":1},\"friend\":{\"a\":1,\"c\":1,\"first\":1,\"h\":0,\"last\":\"2026-11-20\",\"miss\":0},\"island\":{\"a\":2,\"c\":1,\"first\":1,\"h\":0,\"last\":\"2026-11-20\",\"miss\":1}}}",
+   "out": "{\"created\":\"2026-11-20\",\"fans\":{\"balance\":65000,\"lifetime\":65000},\"inventory\":{\"equipped\":{\"dog\":\"none\",\"guitar\":\"classic\",\"theme\":\"tour-pink\"},\"owned\":[\"theme:tour-pink\",\"guitar:classic\",\"dog:none\"]},\"journal\":{\"layout\":{},\"stickers\":{}},\"review\":{\"math\":[{\"level\":3,\"prob\":{\"accept\":{\"simplest\":false},\"answer\":{\"type\":\"int\",\"value\":63},\"choices\":[{\"correct\":false,\"value\":\"(3 + 6) \\u00d7 19\",\"why\":\"wrong-grouping\"},{\"correct\":false,\"value\":\"3 \\u00d7 (19 + 6)\",\"why\":\"extra-parentheses\"},{\"correct\":false,\"value\":\"3 + 19 + 6\",\"why\":\"added-all\"},{\"correct\":true,\"value\":\"3 \\u00d7 19 + 6\",\"why\":null}],\"kind\":\"story\",\"label\":\"3 \\u00d7 19 + 6\",\"level\":3,\"params\":{\"expr\":\"3 \\u00d7 19 + 6\",\"states\":[\"3 \\u00d7 19 + 6\",\"57 + 6\",\"63\"]},\"prompt\":\"the crew unpacks 3 boxes with 19 shirts each, plus 6 loose shirts. how many shirts?\",\"seed\":77,\"skill\":\"ops\",\"steps\":[\"first pick the expression that matches the story, then work it out: parentheses, then \\u00d7 and \\u00f7, then + and \\u2212.\",\"it\\u2019s <b>3 \\u00d7 19 + 6</b>. first: 3 \\u00d7 19 = 57.\",\"3 \\u00d7 19 + 6 \\u2192 57 + 6 \\u2192 <b>63</b>\"],\"traps\":[]},\"seed\":77,\"skill\":\"ops\"},{\"level\":1,\"prob\":{\"accept\":{\"simplest\":false},\"answer\":{\"type\":\"fraction\",\"value\":{\"d\":8,\"n\":3}},\"builder\":true,\"choices\":null,\"kind\":\"fill\",\"label\":\"fill [[1]] measure\",\"level\":1,\"params\":{\"bars\":1,\"grid\":8,\"palette\":[2,4,8],\"pre\":[8,2],\"removable\":false,\"target\":{\"d\":1,\"n\":1}},\"prompt\":\"finish the measure: add notes until it\\u2019s exactly one whole.\",\"seed\":5,\"skill\":\"frac\",\"steps\":[\"the measure holds one whole. how much is already written? count it in eighths.\",\"written so far: [[5/8]]. you need [[3/8]] more.\",\"[[1/4]] + [[1/8]] = [[3/8]]. that fills it to one whole.\"],\"traps\":[]},\"seed\":5,\"skill\":\"frac\"},{\"level\":2,\"prob\":{\"accept\":{\"simplest\":false},\"answer\":{\"type\":\"point\",\"value\":{\"x\":1,\"y\":9}},\"choices\":null,\"kind\":\"place\",\"label\":\"place (1, 9)\",\"level\":2,\"params\":{\"dx\":0,\"dy\":0,\"gear\":\"drum riser\",\"icon\":\"star\",\"max\":10,\"point\":null,\"start\":null},\"prompt\":\"put the drum riser at (1, 9). tap that spot on the stage.\",\"seed\":9,\"skill\":\"xy\",\"steps\":[\"the first number goes across, the second goes up. start at (0, 0).\",\"go across to <b>1</b> on the bottom line. now go up from there.\",\"across 1, up 9. that\\u2019s <b>(1, 9)</b>.\"],\"traps\":[{\"value\":{\"x\":9,\"y\":1},\"why\":\"swapped\"}]},\"seed\":9,\"skill\":\"xy\"},{\"level\":3,\"prob\":{\"accept\":{\"simplest\":false},\"answer\":{\"type\":\"int\",\"value\":2},\"builder\":false,\"choices\":null,\"kind\":\"missing\",\"label\":\"missing height of 154\",\"level\":3,\"params\":{\"boxes\":[{\"h\":2,\"l\":11,\"w\":7}],\"hideH\":true},\"prompt\":\"a speaker case holds 154 cubic units. it\\u2019s 11 long and 7 wide. how tall is it?\",\"seed\":31,\"skill\":\"vol\",\"steps\":[\"length \\u00d7 width \\u00d7 height = 154. you know two of the three.\",\"the floor is 11 \\u00d7 7 = 77. what times 77 makes 154?\",\"154 \\u00f7 77 = <b>2</b>.\"],\"traps\":[{\"value\":77,\"why\":\"subtracted\"},{\"value\":14,\"why\":\"divided-once\"}]},\"seed\":31,\"skill\":\"vol\"},{\"level\":1,\"prob\":{\"accept\":{\"simplest\":false},\"answer\":{\"type\":\"int\",\"value\":28},\"choices\":[{\"correct\":false,\"value\":11,\"why\":\"added\"},{\"correct\":true,\"value\":28,\"why\":null},{\"correct\":false,\"value\":35,\"why\":\"neighbor-fact\"},{\"correct\":false,\"value\":21,\"why\":\"neighbor-fact\"}],\"kind\":\"mul\",\"label\":\"7 \\u00d7 4\",\"level\":1,\"params\":{\"seconds\":8},\"prompt\":\"7 \\u00d7 4 = ?\",\"seed\":8,\"skill\":\"flu\",\"steps\":[\"think of 7 groups of 4.\",\"7 \\u00d7 3 = 21. one more 7\\u2026\",\"7 \\u00d7 4 = <b>28</b>\"],\"traps\":[{\"value\":11,\"why\":\"added\"},{\"value\":35,\"why\":\"neighbor-fact\"},{\"value\":21,\"why\":\"neighbor-fact\"}]},\"seed\":8,\"skill\":\"flu\"},{\"level\":2,\"prob\":{\"accept\":{\"simplest\":false},\"answer\":{\"type\":\"int\",\"value\":45},\"choices\":null,\"kind\":\"div\",\"label\":\"945 \\u00f7 21\",\"level\":2,\"params\":{\"N\":945,\"d\":21,\"op\":\"\\u00f7\"},\"prompt\":\"the crew packs 945 wristbands into 21 equal bags. how many in each bag?\",\"seed\":4242,\"skill\":\"md\",\"steps\":[\"how many tens of 21 fit in 945? one ten of 21 is 21 \\u00d7 10 = 210.\",\"4 tens of 21 fit: 21 \\u00d7 40 = 840. 945 \\u2212 840 = 105. running total: 40. now how many 21s fit in 105?\",\"21 \\u00d7 5 = 105, and 105 \\u2212 105 = 0. running total: 40 + 5 = <b>45</b>.\"],\"traps\":[{\"value\":450,\"why\":\"place-value\"},{\"value\":924,\"why\":\"subtracted-instead\"}],\"work\":{\"N\":945,\"chunks\":[{\"c\":40,\"left\":105,\"take\":840},{\"c\":5,\"left\":0,\"take\":105}],\"d\":21,\"kind\":\"chunks\"}},\"seed\":4242,\"skill\":\"md\"}],\"words\":[\"because\"]},\"settings\":{\"motion\":\"reduced\",\"sound\":false,\"theme\":\"tour-pink\"},\"shows\":[{\"best\":6,\"d\":\"2026-11-20\",\"fans\":30000,\"first\":9,\"hinted\":1,\"mode\":\"remix\",\"n\":10,\"secs\":300,\"sold\":true,\"venue\":\"coffee\"},{\"best\":1,\"d\":\"2026-11-20\",\"encore\":true,\"fans\":500,\"first\":1,\"hinted\":0,\"mode\":\"remix\",\"n\":1,\"secs\":20,\"venue\":\"coffee\"},{\"best\":3,\"d\":\"2026-11-20\",\"fans\":12000,\"first\":5,\"hinted\":3,\"mode\":\"merch\",\"n\":10,\"secs\":610,\"venue\":\"records\"}],\"skills\":{\"dec\":{\"a\":5,\"byLevel\":{\"1\":[4,4],\"2\":[1,0],\"3\":[0,0]},\"c\":4,\"h\":1,\"level\":2,\"missRun\":1,\"mistakes\":{\"gave-total\":1,\"no-borrow\":1},\"run\":0},\"spell:remix\":{\"a\":2,\"byLevel\":{\"1\":[2,0],\"2\":[0,0],\"3\":[0,0]},\"c\":0,\"h\":1,\"level\":1,\"missRun\":2,\"mistakes\":{},\"run\":0}},\"streak\":{\"best\":1,\"days\":1,\"last\":\"2026-11-20\"},\"time\":{},\"updated\":0,\"v\":1,\"venues\":{\"seen\":[\"coffee\",\"records\"],\"unlocked\":[\"coffee\",\"records\",\"rec\"]},\"words\":{\"because\":{\"a\":2,\"c\":1,\"first\":1,\"h\":1,\"last\":\"2026-11-20\",\"miss\":1},\"friend\":{\"a\":1,\"c\":1,\"first\":1,\"h\":0,\"last\":\"2026-11-20\",\"miss\":0},\"island\":{\"a\":2,\"c\":1,\"first\":1,\"h\":0,\"last\":\"2026-11-20\",\"miss\":1}}}"
+  },
+  {
+   "name": "the replayed save through text",
+   "raw": "{\"created\":\"2026-11-20\",\"fans\":{\"balance\":65000,\"lifetime\":65000},\"inventory\":{\"equipped\":{\"dog\":\"none\",\"guitar\":\"classic\",\"theme\":\"tour-pink\"},\"owned\":[\"theme:tour-pink\",\"guitar:classic\",\"dog:none\"]},\"journal\":{\"layout\":{},\"stickers\":{}},\"review\":{\"math\":[{\"level\":3,\"prob\":{\"accept\":{\"simplest\":false},\"answer\":{\"type\":\"int\",\"value\":63},\"choices\":[{\"correct\":false,\"value\":\"(3 + 6) \\u00d7 19\",\"why\":\"wrong-grouping\"},{\"correct\":false,\"value\":\"3 \\u00d7 (19 + 6)\",\"why\":\"extra-parentheses\"},{\"correct\":false,\"value\":\"3 + 19 + 6\",\"why\":\"added-all\"},{\"correct\":true,\"value\":\"3 \\u00d7 19 + 6\",\"why\":null}],\"kind\":\"story\",\"label\":\"3 \\u00d7 19 + 6\",\"level\":3,\"params\":{\"expr\":\"3 \\u00d7 19 + 6\",\"states\":[\"3 \\u00d7 19 + 6\",\"57 + 6\",\"63\"]},\"prompt\":\"the crew unpacks 3 boxes with 19 shirts each, plus 6 loose shirts. how many shirts?\",\"seed\":77,\"skill\":\"ops\",\"steps\":[\"first pick the expression that matches the story, then work it out: parentheses, then \\u00d7 and \\u00f7, then + and \\u2212.\",\"it\\u2019s <b>3 \\u00d7 19 + 6</b>. first: 3 \\u00d7 19 = 57.\",\"3 \\u00d7 19 + 6 \\u2192 57 + 6 \\u2192 <b>63</b>\"],\"traps\":[]},\"seed\":77,\"skill\":\"ops\"},{\"level\":1,\"prob\":{\"accept\":{\"simplest\":false},\"answer\":{\"type\":\"fraction\",\"value\":{\"d\":8,\"n\":3}},\"builder\":true,\"choices\":null,\"kind\":\"fill\",\"label\":\"fill [[1]] measure\",\"level\":1,\"params\":{\"bars\":1,\"grid\":8,\"palette\":[2,4,8],\"pre\":[8,2],\"removable\":false,\"target\":{\"d\":1,\"n\":1}},\"prompt\":\"finish the measure: add notes until it\\u2019s exactly one whole.\",\"seed\":5,\"skill\":\"frac\",\"steps\":[\"the measure holds one whole. how much is already written? count it in eighths.\",\"written so far: [[5/8]]. you need [[3/8]] more.\",\"[[1/4]] + [[1/8]] = [[3/8]]. that fills it to one whole.\"],\"traps\":[]},\"seed\":5,\"skill\":\"frac\"},{\"level\":2,\"prob\":{\"accept\":{\"simplest\":false},\"answer\":{\"type\":\"point\",\"value\":{\"x\":1,\"y\":9}},\"choices\":null,\"kind\":\"place\",\"label\":\"place (1, 9)\",\"level\":2,\"params\":{\"dx\":0,\"dy\":0,\"gear\":\"drum riser\",\"icon\":\"star\",\"max\":10,\"point\":null,\"start\":null},\"prompt\":\"put the drum riser at (1, 9). tap that spot on the stage.\",\"seed\":9,\"skill\":\"xy\",\"steps\":[\"the first number goes across, the second goes up. start at (0, 0).\",\"go across to <b>1</b> on the bottom line. now go up from there.\",\"across 1, up 9. that\\u2019s <b>(1, 9)</b>.\"],\"traps\":[{\"value\":{\"x\":9,\"y\":1},\"why\":\"swapped\"}]},\"seed\":9,\"skill\":\"xy\"},{\"level\":3,\"prob\":{\"accept\":{\"simplest\":false},\"answer\":{\"type\":\"int\",\"value\":2},\"builder\":false,\"choices\":null,\"kind\":\"missing\",\"label\":\"missing height of 154\",\"level\":3,\"params\":{\"boxes\":[{\"h\":2,\"l\":11,\"w\":7}],\"hideH\":true},\"prompt\":\"a speaker case holds 154 cubic units. it\\u2019s 11 long and 7 wide. how tall is it?\",\"seed\":31,\"skill\":\"vol\",\"steps\":[\"length \\u00d7 width \\u00d7 height = 154. you know two of the three.\",\"the floor is 11 \\u00d7 7 = 77. what times 77 makes 154?\",\"154 \\u00f7 77 = <b>2</b>.\"],\"traps\":[{\"value\":77,\"why\":\"subtracted\"},{\"value\":14,\"why\":\"divided-once\"}]},\"seed\":31,\"skill\":\"vol\"},{\"level\":1,\"prob\":{\"accept\":{\"simplest\":false},\"answer\":{\"type\":\"int\",\"value\":28},\"choices\":[{\"correct\":false,\"value\":11,\"why\":\"added\"},{\"correct\":true,\"value\":28,\"why\":null},{\"correct\":false,\"value\":35,\"why\":\"neighbor-fact\"},{\"correct\":false,\"value\":21,\"why\":\"neighbor-fact\"}],\"kind\":\"mul\",\"label\":\"7 \\u00d7 4\",\"level\":1,\"params\":{\"seconds\":8},\"prompt\":\"7 \\u00d7 4 = ?\",\"seed\":8,\"skill\":\"flu\",\"steps\":[\"think of 7 groups of 4.\",\"7 \\u00d7 3 = 21. one more 7\\u2026\",\"7 \\u00d7 4 = <b>28</b>\"],\"traps\":[{\"value\":11,\"why\":\"added\"},{\"value\":35,\"why\":\"neighbor-fact\"},{\"value\":21,\"why\":\"neighbor-fact\"}]},\"seed\":8,\"skill\":\"flu\"},{\"level\":2,\"prob\":{\"accept\":{\"simplest\":false},\"answer\":{\"type\":\"int\",\"value\":45},\"choices\":null,\"kind\":\"div\",\"label\":\"945 \\u00f7 21\",\"level\":2,\"params\":{\"N\":945,\"d\":21,\"op\":\"\\u00f7\"},\"prompt\":\"the crew packs 945 wristbands into 21 equal bags. how many in each bag?\",\"seed\":4242,\"skill\":\"md\",\"steps\":[\"how many tens of 21 fit in 945? one ten of 21 is 21 \\u00d7 10 = 210.\",\"4 tens of 21 fit: 21 \\u00d7 40 = 840. 945 \\u2212 840 = 105. running total: 40. now how many 21s fit in 105?\",\"21 \\u00d7 5 = 105, and 105 \\u2212 105 = 0. running total: 40 + 5 = <b>45</b>.\"],\"traps\":[{\"value\":450,\"why\":\"place-value\"},{\"value\":924,\"why\":\"subtracted-instead\"}],\"work\":{\"N\":945,\"chunks\":[{\"c\":40,\"left\":105,\"take\":840},{\"c\":5,\"left\":0,\"take\":105}],\"d\":21,\"kind\":\"chunks\"}},\"seed\":4242,\"skill\":\"md\"}],\"words\":[\"because\"]},\"settings\":{\"motion\":\"reduced\",\"sound\":false,\"theme\":\"tour-pink\"},\"shows\":[{\"best\":6,\"d\":\"2026-11-20\",\"fans\":30000,\"first\":9,\"hinted\":1,\"mode\":\"remix\",\"n\":10,\"secs\":300,\"sold\":true,\"venue\":\"coffee\"},{\"best\":1,\"d\":\"2026-11-20\",\"encore\":true,\"fans\":500,\"first\":1,\"hinted\":0,\"mode\":\"remix\",\"n\":1,\"secs\":20,\"venue\":\"coffee\"},{\"best\":3,\"d\":\"2026-11-20\",\"fans\":12000,\"first\":5,\"hinted\":3,\"mode\":\"merch\",\"n\":10,\"secs\":610,\"venue\":\"records\"}],\"skills\":{\"dec\":{\"a\":5,\"byLevel\":{\"1\":[4,4],\"2\":[1,0],\"3\":[0,0]},\"c\":4,\"h\":1,\"level\":2,\"missRun\":1,\"mistakes\":{\"gave-total\":1,\"no-borrow\":1},\"run\":0},\"spell:remix\":{\"a\":2,\"byLevel\":{\"1\":[2,0],\"2\":[0,0],\"3\":[0,0]},\"c\":0,\"h\":1,\"level\":1,\"missRun\":2,\"mistakes\":{},\"run\":0}},\"streak\":{\"best\":1,\"days\":1,\"last\":\"2026-11-20\"},\"time\":{},\"updated\":0,\"v\":1,\"venues\":{\"seen\":[\"coffee\",\"records\"],\"unlocked\":[\"coffee\",\"records\",\"rec\"]},\"words\":{\"because\":{\"a\":2,\"c\":1,\"first\":1,\"h\":1,\"last\":\"2026-11-20\",\"miss\":1},\"friend\":{\"a\":1,\"c\":1,\"first\":1,\"h\":0,\"last\":\"2026-11-20\",\"miss\":0},\"island\":{\"a\":2,\"c\":1,\"first\":1,\"h\":0,\"last\":\"2026-11-20\",\"miss\":1}}}",
+   "out": "{\"created\":\"2026-11-20\",\"fans\":{\"balance\":65000,\"lifetime\":65000},\"inventory\":{\"equipped\":{\"dog\":\"none\",\"guitar\":\"classic\",\"theme\":\"tour-pink\"},\"owned\":[\"theme:tour-pink\",\"guitar:classic\",\"dog:none\"]},\"journal\":{\"layout\":{},\"stickers\":{}},\"review\":{\"math\":[{\"level\":3,\"prob\":{\"accept\":{\"simplest\":false},\"answer\":{\"type\":\"int\",\"value\":63},\"choices\":[{\"correct\":false,\"value\":\"(3 + 6) \\u00d7 19\",\"why\":\"wrong-grouping\"},{\"correct\":false,\"value\":\"3 \\u00d7 (19 + 6)\",\"why\":\"extra-parentheses\"},{\"correct\":false,\"value\":\"3 + 19 + 6\",\"why\":\"added-all\"},{\"correct\":true,\"value\":\"3 \\u00d7 19 + 6\",\"why\":null}],\"kind\":\"story\",\"label\":\"3 \\u00d7 19 + 6\",\"level\":3,\"params\":{\"expr\":\"3 \\u00d7 19 + 6\",\"states\":[\"3 \\u00d7 19 + 6\",\"57 + 6\",\"63\"]},\"prompt\":\"the crew unpacks 3 boxes with 19 shirts each, plus 6 loose shirts. how many shirts?\",\"seed\":77,\"skill\":\"ops\",\"steps\":[\"first pick the expression that matches the story, then work it out: parentheses, then \\u00d7 and \\u00f7, then + and \\u2212.\",\"it\\u2019s <b>3 \\u00d7 19 + 6</b>. first: 3 \\u00d7 19 = 57.\",\"3 \\u00d7 19 + 6 \\u2192 57 + 6 \\u2192 <b>63</b>\"],\"traps\":[]},\"seed\":77,\"skill\":\"ops\"},{\"level\":1,\"prob\":{\"accept\":{\"simplest\":false},\"answer\":{\"type\":\"fraction\",\"value\":{\"d\":8,\"n\":3}},\"builder\":true,\"choices\":null,\"kind\":\"fill\",\"label\":\"fill [[1]] measure\",\"level\":1,\"params\":{\"bars\":1,\"grid\":8,\"palette\":[2,4,8],\"pre\":[8,2],\"removable\":false,\"target\":{\"d\":1,\"n\":1}},\"prompt\":\"finish the measure: add notes until it\\u2019s exactly one whole.\",\"seed\":5,\"skill\":\"frac\",\"steps\":[\"the measure holds one whole. how much is already written? count it in eighths.\",\"written so far: [[5/8]]. you need [[3/8]] more.\",\"[[1/4]] + [[1/8]] = [[3/8]]. that fills it to one whole.\"],\"traps\":[]},\"seed\":5,\"skill\":\"frac\"},{\"level\":2,\"prob\":{\"accept\":{\"simplest\":false},\"answer\":{\"type\":\"point\",\"value\":{\"x\":1,\"y\":9}},\"choices\":null,\"kind\":\"place\",\"label\":\"place (1, 9)\",\"level\":2,\"params\":{\"dx\":0,\"dy\":0,\"gear\":\"drum riser\",\"icon\":\"star\",\"max\":10,\"point\":null,\"start\":null},\"prompt\":\"put the drum riser at (1, 9). tap that spot on the stage.\",\"seed\":9,\"skill\":\"xy\",\"steps\":[\"the first number goes across, the second goes up. start at (0, 0).\",\"go across to <b>1</b> on the bottom line. now go up from there.\",\"across 1, up 9. that\\u2019s <b>(1, 9)</b>.\"],\"traps\":[{\"value\":{\"x\":9,\"y\":1},\"why\":\"swapped\"}]},\"seed\":9,\"skill\":\"xy\"},{\"level\":3,\"prob\":{\"accept\":{\"simplest\":false},\"answer\":{\"type\":\"int\",\"value\":2},\"builder\":false,\"choices\":null,\"kind\":\"missing\",\"label\":\"missing height of 154\",\"level\":3,\"params\":{\"boxes\":[{\"h\":2,\"l\":11,\"w\":7}],\"hideH\":true},\"prompt\":\"a speaker case holds 154 cubic units. it\\u2019s 11 long and 7 wide. how tall is it?\",\"seed\":31,\"skill\":\"vol\",\"steps\":[\"length \\u00d7 width \\u00d7 height = 154. you know two of the three.\",\"the floor is 11 \\u00d7 7 = 77. what times 77 makes 154?\",\"154 \\u00f7 77 = <b>2</b>.\"],\"traps\":[{\"value\":77,\"why\":\"subtracted\"},{\"value\":14,\"why\":\"divided-once\"}]},\"seed\":31,\"skill\":\"vol\"},{\"level\":1,\"prob\":{\"accept\":{\"simplest\":false},\"answer\":{\"type\":\"int\",\"value\":28},\"choices\":[{\"correct\":false,\"value\":11,\"why\":\"added\"},{\"correct\":true,\"value\":28,\"why\":null},{\"correct\":false,\"value\":35,\"why\":\"neighbor-fact\"},{\"correct\":false,\"value\":21,\"why\":\"neighbor-fact\"}],\"kind\":\"mul\",\"label\":\"7 \\u00d7 4\",\"level\":1,\"params\":{\"seconds\":8},\"prompt\":\"7 \\u00d7 4 = ?\",\"seed\":8,\"skill\":\"flu\",\"steps\":[\"think of 7 groups of 4.\",\"7 \\u00d7 3 = 21. one more 7\\u2026\",\"7 \\u00d7 4 = <b>28</b>\"],\"traps\":[{\"value\":11,\"why\":\"added\"},{\"value\":35,\"why\":\"neighbor-fact\"},{\"value\":21,\"why\":\"neighbor-fact\"}]},\"seed\":8,\"skill\":\"flu\"},{\"level\":2,\"prob\":{\"accept\":{\"simplest\":false},\"answer\":{\"type\":\"int\",\"value\":45},\"choices\":null,\"kind\":\"div\",\"label\":\"945 \\u00f7 21\",\"level\":2,\"params\":{\"N\":945,\"d\":21,\"op\":\"\\u00f7\"},\"prompt\":\"the crew packs 945 wristbands into 21 equal bags. how many in each bag?\",\"seed\":4242,\"skill\":\"md\",\"steps\":[\"how many tens of 21 fit in 945? one ten of 21 is 21 \\u00d7 10 = 210.\",\"4 tens of 21 fit: 21 \\u00d7 40 = 840. 945 \\u2212 840 = 105. running total: 40. now how many 21s fit in 105?\",\"21 \\u00d7 5 = 105, and 105 \\u2212 105 = 0. running total: 40 + 5 = <b>45</b>.\"],\"traps\":[{\"value\":450,\"why\":\"place-value\"},{\"value\":924,\"why\":\"subtracted-instead\"}],\"work\":{\"N\":945,\"chunks\":[{\"c\":40,\"left\":105,\"take\":840},{\"c\":5,\"left\":0,\"take\":105}],\"d\":21,\"kind\":\"chunks\"}},\"seed\":4242,\"skill\":\"md\"}],\"words\":[\"because\"]},\"settings\":{\"motion\":\"reduced\",\"sound\":false,\"theme\":\"tour-pink\"},\"shows\":[{\"best\":6,\"d\":\"2026-11-20\",\"fans\":30000,\"first\":9,\"hinted\":1,\"mode\":\"remix\",\"n\":10,\"secs\":300,\"sold\":true,\"venue\":\"coffee\"},{\"best\":1,\"d\":\"2026-11-20\",\"encore\":true,\"fans\":500,\"first\":1,\"hinted\":0,\"mode\":\"remix\",\"n\":1,\"secs\":20,\"venue\":\"coffee\"},{\"best\":3,\"d\":\"2026-11-20\",\"fans\":12000,\"first\":5,\"hinted\":3,\"mode\":\"merch\",\"n\":10,\"secs\":610,\"venue\":\"records\"}],\"skills\":{\"dec\":{\"a\":5,\"byLevel\":{\"1\":[4,4],\"2\":[1,0],\"3\":[0,0]},\"c\":4,\"h\":1,\"level\":2,\"missRun\":1,\"mistakes\":{\"gave-total\":1,\"no-borrow\":1},\"run\":0},\"spell:remix\":{\"a\":2,\"byLevel\":{\"1\":[2,0],\"2\":[0,0],\"3\":[0,0]},\"c\":0,\"h\":1,\"level\":1,\"missRun\":2,\"mistakes\":{},\"run\":0}},\"streak\":{\"best\":1,\"days\":1,\"last\":\"2026-11-20\"},\"time\":{},\"updated\":0,\"v\":1,\"venues\":{\"seen\":[\"coffee\",\"records\"],\"unlocked\":[\"coffee\",\"records\",\"rec\"]},\"words\":{\"because\":{\"a\":2,\"c\":1,\"first\":1,\"h\":1,\"last\":\"2026-11-20\",\"miss\":1},\"friend\":{\"a\":1,\"c\":1,\"first\":1,\"h\":0,\"last\":\"2026-11-20\",\"miss\":0},\"island\":{\"a\":2,\"c\":1,\"first\":1,\"h\":0,\"last\":\"2026-11-20\",\"miss\":1}}}"
+  }
+ ]
+}

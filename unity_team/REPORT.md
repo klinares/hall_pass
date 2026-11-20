@@ -2,60 +2,50 @@
 
 ## Phase and status
 
-Phase 0 (pipeline) is **done** and committed locally. Phase 1 (core logic) starts next.
+Phase 1 (core logic) is **done** and committed locally. Phase 2 (look and feel, remix mode) is being placed next; most of it is already written in staging.
 
 ## What now works
 
-- Unity 6000.3.29f1 project, Web target, uGUI with TextMeshPro. Unused packages and engine modules removed.
-- A `Boot` scene: "world tour" on the palette pink. The text comes from the plain-C# Core assembly, which proves Core runs in the web player.
-- `BuildWeb.Build` builds into `tour/` with one command:
-  - It stages first and keeps the previous build's files, so a page Pages cached still loads after a redeploy.
-  - It writes only into folders it owns.
-  - It never overwrites the deployed `weeks.json` or `math_config.json`. Those are the master copies; each build copies them back into the project.
-- Gzip with decompression fallback works on a plain static host, and repeat visits load the engine from the browser cache.
+- All game rules are in plain C#, matching the real JavaScript: all seven math generators (105,000 problems identical byte for byte), answer checking, shows (misses, encore, fans, levels), progress, review, shop, stickers and the parent office.
+- `tour/StreamingAssets/weeks.json` is the master word list (22 words); a broken week is skipped. `node world_tour_unity/Tools/validate_data.mjs` checks an edited week before you push.
+- The save survives a reload. An unreadable save is backed up, not lost. With storage blocked, the game still runs. Export and import are by code or file.
+- Dates use the browser's local date.
 
 ## Test results
 
-- Edit-mode tests: 1 run, 1 passed, 0 failed. Play-mode tests: 0 (valid, none written yet).
-- Browser tests on the real build, served by a plain static server: 6 run, 6 passed, 0 failed. They cover:
-  - cold load at 1366x768 and 1920x1080
-  - cached reload
-  - storage blocked
-  - broken build shows the failure message
-  - size budget
+- Edit-mode: 945 run, 945 passed. Play-mode: 6 run, 6 passed.
+- Browser, real build, plain static server: 14 run, 14 passed. They cover words loading, an edited week appearing on reload, a broken week skipped, the time zone, save and reload, an unreadable save, storage blocked, and the size budget.
 - Compile: 0 errors, 0 warnings.
-- Download: **11.81 MB** total; largest file is the wasm, 7.36 MB.
-- Cold load to the title showing: 0.6–1.3 s. That's localhost in a headless browser; on home wifi the download adds about 5 s at 20 Mbit/s.
-- Repeat visit: 52 KB.
+- Download 11.88 MB (largest file 7.41 MB). Cold load 0.6–1.2 s on localhost; repeat visit 59 KB.
 
 ## What the tester looked at
 
-Boot screenshots at both sizes (centred, no scrollbars, plain as a placeholder should be), the failure screen, a code review of the build script and test runner, and deliberate failures proving each test can fail.
+Every task, against the JavaScript, with inputs the builders didn't pick: rule reviews, fuzzing of the JSON reader and export codes, 33,000 random play sequences (nothing earned ever lost), every shop and sticker text (no real names), and screenshots at both sizes. No new screens this phase.
 
 ## Not done or not verified
 
-- Not checked on the other laptop, a real GPU, Edge, or real GitHub Pages.
-- No clean build from an empty Library this phase. Earlier clean builds took 4–5 minutes.
-- Unity crashes on shutdown after some batch runs (D1), always after the work is saved. Runs are judged by their results files, never exit codes.
-- Build-script hardening stopped at the advisor's request. Four edge cases needing unusual arguments are in `TODO.md` under "Polish later".
-- The "deleted folder" in a 0.5 test was `canary_dir`, a throwaway the tester made in its own temp folder. No owner files were touched.
+- Screens: still only the title; phase 2 adds them.
+- The advisor has been silent since 00:43; I followed the standing notes. A usage limit paused work from 03:22 to 04:20.
+- Some builds ran in the background, against the foreground rule (moved by the tool, and once by a builder). All finished; summary files decide.
+- Unity still sometimes crashes at shutdown after finishing (D1); results files decide.
 
 ## Departures from the brief
 
-None.
+None. Where the web game breaks a learning rule, the port stays exact until answered (questions below).
 
-At the advisor's request, `world_tour/` was copied to `D:\repos\_backups\world_tour_2026-11-20\` (692 files, checksums match, `tests/e2e/node_modules` skipped). Nothing in `world_tour/` was changed, staged or committed.
+## Open questions (none block)
 
-## Open questions
-
-None.
+- 7: typed-answer quirks. Fix messages only.
+- 8, 9, 11: hints that give the answer away, and one with wrong digits ("8.82 × 10: the digits stay 441"). Fix.
+- 10: misses beyond two return only in the encore; the "clean run" sticker. Keep the cap, document it.
 
 ## How to try it
 
-- From the repo root, `node world_tour_unity/Tests/Web/server.mjs tour`, then open the printed address in Chrome.
-- Rebuild: Unity `-executeMethod BuildWeb.Build`. Tests: `node world_tour_unity/Tests/Web/run.mjs`.
+From the repo root, run `node world_tour_unity/Tests/Web/server.mjs tour` and open the address in Chrome. It shows the title only for now.
 
 ## Files changed
 
-- `world_tour_unity/`: Core, Game, Tests and Editor/BuildWeb.cs under Assets; Boot scene; WebGL template; TextMesh Pro essentials; Tests/Web; settings; packages.
-- `tour/` (the build), `unity_team/` and `.claude/agents/`.
+- `world_tour_unity/Assets/`: Core/Math, Gen, Show, Progress, Meta and Data; Game/Boot, Data, Save and Util; Plugins/WebGL; StreamingAssets; tests.
+- `world_tour_unity/Tools/`: JS cross-check scripts and the validator.
+- `tour/`: the rebuilt build, plus StreamingAssets.
+- `unity_team/`: decisions, questions, to-do list and this report.

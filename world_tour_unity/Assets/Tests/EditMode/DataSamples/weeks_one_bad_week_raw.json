@@ -1,0 +1,82 @@
+{
+  "weeks": [
+    {
+      "id": "2026-11-23",
+      "label": "week of nov 23, 2026",
+      "words": [
+        {
+          "w": "unhappy",
+          "s": "un-hap-py",
+          "h": "not glad",
+          "x": "the drummer was ___ about the rain.",
+          "prefix": {
+            "p": "un",
+            "root": "happy",
+            "means": "not"
+          }
+        },
+        {
+          "w": "redo",
+          "s": "re-do",
+          "h": "do it over",
+          "x": "we had to ___ the whole song.",
+          "prefix": {
+            "p": "re",
+            "root": "do",
+            "means": "again"
+          }
+        },
+        {
+          "w": "preview",
+          "s": "pre-view",
+          "h": "a look before",
+          "x": "fans got a ___ of the new show.",
+          "prefix": {
+            "p": "pre",
+            "root": "view",
+            "means": "before"
+          }
+        },
+        {
+          "w": "dislike",
+          "s": "dis-like",
+          "h": "to not enjoy",
+          "x": "i ___ loud alarms.",
+          "prefix": {
+            "p": "dis",
+            "root": "like",
+            "means": "not"
+          }
+        },
+        {
+          "w": "temple",
+          "s": "tem-ple",
+          "h": "a sacred building"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-16",
+      "label": "broken",
+      "words": [
+        {
+          "w": "echo",
+          "s": "ech-o",
+          "h": "a sound",
+          "W": "x"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-09",
+      "label": "week of nov 9, 2026",
+      "words": [
+        {
+          "w": "pyramid",
+          "s": "pyr-a-mid",
+          "h": "an old stone building with triangle sides"
+        }
+      ]
+    }
+  ]
+}

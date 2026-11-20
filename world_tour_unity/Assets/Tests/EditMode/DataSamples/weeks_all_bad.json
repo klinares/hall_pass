@@ -1,0 +1,26 @@
+{
+  "weeks": [
+    {
+      "id": "2026-11-23",
+      "label": "",
+      "words": [
+        {
+          "w": "echo",
+          "s": "ech-o",
+          "h": "a sound"
+        }
+      ]
+    },
+    {
+      "id": "nov 9",
+      "label": "x",
+      "words": [
+        {
+          "w": "echo",
+          "s": "ech-o",
+          "h": "a sound"
+        }
+      ]
+    }
+  ]
+}

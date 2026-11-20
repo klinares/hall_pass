@@ -1,0 +1,78 @@
+{
+  "weeks": [
+    {
+      "id": "2026-11-23",
+      "label": "a",
+      "words": [
+        {
+          "w": "one",
+          "s": "one",
+          "h": "a number"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-23",
+      "label": "b",
+      "words": [
+        {
+          "w": "two",
+          "s": "two",
+          "h": "a number"
+        }
+      ]
+    },
+    {
+      "id": "11/23/2026",
+      "label": "c",
+      "words": [
+        {
+          "w": "three",
+          "s": "three",
+          "h": "a number"
+        }
+      ]
+    },
+    {
+      "id": "2026-02-30",
+      "label": "d",
+      "words": [
+        {
+          "w": "four",
+          "s": "four",
+          "h": "a number"
+        }
+      ]
+    },
+    {
+      "id": "2028-02-29",
+      "label": "leap day is fine",
+      "words": [
+        {
+          "w": "five",
+          "s": "five",
+          "h": "a number"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "label": "",
+      "words": [
+        {
+          "w": "six",
+          "s": "six",
+          "h": "a number"
+        }
+      ]
+    },
+    {
+      "label": "no id",
+      "words": []
+    },
+    {
+      "id": "2026-12-07",
+      "label": "no words key"
+    }
+  ]
+}

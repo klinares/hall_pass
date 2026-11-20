@@ -1,0 +1,45 @@
+{
+  "weeks": [
+    {
+      "id": "2026-11-23",
+      "label": "prefix problems",
+      "words": [
+        {
+          "w": "illegal",
+          "s": "il-le-gal",
+          "h": "against the law",
+          "prefix": {
+            "p": "il",
+            "root": "legal"
+          }
+        },
+        {
+          "w": "irregular",
+          "s": "ir-reg-u-lar",
+          "h": "not even",
+          "prefix": {
+            "p": "ir",
+            "root": "regular",
+            "means": ""
+          }
+        },
+        {
+          "w": "international",
+          "s": "in-ter-na-tion-al",
+          "h": "between countries",
+          "prefix": {
+            "p": "inter",
+            "root": "nation",
+            "means": "between"
+          }
+        },
+        {
+          "w": "impossible",
+          "s": "im-pos-si-ble",
+          "h": "cannot happen",
+          "prefix": {}
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "weeks": [
+    {
+      "id": "2026-11-23",
+      "label": "broken first copy",
+      "words": [
+        {
+          "w": "Echo",
+          "s": "ech-o",
+          "h": "a sound"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-23",
+      "label": "good second copy",
+      "words": [
+        {
+          "w": "tempo",
+          "s": "tem-po",
+          "h": "the speed of a song"
+        }
+      ]
+    }
+  ]
+}

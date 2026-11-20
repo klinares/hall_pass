@@ -12,6 +12,7 @@
     "moneyCents": 10000,
     "maxDenominator": 12.5,
     "coordMax": 10,
-    "maxVolume": 1000
+    "maxVolume": 1000,
+    "storyDollars": 150
   }
 }

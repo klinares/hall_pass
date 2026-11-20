@@ -52,6 +52,7 @@ namespace WorldTour.Core.Maths
             Positive(errors, "maxDenominator", BOUNDS.maxDenominator);
             Positive(errors, "coordMax", BOUNDS.coordMax);
             Positive(errors, "maxVolume", BOUNDS.maxVolume);
+            Positive(errors, "storyDollars", BOUNDS.storyDollars);
             return errors;
         }
 
@@ -61,11 +62,11 @@ namespace WorldTour.Core.Maths
             else if (value <= 0) errors.Add("math_config.json: BOUNDS." + name + " must be a whole number above 0 (it is " + value + ").");
         }
 
-        /// <summary>The values in world_tour/math/config.js, for tests and as a fallback.</summary>
+        /// <summary>The values in world_tour/math/config.js, plus storyDollars (Unity only, QUESTIONS 9.4), for tests and as a fallback.</summary>
         public static MathConfig WebDefaults() => new MathConfig
         {
             ENABLED_SKILLS = new SkillSwitches(),
-            BOUNDS = new GradeBounds { moneyCents = 10000, maxDenominator = 12, coordMax = 10, maxVolume = 1000 }
+            BOUNDS = new GradeBounds { moneyCents = 10000, maxDenominator = 12, coordMax = 10, maxVolume = 1000, storyDollars = 150 }
         };
     }
 
@@ -90,5 +91,6 @@ namespace WorldTour.Core.Maths
         public int maxDenominator = -1;
         public int coordMax = -1;
         public int maxVolume = -1;
+        public int storyDollars = -1;    // whole dollars in tour budget stories, up to $150 (Unity only; QUESTIONS 9.4)
     }
 }

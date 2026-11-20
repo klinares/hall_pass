@@ -48,7 +48,7 @@ namespace WorldTour.Core.Data
         private static readonly string[] PrefixKeys = { "p", "root", "means" };
         private static readonly string[] ConfigKeys = { "ENABLED_SKILLS", "BOUNDS" };
         private static readonly string[] SkillKeys = { "dec", "md", "frac", "xy", "vol", "ops", "flu" };
-        private static readonly string[] BoundKeys = { "moneyCents", "maxDenominator", "coordMax", "maxVolume" };
+        private static readonly string[] BoundKeys = { "moneyCents", "maxDenominator", "coordMax", "maxVolume", "storyDollars" };
 
         // ---------------- weeks.json ----------------
 
@@ -219,6 +219,7 @@ namespace WorldTour.Core.Data
                 GradeBounds g = cfg.BOUNDS;
                 g.moneyCents = Int(b, "moneyCents", g.moneyCents); g.maxDenominator = Int(b, "maxDenominator", g.maxDenominator);
                 g.coordMax = Int(b, "coordMax", g.coordMax); g.maxVolume = Int(b, "maxVolume", g.maxVolume);
+                g.storyDollars = Int(b, "storyDollars", g.storyDollars);
             }
             return cfg;
         }

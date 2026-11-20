@@ -364,6 +364,22 @@ namespace WorldTour.Core.Maths.Gen
             };
         }
 
+        /// <summary>
+        /// The most a tour budget story may show, in whole dollars (BOUNDS.storyDollars in math_config.json; QUESTIONS 9.4).
+        /// Kept apart from moneyCents, which means decimal money work.
+        /// </summary>
+        public const int MaxStoryDollars = 150;
+
+        private static readonly Regex StoryDollars = new Regex(@"\$([0-9]+)", RegexOptions.CultureInvariant);
+
+        /// <summary>Every "$n" in the story text is at most <see cref="MaxStoryDollars"/>.</summary>
+        public static bool StoryDollarsOk(string text)
+        {
+            foreach (Match m in StoryDollars.Matches(text ?? ""))
+                if (m.Groups[1].Value.Length > 6 || int.Parse(m.Groups[1].Value, CultureInfo.InvariantCulture) > MaxStoryDollars) return false;
+            return true;
+        }
+
         private static Problem BuildStory(Rng r, long seed)
         {
             Story st = null;
@@ -373,7 +389,9 @@ namespace WorldTour.Core.Maths.Gen
                 st = r.Pick(Stories)(r);
                 s = Solve(st.Right);
                 Solution sol = s;
-                if (sol != null && st.Wrong.All(w => { Solution ws = Solve(w[0]); return ws == null || ws.Value.Num != sol.Value.Num; })) break;
+                // Unity (QUESTIONS 9.4, an intended difference from the JS): a story never shows more than
+                // MaxStoryDollars. Only the strings story can pass it ($156 at most); about 1 in 3,200 seeds pick again.
+                if (sol != null && StoryDollarsOk(st.Text) && st.Wrong.All(w => { Solution ws = Solve(w[0]); return ws == null || ws.Value.Num != sol.Value.Num; })) break;
             }
             if (s == null) throw new InvalidOperationException("no story found"); // the JS would throw here too
             Answer answer = Answer.Int(checked((long)s.Value.Num));

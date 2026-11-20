@@ -92,6 +92,7 @@ namespace WorldTour.Core.Tests
         [TestCase("config_zero.json", "BOUNDS: \"coordMax\" should be a whole number above 0, but it is 0")]
         [TestCase("config_coordmax_minus_one.json", "BOUNDS: \"coordMax\" should be a whole number above 0, but it is -1")]   // D3: a typed -1 is not "missing"
         [TestCase("config_missing_bound.json", "BOUNDS.maxVolume is missing.")]
+        [TestCase("config_no_story_dollars.json", "BOUNDS.storyDollars is missing.")]   // Unity only (QUESTIONS 9.4): storyDollars is a required bound
         public void BadConfigIsReportedAndFallsBackToWebDefaults(string sample, string message)
         {
             MathConfigLoad r = DataFiles.LoadMathConfig(DataTestPaths.Sample(sample));

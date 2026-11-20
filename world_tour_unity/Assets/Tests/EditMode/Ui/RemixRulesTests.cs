@@ -189,6 +189,68 @@ namespace WorldTour.Game.EditTests
         }
 
         [Test]
+        public void Hint_NeverLightsTheLastLetters()
+        {
+            // QUESTIONS 11 (intended difference from remix.js): "empire" may show 4 of 6 letters; the last 2 are hers.
+            var b = Board("empire", "eripme");
+            for (int i = 0; i < 4; i++)
+            {
+                RemixHint h = b.Hint();
+                Assert.IsTrue(h.Counted, "letter " + (i + 1));
+                Assert.AreEqual("empire"[i], b.Mix[h.Glow]);
+                b.Pick(h.Glow);
+            }
+            Assert.AreEqual("empi", b.Built);
+            RemixHint last = b.Hint();
+            Assert.AreEqual(-1, last.Glow, "no glow on the last two letters");
+            Assert.AreEqual(-1, b.Glow);
+            Assert.IsFalse(last.Counted, "nothing was shown, so the hint is free");
+            Assert.AreEqual(RemixLines.HintYoursToFind, last.Line);
+
+            b.Pick(5);                                                    // e: wrong here, the fifth letter is r
+            RemixHint cleared = b.Hint();
+            Assert.IsTrue(cleared.HadWrong);
+            Assert.IsTrue(cleared.Counted, "clearing wrong letters is still a hint");
+            Assert.AreEqual(-1, cleared.Glow);
+            Assert.AreEqual("empi", b.Built);
+            Assert.AreEqual(RemixLines.HintClearedYoursToFind, cleared.Line);
+        }
+
+        [Test]
+        public void Hint_LeavesAtLeastAThirdHidden_ForEveryLiveWord()
+        {
+            string path = System.IO.Path.Combine(AssetsDir(), "StreamingAssets", "weeks.json");
+            WorldTour.Core.Data.WeeksLoad load = WorldTour.Core.Data.DataFiles.LoadWeeks(System.IO.File.ReadAllText(path));
+            int words = 0;
+            foreach (var week in load.File.weeks)
+                foreach (var v in week.words)
+                {
+                    string w = v.w;
+                    var b = new RemixBoard(w, w.Reverse().ToList());
+                    int lit = 0;
+                    for (int guard = 0; guard < 40 && !b.IsFull; guard++)
+                    {
+                        RemixHint h = b.Hint();
+                        if (h.Glow < 0) break;
+                        lit++;
+                        b.Pick(h.Glow);
+                    }
+                    int floor = Math.Max(2, (w.Length + 2) / 3);
+                    Assert.GreaterOrEqual(w.Length - lit, floor, w + ": hints lit " + lit + " letters");
+                    Assert.IsFalse(b.IsRight, w + ": the hints alone spell the word");
+                    words++;
+                }
+            Assert.Greater(words, 0);
+        }
+
+        /// <summary>The Assets folder: Application.dataPath in Unity, WT_ASSETS in the scratch harness.</summary>
+        private static string AssetsDir()
+        {
+            try { return UnityEngine.Application.dataPath; }
+            catch (Exception) { return Environment.GetEnvironmentVariable("WT_ASSETS"); }
+        }
+
+        [Test]
         public void Keys_PreferTheGlowingTile_ThenTheFirstUnused()
         {
             var b = Board("because", "aubeesc");
@@ -216,8 +278,9 @@ namespace WorldTour.Game.EditTests
             Func<double> high = () => { draws++; return .7; };
             Assert.AreEqual("not quite. it" + Rsq + "s <b>7 letters</b> and starts with <b>" + ldq + "b" + rdq + "</b>.", RemixLines.Ladder("because", "be-cause", 1, low));
             Assert.AreEqual(0, draws, "no random value on the first try");
-            Assert.AreEqual("keep going, natalia. sound it out: <b>be - cause</b>", RemixLines.Ladder("because", "be-cause", 2, low));
-            Assert.AreEqual("keep going. sound it out: <b>be - cause</b>", RemixLines.Ladder("because", "be-cause", 2, high));
+            // QUESTIONS 11 (intended difference): the web game gave "be - cause", the whole word
+            Assert.AreEqual("keep going, natalia. sound it out: <b>be - _____</b>", RemixLines.Ladder("because", "be-cause", 2, low));
+            Assert.AreEqual("keep going. sound it out: <b>be - _____</b>", RemixLines.Ladder("because", "be-cause", 2, high));
             Assert.AreEqual(2, draws, "one value on the second try");
             Assert.AreEqual("keep going. sound it out: <b>ir - ___ - ___ - al</b>", RemixLines.Ladder("irrational", "ir-ra-tion-al", 3, high));
             Assert.AreEqual(2, draws, "none after the second try");
@@ -237,7 +300,7 @@ namespace WorldTour.Game.EditTests
         [Test]
         public void Lines_AreLowercase()
         {
-            foreach (string s in new[] { RemixLines.HintCleared, RemixLines.HintGlow, RemixLines.HintStillGlowing, RemixLines.DecoyNote(2), RemixLines.Sub, RemixLines.DeskTag })
+            foreach (string s in new[] { RemixLines.HintCleared, RemixLines.HintGlow, RemixLines.HintStillGlowing, RemixLines.HintYoursToFind, RemixLines.HintClearedYoursToFind, RemixLines.DecoyNote(2), RemixLines.Sub, RemixLines.DeskTag })
                 Assert.AreEqual(s.ToLowerInvariant(), s);
         }
     }

@@ -140,6 +140,10 @@ namespace WorldTour.Core.Data
                     f.Add(new Finding(Severity.Warning, file, line, 0, at + ": the sentence (x) gives the word away"));
                 if (!Blank(v.h) && TextRules.AsciiLower(v.h).Contains(lw))
                     f.Add(new Finding(Severity.Warning, file, line, 0, at + ": the clue (h) gives the word away"));
+                // Unity only (QUESTIONS 11): once the first letter is shown, a word this short has almost nothing left to hide.
+                if (TextRules.FirstNonLetter(v.w) < 0 && v.w.Length <= Shows.SpellingHints.ShortWord)
+                    f.Add(new Finding(Severity.Warning, file, line, 0, at + ": it is only " + v.w.Length + " letter" + (v.w.Length == 1 ? "" : "s") + " long" +
+                        ", so the hints have almost nothing to hide (words of 4 or more letters work best)"));
             }
         }
 

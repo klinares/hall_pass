@@ -116,6 +116,8 @@ namespace WorldTour.Core.Progress
         public int Fans;
         public int Secs;
         public int Best;
+        /// <summary>Songs missed at least once. Unity only (QUESTIONS 10 addendum), written only when above 0 so saves without misses match the JS byte for byte; a record without it reads as 0.</summary>
+        public int Missed;
         /// <summary>Written only when true (JS <c>sold: ... || undefined</c>).</summary>
         public bool Sold;
         /// <summary>Written only when true (JS <c>encore: G.encore || undefined</c>).</summary>

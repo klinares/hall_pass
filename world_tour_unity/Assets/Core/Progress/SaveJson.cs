@@ -262,6 +262,7 @@ namespace WorldTour.Core.Progress
                 Fans = JsonTree.Int(r["fans"], 0),
                 Secs = JsonTree.Int(r["secs"], 0),
                 Best = JsonTree.Int(r["best"], 0),
+                Missed = System.Math.Max(0, JsonTree.Int(r["missed"], 0)),
                 Sold = Truthy(r["sold"]),
                 Encore = Truthy(r["encore"])
             };
@@ -317,6 +318,7 @@ namespace WorldTour.Core.Progress
             {
                 var e = JsonValue.Obj().Set("d", x.D).Set("mode", x.Mode).Set("venue", x.Venue).Set("n", x.N).Set("first", x.First)
                     .Set("hinted", x.Hinted).Set("fans", x.Fans).Set("secs", x.Secs).Set("best", x.Best);
+                if (x.Missed > 0) e.Set("missed", x.Missed);
                 if (x.Sold) e.Set("sold", true);
                 if (x.Encore) e.Set("encore", true);
                 shows.Add(e);

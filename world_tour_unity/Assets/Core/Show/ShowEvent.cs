@@ -19,7 +19,7 @@ namespace WorldTour.Core.Shows
         Revealed,
         /// <summary>A missed song was put back in the queue. Index = where it will play.</summary>
         Requeued,
-        /// <summary>A miss that was not put back: Tag = "bonus" (it was a bonus replay) or "no-bonus-left" (two already used, or an encore).</summary>
+        /// <summary>A miss that was not put back: Tag = "bonus" (it was a bonus replay), "no-bonus-left" (two already used, or an encore) or "final-song" (the last song in the queue; it waits for the encore and review, QUESTIONS 10).</summary>
         RequeueSkipped,
         /// <summary>
         /// For saved progress (JS record(): recordMath / recordWord). Clean, Missed, Keep, Hinted. Keep means the
@@ -117,6 +117,12 @@ namespace WorldTour.Core.Shows
         public int HintTotal;
         /// <summary>A math set (the ticket says "math set" instead of the week's label).</summary>
         public bool IsMath;
+        /// <summary>
+        /// Songs missed at least once (the engine's MissedKids), bonus replays or not. Unity only (QUESTIONS 10 addendum):
+        /// the "clean run" sticker needs no misses and no hints, and First alone can't tell, because a clean bonus replay
+        /// counts as a first try.
+        /// </summary>
+        public int Missed;
         public List<SetlistEntry> Setlist = new List<SetlistEntry>();
         /// <summary>Main songs missed at least once (JS missedPrim). The encore replays these.</summary>
         public List<ShowItem> MissedItems = new List<ShowItem>();

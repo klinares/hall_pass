@@ -85,13 +85,19 @@ namespace WorldTour.Core.Tests
         [Test]
         public void Chunks_FirstAndLastSyllableOnly()
         {
-            Assert.AreEqual("beau - ___ - ful", ShowPicker.Chunks("beautiful", "beau-ti-ful"));
-            Assert.AreEqual("sum - mer", ShowPicker.Chunks("summer", "sum-mer"));
+            // the web form where it leaves at least a third hidden (unchanged from show.js)
             Assert.AreEqual("ex - ___ - ___ - ment", ShowPicker.Chunks("excitement", "ex-cit-e-ment"));
-            Assert.AreEqual("ca" + ShowPicker.Ellipsis + "at", ShowPicker.Chunks("cat", null));
-            Assert.AreEqual("ca" + ShowPicker.Ellipsis + "at", ShowPicker.Chunks("cat", ""));
-            Assert.AreEqual("ju" + ShowPicker.Ellipsis + "mp", ShowPicker.Chunks("jump", "jump"));
-            Assert.AreEqual("go" + ShowPicker.Ellipsis + "go", ShowPicker.Chunks("go", null));
+            Assert.AreEqual("ir - ___ - ___ - al", ShowPicker.Chunks("irrational", "ir-ra-tion-al"));
+            Assert.AreEqual("st" + ShowPicker.Ellipsis + "hs", ShowPicker.Chunks("strengths", null));
+            // intended differences (QUESTIONS 11); the JS gave the text in the comment
+            Assert.AreEqual("sum - ___", ShowPicker.Chunks("summer", "sum-mer"));                // sum - mer
+            Assert.AreEqual("em - ____", ShowPicker.Chunks("empire", "em-pire"));                 // em - pire
+            Assert.AreEqual("beau - __ - ___", ShowPicker.Chunks("beautiful", "beau-ti-ful"));    // beau - ___ - ful (2 of 9 hidden)
+            Assert.AreEqual("il - __ - ___", ShowPicker.Chunks("illegal", "il-le-gal"));          // il - ___ - gal
+            Assert.AreEqual("c__", ShowPicker.Chunks("cat", null));                               // ca...at
+            Assert.AreEqual("c__", ShowPicker.Chunks("cat", ""));
+            Assert.AreEqual("j___", ShowPicker.Chunks("jump", "jump"));                           // ju...mp
+            Assert.AreEqual("g_", ShowPicker.Chunks("go", null));                                 // go...go
             Assert.AreEqual(1, ShowPicker.Ellipsis.Length);
             Assert.AreEqual(0x2026, ShowPicker.Ellipsis[0]);
         }

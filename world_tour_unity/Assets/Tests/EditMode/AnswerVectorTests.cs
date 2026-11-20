@@ -90,12 +90,78 @@ namespace WorldTour.Core.Tests
         private static string Bits(CheckResult r) => (r.Ok ? "1" : "0") + (r.Simplify ? "1" : "0") + (r.Empty ? "1" : "0") + (r.Bad ? "1" : "0");
         private static string Attempt(Func<string> f) { try { return f(); } catch (Exception) { return "throws"; } }
 
+        // ---------- intended differences from the JS (QUESTIONS 7; see IntendedDifferences.md) ----------
+        // The JS results stay the reference. Only these documented changes are applied to them, by rule, before comparing:
+        //  7.1 a comma that isn't thousands grouping makes number text unreadable: parse null, check "bad", no match;
+        //  7.2 spaces around "/" are accepted: the text gives the JS results of the same text without those spaces;
+        //  7.3 typed text that isn't a point gets "bad" instead of "empty" against a point answer.
+
+        private static readonly System.Text.RegularExpressions.Regex ProperGrouping =
+            new System.Text.RegularExpressions.Regex(@"(?<![0-9.,])[0-9]{1,3}(?:,[0-9]{3})+(?![0-9,])");
+        private static readonly System.Text.RegularExpressions.Regex SpacedSlash =
+            new System.Text.RegularExpressions.Regex(@"[ \t]+/[ \t]*|[ \t]*/[ \t]+");
+
+        /// <summary>7.1: after the same trim and "$" the parser does, some comma is left that isn't thousands grouping.</summary>
+        internal static bool HasStrayComma(string text)
+        {
+            string s = Answers.JsTrim(text);
+            if (s.StartsWith("$", StringComparison.Ordinal)) s = Answers.JsTrim(s.Substring(1));
+            return ProperGrouping.Replace(s, "").IndexOf(',') >= 0;
+        }
+
+        /// <summary>The JS results this text should give in Unity, and which rule changed them (null: unchanged).</summary>
+        private static TextCase Intended(Vectors v, TextCase c, out string rule)
+        {
+            rule = null;
+            var r = new TextCase { text = c.text, parse = c.parse, checks = (string[])c.checks.Clone(), matches = (bool[])c.matches.Clone() };
+            TextCase src = null;
+            if (c.parse != "null" && HasStrayComma(c.text)) { rule = "7.1"; r.parse = "null"; }   // the JS read it by dropping commas
+            else if (SpacedSlash.IsMatch(c.text))
+            {
+                string tight = SpacedSlash.Replace(c.text, "/");
+                src = v.texts.FirstOrDefault(t => t.text == tight);
+                Assert.IsNotNull(src, "7.2: the vectors need the text without spaces too: " + Esc(tight));
+                rule = "7.2"; r.parse = src.parse;
+            }
+            for (int k = 0; k < v.targets.Length; k++)
+            {
+                if (v.targets[k].type == "point")
+                {
+                    for (int j = 0; j < 2; j++)
+                        if (r.checks[2 * k + j] == "0010" && Answers.JsTrim(c.text) != "") { r.checks[2 * k + j] = "0001"; rule = rule ?? "7.3"; }
+                    continue;
+                }
+                if (rule == "7.1") { r.checks[2 * k] = r.checks[2 * k + 1] = "0001"; r.matches[k] = false; }
+                else if (rule == "7.2") { r.checks[2 * k] = src.checks[2 * k]; r.checks[2 * k + 1] = src.checks[2 * k + 1]; r.matches[k] = src.matches[k]; }
+            }
+            return r;
+        }
+
+        [Test]
+        public void IntendedDifferencesCoverExactlyTheDocumentedTexts()
+        {
+            Vectors v = Load();
+            var by = new SortedDictionary<string, List<string>>(StringComparer.Ordinal);
+            foreach (TextCase c in v.texts)
+            {
+                Intended(v, c, out string rule);
+                if (rule == null) continue;
+                if (!by.ContainsKey(rule)) by[rule] = new List<string>();
+                by[rule].Add(c.text);
+            }
+            CollectionAssert.AreEquivalent(new[] { "1,0,0,0", "3,50", "1,5", "3,5" }, by["7.1"]);
+            CollectionAssert.AreEquivalent(new[] { "3 /4", "3/ 4", "3 / 4" }, by["7.2"]);
+            Assert.IsTrue(by["7.3"].Contains("abc") && by["7.3"].Contains("1 1/2") && !by["7.3"].Contains("(3, 5)") && !by["7.3"].Contains(""),
+                "7.3 is every non-blank text that isn't a point");
+            TestContext.Out.WriteLine(string.Join("; ", by.Select(kv => kv.Key + ": " + kv.Value.Count + " texts")));
+        }
+
         [Test, TestCaseSource(nameof(Texts))]
         public void TypedTextMatchesJs(int i)
         {
             Vectors v = Load();
-            TextCase c = v.texts[i];
-            string at = Esc(c.text);
+            TextCase c = Intended(v, v.texts[i], out string rule);
+            string at = Esc(c.text) + (rule != null ? " (intended difference " + rule + ")" : "");
             ParsedNumber p = Answers.ParseNumber(c.text);
             string parse = p == null ? "null" : p.V.N.ToString(CultureInfo.InvariantCulture) + "/" + p.V.D.ToString(CultureInfo.InvariantCulture) + " " + (p.Simplest ? "true" : "false") + " " + p.Form;
             Assert.AreEqual(c.parse, parse, "parseNumber(" + at + ")");

@@ -1,0 +1,25 @@
+{
+  "weeks": [
+    {
+      "id": "2026-11-30",
+      "label": "short words",
+      "words": [
+        {
+          "w": "fun",
+          "s": "fun",
+          "h": "what a good time is"
+        },
+        {
+          "w": "funny",
+          "s": "fun-ny",
+          "h": "it makes you laugh"
+        },
+        {
+          "w": "ox",
+          "s": "ox",
+          "h": "a big farm animal that pulls a cart"
+        }
+      ]
+    }
+  ]
+}

@@ -43,6 +43,13 @@ namespace WorldTour.Core.Maths.Gen
         private static MathValue N(long v) => MathValue.Num(v);
         private static string Dec(Rational r) => Rational.Dec(r);
 
+        /// <summary>
+        /// Hint 2 for moving the decimal point one place (QUESTIONS 9.1, an intended difference from the JS): names the
+        /// direction and the number of places, never the digits.
+        /// </summary>
+        public static string DigitsStay(int places, string direction) =>
+            "the digits don" + Glyph.Apos + "t change; only the decimal point moves " + S(places) + " place" + (places == 1 ? "" : "s") + " to the " + direction + ".";
+
         public static Problem Generate(int level, long seed) => Guard.Guarded(Build, level, seed);
 
         private static Problem Build(int level, long seed, Rng r)
@@ -153,8 +160,10 @@ namespace WorldTour.Core.Maths.Gen
                     steps = new List<string>
                     {
                         Glyph.Times + " " + F(p) + " moves the decimal point " + places + " to the right.",
+                        // Unity (QUESTIONS 9.1): the JS printed "the digits stay " + the reduced numerator, which is
+                        // wrong for 8.82 (441) and gives the answer away for 6.1 (61). Never print the digits.
                         k > 1 ? Dec(xv) + x + "10 = " + Dec(Rational.Mul(xv, R(10))) + ". keep going" + Glyph.Ellipsis
-                              : "the digits stay " + S(xv.N) + "; only the decimal point moves, one place right.",
+                              : DigitsStay(k, "right"),
                         Dec(xv) + x + F(p) + " = <b>" + Dec(ans) + "</b>"
                     };
                 }
@@ -176,7 +185,7 @@ namespace WorldTour.Core.Maths.Gen
                     {
                         Glyph.Divide + " " + F(p) + " moves the decimal point " + places + " to the left.",
                         k > 1 ? F(n) + dv + "10 = " + Dec(Rational.Div(xv, R(10))) + ". keep going" + Glyph.Ellipsis
-                              : "the digits stay " + S(n) + "; the decimal point moves one place left.",
+                              : DigitsStay(k, "left"), // Unity (QUESTIONS 9.1): the JS printed n's digits ("the digits stay 7")
                         F(n) + dv + F(p) + " = <b>" + Dec(ans) + "</b>"
                     };
                 }

@@ -11,6 +11,7 @@
   "BOUNDS": {
     "moneyCents": 10000,
     "maxDenominator": 12,
-    "coordMax": 10
+    "coordMax": 10,
+    "storyDollars": 150
   }
 }

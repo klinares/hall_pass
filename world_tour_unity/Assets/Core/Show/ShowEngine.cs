@@ -320,12 +320,20 @@ namespace WorldTour.Core.Shows
                 Raise(new ShowEvent { Kind = ShowEventKind.LevelChanged, Index = Index, Slot = Current, Moved = moved, Level = SkillRecord.Level });
         }
 
-        // show.js:182-187 requeue()
+        // show.js:182-187 requeue(), with one intended difference (QUESTIONS 10): a miss on the final song of the
+        // queue does not replay at once (she has just seen the worked solution); it goes to the encore and the review
+        // queue only, and keeps its bonus slot unused. Any other miss returns three songs later, or as the last song
+        // when fewer than three remain. At most Scoring.MaxBonus misses return inside a show.
         private void Requeue()
         {
             if (BonusLeft <= 0 || Current.Bonus)
             {
                 Raise(new ShowEvent { Kind = ShowEventKind.RequeueSkipped, Index = Index, Slot = Current, Tag = Current.Bonus ? "bonus" : "no-bonus-left" });
+                return;
+            }
+            if (Index >= _q.Count - 1)
+            {
+                Raise(new ShowEvent { Kind = ShowEventKind.RequeueSkipped, Index = Index, Slot = Current, Tag = "final-song" });
                 return;
             }
             BonusLeft--;
@@ -362,7 +370,8 @@ namespace WorldTour.Core.Shows
                 Vip = pct >= Scoring.VipAt,
                 HintOnly = HintOnly,
                 HintTotal = HintTotal,
-                IsMath = IsMath
+                IsMath = IsMath,
+                Missed = _missed.Count
             };
             foreach (ShowSlot x in prim)
             {

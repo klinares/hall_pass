@@ -204,7 +204,7 @@ namespace WorldTour.Core.Progress
         /// <summary>
         /// progress.js:99-105 <c>finishShow(summary)</c>: ticks the day streak and adds the show to the history
         /// (newest 200 kept). The record is the fields show.js passes: mode, venue, n, first, hinted, fans, secs,
-        /// best, sold, encore.
+        /// best, sold, encore; plus missed (Unity only, QUESTIONS 10 addendum).
         /// </summary>
         public static ShowRecord FinishShow(SaveBlob s, ShowSummary summary, string today)
         {
@@ -214,7 +214,7 @@ namespace WorldTour.Core.Progress
             {
                 D = today, Mode = summary.Mode, Venue = summary.Venue, N = summary.N, First = summary.First,
                 Hinted = summary.Hinted, Fans = summary.Fans, Secs = summary.Secs, Best = summary.Best,
-                Sold = summary.Sold, Encore = summary.Encore
+                Missed = summary.Missed, Sold = summary.Sold, Encore = summary.Encore
             };
             s.Shows.Add(rec);
             if (s.Shows.Count > MaxShows) s.Shows.RemoveRange(0, s.Shows.Count - MaxShows);

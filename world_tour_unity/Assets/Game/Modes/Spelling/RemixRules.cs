@@ -226,6 +226,15 @@ namespace WorldTour.Game.Modes
             r.HadWrong = ok < _picked.Count;
             _picked.RemoveRange(ok, _picked.Count - ok);
             Glow = -1;
+            // QUESTIONS 11 (an intended difference from remix.js): the last hidden letters are always hers to find, so a
+            // hint never lights a letter past SpellingHints.MaxShown. Clearing wrong letters still counts as a hint.
+            if (!SpellingHints.CanReveal(ok, Word.Length))
+            {
+                r.Glow = -1;
+                r.Counted = r.HadWrong;
+                r.Line = r.HadWrong ? RemixLines.HintClearedYoursToFind : RemixLines.HintYoursToFind;
+                return r;
+            }
             if (ok < Word.Length)
                 for (int i = 0; i < Mix.Count; i++)
                     if (!_picked.Contains(i) && Mix[i] == Word[ok]) { Glow = i; break; }
@@ -277,6 +286,10 @@ namespace WorldTour.Game.Modes
         public static readonly string HintCleared = "i cleared the wrong letters. tap the glowing tile next.";
         /// <summary>remix.js:121.</summary>
         public static readonly string HintGlow = "tap the glowing tile. that" + Rsq + "s your next letter.";
+        /// <summary>Unity only (QUESTIONS 11): the hint won't light any of the last letters.</summary>
+        public static readonly string HintYoursToFind = "the last letters are yours to find. sound it out.";
+        /// <summary>Unity only (QUESTIONS 11): wrong letters cleared, and the rest is hers.</summary>
+        public static readonly string HintClearedYoursToFind = "i cleared the wrong letters. the last ones are yours to find.";
 
         /// <summary>remix.js:42 the decoy note, or null with no decoys.</summary>
         public static string DecoyNote(int decoys)

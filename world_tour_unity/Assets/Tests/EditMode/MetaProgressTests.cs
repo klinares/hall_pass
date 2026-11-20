@@ -51,8 +51,11 @@ namespace WorldTour.Core.Tests
             ProgressRules.Attach(engine, s, () => Today, null, MetaTests.Modes, fresh => got.Add(fresh.Select(m => m.Id).ToList()));
             new ShowTestDriver().Play(engine, new[] { "w", "w", "mw", "w", "w", "w", "w", "w", "w", "w", "w" });   // JS scenario A
             Assert.AreEqual(1, got.Count, "awarded once, when the show finished");
-            /* scenario A: first 10 of 10 (the miss was replayed), 33,300 lifetime fans unlock the record store */
-            CollectionAssert.AreEqual(new[] { "first-show", "sold-out", "clean-run", "venue-records" }, got[0]);
+            /* scenario A: first 10 of 10 (the miss was replayed), 33,300 lifetime fans unlock the record store.
+               Intended difference (QUESTIONS 10 addendum): the JS also awards "clean run" here; Unity doesn't, because
+               the show had a miss. */
+            CollectionAssert.AreEqual(new[] { "first-show", "sold-out", "venue-records" }, got[0]);
+            Assert.AreEqual(1, s.Shows[0].Missed, "the miss is on the saved record");
             Assert.AreEqual(Today, s.Journal.Stickers["first-show"]);
             Assert.AreEqual(1, s.Shows.Count, "the show was saved before the award");
 
@@ -62,7 +65,7 @@ namespace WorldTour.Core.Tests
             new ShowTestDriver().Play(enc, new[] { "w" });
             Assert.AreEqual(1, again.Count);
             CollectionAssert.IsEmpty(again[0], "nothing new, and nothing earned is awarded twice");
-            Assert.AreEqual(4, s.Journal.Stickers.Count);
+            Assert.AreEqual(3, s.Journal.Stickers.Count);
         }
     }
 }

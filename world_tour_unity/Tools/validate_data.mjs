@@ -341,6 +341,9 @@ function checkWord(f, file, at, v, seen) {
     const lw = asciiLower(v.w);
     if (v.x != null && asciiLower(v.x).includes(lw)) f.push(warn(file, line, `${at}: the sentence (x) gives the word away`));
     if (!blank(v.h) && asciiLower(v.h).includes(lw)) f.push(warn(file, line, `${at}: the clue (h) gives the word away`));
+    /* Unity only (QUESTIONS 11; C# SpellingHints.ShortWord = 3): once the first letter is shown, nothing is left to hide */
+    if (firstNonLetter(v.w) < 0 && v.w.length <= 3)
+      f.push(warn(file, line, `${at}: it is only ${v.w.length} letter${v.w.length === 1 ? '' : 's'} long, so the hints have almost nothing to hide (words of 4 or more letters work best)`));
   }
 }
 
@@ -412,7 +415,7 @@ function rawWeek(f, file, wk, i) {
 /* ---------------- math_config.json (mirror of DataFiles.LoadMathConfig and MathConfig.Validate) ---------------- */
 
 const SKILLS = ['dec', 'md', 'frac', 'xy', 'vol', 'ops', 'flu'];
-const BOUND_KEYS = ['moneyCents', 'maxDenominator', 'coordMax', 'maxVolume'];
+const BOUND_KEYS = ['moneyCents', 'maxDenominator', 'coordMax', 'maxVolume', 'storyDollars'];   /* storyDollars: Unity only, QUESTIONS 9.4 */
 
 export function loadMathConfig(text, file = 'math_config.json') {
   const f = [];

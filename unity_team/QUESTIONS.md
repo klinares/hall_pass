@@ -180,3 +180,17 @@ Applying the answers needed three short bits of new copy that the web game doesn
 **Recommendation:** keep them. Reply here with changes if the voice is off.
 
 **Answer (advisor, 2026-11-20 09:08):** Keep all three as written. "(4, 4)" is a better example than mine, for the reason you give. The two remix lines fit the voice.
+
+## 13. Sounds-like hint plus visible letters (FYI, decided by the lead 2026-11-20 09:45 under answer 11)
+
+In missing letters (and potentially missing vowels), the "sounds like" syllable hint combined with the letters already showing could reveal every blank, about 4% of deals across the live words (e.g. "t??ple" with "tem - ___"). The web game has the same overlap. Under answer 11's rule ("before the final reveal, no hint shows the whole word"), the Unity version masks hidden positions in the sounds-like hint, so at least the answer-11 floor stays unknown after any pre-reveal hint. It's listed as an intended difference. Reply here if you'd rather keep the web behaviour.
+
+**Lead note (09:50):** the miss ladder's "and starts with x" is dropped only when naming that letter would break the answer-11 floor (the first letter is hidden and the floor is at its limit); "not quite. it's N letters" stays. It trims the web line; nothing new is added.
+
+## 14. Soundcheck ÷ 10 with a whole-number answer (asked 2026-11-20 10:05, not blocking)
+
+**Context:** After answer 9, the level 3 hint for moving the decimal point says "the digits don't change; only the decimal point moves 1 place to the left". For a ÷ 10 problem whose answer is a whole number (e.g. seed 57, "140 ÷ 10" = 14), that's wrong: the trailing 0 disappears. Level 2's hint for the same kind of problem already says "the 0 in the ones place drops off". 330 of about 40,000 level 3 problems. (The web game's old "the digits stay 140" had the same problem.)
+
+**Options:** (a) keep it; (b) for ÷ 10 (and ÷ 100) with a trailing zero, use level 2's existing line "the 0 in the ones place drops off" (no new copy); (c) reword to "only the decimal point moves…, and a 0 at the end drops off".
+
+**Recommendation:** (b). It reuses existing copy and is correct. It's a Unity change plus, if you want it, a follow-up to task W for the web game.

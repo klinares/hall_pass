@@ -47,7 +47,11 @@ namespace WorldTour.Core.Maths.Gen
                 steps = new List<string>
                 {
                     "count the crates in the top layer, then count how many layers.",
-                    "the top layer is " + S(l) + " by " + S(w) + ": that" + Glyph.Apos + "s " + S(l * w) + " crates. there " + (h == 1 ? "is 1 layer" : "are " + S(h) + " layers") + ".",
+                    // Unity (QUESTIONS 9.2, an intended difference from the JS): with one layer, "that's l*w crates"
+                    // is the answer, so hint 2 describes the layer without the total.
+                    h == 1
+                        ? "the top layer is " + S(l) + " across and " + S(w) + " deep. how many crates is that? there is 1 layer."
+                        : "the top layer is " + S(l) + " by " + S(w) + ": that" + Glyph.Apos + "s " + S(l * w) + " crates. there are " + S(h) + " layers.",
                     S(l * w) + x + S(h) + " = <b>" + S(V) + "</b> cubic units."
                 };
                 traps.Add(new Trap(MathValue.Num(l + w + h), "added-sides"));

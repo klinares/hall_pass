@@ -160,8 +160,15 @@ namespace WorldTour.Core.Maths.Gen
                 string ds = S(d);
                 steps = new List<string>
                 {
-                    q >= 10
+                    // Unity (QUESTIONS 8, intended differences from the JS): hint 1 never reaches the answer.
+                    // q = 10: the JS printed "d x 10 = N", the dividend itself. q = 2 or 3: the JS "try a few" list
+                    // ran up to d x q = N. The list now stops below the answer and hands the next try to her.
+                    q == 10
+                        ? "what happens to a number when you multiply it by 10? try it with " + ds + "."
+                    : q >= 10
                         ? "how many tens of " + ds + " fit in " + F(N) + "? one ten of " + ds + " is " + ds + times + "10 = " + F(d * 10L) + "."
+                    : q <= 3
+                        ? "how many " + ds + "s fit in " + F(N) + "? " + ds + times + S(q - 1) + " = " + F(d * (q - 1L)) + ". is there room for another?"
                         : "how many " + ds + "s fit in " + F(N) + "? try a few: " + ds + times + "2 = " + F(d * 2L) + ", " + ds + times + "3 = " + F(d * 3L) + Glyph.Ellipsis,
                     q >= 10
                         ? (lower != null ? (first % 10 != 0 ? "start with " : "start with " + tensWord(first) + " of " + ds + ": ")

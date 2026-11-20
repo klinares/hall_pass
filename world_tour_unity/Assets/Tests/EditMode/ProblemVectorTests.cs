@@ -50,7 +50,28 @@ namespace WorldTour.Core.Tests
             }
         }
 
-        private static string Canon(string skill, int level, long seed) => Generators.Generate(skill, level, seed).ToCanonicalJson();
+        /// <summary>
+        /// The problem as the web game would have it: the C# problem with the web wording put back in the intended
+        /// differences' changed steps only (IntendedDifferences.cs, QUESTIONS 8 and 9), so everything else is still
+        /// compared exactly.
+        /// </summary>
+        private static string Canon(string skill, int level, long seed) => IntendedDifferences.JsCanon(skill, level, seed, out string _);
+
+        /// <summary>
+        /// The hash to compare with the JS. For the few tour budget seeds whose web story shows more than $150, the Unity
+        /// story is a different one (QUESTIONS 9.4): the JS hash is used, after checking the C# story keeps the bound.
+        /// </summary>
+        private static string JsHash(string skill, int level, long seed)
+        {
+            if (skill == OrderOps.Skill && level == 3 && IntendedDifferences.OpsStoryJsHashes.TryGetValue(seed, out string js))
+            {
+                Problem p = Generators.Generate(skill, level, seed);
+                Assert.IsTrue(OrderOps.StoryDollarsOk(p.Prompt), "seed " + seed + ": the Unity story keeps the $150 bound: " + p.Prompt);
+                Assert.AreNotEqual(js, Sha256Hex(p.ToCanonicalJson()), "seed " + seed + " is listed as an intended difference but matches the JS");
+                return js;
+            }
+            return Sha256Hex(Canon(skill, level, seed));
+        }
 
         private static IEnumerable<TestCaseData> GroupCases() =>
             Load().groups.Select((g, i) => new TestCaseData(i).SetName("{m} " + g.skill + " level " + g.level));
@@ -79,7 +100,7 @@ namespace WorldTour.Core.Tests
             for (int k = 0; k < g.seeds.Length; k++)
             {
                 string json = Canon(g.skill, g.level, g.seeds[k]);
-                if (Sha256Hex(json) != g.hashes[k])
+                if (JsHash(g.skill, g.level, g.seeds[k]) != g.hashes[k])
                     bad.Add("seed " + g.seeds[k] + (bad.Count == 0 ? ": C# gives " + json : ""));
             }
             Assert.IsEmpty(bad, bad.Count + " of " + g.seeds.Length + " " + g.skill + " level " + g.level +
@@ -101,7 +122,7 @@ namespace WorldTour.Core.Tests
             foreach (long seed in GeneratorContract.Seeds(g.level, g.allCount))
             {
                 Assert.AreEqual(g.allFirst + k * g.allStep, seed, "same seed list as the JS");
-                hashes.Add(Sha256Hex(Canon(g.skill, g.level, seed)));
+                hashes.Add(JsHash(g.skill, g.level, seed));
                 k++;
             }
             Assert.AreEqual(g.allDigest, Sha256Hex(string.Join("\n", hashes)),

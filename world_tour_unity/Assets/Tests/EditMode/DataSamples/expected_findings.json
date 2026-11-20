@@ -56,7 +56,11 @@
    "E|0|0|BOUNDS.moneyCents is missing.",
    "E|0|0|BOUNDS.maxDenominator is missing.",
    "E|0|0|BOUNDS.coordMax is missing.",
-   "E|0|0|BOUNDS.maxVolume is missing."
+   "E|0|0|BOUNDS.maxVolume is missing.",
+   "E|0|0|BOUNDS.storyDollars is missing."
+  ],
+  "config_no_story_dollars.json": [
+   "E|0|0|BOUNDS.storyDollars is missing."
   ],
   "config_no_unquoted.json": [
    "E|5|13|\"no\" is not a value: text needs double quotes, and true, false and null are lowercase"
@@ -72,13 +76,13 @@
    "E|1|0|the file should be a { } block holding \"ENABLED_SKILLS\" and \"BOUNDS\""
   ],
   "config_trailing_comma.json": [
-   "E|15|22|there is an extra comma here, before }"
+   "E|16|24|there is an extra comma here, before }"
   ],
   "config_unclosed.json": [
    "E|1|1|this { is never closed"
   ],
   "config_unknown_top.json": [
-   "E|17|0|the top level: \"BOUND\" is not a field the game knows (fields here: ENABLED_SKILLS, BOUNDS)"
+   "E|18|0|the top level: \"BOUND\" is not a field the game knows (fields here: ENABLED_SKILLS, BOUNDS)"
   ],
   "config_zero.json": [
    "E|14|0|BOUNDS: \"coordMax\" should be a whole number above 0, but it is 0"
@@ -103,11 +107,14 @@
   "weeks_good.json": [],
   "weeks_good_bom.json": [],
   "weeks_ids.json": [
+   "W|7|0|week 2026-11-23, word \"one\": it is only 3 letters long, so the hints have almost nothing to hide (words of 4 or more letters work best)",
    "E|14|0|week 2026-11-23: a week higher in the file already uses the id 2026-11-23; each week needs its own date",
+   "W|18|0|week 2026-11-23, word \"two\": it is only 3 letters long, so the hints have almost nothing to hide (words of 4 or more letters work best)",
    "E|25|0|week 11/23/2026: the id \"11/23/2026\" should be the test date written as YYYY-MM-DD, like 2026-11-23",
    "E|36|0|week 2026-02-30: the id \"2026-02-30\" is not a real date",
    "E|58|0|week #6: the id is missing; it should be the test date, like 2026-11-23",
    "E|58|0|week #6: the label is missing; it is the name shown in the week menu",
+   "W|62|0|week #6, word \"six\": it is only 3 letters long, so the hints have almost nothing to hide (words of 4 or more letters work best)",
    "E|69|0|week #7: the id is missing; it should be the test date, like 2026-11-23",
    "E|69|0|week #7: there are no words in this week",
    "E|73|0|week 2026-12-07: there are no words in this week",
@@ -141,6 +148,10 @@
    "E|36|0|week 2026-11-23, word \"impossible\": the prefix is missing \"means\" (what the prefix adds, like not)",
    "W|3|0|week 2026-11-23: only 1 word has a prefix, so prefix mixer is hidden that week (it needs 4)",
    "E|0|0|none of the weeks can be used, so the game has no words to show"
+  ],
+  "weeks_short_word.json": [
+   "W|7|0|week 2026-11-30, word \"fun\": it is only 3 letters long, so the hints have almost nothing to hide (words of 4 or more letters work best)",
+   "W|17|0|week 2026-11-30, word \"ox\": it is only 2 letters long, so the hints have almost nothing to hide (words of 4 or more letters work best)"
   ],
   "weeks_syntax_True.json": [
    "E|2|12|\"True\" is not a value: text needs double quotes, and true, false and null are lowercase"

@@ -13,5 +13,6 @@
     "maxDenominator": 12,
     "coordMax": 10,
     "maxVolume": 1000,
+    "storyDollars": 150,
   }
 }

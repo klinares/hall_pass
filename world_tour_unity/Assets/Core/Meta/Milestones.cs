@@ -145,7 +145,9 @@ namespace WorldTour.Core.Meta
             new Milestone("sold-out", "star", "first sold-out show", "get 9 of 10 right on the first try",
                 (s, c) => AnyDone(s, SoldOut)),
             new Milestone("clean-run", "bolt", "ten in a row", "play a whole show with no misses and no hints",
-                (s, c) => AnyDone(s, x => x.N >= 10 && x.First >= x.N)),
+                // Unity (QUESTIONS 10 addendum, an intended difference): no misses and no hints, as the text says. The JS
+                // checked first >= n only, which a show with a miss can reach through a clean bonus replay.
+                (s, c) => AnyDone(s, x => x.N >= 10 && x.First >= x.N && x.Missed == 0 && x.Hinted == 0)),
             new Milestone("streak-3", "heart", "three-day streak", "play three days in a row",
                 (s, c) => s.Streak.Best >= 3),
             new Milestone("streak-5", "lights", "five-day streak", "play five days in a row",

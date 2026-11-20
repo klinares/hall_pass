@@ -141,6 +141,7 @@ namespace WorldTour.Core.Tests
             Assert.AreEqual(12, config.BOUNDS.maxDenominator);
             Assert.AreEqual(10, config.BOUNDS.coordMax);
             Assert.AreEqual(1000, config.BOUNDS.maxVolume);
+            Assert.AreEqual(150, config.BOUNDS.storyDollars, "Unity only: whole dollars in tour budget stories (QUESTIONS 9.4)");
         }
 
         [Test]
@@ -151,12 +152,13 @@ namespace WorldTour.Core.Tests
             Assert.IsTrue(partial.IsEnabled("dec"), "a missing switch stays shown, as in the JS");
             Assert.IsTrue(partial.IsEnabled("not-a-skill"));
             var errors = partial.Validate();
-            Assert.AreEqual(2, errors.Count, string.Join("\n", errors));
+            Assert.AreEqual(3, errors.Count, string.Join("\n", errors));
             Assert.IsTrue(errors.Any(e => e.Contains("BOUNDS.maxDenominator must be a whole number above 0 (it is 0)")), string.Join("\n", errors));
             Assert.IsTrue(errors.Any(e => e.Contains("BOUNDS.maxVolume is missing")), string.Join("\n", errors));
+            Assert.IsTrue(errors.Any(e => e.Contains("BOUNDS.storyDollars is missing")), string.Join("\n", errors));
 
             var empty = JsonUtility.FromJson<MathConfig>("{}");
-            Assert.AreEqual(4, empty.Validate().Count, string.Join("\n", empty.Validate()));
+            Assert.AreEqual(5, empty.Validate().Count, string.Join("\n", empty.Validate()));
             Assert.IsTrue(empty.IsEnabled("flu"));
 
             var nulls = new MathConfig { ENABLED_SKILLS = null, BOUNDS = null };

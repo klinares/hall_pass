@@ -66,24 +66,10 @@ namespace WorldTour.Core.Shows
         }
 
         /// <summary>
-        /// show.js:23-26 <c>chunks</c>: first and last syllable only, so the hint never spells the whole word.
-        /// A word with no syllable split shows its first two and last two letters around an ellipsis.
+        /// show.js:23-26 <c>chunks</c>, held to the spelling hint floor (QUESTIONS 11, an intended difference): the JS
+        /// spelled out two-syllable words ("em - pire") and short words ("ju...mp"). See <see cref="SpellingHints.Chunks"/>.
         /// </summary>
-        public static string Chunks(string w, string s)
-        {
-            w = w ?? "";
-            string[] parts = (string.IsNullOrEmpty(s) ? w : s).Split('-');
-            if (parts.Length < 2)
-            {
-                string head = w.Length > 2 ? w.Substring(0, 2) : w;
-                string tail = w.Length > 2 ? w.Substring(w.Length - 2) : w;
-                return head + Ellipsis + tail;
-            }
-            var bits = new List<string> { parts[0] };
-            for (int i = 1; i < parts.Length - 1; i++) bits.Add("___");
-            bits.Add(parts[parts.Length - 1]);
-            return string.Join(" - ", bits);
-        }
+        public static string Chunks(string w, string s) => SpellingHints.Chunks(w, s);
 
         /// <summary>The JS uses the one-character ellipsis (U+2026). Built from its code so the source stays ASCII.</summary>
         public static readonly string Ellipsis = ((char)0x2026).ToString();

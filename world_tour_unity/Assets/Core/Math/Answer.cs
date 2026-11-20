@@ -102,6 +102,9 @@ namespace WorldTour.Core.Maths
         private static readonly Regex DecimalRe = new Regex(@"\A([0-9]*)\.([0-9]+)\z", Opt);
         private static readonly Regex TrailingPointRe = new Regex(@"\A([0-9]+)\.\z", Opt);
         private static readonly Regex IntRe = new Regex(@"\A[0-9]+\z", Opt);
+        // QUESTIONS 7: 1 to 3 digits, then groups of exactly 3, not inside a longer run of digits, commas or decimals.
+        private static readonly Regex Grouped = new Regex(@"(?<![0-9.,])[0-9]{1,3}(?:,[0-9]{3})+(?![0-9,])", Opt);
+        private static readonly Regex SlashSpaces = new Regex(@" ?/ ?", Opt);
         private static readonly Regex PointRe = new Regex(@"\A" + Ws + @"*\(?" + Ws + "*([0-9]+)" + Ws + "*," + Ws + "*([0-9]+)" + Ws + @"*\)?" + Ws + @"*\z", Opt);
 
         /// <summary>JS <c>String.prototype.trim</c>.</summary>
@@ -131,8 +134,11 @@ namespace WorldTour.Core.Maths
 
         /// <summary>
         /// JS <c>parseNumber</c>: text to <c>{ v, simplest, form }</c>, or null if it doesn't read as a number.
-        /// Takes off one leading "$", removes every comma, squeezes whitespace runs to one space.
-        /// Accepts "2", "1/2", "1 1/2", "0.5", ".5", "5." only: no signs, no spaces around "/".
+        /// Takes off one leading "$", squeezes whitespace runs to one space.
+        /// Accepts "2", "1/2", "1 1/2", "0.5", ".5", "5." only: no signs.
+        /// Intended differences from the JS (QUESTIONS 7): a comma counts only as thousands grouping ("1,000",
+        /// "12,500.5"); any other comma ("3,50", "1,0,0,0", ",5") makes the text unreadable (null), where the JS
+        /// removed every comma. Spaces around "/" are accepted ("3 / 4", "1 3 / 4"), where the JS gave null.
         /// Unlike the JS, a number too big for a 64-bit integer gives null (the JS loses precision past 2^53).
         /// </summary>
         public static ParsedNumber ParseNumber(string text)
@@ -140,8 +146,13 @@ namespace WorldTour.Core.Maths
             if (text == null) return null;
             string s = JsTrim(text);
             s = DollarPrefix.Replace(s, "", 1);
-            s = s.Replace(",", "");
+            if (s.IndexOf(',') >= 0)
+            {
+                s = Grouped.Replace(s, g => g.Value.Replace(",", ""));
+                if (s.IndexOf(',') >= 0) return null;   // a comma that isn't thousands grouping: unreadable, never a guess
+            }
             s = WsRun.Replace(s, " ");
+            s = SlashSpaces.Replace(s, "/");
             try
             {
                 Match m;
@@ -205,7 +216,10 @@ namespace WorldTour.Core.Maths
             {
                 MathValue p = ParsePoint(text);
                 bool has = p.Kind != ValueKind.Null;
-                return new CheckResult(has && p.X == answer.Value.X && p.Y == answer.Value.Y, false, !has);
+                // QUESTIONS 7.3 (an intended difference): typed text that isn't a point is "bad" (doesn't read yet),
+                // not "empty"; the JS said "type your answer on the keys first" although she typed something.
+                bool blank = JsTrim(text ?? "") == "";
+                return new CheckResult(has && p.X == answer.Value.X && p.Y == answer.Value.Y, false, !has && blank, !has && !blank);
             }
             if (JsTrim(text ?? "") == "") return new CheckResult(false, false, empty: true);
             ParsedNumber parsed = ParseNumber(text);
@@ -233,6 +247,27 @@ namespace WorldTour.Core.Maths
             if (picked.IsObject) return new CheckResult(false, false, bad: true);
             return Check(JsNumber.Str(picked.Number), answer, simplest);
         }
+
+        /// <summary>
+        /// The nudge for typed input that isn't an answer yet, or null when the check is a right answer or a real
+        /// miss. Empty, unreadable and "now simplify" input is never a miss: it costs no fans, no try and no streak,
+        /// and only asks her to retype. Unreadable point text shows the expected shape (QUESTIONS 7.3); the example
+        /// (4, 4) is on the diagonal, which the stage designer never asks for, so it can't give an answer away.
+        /// </summary>
+        public static string Nudge(CheckResult r, AnswerType type)
+        {
+            if (r.Bad) return type == AnswerType.Point
+                ? "that doesn" + Apos + "t read as a number yet. type it like (4, 4): across, then up."
+                : "that doesn" + Apos + "t read as a number yet. try again.";
+            if (r.Empty) return "type your answer on the keys first.";
+            if (r.Simplify) return "right amount! now simplify it: divide the top and bottom by the same number.";
+            return null;
+        }
+
+        /// <summary>True when the check only asks her to retype (empty, unreadable, or simplify): never a miss.</summary>
+        public static bool IsRetype(CheckResult r) => r.Empty || r.Bad || r.Simplify;
+
+        private static readonly string Apos = ((char)0x2019).ToString();
 
         /// <summary>JS <c>parsePoint</c>: "(3, 5)", "3,5", "(3,5" all read as (3, 5). Null kind when it doesn't match.</summary>
         public static MathValue ParsePoint(string text)

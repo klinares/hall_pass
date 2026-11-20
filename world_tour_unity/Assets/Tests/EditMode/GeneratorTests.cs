@@ -40,12 +40,15 @@ namespace WorldTour.Core.Tests
             Assert.AreEqual(12, js.maxDenominator, "JS BOUNDS.maxDenominator");
             Assert.AreEqual(10, js.coordMax, "JS BOUNDS.coordMax");
             Assert.AreEqual(1000, js.maxVolume, "JS BOUNDS.maxVolume");
+            Assert.AreEqual(150, js.storyDollars, "BOUNDS.storyDollars (Unity only, QUESTIONS 9.4)");
+            Assert.AreEqual(150, OrderOps.MaxStoryDollars, "the generator keeps the same bound");
             _bounds = new GradeBounds
             {
                 moneyCents = Math.Min(js.moneyCents, c.BOUNDS.moneyCents),
                 maxDenominator = Math.Min(js.maxDenominator, c.BOUNDS.maxDenominator),
                 coordMax = Math.Min(js.coordMax, c.BOUNDS.coordMax),
-                maxVolume = Math.Min(js.maxVolume, c.BOUNDS.maxVolume)
+                maxVolume = Math.Min(js.maxVolume, c.BOUNDS.maxVolume),
+                storyDollars = Math.Min(js.storyDollars, c.BOUNDS.storyDollars)
             };
             return _bounds;
         }
@@ -79,7 +82,7 @@ namespace WorldTour.Core.Tests
                     case "frac": CheckFrac(p, level, bounds); break;
                     case "xy": CheckXy(p, level, bounds); break;
                     case "vol": CheckVol(p, level, bounds); break;
-                    case "ops": CheckOps(p, level); break;
+                    case "ops": CheckOps(p, level, bounds); break;
                     case "flu": CheckFlu(p, level); break;
                     default: Assert.Fail("no checks for " + skill); break;
                 }
@@ -167,7 +170,8 @@ namespace WorldTour.Core.Tests
                 Assert.IsTrue(chunks.Count == 1 || (chunks[0]["c"].Long % 10 == 0 && chunks[1]["c"].Long < 10), "tens first, then ones" + at);
                 Assert.IsTrue(p.Steps[1].Contains("running total") && p.Steps[2].Contains("running total"), at);
                 Assert.IsFalse(string.Join(" ", p.Steps).Contains("start big"), at);
-                if (answer >= 10) Assert.IsTrue(p.Steps[0].StartsWith("how many tens of", StringComparison.Ordinal), at);
+                // quotient 10: hint 1 asks what x 10 does instead (QUESTIONS 8.2, an intended difference from the JS)
+                if (answer > 10) Assert.IsTrue(p.Steps[0].StartsWith("how many tens of", StringComparison.Ordinal), at);
                 Assert.AreEqual(0, N % d, "exact division" + at);
                 Assert.AreEqual(N / d, answer, at);
                 int[] want = new[] { new[] { 3, 1 }, new[] { 3, 2 }, new[] { 4, 2 } }[level - 1];
@@ -282,7 +286,9 @@ namespace WorldTour.Core.Tests
 
         private static readonly Regex OpSigns = new Regex("[+" + Regex.Escape(Glyph.Minus) + Regex.Escape(Glyph.Times) + Regex.Escape(Glyph.Divide) + "]", RegexOptions.CultureInvariant);
 
-        private static void CheckOps(Problem p, int level)
+        private static readonly Regex StoryDollarText = new Regex(@"\$([0-9]+)", RegexOptions.CultureInvariant);
+
+        private static void CheckOps(Problem p, int level, GradeBounds bounds)
         {
             string at = " [ops L" + level + " seed " + p.Seed + "]";
             string expr = p.Params["expr"].String;
@@ -294,6 +300,9 @@ namespace WorldTour.Core.Tests
             if (level == 1) { Assert.AreEqual(2, nops, at); Assert.IsTrue(expr.Contains("("), at); }
             if (level == 2) Assert.AreEqual(3, nops, at);
             if (level == 1 && expr.Contains("(")) Assert.AreNotEqual(ExprEval.Eval(expr.Replace("(", "").Replace(")", "")), v, "the parentheses matter" + at);
+            // money in tour budget is whole dollars in a story, bounded by storyDollars, not moneyCents (QUESTIONS 9.4)
+            foreach (Match m in StoryDollarText.Matches(p.Prompt + " " + string.Join(" ", p.Steps)))
+                Assert.IsTrue(long.Parse(m.Groups[1].Value, CultureInfo.InvariantCulture) <= bounds.storyDollars, "story money within storyDollars: " + m.Value + at);
             if (level == 3)
             {
                 Choice right = p.Choices.Single(c => c.Correct);

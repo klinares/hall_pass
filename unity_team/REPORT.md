@@ -2,11 +2,10 @@
 
 ## For the owner: what you do next
 
-1. **Let her play the new build** (see How to try it). Tell the advisor how it went.
-2. **Switch modes on as her class moves.** Edit `tour/StreamingAssets/math_config.json` and push; no rebuild is needed. `world_tour_unity/Tools/MATH_CONFIG.md` explains each setting. Use the table below.
-3. **Listen once** for the sound and the read-aloud voice.
-4. **Commit `world_tour/`** (six files, as in the phase 6 report).
-5. **Push to GitHub.** Everything else is committed locally (last commit 980e30f).
+1. **Let her play** the new build.
+2. **Switch modes on as her class moves:** edit `tour/StreamingAssets/math_config.json` and push, no rebuild (see `world_tour_unity/Tools/MATH_CONFIG.md`).
+3. **Listen once** for sound and voice.
+4. **Commit `world_tour/`** (six files, as before) and **push**.
 
 | mode | skill | on? | top level | her class unit |
 |---|---|---|---|---|
@@ -21,27 +20,17 @@
 
 ## Phase and status
 
-Phase 7 is **done** and committed locally. Nothing is pushed.
+Phase 7 is **done** and committed locally (4cb0470). Nothing is pushed.
 
 ## What now works
 
-- **Difficulty:**
-  - Every math mode now starts at a new warm-up level 0 of 4th-grade review.
-  - She needs 6 right in a row to move up.
-  - Each skill has a top level, set in `math_config.json`. A save above it plays at the top level and is never lowered.
-- **Gentle/standard switch:** in the manager's office, one per subject. Gentle lowers the top level by one and needs 8 in a row to move up.
-- **Snack table (new):** fraction multiplication and division, with area and tape diagrams. Any equivalent answer counts.
-- **Kid-fit fixes:**
-  - easier ticket sales warm-up;
-  - division steps show on the card;
-  - the ticket buttons stay in view;
-  - shorter snack prompts;
-  - plainer words;
-  - a dog line on the map that says where to start.
+- A warm-up level 0 in every math mode; 6 in a row to move up; per-skill top levels that never lower a save.
+- An office gentle/standard switch per subject (top level one lower, 8 in a row).
+- Snack table: fraction × and ÷ with area and tape diagrams; any equivalent answer counts.
 
 ## Kid-fit review (7.4)
 
-A tester played as her on day one, starting from a fresh save. The target was 7 of the first 10 right without hints.
+A tester played as her on day one. Target: 7 of the first 10 without hints.
 
 | mode | first ten | what changed |
 |---|---|---|
@@ -52,7 +41,7 @@ A tester played as her on day one, starting from a fresh save. The target was 7 
 | snack table | about 7 | prompts fit in 3 lines; level 1 shows the tray |
 | missing vowels | 5–6 | her real word list; plainer clue wording sent to the advisor (Q25) |
 
-Rewards are fine as they are. Every show earns a sticker and at least 5,000 fans, which buys the cheapest backstage item.
+Rewards are fine: every show earns a sticker and enough fans for the cheapest backstage item.
 
 ## Test results
 
@@ -60,21 +49,18 @@ Edit-mode 1797/1797, play-mode 26/26, browser 18/18. 0 console errors. Download 
 
 ## What the tester looked at
 
-- Every phase 7 screen at both sizes in both themes: one tester pass and two fix rounds.
-- Then the kid-fit pass and one fix round, checked from the builder's screenshots.
+Phase 7 screens at both sizes and themes (one pass, two fix rounds), then the kid-fit pass (one fix round, checked from screenshots).
 
 ## Not done or not verified
 
-- **Ticket sales:** she reaches level 1 (the web's level, with regrouping) after 6 right. It wasn't re-scored after the fix.
-- **Snack table:** some prompts with stacked fractions still wrap to four lines.
-- **First-try rule:** the ticket now counts a replayed miss, but the VIP percent keeps the web's rule.
-- **Earlier polish list:** see TODO.md.
+- Ticket sales reaches the web's level 1 (regrouping) after 6 right; not re-scored.
+- Some snack prompts wrap to four lines.
+- The VIP percent keeps the web's first-try rule.
+- Earlier polish list: TODO.md.
 
 ## Departures from the brief
 
-- Workers ran on Sonnet, and no paid or headless use.
-- New intended differences 39–43 are copy changes, listed in IntendedDifferences.md.
-- Ticket sales level 0 is new, and levels 1–3 are unchanged.
+Workers on Sonnet; no paid or headless use. Copy changes are intended differences 39–43.
 
 ## Open questions
 

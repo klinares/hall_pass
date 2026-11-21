@@ -2,7 +2,7 @@
 // with a deliberate miss, a hint and the encore, to both tickets and back to the map. Plain Node plus the Playwright
 // install in world_tour/tests/e2e (read only).
 //
-//   node Tests/Web/playthrough.mjs --mode <mouse|keyboard|reduced|blocked> [--vw 1366] [--vh 768] [--shots <dir>] [--out <json>] [--site <folder>]
+//   node Tests/Web/playthrough.mjs --mode <mouse|keyboard|reduced|blocked> [--vw 1366] [--vh 768] [--shots <dir>] [--out <json>] [--site <folder>] [--theme peach-navy]
 //
 //   mouse     mouse only: tiles are found in a screenshot and read by matching them against Courier Prime Bold
 //             (the bundled font), clicked one by one, one tile dragged onto the slots, the hint clicked; screenshots
@@ -27,6 +27,9 @@ const { chromium } = createRequire(path.join(repo, 'world_tour', 'tests', 'e2e',
 const argv = process.argv.slice(2);
 const opt = (n, d) => { const i = argv.indexOf(n); return i >= 0 && i + 1 < argv.length ? argv[i + 1] : d; };
 const mode = opt('--mode', 'mouse');
+// --theme peach-navy (task 5.1): start from a save that owns and wears peach + navy (written only when storage is empty),
+// and find the navy ink buttons (#1c2747) where the default theme's are black.
+const theme = opt('--theme', 'tour-pink');
 const vw = +opt('--vw', '1366'), vh = +opt('--vh', '768');
 const shots = path.resolve(opt('--shots', path.join(project, 'Temp', 'playthrough')));
 const outFile = path.resolve(opt('--out', path.join(shots, `play_${mode}_${vw}x${vh}.json`)));
@@ -140,7 +143,7 @@ window.findTiles = async (b64, S, vw, vh) => {
 // sticker buttons: white faces of about 150x48 canvas units (ghost buttons) in a region
 window.findBoxes = async (b64, region, minW, maxW, minH, maxH, colour) => {
   const im = await decode(b64);
-  const pred = colour === 'black' ? ((r, g, b) => r + g + b < 60) : white;
+  const pred = colour === 'black' ? ((r, g, b) => r + g + b < (window.INK_SUM || 60)) : white;
   return comps(im, pred, region).filter(c => c.w >= minW && c.w <= maxW && c.h >= minH && c.h <= maxH && c.n / (c.w * c.h) > .5)
     .map(c => ({ x: c.x + c.w / 2, y: c.y + c.h / 2, w: c.w, h: c.h, top: c.y, bottom: c.y + c.h }));
 };
@@ -180,10 +183,16 @@ try {
   const ctx = await browser.newContext({ viewport: { width: vw, height: vh }, reducedMotion: mode === 'reduced' ? 'reduce' : 'no-preference' });
   const page = await ctx.newPage();
   if (mode === 'blocked') await page.addInitScript(STORAGE_BLOCKED);
+  if (theme === 'peach-navy') await page.addInitScript(() => {
+    try {
+      if (!localStorage.getItem('worldtour.v1')) localStorage.setItem('worldtour.v1', JSON.stringify({ v: 1, inventory: { owned: ['theme:tour-pink', 'guitar:classic', 'dog:none', 'theme:peach-navy'], equipped: { theme: 'peach-navy', guitar: 'classic', dog: 'none' } } }));
+    } catch (e) { /* storage blocked */ }
+  });
   const tool = await (await browser.newContext()).newPage();
   await tool.setContent('<html><body></body></html>');
   await tool.addScriptTag({ content: ANALYSIS });
   await tool.evaluate(b => window.loadFont(b), fontB64);
+  if (theme === 'peach-navy') await tool.evaluate(() => { window.INK_SUM = 170; });
 
   let lines = [];
   page.on('console', m => {
@@ -234,6 +243,7 @@ try {
   const mainLine = await wait(/^WT_MAIN_READY/, 20000);
   out.numbers.mainReady = mainLine;
   if (mode === 'reduced' && !/reduced=true/.test(mainLine || '')) fail('reduce motion not picked up: ' + mainLine);
+  if (theme === 'peach-navy' && !/theme=peach-navy/.test(mainLine || '')) fail('not in peach + navy: ' + mainLine);
   const saveLine = has(/^WT_SAVE_READY/);
   out.numbers.saveReady = saveLine && saveLine.t;
   if (mode === 'blocked' && !/persistent=false/.test(saveLine ? saveLine.t : '')) fail('storage blocked but persistent: ' + (saveLine && saveLine.t));
@@ -358,7 +368,10 @@ try {
         let focused = false;
         for (let n = 0; n < 30 && hint; n++) {
           await key('Tab'); await page.waitForTimeout(80);
-          const ring = await tool.evaluate(([p, bx]) => countColour(p, bx, [47, 47, 193], 30), [await png(), [Math.round(hint.x - hint.w / 2 - 12), Math.round(hint.y - hint.h / 2 - 12), Math.round(hint.x + hint.w / 2 + 12), Math.round(hint.y + hint.h / 2 + 12)]]);
+          // the focus ring is accent-2; in peach + navy that is the navy of every outline, so there the focus log decides
+          const ring = theme === 'peach-navy'
+            ? ((lines.filter(l => l.t.startsWith('WT_FOCUS ')).pop() || {}).t === 'WT_FOCUS name=Hint' ? 999 : 0)
+            : await tool.evaluate(([p, bx]) => countColour(p, bx, [47, 47, 193], 30), [await png(), [Math.round(hint.x - hint.w / 2 - 12), Math.round(hint.y - hint.h / 2 - 12), Math.round(hint.x + hint.w / 2 + 12), Math.round(hint.y + hint.h / 2 + 12)]]);
           if (ring > 60) { focused = true; step(`hint focused after ${n + 1} Tab presses`); break; }
         }
         if (!focused) fail('keyboard: Tab never reached the hint button (no focus ring seen)');

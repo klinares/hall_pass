@@ -6,7 +6,7 @@
 //   --out        results file, default <project>/Temp/web-results.json (the results file is the evidence)
 //   --shots      screenshot folder, default <project>/Temp/web-shots
 //   --site       folder to serve instead of tour/ (used to prove the tests can fail)
-//   --only       comma list of: cold, reload, storage, broken, size, data, edit, skip, clock, save, start   (default: all)
+//   --only       comma list of: cold, reload, storage, broken, size, data, edit, skip, clock, save, start, theme, office   (default: all)
 //   --budget-mb  size ceiling in MB (10^6 bytes), default 20; over 12 MB or a cold load over 8 s only warns
 //
 // Exits 1 if any test fails, 2 if the runner itself breaks. Server and browser are closed in finally.
@@ -31,7 +31,7 @@ const opt = (name, def) => { const i = argv.indexOf(name); return i >= 0 && i + 
 const outFile = path.resolve(opt('--out', path.join(project, 'Temp', 'web-results.json')));
 const shotsDir = path.resolve(opt('--shots', path.join(project, 'Temp', 'web-shots')));
 const site = path.resolve(opt('--site', path.join(repo, 'tour')));
-const TEST_NAMES = ['cold', 'reload', 'storage', 'broken', 'size', 'data', 'edit', 'skip', 'clock', 'save', 'start'];
+const TEST_NAMES = ['cold', 'reload', 'storage', 'broken', 'size', 'data', 'edit', 'skip', 'clock', 'save', 'start', 'theme', 'office'];
 const only = new Set((opt('--only', TEST_NAMES.join(','))).split(',').map(s => s.trim()));
 const budgetMb = Number(opt('--budget-mb', '20'));
 const WARN_MB = 12, WARN_MS = 8000, READY_TIMEOUT_MS = 60000, RELOAD_MAX_BYTES = 200 * 1024;
@@ -383,11 +383,11 @@ try {
     {
       const ctx = await browser.newContext({ viewport: { width: 1366, height: 768 } });
       const r = await load(ctx, server, { waitData: true, waitSave: true });
-      const f = [...loadFailures(r), ...saveFailures(r, { persistent: true, fans: 0, unlocked: 1, v: 1, recovered: false })];
+      const f = [...loadFailures(r), ...saveFailures(r, { persistent: true, fans: 0, unlocked: 1, v: 2, recovered: false })];
       const text = await readStorage(r.page, SAVE_KEY);
       let saved = null;
       try { saved = JSON.parse(text); } catch (e) { f.push(`localStorage['${SAVE_KEY}'] is not JSON: ${String(text).slice(0, 80)}`); }
-      if (saved && saved.v !== 1) f.push(`saved v=${saved.v}, expected 1`);
+      if (saved && saved.v !== 2) f.push(`saved v=${saved.v}, expected 2 (save version 2, phase 5)`);
       if (saved && !(saved.venues && Array.isArray(saved.venues.unlocked) && saved.venues.unlocked.includes('coffee'))) f.push('saved venues.unlocked does not include coffee');
       record('save_first_run', f, { saveLine: r.saveLine, savedBytes: text ? text.length : 0, consoleErrors: r.errors });
       await ctx.close();
@@ -399,7 +399,7 @@ try {
       await writeStorage(first.page, SAVE_KEY, fixture);
       await first.page.close();
       const r = await load(ctx, server, { waitData: true, waitSave: true });
-      const f = [...loadFailures(r), ...saveFailures(r, { persistent: true, fans: 1234, unlocked: 2, v: 1, recovered: false })];
+      const f = [...loadFailures(r), ...saveFailures(r, { persistent: true, fans: 1234, unlocked: 2, v: 2, recovered: false })];
       record('save_survives_reload', f, { saveLine: r.saveLine, fixtureBytes: fixture.length, consoleErrors: r.errors });
       await ctx.close();
     }
@@ -413,7 +413,7 @@ try {
       const rescued = await readStorage(r.page, SAVE_KEY + '.unreadable');
       if (rescued !== '{not json') f.push(`localStorage['${SAVE_KEY}.unreadable'] is ${JSON.stringify(rescued)}, expected "{not json"`);
       const fresh = await readStorage(r.page, SAVE_KEY);
-      try { if (JSON.parse(fresh).v !== 1) f.push('the fresh save has no v: 1'); } catch (e) { f.push(`the main key does not hold a fresh valid save: ${String(fresh).slice(0, 80)}`); }
+      try { if (JSON.parse(fresh).v !== 2) f.push('the fresh save has no v: 2'); } catch (e) { f.push(`the main key does not hold a fresh valid save: ${String(fresh).slice(0, 80)}`); }
       record('save_unreadable_backed_up', f, { saveLine: r.saveLine, rescued, consoleErrors: r.errors });
       await ctx.close();
     }
@@ -498,6 +498,194 @@ try {
       });
       await ctx.close();
     }
+  }
+
+  // 13. Phase 5: a bought and equipped theme survives a reload. A save holding peach + navy (owned and on) and a key this
+  // version doesn't know is put in storage; the game must come up in that theme, write it back as save version 2 with
+  // the unknown key kept, and come up in it again after a reload.
+  if (only.has('theme')) {
+    const f = [];
+    const ctx = await browser.newContext({ viewport: { width: 1366, height: 768 } });
+    const first = await load(ctx, server, { waitSave: true });
+    const fixture = JSON.parse(webGameSave({ fans: { balance: 4000, lifetime: 64000 }, venues: { unlocked: ['coffee', 'records', 'rec'], seen: ['coffee', 'records', 'rec'] },
+      inventory: { owned: ['theme:tour-pink', 'guitar:classic', 'dog:none', 'theme:peach-navy'], equipped: { theme: 'peach-navy', guitar: 'classic', dog: 'none' } } }));
+    fixture.x1probe = { kept: true };
+    await writeStorage(first.page, SAVE_KEY, JSON.stringify(fixture));
+    await first.page.close();
+    const mains = [];
+    for (let run = 1; run <= 2; run++) {
+      const page = await ctx.newPage();
+      const lines = [], errors = [];
+      page.on('console', m => { const t = m.text().trim(); lines.push(t); if (m.type() === 'error') errors.push(t); });
+      page.on('pageerror', e => errors.push('pageerror: ' + e.message));
+      const waitFor = async (pred, ms) => { const end = Date.now() + ms; while (!pred() && Date.now() < end) await page.waitForTimeout(50); return pred(); };
+      await page.goto(server.url, { waitUntil: 'load' });
+      if (!await waitFor(() => lines.some(l => l.startsWith('WT_START_SHOWN')), READY_TIMEOUT_MS)) { f.push(`run ${run}: no WT_START_SHOWN`); await page.close(); continue; }
+      await page.waitForTimeout(500);
+      await page.evaluate(() => { const c = document.getElementById('unity-canvas'); if (c) c.focus(); });
+      await page.keyboard.press('Enter');
+      if (!await waitFor(() => lines.some(l => l.startsWith('WT_MAIN_READY')), 30000)) f.push(`run ${run}: no WT_MAIN_READY`);
+      const main = lines.find(l => l.startsWith('WT_MAIN_READY')) || '';
+      mains.push(main);
+      if (!/ theme=peach-navy\b/.test(main)) f.push(`run ${run}: ${main || 'no main line'} (expected theme=peach-navy)`);
+      await page.waitForTimeout(800);
+      const shot = path.join(shotsDir, `theme_peach_reload${run}_1366x768.png`);
+      fs.mkdirSync(shotsDir, { recursive: true });
+      await page.screenshot({ path: shot });
+      results.screenshots.push(shot);
+      let saved = null;
+      try { saved = JSON.parse(await readStorage(page, SAVE_KEY)); } catch (e) { f.push(`run ${run}: the stored save is not JSON`); }
+      if (saved) {
+        if (saved.v !== 2) f.push(`run ${run}: stored v=${saved.v}, expected 2`);
+        if (!(saved.inventory && saved.inventory.equipped && saved.inventory.equipped.theme === 'peach-navy')) f.push(`run ${run}: the stored theme is not peach-navy`);
+        if (!(saved.inventory && saved.inventory.owned.includes('theme:peach-navy'))) f.push(`run ${run}: peach-navy is no longer owned`);
+        if (!(saved.x1probe && saved.x1probe.kept === true)) f.push(`run ${run}: the unknown key was not kept`);
+        if (!(saved.journal && Array.isArray(saved.journal.seen))) f.push(`run ${run}: no journal.seen list`);
+        if (saved.fans.lifetime !== 64000 || saved.fans.balance !== 4000) f.push(`run ${run}: fans changed to ${JSON.stringify(saved.fans)}`);
+      }
+      if (errors.length) f.push(`run ${run}: ${errors.length} console error(s): ${errors.slice(0, 3).join(' | ')}`);
+      await page.close();
+    }
+    record('theme_survives_reload', f, { mainLines: mains });
+    await ctx.close();
+  }
+
+  // Task 5.2: the manager's office in the real player, by keyboard. Export the save as a file (a real download) and as a
+  // code (the clipboard); a bad pasted code is refused and changes nothing in localStorage; the confirmed reset backs the
+  // save up to worldtour.v1.backup and wipes it; then the downloaded file is chosen in the file picker and, after the yes,
+  // brings the save back (export -> import round trip), with the erased one kept as the backup.
+  if (only.has('office')) {
+    const f = [], steps = [];
+    const ctx = await browser.newContext({ viewport: { width: 1366, height: 768 }, acceptDownloads: true, permissions: ['clipboard-read', 'clipboard-write'] });
+    const first = await load(ctx, server, { waitSave: true });
+    const fixture = JSON.parse(webGameSave({ fans: { balance: 5000, lifetime: 64000 }, venues: { unlocked: ['coffee', 'records', 'rec'], seen: ['coffee', 'records', 'rec'] },
+      shows: [{ d: '2026-11-19', mode: 'remix', venue: 'coffee', n: 10, first: 8, hinted: 0, fans: 900, secs: 300, best: 6 }],
+      words: { illegible: { a: 3, c: 1, first: 1, h: 0, miss: 2, last: '2026-11-19' } } }));
+    await writeStorage(first.page, SAVE_KEY, JSON.stringify(fixture));
+    for (const k of ['.backup', '.backup.2']) await first.page.evaluate(k => localStorage.removeItem(k), SAVE_KEY + k);
+    await first.page.close();
+    const page = await ctx.newPage();
+    const lines = [], errors = [];
+    page.on('console', m => { const t = m.text().trim(); lines.push(t); if (m.type() === 'error') errors.push(t); });
+    page.on('pageerror', e => errors.push('pageerror: ' + e.message));
+    const waitFor = async (pred, ms) => { const end = Date.now() + ms; while (!pred() && Date.now() < end) await page.waitForTimeout(50); return pred(); };
+    const waitLine = async (re, ms, from = 0) => { await waitFor(() => lines.slice(from).some(l => re.test(l)), ms); const l = lines.slice(from).find(x => re.test(x)); if (!l) f.push('missing ' + re); else steps.push(l); return l || null; };
+    const key = async k => { await page.keyboard.press(k); await page.waitForTimeout(120); };
+    const tabTo = async name => {
+      for (let i = 0; i < 90; i++) {
+        const m0 = lines.length;
+        await key('Tab');
+        await waitFor(() => lines.slice(m0).some(t => t.startsWith('WT_FOCUS ')), 2000);
+        if (lines.slice(m0).includes('WT_FOCUS name=' + name)) return true;
+      }
+      f.push('Tab never reached ' + name);
+      return false;
+    };
+    const shoot = async name => { const p = path.join(shotsDir, name + '_1366x768.png'); fs.mkdirSync(shotsDir, { recursive: true }); await page.screenshot({ path: p }); results.screenshots.push(p); };
+    const stored = async k => { try { return JSON.parse(await readStorage(page, SAVE_KEY + (k || ''))); } catch (e) { return null; } };
+    try {
+      await page.goto(server.url, { waitUntil: 'load' });
+      await waitLine(/^WT_START_SHOWN/, READY_TIMEOUT_MS);
+      await page.waitForTimeout(500);
+      await page.evaluate(() => { const c = document.getElementById('unity-canvas'); if (c) c.focus(); });
+      await key('Enter');
+      await waitLine(/^WT_MAP_READY/, 30000);
+      await page.waitForTimeout(600);
+      // the map's footer link
+      let m = lines.length;
+      if (await tabTo('OfficeLink')) await key('Enter');
+      const open = await waitLine(/^WT_OFFICE_OPEN /, 8000, m);
+      if (open && !/ fans=64000 /.test(open)) f.push('office shows ' + open + ', expected fans=64000');
+      await page.waitForTimeout(500);
+      await shoot('office_open');
+      // export: the file
+      m = lines.length;
+      let file = null;
+      if (await tabTo('Download')) {
+        const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 8000 }).catch(() => null), key('Enter')]);
+        if (!dl) f.push('no download');
+        else {
+          const chunks = []; for await (const c of await dl.createReadStream()) chunks.push(c);
+          file = { name: dl.suggestedFilename(), text: Buffer.concat(chunks).toString('utf8') };
+          if (!/^world-tour-save-\d{4}-\d\d-\d\d\.json$/.test(file.name)) f.push('download name ' + file.name);
+          try { if (JSON.parse(file.text).fans.lifetime !== 64000) f.push('the downloaded save has the wrong fans'); } catch (e) { f.push('the download is not JSON'); }
+        }
+      }
+      await waitLine(/^WT_OFFICE_EXPORT kind=file ok=true/, 3000, m);
+      // export: the code
+      m = lines.length;
+      let code = null;
+      if (await tabTo('CopyCode')) {
+        await key('Enter');
+        await waitLine(/^WT_OFFICE_EXPORT kind=code ok=true/, 3000, m);
+        await page.waitForTimeout(300);
+        code = await page.evaluate(() => navigator.clipboard.readText()).catch(() => null);
+        if (!code || !code.startsWith('WT1-')) f.push('the clipboard holds ' + JSON.stringify(String(code).slice(0, 30)));
+      }
+      // a bad code, pasted: refused, nothing changes
+      const before = await readStorage(page, SAVE_KEY);
+      m = lines.length;
+      if (await tabTo('PasteCode')) {
+        await page.evaluate(t => navigator.clipboard.writeText(t), code ? code.slice(0, Math.floor(code.length / 2)) : 'WT1-nope-00000000');
+        await key('Control+V');
+        const bad = await waitLine(/^WT_OFFICE_CHECK from=paste ok=false/, 4000, m);
+        if (bad && !/error=/.test(bad)) f.push('a refused code needs a message: ' + bad);
+      }
+      await page.waitForTimeout(600);
+      await shoot('office_bad_import');
+      if (await readStorage(page, SAVE_KEY) !== before) f.push('a bad import changed the stored save');
+      if (await readStorage(page, SAVE_KEY + '.backup') !== null) f.push('a bad import wrote a backup');
+      // the confirmed reset: ask, then erase
+      m = lines.length;
+      if (await tabTo('Reset')) {
+        await key('Enter');
+        await page.waitForTimeout(400);
+        await shoot('office_reset_question');
+        if (await tabTo('Erase')) await key('Enter');
+      }
+      await waitLine(/^WT_OFFICE_RESET changed=true backup=Kept saved=true/, 4000, m);
+      await waitLine(/^WT_MAP_READY/, 5000, m);
+      const wiped = await stored(), kept = await stored('.backup');
+      if (!wiped || wiped.fans.lifetime !== 0) f.push('the reset did not wipe the save: ' + JSON.stringify(wiped && wiped.fans));
+      if (!kept || kept.fans.lifetime !== 64000) f.push('the reset did not keep a backup of the old save');
+      // import the downloaded file: the round trip
+      await page.waitForTimeout(600);
+      m = lines.length;
+      if (await tabTo('OfficeLink')) await key('Enter');
+      await waitLine(/^WT_OFFICE_OPEN /, 8000, m);
+      await page.waitForTimeout(500);
+      m = lines.length;
+      let importLine = null;
+      if (file && await tabTo('PickFile')) {
+        const [fc] = await Promise.all([page.waitForEvent('filechooser', { timeout: 8000 }).catch(() => null), key('Enter')]);
+        if (!fc) f.push('no file picker');
+        else {
+          await fc.setFiles({ name: file.name, mimeType: 'application/json', buffer: Buffer.from(file.text, 'utf8') });
+          const ok = await waitLine(/^WT_OFFICE_CHECK from=file ok=true/, 5000, m);
+          await page.waitForTimeout(500);
+          await shoot('office_import_question');
+          if (ok) {
+            // focus is on cancel: Tab to the yes
+            if (await tabTo('ImportYes')) await key('Enter');
+            importLine = await waitLine(/^WT_OFFICE_IMPORT changed=true backup=(Kept|NothingToKeep) saved=true fans=64000/, 4000, m);
+          }
+        }
+      }
+      await page.waitForTimeout(600);
+      await shoot('office_imported');
+      const back = await stored(), kept2 = await stored('.backup'), kept3 = await stored('.backup.2');
+      if (!back || back.fans.lifetime !== 64000 || back.fans.balance !== 5000) f.push('the imported save is not the exported one: ' + JSON.stringify(back && back.fans));
+      if (!back || !back.words || !back.words.illegible) f.push('the imported save lost its words');
+      // the save the import replaced had nothing earned unless play time was counted since the reset: then it is kept too
+      if (importLine && /backup=Kept/.test(importLine)) {
+        if (!kept2 || kept2.fans.lifetime !== 0) f.push('the replaced save was not the newest backup');
+        if (!kept3 || kept3.fans.lifetime !== 64000) f.push('the first backup did not move to .backup.2');
+      } else if (!kept2 || kept2.fans.lifetime !== 64000) f.push('the backup of the erased save was lost');
+    } catch (e) { f.push('office test broke: ' + (e && e.message)); }
+    if (errors.length) f.push(`${errors.length} console error(s): ${errors.slice(0, 3).join(' | ')}`);
+    record('office_export_import_reset', f, { steps });
+    await page.close();
+    await ctx.close();
   }
 
   // 5. Size budget, from the 1366x768 cold load.

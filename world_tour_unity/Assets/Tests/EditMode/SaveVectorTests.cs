@@ -12,8 +12,9 @@ namespace WorldTour.Core.Tests
     /// <summary>
     /// Saves made by the real web game (world_tour_unity/Tools/save/save_vectors.mjs, which writes
     /// save_vectors.json next to this file): store.js migrate on good, partial, old and garbage input, and a
-    /// replay of progress.js calls. The C# port must give the same saved JSON. One deliberate difference:
-    /// keys the save doesn't know are dropped (the JS keeps them; see DECISIONS.md).
+    /// replay of progress.js calls. The C# port must give the same saved JSON, read as save version 2: the web game
+    /// writes v 1 and has no journal.seen, so every JS output is compared after <see cref="AsV2"/> sets v to 2 and adds
+    /// an empty journal.seen (what a version 1 save migrates to). Unknown keys are kept, as the JS keeps them.
     /// </summary>
     public class SaveVectorTests
     {
@@ -25,19 +26,18 @@ namespace WorldTour.Core.Tests
             return _v;
         }
 
-        private static readonly HashSet<string> Known = new HashSet<string>
+        /// <summary>A save the web game wrote (version 1), as version 2 reads it: v 2 and an empty journal.seen, key order kept.</summary>
+        internal static JsonValue AsV2Tree(string js)
         {
-            "v", "created", "updated", "settings", "fans", "streak", "venues", "skills", "words", "review", "shows", "time", "inventory", "journal"
-        };
-
-        /// <summary>The JS output with top-level keys the save doesn't model taken out.</summary>
-        private static string KnownOnly(string jsCanon)
-        {
-            JsonValue o = StrictJson.Parse(jsCanon);
-            var k = JsonValue.Obj();
-            foreach (string key in o.Keys) if (Known.Contains(key)) k.Set(key, o[key]);
-            return k.ToCanonicalJson();
+            JsonValue o = StrictJson.Parse(js);
+            o.Set("v", SaveBlob.Version);
+            if (o["journal"] != null && o["journal"].Kind == JsonKind.Object && o["journal"]["seen"] == null) o["journal"].Set("seen", JsonValue.Arr());
+            return o;
         }
+
+        internal static string AsV2(string js) { return JsonTree.Ordered(AsV2Tree(js)); }
+
+        private static string AsV2Canon(string js) { return AsV2Tree(js).ToCanonicalJson(); }
 
         public static IEnumerable<string> MigrateCases()
         {
@@ -49,14 +49,23 @@ namespace WorldTour.Core.Tests
         {
             JsonValue c = Vectors()["migrate"].Items.Single(x => x["name"].String == name);
             string today = Vectors()["today"].String;
-            SaveBlob blob = SaveJson.Migrate(StrictJson.Parse(c["raw"].String), today);
-            Assert.AreEqual(KnownOnly(c["out"].String), SaveJson.ToCanonical(blob), name);
+            JsonValue raw = StrictJson.Parse(c["raw"].String);
+            SaveBlob blob = SaveJson.Migrate(raw, today);
+            JsonValue want = AsV2Tree(c["out"].String);
+            // An array isn't a save: the JS spreads its items in as keys "0", "1"; the C# starts from defaults. Compare known keys only.
+            if (raw.Kind != JsonKind.Object)
+            {
+                var known = JsonValue.Obj();
+                foreach (string k in want.Keys) if (System.Array.IndexOf(SaveJson.TopKeys, k) >= 0) known.Set(k, want[k]);
+                want = known;
+            }
+            Assert.AreEqual(want.ToCanonicalJson(), SaveJson.ToCanonical(blob), name);
         }
 
         [Test]
         public void Defaults_SameTextAsTheWebGame()
         {
-            Assert.AreEqual(Vectors()["defaultsText"].String, SaveJson.ToText(SaveBlob.Defaults(Vectors()["today"].String)));
+            Assert.AreEqual(AsV2(Vectors()["defaultsText"].String), SaveJson.ToText(SaveBlob.Defaults(Vectors()["today"].String)));
         }
 
         [Test]
@@ -102,8 +111,8 @@ namespace WorldTour.Core.Tests
                     default: Assert.Fail("unknown op " + a[0].String); break;
                 }
             }
-            Assert.AreEqual(Vectors()["replay"]["out"].String, SaveJson.ToCanonical(s));
-            Assert.AreEqual(Vectors()["replay"]["text"].String, SaveJson.ToText(s), "same text as the web game stores, key order included");
+            Assert.AreEqual(AsV2Canon(Vectors()["replay"]["out"].String), SaveJson.ToCanonical(s));
+            Assert.AreEqual(AsV2(Vectors()["replay"]["text"].String), SaveJson.ToText(s), "same text as the web game stores (as version 2), key order included");
             CollectionAssert.AreEqual(new[] { "coffee", "records", "rec" }, s.Venues.Unlocked);
         }
 
@@ -113,8 +122,8 @@ namespace WorldTour.Core.Tests
             string js = Vectors()["replay"]["text"].String;          // what the web game stores
             LoadResult r = SaveJson.Load(js, "2030-01-01");
             Assert.IsFalse(r.Unreadable);
-            Assert.AreEqual(js, SaveJson.ToText(r.Blob), "byte for byte, key order included");
-            Assert.AreEqual(Vectors()["replay"]["out"].String, SaveJson.ToCanonical(r.Blob));
+            Assert.AreEqual(AsV2(js), SaveJson.ToText(r.Blob), "byte for byte as version 2, key order included");
+            Assert.AreEqual(AsV2Canon(Vectors()["replay"]["out"].String), SaveJson.ToCanonical(r.Blob));
             // ops, frac (a clean answer with keep doesn't clear it), xy, vol, flu, md; dec was cleared by a clean answer
             CollectionAssert.AreEqual(new[] { "ops", "frac", "xy", "vol", "flu", "md" }, r.Blob.Review.Math.Select(x => x.Skill).ToArray());
             Assert.IsTrue(r.Blob.Review.Math.All(x => Review.Usable(x.Prob)), "every one stored whole");

@@ -136,6 +136,7 @@ namespace WorldTour.Game.Prefs
         {
             Sfx.Enabled = Sound;
             MotionPrefs.Reduced = ReducedMotion;
+            LookArt.Apply(s_Store != null ? s_Store.Blob : null);
             Theme.Use(ThemeId);
             Changed?.Invoke();
         }

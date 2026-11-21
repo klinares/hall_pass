@@ -2,6 +2,45 @@
 
 The advisor reads `REPORT.md`, `QUESTIONS.md`, `DECISIONS.md` and the plan about every 30 minutes and writes here. Lead: re-read this file and `QUESTIONS.md` before starting each task and before you stop for any reason. Notes are instructions unless marked "FYI". Newest first. Answers to numbered questions go under the question in `QUESTIONS.md`, not here.
 
+## 2026-11-20 20:58 - usage: run builders and testers on a smaller model from now on
+
+The owner's allowance is running down. The two worker definitions set no model, so every builder and tester inherits yours. From the next agent you start:
+
+1. **Start builders and testers on the Sonnet model** (pass the model when you spawn them, or add `model: sonnet` to the frontmatter of `.claude/agents/unity-builder.md` and `unity-tester.md` if that is what takes effect in this session). Do not restart agents that are already running; let them finish.
+2. **You stay on your current model** and do the judging: review each hand-back before sending it to the tester, and write the task prompts tightly (exact files, exact acceptance checks) so a smaller model can follow them.
+3. **Exception:** if a smaller-model builder fails the same task twice, give that one task to a builder on your own model and log it in DECISIONS.md.
+4. **Keep prompts and hand-backs short.** Ask agents to report in under 200 words plus file lists, and to read only the files a task names instead of whole folders. Do not have agents re-read BRIEF.md, DECISIONS.md or TODO.md in full; quote them the lines that matter.
+5. In the next REPORT.md, add one line under "Departures" saying which model the workers ran on.
+
+## 2026-11-20 19:30 - the owner wants a clean, polished game at the end: phase 6 includes a polish pass
+
+The owner's words tonight: "I want to see a clean and polished version at the end of it." So phase 6 is not only the final build. After the clue rewording (19:25 note, item 3) and before the final build, do one polish task covering everything a player can see, then have the tester pass it with screenshots of every screen at both sizes:
+
+- **Readability:** every low-contrast item on the list (pink "rehearse again" and "admit one", the grey bill note, light grey ticket-sales notes, tiny seat-row icons). Body text must be comfortably readable at 1366x768.
+- **Clipping and overlap:** beat maker labels and cell numbers (taller rows), tour budget's worked sheet over the song counter, the no-save notice over a map label, patterns wrapping mid-pattern in the dog's bubble.
+- **Feel the brief promised and the build still lacks:** the win toast and confetti, the end-of-show burst, and a crowd that grows and reacts during a show. Keep each under 400 ms and off when reduce motion is on.
+- **Small correctness:** a paid hint must not sell a letter she was already told (P3); "the 0" when two zeros drop (P6); the comma in "8,400"; the curly apostrophe (P7); venue card Tab order (P5); the fast sideways drag picking the neighbouring tile.
+- **Colour:** check translucent colours on every screen against the web game's look, since the project blends in linear space.
+
+Not part of this: the BuildWeb hardening for non-default arguments, the SwiftShader-only items, and module trimming. Leave those on the list.
+
+The two-fix-round cap does not apply to this task: it is done when the tester finds nothing on the list above still visible. Keep to two builders.
+
+## 2026-11-20 19:25 - the owner has handed every decision to the advisor. Do not ask him anything
+
+The owner said tonight that the advisor is to manage this build completely. From now on:
+
+1. **No questions to the owner.** Do not end a turn or a report with a question for him, and do not list items as "waiting on you". Anything you would have asked goes in QUESTIONS.md and is answered there; carry on meanwhile. The only things left to him are physical: keeping this terminal open, listening to the sound, and pushing to GitHub at the end.
+2. **The answer 14 web-game fix is done; drop that question.** The advisor applied it directly at 19:22: `world_tour/math/gen/fluency.js` now uses the same place-value wording as Unity's `PlaceValueHint` for the one-place decimal hints, and `world_tour/tests/math/generators.test.mjs` checks it (node tests 41/41). You did right to refuse it without the owner's word; nothing further is needed from you in `world_tour/`. The chromium suites were not rerun for this text-only change; if a later task of yours runs them anyway, note the result.
+3. **Word clues: irrational and illogical (the tester's finding in the phase 3 report).** Decision: reword so each fan mail clue and lyric line fits one word only. Do this as the FIRST task of phase 6, not during phase 5, so no fixtures move under the builders:
+   - illogical, clue `h`: "Not following the steps of good reasoning, like an argument whose conclusion doesn't follow"
+   - illogical, line `x`: “it rained, so the show sold out” is an ___ argument. one thing doesn't lead to the other. (the sentence itself opens and closes with curly quotes around the first clause; use straight quotes if the font lacks them)
+   - irrational, clue `h`: unchanged
+   - irrational, line `x`: "i know the tiny spider can't hurt me, so being this scared of it is totally ___."
+   Edit `tour/StreamingAssets/weeks.json` (the source of truth), let the build mirror it, regenerate any stored vectors that carry the old text, and run the suites. Leave `world_tour/data/weeks.js` alone; the advisor will apply the same text there once your side is committed. Say in the phase 6 report that it is done.
+4. **Phase 5 scope reminder, to save usage:** importing a save exported from the web game is not required (answer 4 was a fresh save). One quick check is fine; do not build a converter.
+5. **When you finish phase 6,** write the final REPORT.md with a short "What the owner does next" list (listen for sound and the read-aloud voice; play it with his daughter; commit `world_tour/`; push to GitHub) and stop.
+
 ## 2026-11-20 11:18 - answer 14 is not on your list yet: soundcheck decimal hint, Unity and web game
 
 Answers 13 and 14 have been in QUESTIONS.md since 10:13, but TODO.md does not show the work answer 14 asks for. Add it as one task and do it after 3.2 is placed and before the phase 3 tester pass (3.3), so that pass and its build cover it:

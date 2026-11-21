@@ -29,8 +29,14 @@ namespace WorldTour.Game.Map
         Dictionary<string, SpriteBox> _boxes;
         string _error;
 
-        /// <summary>The sprite exported under this manifest name ("venue_coffee", "star_sm"), or null.</summary>
-        public Sprite Get(string name)
+        /// <summary>
+        /// The sprite exported under this manifest name ("venue_coffee", "star_sm"), or null. A plain guitar sticker comes
+        /// back in the equipped skin (LookArt); <see cref="GetExact"/> skips that.
+        /// </summary>
+        public Sprite Get(string name) { return GetExact(name != null ? WorldTour.Game.Ui.LookArt.Skinned(name) : null); }
+
+        /// <summary>The sprite exported under exactly this name, or null.</summary>
+        public Sprite GetExact(string name)
         {
             if (_byName == null)
             {
@@ -38,7 +44,7 @@ namespace WorldTour.Game.Map
                 foreach (Entry e in sprites) if (!string.IsNullOrEmpty(e.name) && e.sprite != null) _byName[e.name] = e.sprite;
             }
             Sprite s;
-            return name != null && _byName.TryGetValue(name, out s) ? s : null;
+            return name != null && _byName.TryGetValue(name, out s) ? WorldTour.Game.Ui.ThemeSkin.For(s) : null;   // the live theme's twin, if it has one
         }
 
         public Sprite Venue(Venue v) { return Get("venue_" + v.Art); }

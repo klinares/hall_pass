@@ -42,16 +42,61 @@ namespace WorldTour.Core.Progress
             return new LoadResult { Blob = Migrate(raw, today), Text = text };
         }
 
+        // Keys each part of the save knows. Anything else is kept as it was stored (save version 2) and written back
+        // after the known keys, the order JS { ...defaults, ...raw } gives.
+        /// <summary>The top-level keys this version knows (anything else is kept as stored).</summary>
+        public static readonly string[] TopKeys = { "v", "created", "updated", "settings", "fans", "streak", "venues", "skills", "words", "review", "shows", "time", "inventory", "journal" };
+        private static readonly string[] SettingsKeys = { "sound", "theme", "motion" };
+        private static readonly string[] FansKeys = { "balance", "lifetime" };
+        private static readonly string[] StreakKeys = { "days", "best", "last" };
+        private static readonly string[] VenuesKeys = { "unlocked", "seen" };
+        private static readonly string[] ReviewKeys = { "words", "math" };
+        private static readonly string[] InventoryKeys = { "owned", "equipped" };
+        private static readonly string[] JournalKeys = { "stickers", "layout", "seen" };
+        private static readonly string[] ShowKeys = { "d", "mode", "venue", "n", "first", "hinted", "fans", "secs", "best", "missed", "sold", "encore" };
+        private static readonly string[] WordKeys = { "a", "c", "first", "h", "miss", "last" };
+        private static readonly string[] SkillKeys = { "level", "run", "missRun", "a", "c", "h", "byLevel", "mistakes" };
+        private static readonly string[] EntryKeys = { "skill", "level", "seed", "prob" };
+        private static readonly string[] SpotKeys = { "x", "y", "r" };
+
+        /// <summary>The keys of a stored object that <paramref name="known"/> doesn't list, deep-copied in stored order; null when none.</summary>
+        internal static JsonValue Unknown(JsonValue src, string[] known)
+        {
+            if (src == null || src.Kind != JsonKind.Object) return null;
+            JsonValue o = null;
+            foreach (string k in src.Keys)
+            {
+                if (System.Array.IndexOf(known, k) >= 0) continue;
+                if (o == null) o = JsonValue.Obj();
+                o.Set(k, JsonTree.Clone(src[k]));
+            }
+            return o;
+        }
+
+        /// <summary>Appends kept unknown keys after the known ones (a known key is never overwritten).</summary>
+        private static JsonValue WithExtra(JsonValue o, JsonValue extra)
+        {
+            if (extra == null) return o;
+            foreach (string k in extra.Keys) if (!o.Has(k)) o.Set(k, extra[k]);
+            return o;
+        }
+
         /// <summary>
         /// store.js:26-40 <c>migrate(raw)</c>: fill in anything missing so older or partial saves keep working;
         /// coffee is always unlocked. Where the JS would keep a value of the wrong type (and then misbehave),
-        /// this keeps the default instead; see DECISIONS.md.
+        /// this keeps the default instead; see DECISIONS.md. Save version 2: keys this version doesn't know are kept
+        /// (top level, each group, and each show, word, skill, review entry and sticker spot), <c>journal.seen</c> is read
+        /// (a version 1 save has none), and the version written is 2, or the stored one if it is newer.
         /// </summary>
         public static SaveBlob Migrate(JsonValue raw, string today)
         {
             var d = SaveBlob.Defaults(today);
             // store.js:28 if (!raw || typeof raw !== 'object') return d
             if (raw == null || raw.Kind != JsonKind.Object) return d;
+
+            int storedV = JsonTree.Int(raw["v"], 0);
+            if (storedV > SaveBlob.Version) d.V = storedV;
+            d.Extra = Unknown(raw, TopKeys);
 
             // store.js:29 { ...d, ...raw, v: 1 }
             string created = JsonTree.Str(raw["created"]);
@@ -65,12 +110,14 @@ namespace WorldTour.Core.Progress
                 if (s["sound"] != null && s["sound"].Kind == JsonKind.Bool) d.Settings.Sound = s["sound"].BoolValue;
                 d.Settings.Theme = JsonTree.Str(s["theme"]) ?? d.Settings.Theme;
                 d.Settings.Motion = JsonTree.Str(s["motion"]) ?? d.Settings.Motion;
+                d.Settings.Extra = Unknown(s, SettingsKeys);
             }
             JsonValue f = Obj(raw["fans"]);
             if (f != null)
             {
                 d.Fans.Balance = JsonTree.Long(f["balance"], 0);
                 d.Fans.Lifetime = JsonTree.Long(f["lifetime"], 0);
+                d.Fans.Extra = Unknown(f, FansKeys);
             }
             JsonValue st = Obj(raw["streak"]);
             if (st != null)
@@ -78,6 +125,7 @@ namespace WorldTour.Core.Progress
                 d.Streak.Days = JsonTree.Int(st["days"], 0);
                 d.Streak.Best = JsonTree.Int(st["best"], 0);
                 d.Streak.Last = JsonTree.Str(st["last"]);
+                d.Streak.Extra = Unknown(st, StreakKeys);
             }
             JsonValue ve = Obj(raw["venues"]);
             List<string> unlocked = null;
@@ -85,6 +133,7 @@ namespace WorldTour.Core.Progress
             {
                 unlocked = Strings(ve["unlocked"]);
                 if (ve["seen"] != null) d.Venues.Seen = Strings(ve["seen"]) ?? new List<string> { Venues.First };
+                d.Venues.Extra = Unknown(ve, VenuesKeys);
             }
             // store.js:38 coffee is always unlocked (deduplicated only when it had to be added, as in the JS)
             if (unlocked == null || !unlocked.Contains(Venues.First))
@@ -100,6 +149,7 @@ namespace WorldTour.Core.Progress
             {
                 d.Review.Words = Strings(rv["words"]) ?? new List<string>();    // store.js:36
                 d.Review.Math = ReadReview(rv["math"]);                           // store.js:37
+                d.Review.Extra = Unknown(rv, ReviewKeys);
             }
             JsonValue inv = Obj(raw["inventory"]);
             if (inv != null)
@@ -113,6 +163,7 @@ namespace WorldTour.Core.Progress
                         string val = JsonTree.Str(eq[k]);
                         if (val != null) d.Inventory.Equipped[k] = val;
                     }
+                d.Inventory.Extra = Unknown(inv, InventoryKeys);
             }
             JsonValue jo = Obj(raw["journal"]);
             if (jo != null)
@@ -130,8 +181,12 @@ namespace WorldTour.Core.Progress
                     {
                         JsonValue sp = Dict(lay[k]);
                         if (sp != null && JsonTree.IsNum(sp["x"]) && JsonTree.IsNum(sp["y"]))
-                            d.Journal.Layout[k] = new Spot { X = sp["x"].Number, Y = sp["y"].Number, R = JsonTree.IsNum(sp["r"]) ? sp["r"].Number : 0 };
+                            d.Journal.Layout[k] = new Spot { X = sp["x"].Number, Y = sp["y"].Number, R = JsonTree.IsNum(sp["r"]) ? sp["r"].Number : 0, Extra = Unknown(sp, SpotKeys) };
                     }
+                // version 2: the stickers she has seen peel on (a version 1 save has none); strings only, each once
+                List<string> seen = Strings(jo["seen"]);
+                if (seen != null) d.Journal.Seen = seen.Distinct().ToList();
+                d.Journal.Extra = Unknown(jo, JournalKeys);
             }
 
             // store.js:34 skills, words, time must be plain objects
@@ -202,7 +257,8 @@ namespace WorldTour.Core.Progress
                     Skill = skill,
                     Level = JsonTree.Int(e["level"], 1),
                     Seed = JsonTree.Long(e["seed"], 0),
-                    Prob = prob == null ? null : JsonTree.Clone(prob)
+                    Prob = prob == null ? null : JsonTree.Clone(prob),
+                    Extra = Unknown(e, EntryKeys)
                 });
             }
             return list;
@@ -233,6 +289,7 @@ namespace WorldTour.Core.Progress
             if (ms != null)
                 foreach (string key in ms.Keys)
                     if (JsonTree.IsNum(ms[key])) k.Mistakes[key] = JsonTree.Int(ms[key], 0);
+            k.Extra = Unknown(r, SkillKeys);
             return k;
         }
 
@@ -245,7 +302,8 @@ namespace WorldTour.Core.Progress
                 First = JsonTree.Int(r["first"], 0),
                 H = JsonTree.Int(r["h"], 0),
                 Miss = JsonTree.Int(r["miss"], 0),
-                Last = JsonTree.Str(r["last"])
+                Last = JsonTree.Str(r["last"]),
+                Extra = Unknown(r, WordKeys)
             };
         }
 
@@ -264,7 +322,8 @@ namespace WorldTour.Core.Progress
                 Best = JsonTree.Int(r["best"], 0),
                 Missed = System.Math.Max(0, JsonTree.Int(r["missed"], 0)),
                 Sold = Truthy(r["sold"]),
-                Encore = Truthy(r["encore"])
+                Encore = Truthy(r["encore"]),
+                Extra = Unknown(r, ShowKeys)
             };
         }
 
@@ -291,10 +350,10 @@ namespace WorldTour.Core.Progress
                 .Set("v", b.V)
                 .Set("created", b.Created)
                 .Set("updated", b.Updated)
-                .Set("settings", JsonValue.Obj().Set("sound", b.Settings.Sound).Set("theme", b.Settings.Theme).Set("motion", b.Settings.Motion))
-                .Set("fans", JsonValue.Obj().Set("balance", b.Fans.Balance).Set("lifetime", b.Fans.Lifetime))
-                .Set("streak", JsonValue.Obj().Set("days", b.Streak.Days).Set("best", b.Streak.Best).Set("last", b.Streak.Last))
-                .Set("venues", JsonValue.Obj().Set("unlocked", StrArr(b.Venues.Unlocked)).Set("seen", StrArr(b.Venues.Seen)));
+                .Set("settings", WithExtra(JsonValue.Obj().Set("sound", b.Settings.Sound).Set("theme", b.Settings.Theme).Set("motion", b.Settings.Motion), b.Settings.Extra))
+                .Set("fans", WithExtra(JsonValue.Obj().Set("balance", b.Fans.Balance).Set("lifetime", b.Fans.Lifetime), b.Fans.Extra))
+                .Set("streak", WithExtra(JsonValue.Obj().Set("days", b.Streak.Days).Set("best", b.Streak.Best).Set("last", b.Streak.Last), b.Streak.Extra))
+                .Set("venues", WithExtra(JsonValue.Obj().Set("unlocked", StrArr(b.Venues.Unlocked)).Set("seen", StrArr(b.Venues.Seen)), b.Venues.Extra));
             var skills = JsonValue.Obj();
             foreach (var kv in b.Skills) skills.Set(kv.Key, WriteSkill(kv.Value));
             o.Set("skills", skills);
@@ -302,7 +361,7 @@ namespace WorldTour.Core.Progress
             foreach (var kv in b.Words)
             {
                 WordStat w = kv.Value;
-                words.Set(kv.Key, JsonValue.Obj().Set("a", w.A).Set("c", w.C).Set("first", w.First).Set("h", w.H).Set("miss", w.Miss).Set("last", w.Last));
+                words.Set(kv.Key, WithExtra(JsonValue.Obj().Set("a", w.A).Set("c", w.C).Set("first", w.First).Set("h", w.H).Set("miss", w.Miss).Set("last", w.Last), w.Extra));
             }
             o.Set("words", words);
             var math = new List<JsonValue>();
@@ -310,9 +369,9 @@ namespace WorldTour.Core.Progress
             {
                 var e = JsonValue.Obj().Set("skill", r.Skill).Set("level", r.Level).Set("seed", r.Seed);
                 if (r.Prob != null) e.Set("prob", r.Prob);
-                math.Add(e);
+                math.Add(WithExtra(e, r.Extra));
             }
-            o.Set("review", JsonValue.Obj().Set("words", StrArr(b.Review.Words)).Set("math", JsonValue.Arr(math)));
+            o.Set("review", WithExtra(JsonValue.Obj().Set("words", StrArr(b.Review.Words)).Set("math", JsonValue.Arr(math)), b.Review.Extra));
             var shows = new List<JsonValue>();
             foreach (ShowRecord x in b.Shows)
             {
@@ -321,7 +380,7 @@ namespace WorldTour.Core.Progress
                 if (x.Missed > 0) e.Set("missed", x.Missed);
                 if (x.Sold) e.Set("sold", true);
                 if (x.Encore) e.Set("encore", true);
-                shows.Add(e);
+                shows.Add(WithExtra(e, x.Extra));
             }
             o.Set("shows", JsonValue.Arr(shows));
             var time = JsonValue.Obj();
@@ -329,14 +388,14 @@ namespace WorldTour.Core.Progress
             o.Set("time", time);
             var eq = JsonValue.Obj();
             foreach (var kv in b.Inventory.Equipped) eq.Set(kv.Key, kv.Value);
-            o.Set("inventory", JsonValue.Obj().Set("owned", StrArr(b.Inventory.Owned)).Set("equipped", eq));
+            o.Set("inventory", WithExtra(JsonValue.Obj().Set("owned", StrArr(b.Inventory.Owned)).Set("equipped", eq), b.Inventory.Extra));
             var stk = JsonValue.Obj();
             foreach (var kv in b.Journal.Stickers) stk.Set(kv.Key, kv.Value);
             var lay = JsonValue.Obj();
             foreach (var kv in b.Journal.Layout)
-                lay.Set(kv.Key, JsonValue.Obj().Set("x", JsonValue.Num(kv.Value.X)).Set("y", JsonValue.Num(kv.Value.Y)).Set("r", JsonValue.Num(kv.Value.R)));
-            o.Set("journal", JsonValue.Obj().Set("stickers", stk).Set("layout", lay));
-            return o;
+                lay.Set(kv.Key, WithExtra(JsonValue.Obj().Set("x", JsonValue.Num(kv.Value.X)).Set("y", JsonValue.Num(kv.Value.Y)).Set("r", JsonValue.Num(kv.Value.R)), kv.Value.Extra));
+            o.Set("journal", WithExtra(JsonValue.Obj().Set("stickers", stk).Set("layout", lay).Set("seen", StrArr(b.Journal.Seen)), b.Journal.Extra));
+            return WithExtra(o, b.Extra);
         }
 
         /// <summary>
@@ -361,8 +420,8 @@ namespace WorldTour.Core.Progress
                 bl.Set(kv.Key.ToString(System.Globalization.CultureInfo.InvariantCulture), JsonValue.Ints(kv.Value.Select(x => (long)x)));
             var ms = JsonValue.Obj();
             foreach (var kv in k.Mistakes) ms.Set(kv.Key, kv.Value);
-            return JsonValue.Obj().Set("level", k.Level).Set("run", k.Run).Set("missRun", k.MissRun)
-                .Set("a", k.A).Set("c", k.C).Set("h", k.H).Set("byLevel", bl).Set("mistakes", ms);
+            return WithExtra(JsonValue.Obj().Set("level", k.Level).Set("run", k.Run).Set("missRun", k.MissRun)
+                .Set("a", k.A).Set("c", k.C).Set("h", k.H).Set("byLevel", bl).Set("mistakes", ms), k.Extra);
         }
 
         private static JsonValue StrArr(IEnumerable<string> items)

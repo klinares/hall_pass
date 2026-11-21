@@ -43,16 +43,17 @@ namespace WorldTour.Game.Ticket
 
         Dictionary<string, Sprite> _byName;
 
-        /// <summary>The sprite exported under this manifest name ("star", "venue_coffee"), or null.</summary>
+        /// <summary>The sprite exported under this manifest name ("star", "venue_coffee"), or null. A plain guitar sticker wears the equipped skin (LookArt).</summary>
         public Sprite Get(string name)
         {
+            if (name != null) name = WorldTour.Game.Ui.LookArt.Skinned(name);
             if (_byName == null)
             {
                 _byName = new Dictionary<string, Sprite>();
                 foreach (Entry e in sprites) if (!string.IsNullOrEmpty(e.name) && e.sprite != null) _byName[e.name] = e.sprite;
             }
             Sprite s;
-            return name != null && _byName.TryGetValue(name, out s) ? s : null;
+            return name != null && _byName.TryGetValue(name, out s) ? WorldTour.Game.Ui.ThemeSkin.For(s) : null;   // the live theme's twin, if it has one
         }
 
         /// <summary>sticker.js journalArt: "venue:&lt;id&gt;" is a venue drawing, anything else a sticker.</summary>

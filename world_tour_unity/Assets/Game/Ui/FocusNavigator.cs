@@ -156,6 +156,8 @@ namespace WorldTour.Game.Ui
             }
             _ring.enabled = show;
             if (!show) return;
+            Color rc = Theme.Color(ColorRole.Accent2);   // follows a theme switch (the ring lives as long as the scene)
+            if (_ring.color != rc) _ring.color = rc;
             Rect r = WorldRect((RectTransform)sel.transform);
             RectTransform hud = (RectTransform)_ring.transform.parent;
             Vector2 a = hud.InverseTransformPoint(new Vector3(r.xMin, r.yMin)), b = hud.InverseTransformPoint(new Vector3(r.xMax, r.yMax));

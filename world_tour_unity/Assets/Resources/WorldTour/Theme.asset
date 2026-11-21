@@ -26,3 +26,24 @@ MonoBehaviour:
   dogArt: {fileID: 11400000, guid: 40cf264af78d1364f9550b6ecc74bd41, type: 2}
   iconSound: {fileID: 21300000, guid: 62607c0cfd51fb8408db0d14c4157c6e, type: 3}
   iconMute: {fileID: 21300000, guid: 41da0ed30efd6f94dbf7f1d242d30a5d, type: 3}
+  peachDecor:
+  - tourPink: {fileID: 21300000, guid: 46a9671ba2404ff42a044f7a85d0b791, type: 3}
+    peachNavy: {fileID: 21300000, guid: a4edd8caeba64714b81f3d9fa12a4c1b, type: 3}
+  - tourPink: {fileID: 21300000, guid: b3bb14011966e704a950b58a4ef6850c, type: 3}
+    peachNavy: {fileID: 21300000, guid: 923514946302ff948afa554299f56141, type: 3}
+  - tourPink: {fileID: 21300000, guid: 0a2f2ff8e79077d46ac72bfae3b2198a, type: 3}
+    peachNavy: {fileID: 21300000, guid: cc982b3debc5d364aa683b0b78a17e2b, type: 3}
+  - tourPink: {fileID: 21300000, guid: 5dc4b63a0576c554aa35dbc6d5349ccc, type: 3}
+    peachNavy: {fileID: 21300000, guid: 316a1e5d991134d46bb8ca634316cdda, type: 3}
+  - tourPink: {fileID: 21300000, guid: c4a2248ea0b5c5543bf27e1acfdc3330, type: 3}
+    peachNavy: {fileID: 21300000, guid: 5474df311ef5dcd4098774c8b0a530ee, type: 3}
+  - tourPink: {fileID: 21300000, guid: 4eca5becb31439445987d6dc69a73278, type: 3}
+    peachNavy: {fileID: 21300000, guid: f323000ab8d63d746b6fff60507a7ba3, type: 3}
+  - tourPink: {fileID: 21300000, guid: f75d118fe490bbe4fadd0f36a742462a, type: 3}
+    peachNavy: {fileID: 21300000, guid: 33f5fe39781b10b4e9377eca5cea8ea2, type: 3}
+  - tourPink: {fileID: 21300000, guid: 1b119c8e86024b640bce1b3bfe1c6cde, type: 3}
+    peachNavy: {fileID: 21300000, guid: ce6844448a5b86d41a79ac726ef65099, type: 3}
+  - tourPink: {fileID: 21300000, guid: 5c91c36bafeef2e46b27942476afc5c6, type: 3}
+    peachNavy: {fileID: 21300000, guid: c00b1f5095fb57043b6ab699449b760f, type: 3}
+  - tourPink: {fileID: 21300000, guid: db9ce939fa6b7b4459836520d0caffb7, type: 3}
+    peachNavy: {fileID: 21300000, guid: 24a5bbea6592b7e4bbf76f243589e482, type: 3}

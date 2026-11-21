@@ -21,6 +21,8 @@ namespace WorldTour.Game.Ui
             if (Boot.Store != null) GameSettings.Bind(Boot.Store);
             else GameSettings.Apply();
             Sfx.Prepare();
+            ThemeSkin.Attach(gameObject, stack);   // decor sprites follow the theme (palette colours already do)
+            gameObject.AddComponent<WorldTour.Game.Save.PlayTimer>();   // "time played" for the manager's office (progress.js timer)
             if (stack != null && home != null) stack.SetRoot(home);
             else Debug.LogWarning("[ui] MainRoot needs its screen stack and home screen assigned");
             // the web header's sound toggle and footer's no-save notice, plus Tab navigation, on every screen

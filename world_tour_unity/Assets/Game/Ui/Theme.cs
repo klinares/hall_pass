@@ -67,7 +67,8 @@ namespace WorldTour.Game.Ui
 
         public static TMP_FontAsset Font(FontRole r) { return Asset != null ? Asset.Font(r) : null; }
 
-        public static Sprite Sprite(SpriteRole r) { return Asset != null ? Asset.Sprite(r) : null; }
+        /// <summary>The decor sprite for a role, in the live theme (ThemeSkin's twin when the theme has one).</summary>
+        public static Sprite Sprite(SpriteRole r) { return Asset != null ? ThemeSkin.For(Asset.Sprite(r)) : null; }
 
         /// <summary>Applies a font role to a label (leaves the TMP default when 2.1's fonts aren't in yet).</summary>
         public static void ApplyFont(TMP_Text label, FontRole r)

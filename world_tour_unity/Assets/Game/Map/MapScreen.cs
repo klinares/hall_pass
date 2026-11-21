@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using WorldTour.Core.Data;
 using WorldTour.Core.Meta;
 using WorldTour.Core.Progress;
+using WorldTour.Game.Meta;
 using WorldTour.Game.Motion;
 using WorldTour.Game.Ui;
 using WorldTour.Game.Util;
@@ -157,6 +158,8 @@ namespace WorldTour.Game.Map
             MapLayout L = art != null ? art.Layout : null;
             if (L != null) y = BuildMap(m, L, x0, y, mw, playUnlocks && m.Fresh.Count > 0);
             else Debug.LogWarning("[map] " + (art != null ? art.Error : "no map art assigned"));
+            y = BuildHub(s, x0, y + 28f, mw);
+            y = BuildFooter(x0, y + 24f, mw);
             _contentHeight = y + 40f;
             _content.sizeDelta = new Vector2(0f, _contentHeight);
 
@@ -526,6 +529,62 @@ namespace WorldTour.Game.Map
             if (!animate) { sr.verticalNormalizedPosition = target; return; }
             Tweener.Float(from, target, Tokens.TMed, Ease.Out, v => { if (sr != null) sr.verticalNormalizedPosition = v; }, null, owner: sr);
         }
+
+        // ------------------------------------------------------------------ hub (map.js:58-61)
+
+        /// <summary>map.js .hubnav: the backstage and tour journal cards under the map, side by side.</summary>
+        float BuildHub(SaveBlob s, float x0, float y, float mw)
+        {
+            const float gap = 14f, h = 76f;
+            float cw = (mw - gap) * 0.5f;
+            int stk = s.Journal.Stickers.Count;
+            HubCard("Hub_backstage", "amp_sm", Backstage.Title, MapText.FansToSpend(s.Fans.Balance), new Vector2(x0, y), cw, h, -2.4f, OpenBackstage);
+            HubCard("Hub_journal", "setlist_sm", JournalText.Title, MapText.StickersOf(stk, Milestones.All.Count), new Vector2(x0 + cw + gap, y), cw, h, 2.2f, OpenJournal);
+            return y + h;
+        }
+
+        void HubCard(string name, string sticker, string title, string small, Vector2 at, float w, float h, float cssTilt, Action open)
+        {
+            RectTransform root = UiKit.Place(UiKit.Rect(name, _content), at + new Vector2(w * 0.5f, h * 0.5f), new Vector2(w, h), UiKit.Center);
+            root.localEulerAngles = new Vector3(0f, 0f, MapLayout.UnityTilt(cssTilt));   // map.js tilt-3 / tilt-4
+            Image hit = root.gameObject.AddComponent<Image>();
+            hit.color = new Color(1, 1, 1, 0);
+            RectTransform body = UiKit.Stretch(UiKit.Rect("Body", root));
+            body.pivot = UiKit.Center;
+            RectTransform face = UiKit.Card(body, Tokens.ShadowMd);
+            Sprite sp = art != null ? art.Get(sticker) : null;
+            if (sp != null) UiKit.Sticker(face, "Sticker", sp, art.Box(sticker), new Vector2(8f - Tokens.BorderWidth, (h - 58f) * 0.5f - Tokens.BorderWidth), 58f);
+            TextMeshProUGUI b = UiKit.Text(face, "Title", title, FontRole.Display, 24f, ColorRole.Ink, TextAlignmentOptions.BottomLeft, false);
+            UiKit.Place(b.rectTransform, new Vector2(76f, 10f), new Vector2(w - 90f, 30f), UiKit.TopLeft);
+            TextMeshProUGUI t = UiKit.Text(face, "Small", small, FontRole.Body, 11.5f, ColorRole.Ink, TextAlignmentOptions.TopLeft, false);
+            UiKit.Place(t.rectTransform, new Vector2(76f, 42f), new Vector2(w - 90f, 18f), UiKit.TopLeft);
+            var press = root.gameObject.AddComponent<PressTarget>();
+            press.body = body;
+            press.squash = new Vector2(0.95f, 0.9f);   // screens.css .hubcard:active
+            press.transition = Selectable.Transition.None;
+            press.targetGraphic = hit;
+            press.Clicked += open;
+            press.Focused += p => ScrollTo(at.y + h * 0.5f, true);
+        }
+
+        /// <summary>
+        /// index.html:32, the footer under every web page: the "manager's office" link (task 5.2). Here it closes the map
+        /// page, under the hub cards, so it never covers anything in either theme or size.
+        /// </summary>
+        float BuildFooter(float x0, float y, float mw)
+        {
+            var link = WorldTour.Game.Office.OfficeButton.Create(_content, "OfficeLink", WorldTour.Game.Office.OfficeText.Link);
+            float w = link.GetComponent<LayoutElement>().preferredWidth;
+            UiKit.Place((RectTransform)link.transform, new Vector2(x0 + mw * 0.5f, y + Tokens.Tap * 0.5f), new Vector2(w, Tokens.Tap), UiKit.Center);
+            link.Clicked += OpenOffice;
+            return y + Tokens.Tap;
+        }
+
+        void OpenOffice() { if (Stack != null && Stack.Top == this) { Debug.Log("WT_OFFICE_LINK"); WorldTour.Game.Office.OfficeScreen.Open(Stack); } }
+
+        void OpenBackstage() { if (Stack != null) BackstageScreen.Open(Stack); }
+
+        void OpenJournal() { if (Stack != null) JournalScreen.Open(Stack); }
 
         // ------------------------------------------------------------------ navigation
 

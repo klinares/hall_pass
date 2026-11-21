@@ -73,7 +73,11 @@ public static class SpriteImport
     {
         try { LoadManifest(); } catch (Exception e) { Debug.LogWarning("SpriteImport: manifest unreadable: " + e.Message); return null; }
         if (byFile == null) return null;
-        byFile.TryGetValue(assetPath.Substring(Root.Length + 1), out var hit);
+        string rel = assetPath.Substring(Root.Length + 1);
+        // A theme's twin of a decor piece (decor_peach-navy/bubble.png, phase 5) has the same size, pivot and border as the
+        // tour-pink piece (the exporter's peach-navy manifest matches entry for entry), so it imports with that entry.
+        if (rel.StartsWith("decor_", StringComparison.Ordinal) && rel.IndexOf('/') > 0) rel = "decor" + rel.Substring(rel.IndexOf('/'));
+        byFile.TryGetValue(rel, out var hit);
         return hit;
     }
 
@@ -179,7 +183,7 @@ public static class SpriteImport
         try { foreach (var p in pngs) { AssetDatabase.ImportAsset(p, ImportAssetOptions.ForceUpdate); sum.imported++; } }
         finally { AssetDatabase.StopAssetEditing(); }
         var listed = new HashSet<string>(m.sprites.Select(e => Root + "/" + e.file), StringComparer.Ordinal);
-        foreach (var p in pngs) if (!listed.Contains(p)) sum.warnings.Add(p + " is not in the manifest (left from an older export?)");
+        foreach (var p in pngs) if (!listed.Contains(p) && p.IndexOf("/decor_", StringComparison.Ordinal) < 0) sum.warnings.Add(p + " is not in the manifest (left from an older export?)");
 
         // 2. check each manifest sprite against what Unity imported
         foreach (var e in m.sprites)

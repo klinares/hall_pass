@@ -27,6 +27,8 @@ namespace WorldTour.Core.Shows
         };
         /// <summary>Mistake tag to count (JS <c>mistakes</c>).</summary>
         public Dictionary<string, int> Mistakes = new Dictionary<string, int>();
+        /// <summary>Keys the save doesn't know, kept in stored order (null = none). Save version 2.</summary>
+        public WorldTour.Core.Maths.Gen.JsonValue Extra;
     }
 
     /// <summary>

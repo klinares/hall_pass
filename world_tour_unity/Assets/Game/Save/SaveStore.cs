@@ -200,5 +200,61 @@ namespace WorldTour.Game.Save
             Blob = incoming;
             return Save();
         }
+
+        /// <summary>The backend as Core's key-value slots (always the current backend, which can fall back to memory).</summary>
+        public ISaveSlots Slots { get { return new SlotView(this); } }
+
+        sealed class SlotView : ISaveSlots
+        {
+            readonly SaveStore _s;
+            public SlotView(SaveStore s) { _s = s; }
+            public string Read(string key) { return _s._backend.Read(key); }
+            public bool Write(string key, string text) { return _s._backend.Write(key, text); }
+        }
+
+        /// <summary>
+        /// The office's import, after the player confirmed: the current save is copied to SaveBackup.Key first
+        /// (the older copy moves to SaveBackup.Key2), and only if that copy is safely kept is the save replaced.
+        /// Logs "WT_SAVE_SWAP kind=import backup=Kept saved=true".
+        /// </summary>
+        public SwapResult ReplaceKeepingBackup(SaveBlob incoming)
+        {
+            if (incoming == null) throw new ArgumentNullException(nameof(incoming));
+            return Swap("import", incoming);
+        }
+
+        /// <summary>
+        /// The office's confirmed reset (store.js reset(): fresh defaults, saved at once), with the current save copied
+        /// to SaveBackup.Key first, exactly as an import does. Logs "WT_SAVE_SWAP kind=reset ...".
+        /// </summary>
+        public SwapResult ResetKeepingBackup(string today)
+        {
+            return Swap("reset", SaveBlob.Defaults(today));
+        }
+
+        SwapResult Swap(string kind, SaveBlob next)
+        {
+            BackupOutcome b = SaveBackup.Keep(Slots, Blob);
+            if (b == BackupOutcome.Failed)
+            {
+                Debug.LogWarning("[save] couldn't keep a copy of the current save before the " + kind + "; nothing was changed");
+                Debug.Log("WT_SAVE_SWAP kind=" + kind + " backup=Failed saved=false");
+                return new SwapResult { Changed = false, Backup = b, Saved = false };
+            }
+            Blob = next;
+            bool saved = Save();
+            Debug.Log("WT_SAVE_SWAP kind=" + kind + " backup=" + b + " saved=" + (saved ? "true" : "false"));
+            return new SwapResult { Changed = true, Backup = b, Saved = saved };
+        }
+    }
+
+    /// <summary>What <see cref="SaveStore.ReplaceKeepingBackup"/> or <see cref="SaveStore.ResetKeepingBackup"/> did.</summary>
+    public struct SwapResult
+    {
+        /// <summary>False only when the backup failed: the save is exactly as it was.</summary>
+        public bool Changed;
+        public BackupOutcome Backup;
+        /// <summary>True when the new save is written to storage (false while storage is blocked: this session only).</summary>
+        public bool Saved;
     }
 }

@@ -57,6 +57,7 @@ namespace WorldTour.Game.Flow
             rt.offsetMin = Vector2.zero; rt.offsetMax = Vector2.zero;
             DogRig rig = go.AddComponent<DogRig>();
             rig.Init(Art, TweenerPort.Instance, MotionSettingsPort.Instance);
+            rig.SetOutfit(DogPoses.OutfitOf(MapScreen.Blob));   // riff wears his backstage outfit everywhere (shop.js, look.js setOutfit)
             return rig;
         }
 

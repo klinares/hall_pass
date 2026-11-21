@@ -60,6 +60,13 @@ namespace WorldTour.Game.Ui
 
         public Style ButtonStyle { get { return style; } set { style = value; Paint(); } }
 
+        /// <summary>Whether a click plays the button's own sound (off when the screen plays its own, as backstage's buy does).</summary>
+        public bool PlaySound { get { return playSound; } set { playSound = value; } }
+
+        /// <summary>How faded the button is while disabled: .btn:disabled 0.42; backstage's mirror uses .55 (screens.css .mirror .btn[disabled]).</summary>
+        public float DisabledAlpha { get { return _disabledAlpha; } set { _disabledAlpha = value; Paint(); } }
+        float _disabledAlpha = 0.42f;
+
         /// <summary>Sets the label, lowercased.</summary>
         public string Text
         {
@@ -206,7 +213,7 @@ namespace WorldTour.Game.Ui
             if (focusRing != null) focusRing.color = accent2;
             if (label != null) label.color = inkStyle ? Theme.Color(ColorRole.OnInk) : ink;
             if (_bodyGroup == null && body != null) _bodyGroup = body.GetComponent<CanvasGroup>();
-            if (_bodyGroup != null) _bodyGroup.alpha = _disabled ? 0.42f : 1f;   // .btn:disabled opacity
+            if (_bodyGroup != null) _bodyGroup.alpha = _disabled ? _disabledAlpha : 1f;   // .btn:disabled opacity
         }
     }
 }

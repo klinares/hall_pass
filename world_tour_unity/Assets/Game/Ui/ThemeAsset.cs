@@ -37,6 +37,18 @@ namespace WorldTour.Game.Ui
         public Sprite iconSound;
         public Sprite iconMute;
 
+        /// <summary>A decor sprite and its peach + navy twin (the same piece rendered from the web CSS with that theme on).</summary>
+        [System.Serializable]
+        public struct DecorTwin
+        {
+            public Sprite tourPink;
+            public Sprite peachNavy;
+        }
+
+        [Header("peach + navy decor (phase 5, Assets/Art/Sprites/decor_peach-navy/, wired by MetaBuilder)")]
+        [Tooltip("ThemeSkin swaps every Image showing one of these for its twin when the theme changes.")]
+        public System.Collections.Generic.List<DecorTwin> peachDecor = new System.Collections.Generic.List<DecorTwin>();
+
         public TMP_FontAsset Font(FontRole r)
         {
             switch (r)

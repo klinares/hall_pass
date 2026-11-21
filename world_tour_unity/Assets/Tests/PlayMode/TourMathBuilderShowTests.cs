@@ -121,8 +121,20 @@ namespace WorldTour.Game.Tests
                     yield return Tap(FindDeep(mode.transform, "Hint").gameObject);
                     Assert.AreEqual(1, engine.Hints, "the hint did not count");
                     Assert.AreEqual(2, g.Ladder.Shown);
-                    Assert.IsNotNull(g.Scene().Path, "the partial step draws the route");
-                    Assert.AreEqual(a.X, g.Scene().Highlight);
+                    // answer 16 (intended difference 29): a hint-2 route that would end on the answer is not drawn, and an
+                    // answer on the bottom line gets no big number. Both depend on the dealt problem (y = 0 about 1 in 7).
+                    GridPt from2 = g.Setup.Start ?? new GridPt(0, 0);
+                    GridPt end2 = g.Setup.Read ? new GridPt(a.X, 0) : new GridPt(a.X, from2.Y);
+                    if (end2.Equals(a))
+                    {
+                        Assert.IsNull(g.Scene().Path, "no hint-2 route onto the answer (answer 16)");
+                        Assert.IsNull(g.Scene().Highlight, "no big number onto the answer (answer 16)");
+                    }
+                    else
+                    {
+                        Assert.IsNotNull(g.Scene().Path, "the partial step draws the route");
+                        Assert.AreEqual(a.Y == 0 ? (int?)null : a.X, g.Scene().Highlight);
+                    }
                     yield return Place(mode, a, click: false);                 // the keyboard: arrows (or picker arrows)
                     if (g.Setup.Read) yield return Tap(FindDeep(mode.transform, "Set").gameObject);
                     else ExecuteEvents.Execute(mode.Plot.gameObject, new BaseEventData(EventSystem.current), ExecuteEvents.submitHandler);

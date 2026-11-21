@@ -237,3 +237,42 @@ The phase 4 tester checked every hint picture in every math mode. Three show the
 The tester ruled beat maker's builder hint 2 (the grid and "you need 4/8 more") acceptable, since answer 8 kept that line for builders. All three will be listed in the phase 4 report as faults the web game still has. Say if you disagree with any.
 
 **Answer to 17 (advisor, 2026-11-20 18:58):** Agreed on all three fixes, and on the tester's ruling that beat maker's builder hint 2 stays. Nothing to change.
+
+## 18. Peach theme: re-colour the stickers, venues and riff too? (asked 2026-11-20 20:xx, not blocking)
+
+**Context:** The peach and navy theme now re-skins the UI, all text and the decor. The sticker, venue and riff art stays in tour pink (intended difference 37). A full peach set is already exported, about 1.48 MB of PNG. That's roughly 0.5–1 MB more download (now 13.00 MB, against a 20 MB budget), plus a small change so riff doesn't flicker when he changes pose.
+
+**Options:** (a) keep the art in pink, as now; (b) add the full peach art set.
+
+**Recommendation:** (b). In the web game the peach theme changes the whole look, and stickers left pink on a peach page will look unfinished to her. It stays well under budget. Until answered, the build keeps (a).
+
+**Answer to 18 (advisor, 2026-11-20 21:04):** (b), the full peach art set. The owner asked for a clean, polished result, and pink stickers on a peach page would look unfinished. Do it as part of the polish task (6.2), not before the phase 5 tester pass, and include the no-flicker change for riff. Have the tester look at every screen in peach at both sizes, and report the new download size.
+
+## 19. Journal and backstage departures from the web (FYI, decided by the lead 2026-11-20 20:xx)
+
+Kept as intended differences 35, 36 and 38:
+- **35:** the journal is a paged book, with a slot per milestone and a greyed slot with the web's "how" hint for unearned ones, plus a last page for bought stickers. New copy: "page N of M" and arrow buttons.
+- **36:** new stickers peel on the first time she sees them in the book, and the book opens on that page.
+- **38:** no confetti on a purchase, only the toast.
+
+Say if you want any of them changed.
+
+**Answer to 19 (advisor, 2026-11-20 21:04):** Agreed on all three. The paged journal with greyed "how" slots is better than a long list.
+
+## 20. Answer 14 in world_tour/: extended to 100 and 1,000 (FYI, 2026-11-20 20:5x)
+
+The advisor's 19:22 edit (in fluency.js at 19:18:58) used the place-value line for × and ÷ 10 only. At 19:2x the owner told the lead directly to apply the answer 14 fix to `world_tour/`. Before the lead read the 19:25 note, it extended the line to every power (× and ÷ 10, 100, 1,000), so the web game says exactly what Unity's `PlaceValueHint` says. The "8.8 × 10 = 88. keep going…" step at 100 and 1,000 is gone. The test now checks the claim against the numbers at every power: node 41/41, chromium math 9/9, math-more 28/28. LF line endings, nothing staged. Say if you want the 10-only version back.
+
+**Answer to 20 (advisor, 2026-11-20 21:04):** Agreed, keep the every-power version; matching Unity exactly is right. Nothing to revert.
+
+**For the phase 5 tester pass (advisor, 21:04):** on the real build in Chrome, paste a save code into the import field with a real Ctrl+V (not the stand-in). If it fails or is unreliable, make "choose a file" the first and default route on the import screen and leave the code field as the second.
+
+## 21. New manager's office text (FYI, 2026-11-20 21:xx)
+
+The web game has no export or import, so the office's "keep a copy" and "load a copy" cards, their status lines and the import preview are new Unity text. It's parent-facing and lowercase. Main lines:
+- "keep a copy" / "browser data can get cleared. save her progress as a file, or copy it as a code, and keep it somewhere safe." / "download save file" / "copy save code"
+- "load a copy" / "replaces the progress on this device with a saved file or code. the progress here now is kept as a backup on this device first." / "choose a save file…" / "click here, then paste a save code (ctrl+v)"
+- the preview: "this copy: <fans> total fans, <v> of 8 venues, <n> shows, <n> journal stickers, last played <day>." with "here now:" for the current save, then "load this copy? it replaces the progress here." and "cancel / yes, load this copy"
+- the result lines: "loaded. the progress from before is kept as a backup on this device." Every refusal ends with " nothing was changed."
+
+The full list is in world_tour_unity/Assets/Game/Office/OfficeText.cs. Time played is now counted as on the web, 15 s at a time while the page is in use. Say if any line should change.

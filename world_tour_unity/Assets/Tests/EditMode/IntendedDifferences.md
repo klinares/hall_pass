@@ -175,3 +175,23 @@ Kept: "1 5/4" counts as 9/4 where simplest form isn't asked (7.4); equivalent de
     notes); ticket chunk notes, truck side labels (at least 15 px) and the "more full rows" line are larger and darker;
     the stage's bottom-line numbers sit a little lower so a light on the bottom line doesn't cover its number; a
     coordinate pair keeps together with a no-break space (P6); a four-line prompt clears the card's torn edge (P10).
+
+## Meta (phase 5, task 5.1): proposed, awaiting the lead and advisor
+
+35. **The tour journal is a paged sticker book (task brief).** The web journal is one long notebook page with the earned
+    and bought stickers in a loose grid, then a "still to earn" list. Here each page has ten slots, one per milestone in
+    milestones.js order: an earned sticker sits in its slot until she moves it; one still to earn shows an empty dashed
+    slot with its greyed art, name and the web's "how" line (the "still to earn" list's content, placed in the book).
+    Bought stickers get a last page. New copy: "page 1 of 3" and the arrow buttons (Page Up / Page Down too). Moving a
+    sticker works as on the web (drag, or click it then click a spot; arrow keys nudge 3%), within its page. The empty
+    book's and the full book's lines show in the caption. `JournalBook`; `JournalBookTests`.
+36. **New stickers peel on when she first sees them in the book.** The web peels only stickers earned at the moment the
+    journal opens (so the ones earned at a show's end never peel there). Here every sticker she hasn't seen yet peels on
+    and slaps down when its page opens, and the book opens at the first such page; `journal.seen` (save version 2)
+    remembers them. Nothing is ever removed.
+37. **In peach + navy, sticker, venue and riff art keep their tour-pink colours.** The web's SVG art reads the theme's
+    colours, so its outlines turn navy and its pink and lilac parts peach and blue. Here the UI colours, every text, and
+    the scrapbook decor (paper, tape, bubbles, ticket stub, stamp, the map paper) follow the theme; the exported sticker,
+    venue and dog sprites do not. A full peach set is already exported (1.48 MB more PNG: stickers 888 KB, venues 246 KB,
+    riff 350 KB) and would plug into the same twin list if wanted.
+38. **Backstage: no confetti burst on a purchase**, the toast only (no particle helper yet, as with show.js win()).

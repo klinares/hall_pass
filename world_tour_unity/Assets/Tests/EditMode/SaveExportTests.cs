@@ -70,7 +70,7 @@ namespace WorldTour.Core.Tests
                 new[] { flipped, null },
                 new[] { wrongCheck, "the code doesn't check out. copy it again, all of it." },
                 new[] { "{\"hello\":1}", "that isn't a world tour save." },
-                new[] { "{\"fans\":{},\"venues\":{},\"v\":2}", "that save is from a newer version of the game." },
+                new[] { "{\"fans\":{},\"venues\":{},\"v\":" + (SaveBlob.Version + 1) + "}", "that save is from a newer version of the game." },
                 new[] { "{\"fans\":", "the save inside the code can't be read." },
             };
             var current = SaveFixtures.Full();

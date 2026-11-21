@@ -13,8 +13,12 @@ namespace WorldTour.Core.Progress
     {
         /// <summary>store.js KEY: the one storage key the whole save lives under.</summary>
         public const string Key = "worldtour.v1";
-        /// <summary>store.js <c>v: 1</c>. Migrate always writes this version.</summary>
-        public const int Version = 1;
+        /// <summary>
+        /// The save format version. 1 = the web game's store.js format; 2 = phase 5: adds <c>journal.seen</c> and keeps
+        /// keys this version doesn't know. Migrate writes this version, or the stored one if it is newer (so a save from a
+        /// newer game is never stamped back down and re-migrated by it).
+        /// </summary>
+        public const int Version = 2;
 
         public int V = Version;
         /// <summary>The day the save was made ("yyyy-mm-dd").</summary>
@@ -33,6 +37,8 @@ namespace WorldTour.Core.Progress
         public Dictionary<string, int> Time = new Dictionary<string, int>();
         public InventoryData Inventory = new InventoryData();
         public JournalData Journal = new JournalData();
+        /// <summary>Top-level keys this version doesn't know, kept in their stored order and written back after the known ones (null = none).</summary>
+        public JsonValue Extra;
 
         /// <summary>store.js <c>defaults()</c>, with today's stamp passed in.</summary>
         public static SaveBlob Defaults(string today)
@@ -43,6 +49,8 @@ namespace WorldTour.Core.Progress
 
     public sealed class SettingsData
     {
+        /// <summary>Keys this version doesn't know, kept in stored order (null = none).</summary>
+        public JsonValue Extra;
         public bool Sound = true;
         public string Theme = "tour-pink";
         /// <summary>"auto" or "reduced".</summary>
@@ -52,6 +60,8 @@ namespace WorldTour.Core.Progress
     /// <summary>Balance is what she can spend backstage; lifetime only ever grows and unlocks venues.</summary>
     public sealed class FansData
     {
+        /// <summary>Keys this version doesn't know, kept in stored order (null = none).</summary>
+        public JsonValue Extra;
         public long Balance;
         public long Lifetime;
     }
@@ -59,6 +69,8 @@ namespace WorldTour.Core.Progress
     /// <summary>The day streak.</summary>
     public sealed class StreakData
     {
+        /// <summary>Keys this version doesn't know, kept in stored order (null = none).</summary>
+        public JsonValue Extra;
         public int Days;
         public int Best;
         /// <summary>The last day she finished a show, or null.</summary>
@@ -67,6 +79,8 @@ namespace WorldTour.Core.Progress
 
     public sealed class VenuesData
     {
+        /// <summary>Keys this version doesn't know, kept in stored order (null = none).</summary>
+        public JsonValue Extra;
         public List<string> Unlocked = new List<string> { Data.Venues.First };
         /// <summary>Unlocks she has already seen on the map.</summary>
         public List<string> Seen = new List<string> { Data.Venues.First };
@@ -75,6 +89,8 @@ namespace WorldTour.Core.Progress
     /// <summary>One word's record (progress.js recordWord): attempts, correct, first-try, hinted, missed, last day.</summary>
     public sealed class WordStat
     {
+        /// <summary>Keys this version doesn't know, kept in stored order (null = none).</summary>
+        public JsonValue Extra;
         public int A;
         public int C;
         public int First;
@@ -85,6 +101,8 @@ namespace WorldTour.Core.Progress
 
     public sealed class ReviewData
     {
+        /// <summary>Keys this version doesn't know, kept in stored order (null = none).</summary>
+        public JsonValue Extra;
         /// <summary>Words missed and not yet cleared.</summary>
         public List<string> Words = new List<string>();
         /// <summary>Missed math problems, stored whole (js/review.js), oldest first, at most <see cref="Review.Max"/>.</summary>
@@ -98,6 +116,8 @@ namespace WorldTour.Core.Progress
     /// </summary>
     public sealed class ReviewEntry
     {
+        /// <summary>Keys this version doesn't know, kept in stored order (null = none).</summary>
+        public JsonValue Extra;
         public string Skill;
         public int Level;
         public long Seed;
@@ -107,6 +127,8 @@ namespace WorldTour.Core.Progress
     /// <summary>One finished show (progress.js finishShow: <c>{ d, ...summary }</c>).</summary>
     public sealed class ShowRecord
     {
+        /// <summary>Keys this version doesn't know, kept in stored order (null = none).</summary>
+        public JsonValue Extra;
         public string D;
         public string Mode;
         public string Venue;
@@ -126,6 +148,8 @@ namespace WorldTour.Core.Progress
 
     public sealed class InventoryData
     {
+        /// <summary>Keys this version doesn't know, kept in stored order (null = none).</summary>
+        public JsonValue Extra;
         public List<string> Owned = new List<string> { "theme:tour-pink", "guitar:classic", "dog:none" };
         /// <summary>Slot to item (without the slot prefix).</summary>
         public Dictionary<string, string> Equipped = DefaultEquipped();
@@ -138,15 +162,25 @@ namespace WorldTour.Core.Progress
 
     public sealed class JournalData
     {
+        /// <summary>Keys this version doesn't know, kept in stored order (null = none).</summary>
+        public JsonValue Extra;
         /// <summary>Milestone id to the day it was earned. Kept forever.</summary>
         public Dictionary<string, string> Stickers = new Dictionary<string, string>();
         /// <summary>Sticker key to where she placed it on the page.</summary>
         public Dictionary<string, Spot> Layout = new Dictionary<string, Spot>();
+        /// <summary>
+        /// Version 2: the sticker keys (milestone ids and bought "sticker:" ids) she has already seen peel onto the journal
+        /// page, in the order they peeled. Only ever grows. A version 1 save starts with none, so everything already in her
+        /// book peels on at her first visit.
+        /// </summary>
+        public List<string> Seen = new List<string>();
     }
 
     /// <summary>A sticker's place on the journal page, as fractions of the page, plus its tilt.</summary>
     public sealed class Spot
     {
+        /// <summary>Keys this version doesn't know, kept in stored order (null = none).</summary>
+        public JsonValue Extra;
         public double X;
         public double Y;
         public double R;

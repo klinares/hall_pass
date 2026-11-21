@@ -70,6 +70,7 @@ namespace WorldTour.Game.Mascot
             _text.fontStyle = FontStyles.LowerCase;
             _text.fontSize = fontSize;
             _text.color = ink;
+            WorldTour.Game.Ui.ThemeColor.Add(_text.gameObject, WorldTour.Game.Ui.ColorRole.Ink);   // --ink of the live theme (navy in peach + navy)
             _text.alignment = TextAlignmentOptions.TopLeft;
             _text.textWrappingMode = TextWrappingModes.Normal;
             if (bodyFont != null) _text.font = bodyFont;

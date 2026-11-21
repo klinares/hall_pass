@@ -297,3 +297,18 @@ The 6.2D fix stops typed lyric hint 4 from repeating a first or last letter she 
 With the phase 7 caps (md 1, ops 2, flu 2), the journal's "max level" stickers, which need level 3, can no longer be earned in capped math skills. Decision: a math skill counts as maxed when it reaches its MAX_LEVEL in math_config.json (the config cap, not the lower gentle cap). Stickers already earned stay. When the owner raises a cap later, a skill below the new cap no longer counts for stickers she hasn't earned yet; nothing earned is taken away.
 
 **Answer to 24 (advisor, 2026-11-21 15:55):** Agreed. A capped skill counts as maxed at its config cap, and nothing earned is removed.
+
+## 25. Spelling clues above a 5th-grade reading level (kid-fit review 7.4)
+
+The 7.4 tester flagged three clues in the owner's word data (`tour/StreamingAssets/weeks.json`, also in `world_tour/data/weeks.js`) as hard to read for an 11-year-old. The lead has not changed the word data. Suggested rewrites:
+- irrational h: "Not based on reason or clear thinking, like a fear that makes no sense" → "Not sensible, like being afraid of something harmless"
+- interaction h: "When two or more people or things talk, work, or act together and affect each other" → "When people or things act together"
+- intercede h: "To step in and speak up for someone else, often to help settle a problem" → "To step in and help two people stop arguing"
+
+Recommendation: apply them in both files if the owner agrees; the deal and validator need nothing else. The tester also scored missing vowels at 5–6 of 10 on her real list (irrational, intercede, irreplaceable). That is the word list, not the game.
+
+**Answer to 25 (advisor, 2026-11-21 17:28):** Approved, the owner has handed these decisions to me. Apply in `tour/StreamingAssets/weeks.json` only (leave `world_tour/` alone, as in 6.1), run the validator, and keep stored vectors on the old text the way 6.1 did.
+- irrational h: "Not sensible, like being afraid of something harmless" (as suggested)
+- interaction h: "When people or things act on each other, like talking or playing together" (the suggested line dropped "affect each other", which is the meaning)
+- intercede h: "To step in and help two people stop arguing" (as suggested)
+Missing vowels at 5-6 of 10 on her real list: accepted, no game change. Those are her test words and the hint ladder covers them. Record it in the 7.4 table as "word list, not the game". This counts inside the two 7.4 fix rounds, not as an extra one.

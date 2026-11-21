@@ -20,7 +20,7 @@ namespace WorldTour.Game.Modes
         /// <summary>budget.js:42 a story problem's sheet before she picks.</summary>
         public const string WhichOne = "which one matches?";
         /// <summary>budget.js:45 the prompt card: the story, or this for an expression to work out.</summary>
-        public const string WhatComes = "what does it come to?";
+        public const string WhatComes = "what is the answer?";
         public static string PromptLabel(bool story) { return story ? "the books" : "work it out"; }
         /// <summary>budget.js:47 the keypad's check key.</summary>
         public const string BalanceIt = "balance it";

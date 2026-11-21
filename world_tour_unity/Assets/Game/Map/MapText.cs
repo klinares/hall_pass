@@ -96,6 +96,9 @@ namespace WorldTour.Game.Map
         /// copy.js:19 <c>dogHome</c>: after 3 or more days away the nap line; otherwise one of two lines, picked by
         /// <paramref name="pickSecond"/> (the web's Math.random pick). <paramref name="toGo"/> is already formatted.
         /// </summary>
+        /// <summary>7.4 (kid-fit): the dog's line on the map until her first show is done, so she knows where to start.</summary>
+        public const string FirstVisit = "pick any set to play a show. math is further down.";
+
         public static string DogHome(string next, string toGo, int streak, int? away, bool pickSecond)
         {
             if (away != null && away.Value >= 3) return "oh hey. i napped for " + away.Value + " days. ready when you are.";
@@ -127,7 +130,7 @@ namespace WorldTour.Game.Map
         public const string SpellingSets = "spelling sets";
 
         /// <summary>venue.js:44.</summary>
-        public const string TourDate = "tour date";
+        public const string TourDate = "tour date: pick a set";
 
         /// <summary>venue.js:58 the math section's heading and its pencil note.</summary>
         public const string MathSets = "math sets";

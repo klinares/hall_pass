@@ -256,7 +256,7 @@ namespace WorldTour.Game.EditTests
             if (!game.Story) rec.PadShown = true;
             JsonValue head = v["head"];
             Assert.AreEqual(head["lbl"].String, BudgetLines.PromptLabel(game.Story), at0);
-            Assert.AreEqual(head["prompt"].String, game.Story ? p.Prompt : BudgetLines.WhatComes, at0);
+            Assert.AreEqual(head["prompt"].String, game.Story ? p.Prompt : IntendedCopy.ToWeb(BudgetLines.WhatComes), at0);
             Assert.AreEqual(head["check"].String, BudgetLines.BalanceIt, at0);
             Assert.IsEmpty(StepSwaps(head, p, at0));
             CollectionAssert.AreEqual(head["choices"].Items.Select(x => x.String).ToList(), game.Story ? p.Choices.Select(c => c.Text).ToList() : new List<string>(), at0);
@@ -319,7 +319,7 @@ namespace WorldTour.Game.EditTests
             for (int i = 0; i < acts.Count; i++)
             {
                 string what = acts[i][0].String;
-                if (what == "begin") rec.Say(SoundcheckLines.Intro, "idle");
+                if (what == "begin") rec.Say(IntendedCopy.ToWeb(SoundcheckLines.Intro), "idle");
                 else if (what == "hint") rec.Hint();
                 else if (what == "pick") game.Pick((int)acts[i][1].Number);
                 else if (what == "wait")

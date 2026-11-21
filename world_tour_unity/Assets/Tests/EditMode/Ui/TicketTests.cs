@@ -118,7 +118,7 @@ namespace WorldTour.Game.EditTests
                 ["pctRound"] = TicketText.PctRound(m.Pct).ToString(CultureInfo.InvariantCulture),
                 ["eyebrow"] = m.Eyebrow,
                 ["head"] = m.Head,
-                ["sub"] = m.Sub,
+                ["sub"] = IntendedCopy.ToWeb(m.Sub),
                 ["top"] = TicketText.Top,
                 ["venue"] = m.LiveAt,
                 ["fansNum"] = m.FansNumber,

@@ -375,7 +375,7 @@ namespace WorldTour.Game.Map
                 // .mlvl: the stars in accent-2 at 1rem, letter-spaced, then "level n" small in ink
                 TextMeshProUGUI lvl = UiKit.Text(face, "Level", "", FontRole.Body, 16f, ColorRole.Accent2, TextAlignmentOptions.TopLeft, false);
                 lvl.characterSpacing = 8f;
-                lvl.text = MapText.LevelStars(mathLevel) + " <cspace=0><size=11.5><color=#" + ColorUtility.ToHtmlStringRGB(Theme.Color(ColorRole.Ink)) + ">" + (mathLevel == 0 ? "warm-up" : "level " + mathLevel) + "</color></size></cspace>";
+                lvl.text = MapText.LevelStars(mathLevel) + " <cspace=0><size=11.5><color=#" + ColorUtility.ToHtmlStringRGB(Theme.Color(ColorRole.Ink)) + ">" + (mathLevel == 0 ? "warm-up = easy start" : "level " + mathLevel) + "</color></size></cspace>";
                 UiKit.Place(lvl.rectTransform, new Vector2(x, 70f), new Vector2(textW, 20f), UiKit.TopLeft);
             }
             TextMeshProUGUI arrow = UiKit.Text(face, "Arrow", MapText.Arrow, FontRole.Body, 25.6f, ColorRole.Ink, TextAlignmentOptions.Center, false);

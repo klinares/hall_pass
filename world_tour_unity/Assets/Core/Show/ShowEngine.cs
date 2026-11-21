@@ -103,6 +103,8 @@ namespace WorldTour.Core.Shows
         public int Best { get; private set; }
         /// <summary>Clean wins (JS G.firstTry), bonus replays included.</summary>
         public int FirstTry { get; private set; }
+        /// <summary>Clean wins on main songs only (7.4): what the ticket calls "first try".</summary>
+        public int FirstTryMain { get; private set; }
         /// <summary>Wins with hints and no wrong try (JS G.hintOnly).</summary>
         public int HintOnly { get; private set; }
         public int HintTotal { get; private set; }
@@ -267,7 +269,7 @@ namespace WorldTour.Core.Shows
             Resolved = true;
             WinKind kind = Scoring.Kind(Tries, Hints);
             bool clean = kind == WinKind.Clean;
-            if (clean) { Streak++; FirstTry++; Best = Math.Max(Best, Streak); }
+            if (clean) { Streak++; FirstTry++; if (!Current.Bonus) FirstTryMain++; Best = Math.Max(Best, Streak); }
             else if (kind == WinKind.HintOnly) HintOnly++;
             int gain = Scoring.Gain(kind, Streak, IsEncore, extra);
             Fans += gain;
@@ -366,6 +368,7 @@ namespace WorldTour.Core.Shows
                 Venue = VenueId,
                 N = n,
                 First = FirstTry,
+                FirstMain = FirstTryMain,
                 Hinted = _hinted.Count,
                 Fans = Fans,
                 Secs = (int)Math.Floor(ms / 1000.0 + 0.5),

@@ -12,9 +12,10 @@ Kept on disk so a new session can resume from here (see the FYI in ADVISOR.md, 2
 4. Phases 3, 4, 5, 6
 
 ## Phase 7 (fit the math to her class) - ADVISOR 2026-11-21 12:05; sonnet workers, max 2 builders, 1 tester pass + 2 fix rounds
-- [ ] 7.1 difficulty controls in math_config.json (MAX_LEVEL / START_LEVEL per skill, LEVEL_UP_AFTER 6, LEVEL_DOWN_AFTER 2, caps never remove progress), warm-up level 0 in every math generator, office gentle/standard per subject; defaults md 1, ops 2, flu 2, vol uncapped, dec/frac/xy off (builder A)
-- [ ] 7.2 new mode fm: fraction x and / (green room snack table), L0-L3, fmDivision switch, area/tape models, hints per answers 8/9/11/16, any equivalent form accepted, mistake distractors, seeded Core tests (builder B; config wiring after A)
-- [ ] 7.3 tester pass, final build, commit, short REPORT.md with the owner's mode table (on / cap / class unit). Do not push.
+- [x] 7.1 difficulty controls in math_config.json (MAX_LEVEL / START_LEVEL per skill, LEVEL_UP_AFTER 6, LEVEL_DOWN_AFTER 2, caps never remove progress), warm-up level 0 in every math generator, office gentle/standard per subject; defaults md 1, ops 2, flu 2, vol uncapped, dec/frac/xy off (builder A)
+- [x] 7.2 new mode fm: fraction x and / (green room snack table), L0-L3, fmDivision switch, area/tape models, hints per answers 8/9/11/16, any equivalent form accepted, mistake distractors, seeded Core tests (builder B; config wiring after A)
+- [x] 7.3 (tester FAIL -> fix 1 + fix 2; committed 83d4edc) tester pass, final build, commit, short REPORT.md with the owner's mode table (on / cap / class unit). Do not push.
+- [x] 7.4 kid-fit review (tester pass + fix round 1; Q25 clue rewrites to the advisor) (ADVISOR 15:55): one tester pass as an 11-year-old, fresh save, shipped config, pink 1366; first 5 minutes; first-ten score per enabled math mode from L0 + one spelling mode (target 7+); reading level; rewards by first show, a backstage buy within 2-3 shows; two fix rounds max; REPORT table mode / first-ten / what changed. Billing: plan allowance only (no headless/API, no overage).
 
 ## Phase 6 (ship) - per ADVISOR 19:25 + 19:30
 - [x] 6.1 DONE, committed 1589654 (curly quotes in all 3 fonts; edit 1661, play 23; no vectors needed changing). Was FIRST: reword the irrational/illogical clue and line in tour/StreamingAssets/weeks.json (exact text in ADVISOR 19:25 item 3), regenerate stored vectors with the old text, suites. Leave world_tour/data/weeks.js alone

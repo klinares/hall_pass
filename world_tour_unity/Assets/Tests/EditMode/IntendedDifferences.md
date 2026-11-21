@@ -195,3 +195,21 @@ Kept: "1 5/4" counts as 9/4 where simplest form isn't asked (7.4); equivalent de
     venue and dog sprites do not. A full peach set is already exported (1.48 MB more PNG: stickers 888 KB, venues 246 KB,
     riff 350 KB) and would plug into the same twin list if wanted.
 38. **Backstage: no confetti burst on a purchase**, the toast only (no particle helper yet, as with show.js win()).
+
+## Kid-fit (phase 7.4, round 1)
+
+39. **Plain words in game copy.** "what does it come to?" is "what is the answer?" (tour budget's prompt card, evaluate
+    problems); "tap the bulb" in riff's idle nudge is "tap hint" (the button says hint); soundcheck's first line is
+    "quick as you can. the bar only changes bonus fans. you can't lose fans."; the ticket's low-score lede is "every star
+    practices. try it again." The web-vector tests restore the web's text through `IntendedCopy.ToWeb`.
+40. **Ticket sales warm-up (level 0) is easier.** Seven in ten problems are single-digit facts; the rest are 2-digit x
+    1-digit with no regrouping or a multiple of ten (23 x 3, 40 x 6) and 2-digit / 1-digit with no regrouping and no
+    remainder (84 / 4, 60 / 3). No 3-digit dividends. Levels 1 to 3 are the web's.
+41. **Ticket sales division: the step is the question.** After a miss, hint 2 shows its step on the prompt card as
+    "step: how many 4s fit in 4?" (the card used to keep asking the whole question); at level 0 the step line is
+    "4 x 7 = 28. that leaves 4. how many 4s fit in 4?". The whole answer still wins at any point; the step's own answer is
+    welcomed, never a miss.
+42. **The ticket's "first try" counts main songs only.** A miss replayed clean as a bonus song no longer reads as a first
+    try (the saved count, the sold-out rule and the VIP percent keep the web rule).
+43. **Snack table prompts are three short lines**, the part-of-a-part problem opens on the whole tray with its first part
+    shaded, and the dog's first line there names the numbers.

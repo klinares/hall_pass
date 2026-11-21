@@ -44,6 +44,51 @@ namespace WorldTour.Game.Modes
         }
     }
 
+    /// <summary>
+    /// 7.4 (kid-fit): after a miss on a division the second hint is a step ("how many 4s fit in 4?"). The prompt card shows that
+    /// step as the question now, the whole answer still finishes the problem, and the step's own answer is welcomed (never a
+    /// miss) and sends her to put it together with the part already counted.
+    /// </summary>
+    public static class TicketsStep
+    {
+        private static JsonValue Part(Problem p)
+        {
+            if (p == null || p.Skill != "md" || p.Kind != "div" || p.Work == null || p.Work.IsNull || p.Work["kind"].String != "chunks") return null;
+            if (p.Work.Has("lower")) return p.Work["lower"];
+            var items = p.Work["chunks"].Items;
+            return items.Count == 0 ? null : items[0];
+        }
+
+        /// <summary>"how many 4s fit in 4?" for a division, else null.</summary>
+        public static string Question(Problem p)
+        {
+            JsonValue c = Part(p);
+            return c == null ? null : "how many " + p.Work["d"].Long + "s fit in " + TicketsWork.F(c["left"].Long) + "?";
+        }
+
+        /// <summary>What the step asks for (the ones still to fit), or null when the problem has no step.</summary>
+        public static long? StepAnswer(Problem p)
+        {
+            JsonValue c = Part(p);
+            return c == null ? (long?)null : (long)p.Answer.Value.Number - c["c"].Long;
+        }
+
+        /// <summary>"yes, 1 more. now put it with the 7 you already have."</summary>
+        public static string Welcome(Problem p)
+        {
+            JsonValue c = Part(p);
+            return c == null ? null : "yes, " + StepAnswer(p) + " more. now put it with the " + TicketsWork.F(c["c"].Long) + " you already have.";
+        }
+
+        /// <summary>True when <paramref name="typed"/> is the step's answer and not the whole answer.</summary>
+        public static bool IsStepAnswer(Problem p, string typed)
+        {
+            long? step = StepAnswer(p);
+            if (step == null || step == (long)p.Answer.Value.Number || string.IsNullOrWhiteSpace(typed)) return false;
+            return long.TryParse(typed.Trim(), NumberStyles.None, CultureInfo.InvariantCulture, out long v) && v == step.Value;
+        }
+    }
+
     /// <summary>A row of the chunking sheet (tickets.js chunks(): .crow, .crow.left, .crow.top, .crow.total).</summary>
     public struct ChunkRow
     {

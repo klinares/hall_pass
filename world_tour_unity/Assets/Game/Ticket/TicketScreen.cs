@@ -288,11 +288,30 @@ namespace WorldTour.Game.Ticket
             // ticket.js:64-72 tonight's setlist
             y = BuildSetlist(y) + 22f;
 
-            // ticket.js:74-77 buttons (.row gap 12, .btn flex 1 1 220px)
+            // ticket.js:74-77 buttons (.row gap 12, .btn flex 1 1 220px). 7.4 (kid-fit): pinned in a bar at the bottom so
+            // "play again" and "back to the map" are in view without scrolling (the page is ~2000 px tall at 1366x768)
             float bw = (Width - Tokens.RowGap) / 2f;
-            PrimaryButton = Button(_content, "PrimaryButton", m.PrimaryLabel, false, OnPrimary, 0f, y, bw);
-            BackButton = Button(_content, "BackButton", TicketText.BackToMap, true, OnBack, bw + Tokens.RowGap, y, bw);
-            y += Tokens.ButtonMinHeight;
+            const float barH = Tokens.ButtonMinHeight + 40f;
+            RectTransform bar = NewRect("ButtonBar", root);
+            bar.anchorMin = new Vector2(0f, 0f); bar.anchorMax = new Vector2(1f, 0f);
+            bar.pivot = new Vector2(.5f, 0f);
+            bar.sizeDelta = new Vector2(0f, barH);
+            bar.anchoredPosition = Vector2.zero;
+            var barBg = bar.gameObject.AddComponent<Image>();
+            barBg.color = Theme.Color(ColorRole.Paper);
+            RectTransform rule = NewRect("Rule", bar);
+            rule.anchorMin = new Vector2(0f, 1f); rule.anchorMax = new Vector2(1f, 1f);
+            rule.pivot = new Vector2(.5f, 1f); rule.sizeDelta = new Vector2(0f, 3f); rule.anchoredPosition = Vector2.zero;
+            var ruleImg = rule.gameObject.AddComponent<Image>();
+            ruleImg.color = Theme.Color(ColorRole.Ink); ruleImg.raycastTarget = false;
+            RectTransform row = NewRect("Row", bar);
+            row.anchorMin = row.anchorMax = new Vector2(.5f, 1f);
+            row.pivot = new Vector2(.5f, 1f);
+            row.sizeDelta = new Vector2(Width, Tokens.ButtonMinHeight);
+            row.anchoredPosition = new Vector2(0f, -20f);
+            _viewport.offsetMin = new Vector2(0f, barH);
+            PrimaryButton = Button(row, "PrimaryButton", m.PrimaryLabel, false, OnPrimary, 0f, 0f, bw);
+            BackButton = Button(row, "BackButton", TicketText.BackToMap, true, OnBack, bw + Tokens.RowGap, 0f, bw);
 
             // ticket.js:79-82 riff and his line (.coach margin-top 22, gap 10, aligned to the bottom)
             y += 22f;

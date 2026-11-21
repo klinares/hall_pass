@@ -83,7 +83,7 @@ namespace WorldTour.Mascot.Tests
                 StringAssert.Contains("'" + s + "'", copy);
             foreach (var s in DogLines.NextSong) StringAssert.Contains("'" + s + "'", show);
             StringAssert.Contains("`" + DogLines.BonusSong + "`", show);
-            StringAssert.Contains("`" + DogLines.IdleHint + "`", copy);
+            StringAssert.Contains("`" + DogLines.IdleHint.Replace("tap hint", "tap the bulb") + "`", copy);   // 7.4 intended copy difference: "tap hint" (IntendedDifferences.md)
             StringAssert.Contains("${streak} in a row. the crowd is losing it.", copy);
             StringAssert.Contains("`${G.streak} in a row!`", show);
             StringAssert.Contains("export const NAME = '" + DogLines.Name + "'", copy);

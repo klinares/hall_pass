@@ -95,7 +95,7 @@ namespace WorldTour.Game.Ticket
         {
             return pct >= VipAt ? Name + ", you" + Q + "re so ready for that test."
                 : pct >= GoodAt ? "a couple more run-throughs and it" + Q + "s perfect."
-                : "every star rehearses. run it back.";
+                : "every star practices. try it again.";
         }
 
         /// <summary>ticket.js:34, without its heart (drawn as a glyph after it).</summary>
@@ -297,7 +297,7 @@ namespace WorldTour.Game.Ticket
             m.Sub = TicketText.Sub(s.Pct);
             m.LiveAt = TicketText.LiveAt(m.Venue != null ? m.Venue.Name : s.Venue);
             m.FansNumber = TicketText.Fmt(s.Fans);
-            m.Rows = TicketText.Rows(s.First, s.N, s.Best, s.HintTotal);
+            m.Rows = TicketText.Rows(s.FirstMain >= 0 ? s.FirstMain : s.First, s.N, s.Best, s.HintTotal);
             m.Class = TicketText.ClassOf(m.Vip);
             m.Date = date ?? data.Date ?? "";
             m.BarcodeSeed = TicketBarcode.Seed(m.Date, s.Mode, s.Fans);

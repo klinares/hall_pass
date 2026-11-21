@@ -73,7 +73,7 @@ namespace WorldTour.Game.Modes
             if (EventSystem.current != null) EventSystem.current.SetSelectedGameObject(null);
             if (_grid != null)
                 ctx.Later(() => { if (_grid != null && EventSystem.current != null && !Picks.Ladder.Over) EventSystem.current.SetSelectedGameObject(_grid.Buttons[0].Go); }, TypedRound.FocusDelay);
-            ctx.Later(() => _ctx.Say(FracMulLines.Intro(p.Kind), "idle"), .01f);
+            ctx.Later(() => _ctx.Say(MathText.ToTmp(FracMulLines.Intro(p), MathText.BubbleScale), "idle"), .01f);
             ctx.Later(() => { if (_grid != null) _grid.LogPositions("WT_CHOICES"); if (Pad != null) Pad.LogPositions(); }, .45f);
         }
 

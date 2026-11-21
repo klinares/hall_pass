@@ -8,8 +8,8 @@ namespace WorldTour.Core.Maths.Gen
     /// <summary>
     /// TICKET SALES: multi-digit multiplication and division (5.NBT.5-6). Ported from
     /// world_tour/math/gen/multdiv.js; every RNG call happens in the same order, so problems match the JS.
-    /// L0 (Unity only, warm-up): 4th-grade review. Single-digit facts, 2-digit x 1-digit (factor up to 5),
-    /// division facts, and 2-digit / 1-digit (divisor up to 5).
+    /// L0 (Unity only, warm-up): 4th-grade review. Single-digit facts, mostly single-digit facts, plus 2-digit x 1-digit with no regrouping or a multiple of ten,
+    /// and 2-digit / 1-digit with no regrouping and no remainder (7.4).
     /// L1: 2-digit x 1-digit, 3-digit / 1-digit.
     /// L2: 2-digit x 2-digit, 3-digit / 2-digit.
     /// L3: 3-digit x 2-digit, 4-digit / 2-digit, and "how many full rows" with a remainder.
@@ -60,12 +60,17 @@ namespace WorldTour.Core.Maths.Gen
             if (kind == "mul")
             {
                 // level 0 only: half the problems are single-digit facts (no box sizes: they start at 12)
-                bool fact = level == 0 && r.Chance(.5);
-                string tale = r.Pick(fact ? TalesNoBoxes : Tales);
+                // (7.4: seven in ten at level 0, and the rest never regroup: see NoRegroup)
+                bool fact = level == 0 && r.Chance(.7);
+                string tale = r.Pick(fact || level == 0 ? TalesNoBoxes : Tales);
                 List<int> small = BoxSizes.Where(n => n < 100).ToList();
                 if (fact) { a = r.Int(2, 9); b = r.Int(3, 9); }
-                else if (level == 0 && tale == "boxes") { a = r.Pick(small); b = r.Int(2, 5); }
-                else if (level == 0) { a = r.Int(12, 49); b = r.Int(2, 5); }
+                else if (level == 0)
+                {
+                    // 7.4: a multiple of ten (40 x 6), or tens and ones that each multiply without carrying (23 x 3)
+                    if (r.Chance(.4)) { a = 10 * r.Int(2, 9); b = r.Int(2, 9); }
+                    else { b = r.Int(2, 4); a = 10 * r.Int(1, 9 / (int)b) + r.Int(1, 9 / (int)b); }
+                }
                 else if (tale == "boxes")
                 {
                     // posters ship in real box sizes. level 3 needs 3-digit x 2-digit, so either a 144 box
@@ -141,9 +146,10 @@ namespace WorldTour.Core.Maths.Gen
                 int d, q;
                 if (level == 0)
                 {
-                    // facts to 9 x 9, or a 2-digit number shared among 2 to 5
-                    if (r.Chance(.5)) { d = r.Int(2, 9); q = r.Int(2, 9); }
-                    else { d = r.Int(2, 5); q = r.Int(10, 99 / d); }
+                    // 7.4: facts to 9 x 9 (seven in ten), or a 2-digit number shared among 2 to 4 that splits tens and
+                    // ones with no regrouping and no remainder (84 / 4, 69 / 3, 60 / 3)
+                    if (r.Chance(.7)) { d = r.Int(2, 9); q = r.Int(2, 9); }
+                    else { d = r.Int(2, 4); q = 10 * r.Int(1, 9 / d) + r.Int(0, 9 / d); }
                 }
                 else if (level == 1) { d = r.Int(2, 9); q = r.Int(CeilDiv(100, d), 999 / d); }
                 else if (level == 2) { d = r.Int(11, 49); q = r.Int(Math.Max(2, CeilDiv(100, d)), 999 / d); }
@@ -199,7 +205,9 @@ namespace WorldTour.Core.Maths.Gen
                     : level == 0
                         ? "how many " + ds + "s fit in " + F(N) + "? use the " + ds + "s facts you know to get close."
                         : "how many " + ds + "s fit in " + F(N) + "? try a few: " + ds + times + "2 = " + F(d * 2L) + ", " + ds + times + "3 = " + F(d * 3L) + Glyph.Ellipsis,
-                    q >= 10
+                    level == 0
+                        ? ds + times + F(first) + " = " + F(first * d) + ". that leaves " + F(after) + ". how many " + ds + "s fit in " + F(after) + "?"
+                    : q >= 10
                         ? (lower != null ? (first % 10 != 0 ? "start with " : "start with " + tensWord(first) + " of " + ds + ": ")
                                          : tensWord(first) + " of " + ds + " " + (first == 10 ? "fits" : "fit") + ": ") +
                           ds + times + F(first) + " = " + F(first * d) + ". " + F(N) + minus + F(first * d) + " = " + F(after) +

@@ -23,7 +23,7 @@ namespace WorldTour.Game.Modes
         /// <summary>soundcheck.js:66.</summary>
         public static readonly string Beat = "beat the meter. <b>+" + Bonus + "</b> bonus fans.";
         /// <summary>soundcheck.js:75 the dog's first line.</summary>
-        public const string Intro = "quick as you can. the meter only changes bonus fans.";
+        public const string Intro = "quick as you can. the bar only changes bonus fans. you can't lose fans.";
         /// <summary>soundcheck.js:31 the choice tilts (--r, degrees, CSS clockwise).</summary>
         public static readonly float[] Tilts = { -1f, 1.2f, -.6f, .8f };
 

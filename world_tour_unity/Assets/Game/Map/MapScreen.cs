@@ -216,7 +216,7 @@ namespace WorldTour.Game.Map
             // right: the coach, bubble over the dog (screens.css:36-38), bottom-aligned with the left column
             TextMeshProUGUI line = null;
             string toGo = m.Next != null ? MapText.Fmt(m.ToGo) : "0";
-            string say = MapText.DogHome(m.Next != null ? m.Next.Short : null, toGo, m.Streak, m.Away, UnityEngine.Random.value < 0.5f);
+            string say = m.Lifetime == 0 && m.Streak == 0 ? MapText.FirstVisit : MapText.DogHome(m.Next != null ? m.Next.Short : null, toGo, m.Streak, m.Away, UnityEngine.Random.value < 0.5f);
             RectTransform bubble = UiKit.Rect("Bubble", hero);
             line = UiKit.Text(bubble, "Line", say, FontRole.Body, Tokens.Fs1, ColorRole.Ink);
             float bh = Mathf.Max(64f, UiKit.HeightFor(line, rw - 32f - 6f) + 24f + 6f);

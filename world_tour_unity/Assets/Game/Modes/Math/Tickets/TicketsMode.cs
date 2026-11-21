@@ -23,6 +23,8 @@ namespace WorldTour.Game.Modes
         private SongContext _ctx;
         private RectTransform _desk, _slot;
         private ShowButton _next;
+        private TMP_Text _promptText;
+        private string _promptBase;
 
         public Problem Problem { get; private set; }
         public TypedMathRound Round { get; private set; }
@@ -42,11 +44,21 @@ namespace WorldTour.Game.Modes
             wl.childControlWidth = true; wl.childControlHeight = true; wl.childForceExpandWidth = false; wl.childForceExpandHeight = false;
             _slot.gameObject.SetActive(false);
             _next = MathUi.Controls(ctx, left, out _);
-            MathUi.PromptCard(right, p.Prompt, TicketsLines.PromptLabel(p.Kind));
+            RectTransform card = MathUi.PromptCard(right, p.Prompt, TicketsLines.PromptLabel(p.Kind));
+            _promptText = card.Find("Text") != null ? card.Find("Text").GetComponent<TMP_Text>() : null;
+            _promptBase = _promptText != null ? _promptText.text : null;
             Pad = MathKeypad.Make(right, p.Answer.Type, TicketsLines.SellIt, () => MathUi.ShowNext(_ctx, _next));
             Round = new TypedMathRound(new MathSongHost(ctx, "tickets", () => _desk), p, Pad, s => ctx.Next(s), OnStep);
             Pad.Submitted += text =>
             {
+                if (!Round.Ladder.Over && TicketsStep.IsStepAnswer(Problem, text))
+                {
+                    // 7.4: the step's own answer is welcome, never a miss; the whole answer finishes the problem
+                    _ctx.Say(TicketsStep.Welcome(Problem), "think");
+                    Pad.Clear();
+                    Debug.Log("WT_MATH_SUBMIT val=" + text + " result=step tries=" + _ctx.Tries);
+                    return;
+                }
                 TypedMathResult r = Round.Submit(text);
                 Debug.Log("WT_MATH_SUBMIT val=" + text + " result=" + r.ToString().ToLowerInvariant() + " tries=" + _ctx.Tries);
             };
@@ -60,6 +72,7 @@ namespace WorldTour.Game.Modes
         private void OnStep(int n)
         {
             if (n < 2) return;
+            ShowStepOnCard(n);
             Work = TicketsWork.Draw(Problem, n);
             if (Work == null) return;
             Debug.Log("WT_TICKETS_WORK n=" + n + " kind=" + Work.Kind);
@@ -68,6 +81,14 @@ namespace WorldTour.Game.Modes
             _slot.gameObject.SetActive(true);
             LayoutRebuilder.ForceRebuildLayoutImmediate(_ctx.Area);
             Feedback.Slap(paper);
+        }
+
+        /// <summary>7.4: from hint 2 on a division's card names the step as the question now (the whole answer still counts).</summary>
+        private void ShowStepOnCard(int n)
+        {
+            string q = TicketsStep.Question(Problem);
+            if (_promptText == null || q == null || _promptBase == null) return;
+            _promptText.text = n >= 3 ? _promptBase : _promptBase + "\n<b>step: " + q + "</b>";
         }
 
         // ---------- drawing ----------

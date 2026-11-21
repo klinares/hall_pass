@@ -100,6 +100,12 @@ namespace WorldTour.Core.Shows
         public int N;
         /// <summary>Clean wins, bonus replays included (JS G.firstTry).</summary>
         public int First;
+        /// <summary>
+        /// Unity (7.4): clean wins on the main songs only, so a miss replayed clean never reads as a first try on the ticket.
+        /// First (the saved count, the sold-out rule and the VIP percent) keeps the web rule. -1 = not known (a summary built
+        /// from the web's vectors), and the ticket falls back to First.
+        /// </summary>
+        public int FirstMain = -1;
         /// <summary>Distinct songs a hint was used on (JS G.hinted.size).</summary>
         public int Hinted;
         public int Fans;

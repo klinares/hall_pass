@@ -92,7 +92,8 @@ namespace WorldTour.Core.Maths.Gen
                 {
                     int cols = q["cols"].Int, colsOn = q["colsOn"].Int, rows = q["rows"].Int, rowsOn = q["rowsOn"].Int;
                     var a = new FmPicture { Kind = "area", Cols = 1, Rows = 1 };
-                    if (stage >= 1) { a.Cols = cols; a.ColsOn = colsOn; }
+                    // 7.4: the part problem opens on the whole tray with its first part shaded (never the product); an empty box told her nothing
+                    if (stage >= 1 || p.Kind == "part") { a.Cols = cols; a.ColsOn = colsOn; }
                     if (stage >= 2) { a.Rows = rows; a.CutShadedOnly = true; a.RowsLabel = S(rows) + " rows"; }
                     if (stage >= 3) { a.CutAll = true; a.CutShadedOnly = false; a.Overlap = true; a.RowsOn = rowsOn; a.OverlapCols = colsOn; a.ColsLabel = S(cols) + " columns"; a.Caption = answer + " of the tray"; }
                     return a;

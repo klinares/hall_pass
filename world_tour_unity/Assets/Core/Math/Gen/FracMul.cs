@@ -34,8 +34,10 @@ namespace WorldTour.Core.Maths.Gen
         static readonly string[] Items = { "pretzels", "cookies", "granola bars", "fruit cups", "sandwiches", "juice boxes", "popcorn bags", "veggie cups" };
         static readonly string[] Trays = { "pretzels", "cookies", "granola bars", "fruit", "sandwiches", "trail mix", "popcorn", "veggies" };
         /// <summary>The mixed-number problem's own ingredients: "[[1 1/2]] cups of oats".</summary>
-        static readonly string[] Ingredients = { "oats", "raisins", "peanuts", "pretzel bits", "dried cranberries", "banana chips", "cereal", "sunflower seeds" };
-        static readonly string[] Who = { "the drummer", "the bassist", "the lighting crew", "the opener", "the tour manager", "the dog" };
+        static readonly string[] Ingredients = { "oats", "raisins", "peanuts", "pretzels", "cranberries", "walnuts", "cereal", "seeds" };
+        static readonly string[] Who = { "the roadie", "the singer", "the crew", "the opener", "the tech", "the dog" };
+        /// <summary>Short plural foods, so the part-of-a-part prompt stays at three short lines (7.4).</summary>
+        static readonly string[] PartFoods = { "chips", "cookies", "pears", "bagels", "apples", "grapes" };
         static readonly string[] Names = { "", "", "halves", "thirds", "fourths", "fifths", "sixths", "sevenths" };
 
         // proper fractions in simplest form with a numerator of 2 or more, denominators 3..6
@@ -119,7 +121,7 @@ namespace WorldTour.Core.Maths.Gen
                 new Trap(MathValue.Num(d), "gave-the-bottom"),
             };
             return Make(
-                S(n) + " " + item + " sit on the snack table. " + who + " takes " + unit + " of them. how many is that?",
+                S(n) + " " + item + " sit on the table. " + who + " takes " + unit + " of them. how many is that?",
                 unit + " of " + S(n), Answer.Int(k),
                 JsonValue.Obj().Set("whole", n).Set("parts", d).Set("factors", JsonValue.Arr(FracJ(1, d))),
                 new List<string>
@@ -136,7 +138,7 @@ namespace WorldTour.Core.Maths.Gen
         static Problem PartOfPart(Rng r)
         {
             int a = r.Int(2, 6), b = r.Int(2, 6);
-            string who = r.Pick(Who), who2 = r.Pick(Who.Where(w => w != who).ToArray()), tray = r.Pick(Trays);
+            string who = r.Pick(Who), who2 = r.Pick(Who.Where(w => w != who).ToArray()), food = r.Pick(PartFoods);
             Rational ans = Rational.R(1, (long)a * b);
             string fa = F(Rational.R(1, a)), fb = F(Rational.R(1, b));
             var traps = new List<Trap>
@@ -146,7 +148,7 @@ namespace WorldTour.Core.Maths.Gen
                 new Trap(V(Rational.R(1, b)), "kept-one-part"),
             };
             return Make(
-                who + " sets aside " + fa + " of the " + TrayOf(tray) + " for the encore. " + who2 + " gets " + fb + " of that part. what fraction of the whole tray is " + who2 + Apos + "s share?",
+                fa + " of the " + food + " are saved. " + who2 + " gets " + fb + " of those. what fraction of all " + food + "?",
                 fb + " of " + fa, Answer.Fraction(ans),
                 AreaParams(a, 1, b, 1, new[] { Tuple.Create(1L, (long)a), Tuple.Create(1L, (long)b) }),
                 new List<string>
@@ -193,7 +195,7 @@ namespace WorldTour.Core.Maths.Gen
             };
             string rawAns = Raw(a * c, b * d);
             return Make(
-                "there is " + fc + " of a " + TrayOf(tray) + " left. " + who + " takes " + fa + " of that. how much of a whole tray is that?",
+                fc + " of a tray is left. " + who + " takes " + fa + " of that. how much of a whole tray is that?",
                 fa + " of " + fc, Answer.Fraction(ans),
                 AreaParams((int)d, (int)c, (int)b, (int)a, new[] { Tuple.Create(a, b), Tuple.Create(c, d) }),
                 new List<string>
@@ -236,7 +238,7 @@ namespace WorldTour.Core.Maths.Gen
                 prm.Set("overlap", true);
                 string rawAns = Raw((long)a * c, (long)b * d);
                 var p = Make(
-                    "the tour manager cut a tray into rows and columns and shaded part of it. which expression matches the shaded part?",
+                    "part of this tray is shaded. which expression matches the shaded part?",
                     "match the picture", Answer.Fraction(ans), prm,
                     new List<string>
                     {
@@ -265,7 +267,7 @@ namespace WorldTour.Core.Maths.Gen
                 new Trap(V(Rational.R(1, d + n)), "added-the-bottoms"),
             };
             return Make(
-                u + " of a " + TrayOf(tray) + " is left. the crew shares it evenly " + Among(n) + " " + S(n) + " people. what fraction of the whole tray does each person get?",
+                u + " of a tray is left. " + S(n) + " people share it evenly. what fraction of a whole tray does each get?",
                 u + " " + Divide + " " + S(n), Answer.Fraction(ans),
                 JsonValue.Obj().Set("parts", d).Set("split", n).Set("factors", JsonValue.Arr(FracJ(1, d))),
                 new List<string>
@@ -289,7 +291,7 @@ namespace WorldTour.Core.Maths.Gen
                 new Trap(V(Rational.R(d)), "one-tray-only"),
             };
             return Make(
-                S(w) + " trays of " + tray + " get cut into servings. each serving is " + u + " of a tray. how many servings is that?",
+                S(w) + " trays are cut into servings. each serving is " + u + " of a tray. how many servings is that?",
                 S(w) + " " + Divide + " " + u, Answer.Fraction(Rational.R(ans)),
                 JsonValue.Obj().Set("wholes", w).Set("parts", d).Set("factors", JsonValue.Arr(FracJ(1, d))),
                 new List<string>
@@ -324,7 +326,7 @@ namespace WorldTour.Core.Maths.Gen
                 new Trap(V(Rational.R(x * c, d)), "multiplied-only-the-tops"),
             };
             return Make(
-                "the snack mix recipe uses " + mixed + " cups of " + stuff + ". the band makes " + frac + " of the recipe. how many cups of " + stuff + " is that?",
+                "a recipe uses " + mixed + " cups of " + stuff + ". the band makes " + frac + " of it. how many cups is that?",
                 mixed + " " + Times + " " + frac, Answer.Fraction(ans),
                 JsonValue.Obj().Set("whole", w).Set("factors", JsonValue.Arr(FracJ(n, d), FracJ(c, e))),
                 new List<string>

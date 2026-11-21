@@ -46,7 +46,7 @@ namespace WorldTour.Game.Mascot
         public static readonly string BonusSong = Q("this one again. you've got it now.");
 
         /// <summary>copy.js:34 dogIdleHint: after 15 s with an unused hint (show.js:115).</summary>
-        public static readonly string IdleHint = Q("stuck? tap the bulb. your streak is safe, you just win fewer fans.");
+        public static readonly string IdleHint = Q("stuck? tap hint. your streak is safe, you just win fewer fans.");
 
         static T Pick<T>(IReadOnlyList<T> a, Func<double> random) => a[(int)Math.Floor(random() * a.Count)];
 

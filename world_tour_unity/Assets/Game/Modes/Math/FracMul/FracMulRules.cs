@@ -60,12 +60,24 @@ namespace WorldTour.Game.Modes
         }
 
         /// <summary>The dog's first line.</summary>
+        /// <summary>7.4: the dog's first line for a problem; for a part of a part it names the numbers ("you want 1/2 of a 1/6 piece. picture the tray.").</summary>
+        public static string Intro(Problem p)
+        {
+            if (p.Kind == "part" && p.Params != null && p.Params.Has("factors"))
+            {
+                var f = p.Params["factors"].Items;
+                if (f.Count == 2)
+                    return "you want [[1/" + f[1]["d"].Long + "]] of a [[1/" + f[0]["d"].Long + "]] piece. picture the tray.";
+            }
+            return Intro(p.Kind);
+        }
+
         public static string Intro(string kind)
         {
             switch (kind)
             {
                 case "unitof": return "cut it into equal groups and take one.";
-                case "part": return "a part of a part. picture the tray.";
+                case "part": return "a part of a part. picture the tray.";   // the problem's own line is Intro(Problem)
                 case "unitnon":
                 case "nonnon": return "work it out on paper if you want. i" + Glyph.Apos + "ll wait.";
                 case "shaded": return "read the picture. which expression says it?";

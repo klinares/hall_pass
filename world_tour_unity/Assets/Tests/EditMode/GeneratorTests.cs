@@ -156,7 +156,7 @@ namespace WorldTour.Core.Tests
                 long a = p.Params["a"].Long, b = p.Params["b"].Long;
                 Assert.AreEqual(a * b, answer, "product" + at);
                 if (level == 0)
-                    Assert.IsTrue(a >= 2 && b >= 2 && (a <= 9 && b <= 9 || a >= 12 && a <= 50 && b <= 5), "a fact, or 2-digit x 1-digit with a factor to 5: " + a + " x " + b + at);
+                    Assert.IsTrue(a >= 2 && b >= 2 && (a <= 9 && b <= 9 || a >= 10 && a <= 99 && b <= 9 && (a % 10 == 0 || (a % 10) * b <= 9 && (a / 10) * b <= 9)), "a fact, a multiple of ten x 1-digit, or 2-digit x 1-digit with no regrouping (7.4): " + a + " x " + b + at);
                 else
                 {
                     int[] want = new[] { new[] { 2, 1 }, new[] { 2, 2 }, new[] { 3, 2 } }[level - 1];
@@ -179,14 +179,14 @@ namespace WorldTour.Core.Tests
                 Assert.AreEqual(answer, chunks.Sum(c => c["c"].Long), "chunks add up" + at);
                 Assert.AreEqual(0, chunks[chunks.Count - 1]["left"].Long, "chunks use up N" + at);
                 Assert.IsTrue(chunks.Count == 1 || (chunks[0]["c"].Long % 10 == 0 && chunks[1]["c"].Long < 10), "tens first, then ones" + at);
-                Assert.IsTrue(p.Steps[1].Contains("running total") && p.Steps[2].Contains("running total"), at);
+                Assert.IsTrue((level == 0 || p.Steps[1].Contains("running total")) && p.Steps[2].Contains("running total"), at);   // 7.4: the level-0 step line is short
                 Assert.IsFalse(string.Join(" ", p.Steps).Contains("start big"), at);
                 // quotient 10: hint 1 asks what x 10 does instead (QUESTIONS 8.2, an intended difference from the JS)
                 if (answer > 10) Assert.IsTrue(p.Steps[0].StartsWith("how many tens of", StringComparison.Ordinal), at);
                 Assert.AreEqual(0, N % d, "exact division" + at);
                 Assert.AreEqual(N / d, answer, at);
                 if (level == 0)
-                    Assert.IsTrue(d >= 2 && answer >= 2 && (d <= 9 && answer <= 9 || d <= 5 && Digits(N) == 2 && answer >= 10), "a division fact, or a 2-digit number shared among up to 5: " + N + " / " + d + at);
+                    Assert.IsTrue(d >= 2 && answer >= 2 && (d <= 9 && answer <= 9 || d <= 4 && Digits(N) == 2 && answer >= 10 && (N / 10) % d == 0 && (N % 10) % d == 0), "a division fact, or a 2-digit number shared among up to 4 with no regrouping (7.4): " + N + " / " + d + at);
                 else
                 {
                     int[] want = new[] { new[] { 3, 1 }, new[] { 3, 2 }, new[] { 4, 2 } }[level - 1];

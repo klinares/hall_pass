@@ -1,0 +1,56 @@
+/* world tour: design tokens. every color the game uses comes from here,
+   so a theme is just a different set of these values. */
+:root{
+  /* palette: tour-pink (default) */
+  --paper:#fdb1cb;          /* baby pink page */
+  --paper-deep:#f98bb0;     /* deeper pink: halftone, accents */
+  --ink:#000000;            /* outlines, text, shadows */
+  --card:#ffffff;           /* paper scraps, stickers */
+  --on-ink:#ffffff;         /* text sitting on ink */
+  --accent:#a8a9fc;         /* lilac */
+  --accent-2:#2f2fc1;       /* ink blue */
+  --muted:#6b5560;          /* pencil grey for locked things */
+
+  /* derived */
+  --dot:var(--paper-deep);
+  --fur:#fffaf2;
+  --fur-2:#2a2a2a;
+  --tee:var(--accent);
+  --gtr:var(--paper-deep);
+  --tape-a:color-mix(in srgb, var(--accent) 80%, transparent);
+  --tape-b:color-mix(in srgb, var(--card) 72%, transparent);
+  --tape-c:color-mix(in srgb, var(--paper-deep) 82%, transparent);
+  --hl:color-mix(in srgb, var(--accent) 60%, transparent);   /* highlighter */
+
+  /* type */
+  --hand:'Caveat Brush','Segoe Print','Bradley Hand','Chalkboard SE',cursive;
+  --mono:'Courier Prime','Courier New',Courier,monospace;
+  --fs-0:.8rem; --fs-1:1rem; --fs-2:1.25rem; --fs-3:clamp(1.6rem,5vw,2.1rem);
+  --fs-4:clamp(2.4rem,9vw,3.6rem); --fs-5:clamp(3rem,13vw,5.4rem);
+
+  /* shape */
+  --bw:3px;
+  --shadow:6px 6px 0 var(--ink);
+  --shadow-md:4px 4px 0 var(--ink);
+  --shadow-sm:3px 3px 0 var(--ink);
+  --gutter:clamp(16px,4vw,32px);
+  --tap:48px;
+
+  /* motion (all under 400ms) */
+  --spring:cubic-bezier(.34,1.56,.64,1);
+  --ease:cubic-bezier(.2,.8,.2,1);
+  --t-fast:120ms; --t-med:240ms; --t-slow:360ms;
+}
+
+/* unlockable: peach + navy (phase 5 wires the shop; the theme itself works now) */
+:root[data-theme="peach-navy"]{
+  --paper:#ffcfb5;
+  --paper-deep:#ffa47e;
+  --ink:#1c2747;
+  --card:#fffaf5;
+  --on-ink:#fffaf5;
+  --accent:#9fb3ea;
+  --accent-2:#1c2747;
+  --muted:#6d6a78;
+  --fur:#fffaf2;
+}

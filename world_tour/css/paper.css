@@ -1,0 +1,79 @@
+/* ---------- paper kit: the scrapbook textures ---------- */
+
+/* .scrap carries the hard shadow as a drop-shadow so it follows torn edges.
+   put .torn (the masked paper) inside it. */
+.scrap{position:relative;filter:drop-shadow(6px 6px 0 var(--ink))}
+.scrap.sm{filter:drop-shadow(4px 4px 0 var(--ink))}
+
+/* torn paper: solid body + ragged strips top and bottom, all from code-drawn SVG masks */
+.torn{
+  background:var(--card);position:relative;
+  --edge:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 12' preserveAspectRatio='none'%3E%3Cpath d='M0 12V5l4 3 5-6 4 5 6-4 3 4 7-6 4 6 5-3 4 4 6-6 4 5 4-3v8z'/%3E%3C/svg%3E");
+  --edge-t:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 12' preserveAspectRatio='none'%3E%3Cpath d='M0 0v7l5-3 4 5 6-6 4 5 5-3 3 4 6-5 5 6 4-4 5 3 4-5 5 4 4-3V0z'/%3E%3C/svg%3E");
+  -webkit-mask:
+    linear-gradient(#000,#000) 0 11px/100% calc(100% - 22px) no-repeat,
+    var(--edge-t) 0 0/60px 12px repeat-x,
+    var(--edge) 0 100%/60px 12px repeat-x;
+  mask:
+    linear-gradient(#000,#000) 0 11px/100% calc(100% - 22px) no-repeat,
+    var(--edge-t) 0 0/60px 12px repeat-x,
+    var(--edge) 0 100%/60px 12px repeat-x;
+  padding:26px 20px 26px;
+}
+.torn.flat-top{
+  -webkit-mask:linear-gradient(#000,#000) 0 0/100% calc(100% - 11px) no-repeat,var(--edge) 0 100%/60px 12px repeat-x;
+  mask:linear-gradient(#000,#000) 0 0/100% calc(100% - 11px) no-repeat,var(--edge) 0 100%/60px 12px repeat-x;
+  padding-top:18px;
+}
+/* lined notebook paper variant */
+.torn.lined{
+  background:
+    linear-gradient(90deg,transparent 34px,color-mix(in srgb,var(--paper-deep) 70%,transparent) 34px 36px,transparent 36px),
+    repeating-linear-gradient(transparent 0 31px,color-mix(in srgb,var(--accent) 55%,transparent) 31px 32px),
+    var(--card);
+  background-position:0 0,0 18px,0 0;
+}
+
+/* washi tape: translucent strip with zigzag ends */
+.tape{
+  position:absolute;z-index:3;width:96px;height:26px;pointer-events:none;
+  background:repeating-linear-gradient(135deg,var(--tape-a) 0 8px,color-mix(in srgb,var(--tape-a) 60%,#fff) 8px 14px);
+  clip-path:polygon(0 0,4% 18%,0 36%,4% 54%,0 72%,4% 90%,0 100%,100% 100%,96% 84%,100% 66%,96% 48%,100% 30%,96% 12%,100% 0);
+  mix-blend-mode:multiply;
+}
+.tape.b{background:repeating-linear-gradient(90deg,var(--tape-b) 0 6px,color-mix(in srgb,var(--tape-b) 50%,var(--accent)) 6px 8px);mix-blend-mode:normal;opacity:.9}
+.tape.c{background:radial-gradient(circle,color-mix(in srgb,var(--card) 80%,transparent) 22%,transparent 26%) 0 0/9px 9px,var(--tape-c)}
+.tape.tl{top:-10px;left:14px;transform:rotate(-8deg)}
+.tape.tr{top:-10px;right:14px;transform:rotate(7deg)}
+.tape.tc{top:-12px;left:50%;transform:translateX(-50%) rotate(-3deg)}
+
+/* halftone patch */
+.halftone{background:radial-gradient(circle,var(--dot) 32%,transparent 36%) 0 0/10px 10px}
+
+/* polaroid */
+.polaroid{background:var(--card);padding:10px 10px 34px;border:2px solid var(--ink);box-shadow:var(--shadow-md);position:relative}
+.polaroid .cap{position:absolute;left:0;right:0;bottom:6px;text-align:center;font-family:var(--hand);font-size:1.3rem}
+
+/* ticket perforation: a dashed seam with half-circle bites on both ends */
+.perf{position:relative;border-left:3px dashed var(--ink)}
+.perf::before,.perf::after{content:"";position:absolute;left:-15px;width:26px;height:26px;border-radius:50%;background:var(--paper);border:3px solid var(--ink)}
+.perf::before{top:-16px}
+.perf::after{bottom:-16px}
+
+/* hand-drawn underline / circle (svg injected by js; these just place it) */
+.scribble{position:relative;display:inline-block;white-space:nowrap}
+.scribble>svg{position:absolute;left:-4%;width:108%;bottom:-.22em;height:.45em;pointer-events:none}
+.scribble>svg path{fill:none;stroke:var(--accent-2);stroke-width:5;stroke-linecap:round}
+.hl{background:linear-gradient(transparent 55%,var(--hl) 55% 92%,transparent 92%);padding:0 .15em}
+
+/* tilt helpers: nothing grid-perfect */
+.tilt-1{transform:rotate(-1.2deg)} .tilt-2{transform:rotate(1.6deg)} .tilt-3{transform:rotate(-2.4deg)} .tilt-4{transform:rotate(2.2deg)}
+
+/* shouting sticker type: white letters, ink outline, offset ink shadow */
+.shout{
+  font-family:var(--hand);font-weight:400;color:var(--card);line-height:.92;letter-spacing:.01em;
+  text-shadow:
+    -2px -2px 0 var(--ink), 2px -2px 0 var(--ink), -2px 2px 0 var(--ink), 2px 2px 0 var(--ink),
+     0 -2px 0 var(--ink), 0 2px 0 var(--ink), -2px 0 0 var(--ink), 2px 0 0 var(--ink),
+     5px 5px 0 var(--ink);
+}

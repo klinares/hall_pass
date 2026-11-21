@@ -1,0 +1,20 @@
+{
+  "ENABLED_SKILLS": {
+    "dec": true,
+    "md": true,
+    "frac": true,
+    "xy": true,
+    "vol": true,
+    "ops": true,
+    "flu": true,
+    "fm": true
+  },
+  "fmDivision": true,
+  "BOUNDS": {
+    "moneyCents": 10000,
+    "maxDenominator": 12,
+    "coordMax": 10,
+    "maxVolume": 1000,
+    "storyDollars": 150
+  }
+}

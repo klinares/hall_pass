@@ -21,10 +21,19 @@ namespace WorldTour.Core.Meta
         /// <summary>Math modes: the generator skill ("dec", "frac", ...); null for spelling.</summary>
         public readonly string Skill;
 
-        public ModeInfo(string id, string name, string kind, string skill = null)
+        /// <summary>
+        /// The level that counts as maxed for the max-level stickers: 3, or a math skill's MAX_LEVEL from
+        /// math_config.json (the config cap, not the office's gentle cap; QUESTIONS 24).
+        /// </summary>
+        public readonly int MaxLevel;
+
+        public ModeInfo(string id, string name, string kind, string skill = null, int maxLevel = 3)
         {
-            Id = id; Name = name; Kind = kind; Skill = skill;
+            Id = id; Name = name; Kind = kind; Skill = skill; MaxLevel = maxLevel;
         }
+
+        /// <summary>The same mode with another maxed level.</summary>
+        public ModeInfo WithMaxLevel(int maxLevel) { return new ModeInfo(Id, Name, Kind, Skill, maxLevel); }
     }
 
     /// <summary>
@@ -89,25 +98,27 @@ namespace WorldTour.Core.Meta
         }
 
         /// <summary>
-        /// milestones.js:9 <c>maxLevel</c>: some key is at level 3 with byLevel[3][1] (right answers at level 3)
-        /// of at least <see cref="MasterAt3"/>. A missing record or row counts as 0.
+        /// milestones.js:9 <c>maxLevel</c>: some mode is at its top level with byLevel[top][1] (right answers there)
+        /// of at least <see cref="MasterAt3"/>. The top level is 3, or a math skill's config MAX_LEVEL
+        /// (<see cref="ModeInfo.MaxLevel"/>). A missing record or row counts as 0.
         /// </summary>
-        private static bool MaxLevel(SaveBlob s, IEnumerable<string> ids)
+        private static bool MaxLevel(SaveBlob s, IEnumerable<ModeInfo> modes)
         {
-            foreach (string id in ids)
+            foreach (ModeInfo m in modes)
             {
+                string id = SkillKey(m);
                 SkillRecord k;
-                if (id == null || !s.Skills.TryGetValue(id, out k) || k == null || k.Level != 3) continue;
+                if (id == null || !s.Skills.TryGetValue(id, out k) || k == null || k.Level != m.MaxLevel) continue;
                 int[] row;
-                int right = k.ByLevel != null && k.ByLevel.TryGetValue(3, out row) && row != null && row.Length > 1 ? row[1] : 0;
+                int right = k.ByLevel != null && k.ByLevel.TryGetValue(m.MaxLevel, out row) && row != null && row.Length > 1 ? row[1] : 0;
                 if (right >= MasterAt3) return true;
             }
             return false;
         }
 
-        private static IEnumerable<string> Keys(IReadOnlyList<ModeInfo> modes, string kind)
+        private static IEnumerable<ModeInfo> Of(IReadOnlyList<ModeInfo> modes, string kind)
         {
-            foreach (ModeInfo m in modes) if (kind == null || m.Kind == kind) yield return SkillKey(m);
+            foreach (ModeInfo m in modes) if (kind == null || m.Kind == kind) yield return m;
         }
 
         private static long TotalTime(SaveBlob s)
@@ -155,11 +166,11 @@ namespace WorldTour.Core.Meta
             new Milestone("streak-10", "vinyl", "ten-day streak", "play ten days in a row",
                 (s, c) => s.Streak.Best >= 10),
             new Milestone("master-any", "trophy", "mastered a skill", "get 10 right at level 3 in any mode",
-                (s, c) => MaxLevel(s, Keys(c, null))),
+                (s, c) => MaxLevel(s, Of(c, null))),
             new Milestone("master-spell", "mic", "spelling headliner", "get 10 right at level 3 in a spelling mode",
-                (s, c) => MaxLevel(s, Keys(c, ModeInfo.Spelling))),
+                (s, c) => MaxLevel(s, Of(c, ModeInfo.Spelling))),
             new Milestone("master-math", "amp", "math headliner", "get 10 right at level 3 in a math mode",
-                (s, c) => MaxLevel(s, Keys(c, ModeInfo.Math))),
+                (s, c) => MaxLevel(s, Of(c, ModeInfo.Math))),
             new Milestone("every-mode", "bus", "played every stage", "finish a show in every mode",
                 EveryMode),
             new Milestone("ten-shows", "setlist", "ten shows", "finish ten shows",

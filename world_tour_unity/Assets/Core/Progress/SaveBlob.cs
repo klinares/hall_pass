@@ -55,6 +55,10 @@ namespace WorldTour.Core.Progress
         public string Theme = "tour-pink";
         /// <summary>"auto" or "reduced".</summary>
         public string Motion = "auto";
+        /// <summary>Phase 7.1, the manager's office: spelling plays one level lower at the top and needs 8 in a row to move up. Written only when true.</summary>
+        public bool GentleSpelling;
+        /// <summary>Phase 7.1, the manager's office: the same for math. Written only when true.</summary>
+        public bool GentleMath;
     }
 
     /// <summary>Balance is what she can spend backstage; lifetime only ever grows and unlocks venues.</summary>

@@ -224,6 +224,43 @@ namespace WorldTour.Game.Tests
             yield return Until(() => engine.Resolved, 3f, "song " + (i + 1) + " did not resolve");
         }
 
+        // ------------------------------------------------------------------ the warm-up level (phase 7.1)
+
+        /// <summary>
+        /// A skill saved at level 0 plays the warm-up: the stage has four axes, the truck is one flat layer, the beat maker
+        /// has one size of note. The first song of each is dealt, drawn and playable without an error log.
+        /// </summary>
+        [UnityTest, Timeout(240000)]
+        public IEnumerator WarmUp_StageFourAxes_TruckOneLayer_BeatOneSize_RenderWithoutErrors()
+        {
+            Seed("xy", 0);
+            ShowScreen show = null;
+            yield return OpenShow("stage", s => show = s);
+            StageMode stage = null;
+            yield return Until(() => (stage = ModeAt<StageMode>(show, 0)) != null && stage.Game != null, 10f, "the stage never became playable");
+            Assert.AreEqual(0, ((MathItem)show.Engine.Current.Item).Level, "level 0 problems");
+            Assert.AreEqual(4, stage.Game.Setup.Max, "the stage has axes to 4");
+
+            Seed("vol", 0);
+            yield return OpenShow("truck", s => show = s);
+            TruckMode truck = null;
+            yield return Until(() => (truck = ModeAt<TruckMode>(show, 0)) != null && (truck.Build != null || truck.Round != null), 10f, "the truck never became playable");
+            Problem tp = truck.Problem;
+            Assert.AreEqual(0, tp.Level);
+            Assert.AreEqual("count", tp.Kind);
+            Assert.AreEqual(1, tp.Params["boxes"].Items[0]["h"].Long, "a single visible layer");
+            Assert.IsNotNull(truck.Picture, "the one-layer stack is drawn");
+
+            Seed("frac", 0);
+            yield return OpenShow("beat", s => show = s);
+            BeatMode beat = null;
+            yield return Until(() => (beat = ModeAt<BeatMode>(show, 0)) != null && beat.Ladder != null, 10f, "the beat maker never became playable");
+            Assert.AreEqual(0, ((MathItem)show.Engine.Current.Item).Level);
+            Assert.AreEqual(1, ((MathItem)show.Engine.Current.Item).Prob.Params["palette"].Items.Count, "one size of note");
+            yield return new WaitForSecondsRealtime(.3f);
+            Assert.IsEmpty(_errors, string.Join("\n", _errors));
+        }
+
         // ------------------------------------------------------------------ pack the truck
 
         [UnityTest, Timeout(240000)]
@@ -441,6 +478,70 @@ namespace WorldTour.Game.Tests
                 Assert.IsTrue(mode.Game.Picked);
             }
             yield return TypedRight(mode.Pad, mode.Problem);
+            yield return Until(() => engine.Resolved, 3f, "song " + (i + 1) + " did not resolve");
+        }
+
+        // ------------------------------------------------------------------ snack table (fm)
+
+        [UnityTest, Timeout(240000)]
+        public IEnumerator SnackTable_Level2_MissThenHint_ToTheTicketAndEncore() { yield return SnackShow(2); }
+
+        [UnityTest, Timeout(240000)]
+        public IEnumerator SnackTable_Level3_MissThenHint_ToTheTicketAndEncore() { yield return SnackShow(3); }
+
+        IEnumerator SnackShow(int level)
+        {
+            Seed("fm", level);
+            ShowScreen show = null;
+            yield return OpenShow("snack", s => show = s);
+            ShowEngine engine = show.Engine;
+            Assert.AreEqual("fm", engine.Skill);
+            bool missed = false;
+            while (!engine.Finished)
+            {
+                int i = engine.Index;
+                FracMulMode mode = null;
+                yield return Until(() => engine.Finished || (engine.Index == i && (mode = ModeAt<FracMulMode>(show, i)) != null && (mode.Round != null || mode.Picks != null) && !engine.Resolved), 10f, "song " + (i + 1) + " never became playable");
+                if (engine.Finished) break;
+                if (!missed && !engine.IsBonus)
+                {
+                    missed = true;
+                    if (mode.Picks != null)
+                    {
+                        int wrong = Enumerable.Range(0, mode.Problem.Choices.Count).First(k => !mode.Problem.Choices[k].Correct);
+                        yield return Tap(FindDeep(mode.transform, "Choice " + wrong).gameObject);
+                    }
+                    else
+                    {
+                        mode.Pad.Press("go");
+                        Assert.AreEqual(0, engine.Tries, "an empty answer is not a miss");
+                        Type(mode.Pad, "1/99");
+                        mode.Pad.Press("go");
+                        yield return null;
+                    }
+                    Assert.AreEqual(1, engine.Tries);
+                    yield return new WaitForSecondsRealtime(.2f);
+                    yield return Tap(FindDeep(mode.transform, "Hint").gameObject);
+                    Assert.AreEqual(1, engine.Hints);
+                    Assert.GreaterOrEqual(mode.Ladder.Shown, 1);
+                    Assert.Less(mode.Stage, 3, "the worked picture waits for the third miss");
+                    yield return SnackRight(show, i);
+                }
+                else yield return SnackRight(show, i);
+                yield return Until(() => engine.Index != i || engine.Finished, 8f, "song " + (i + 1) + " never moved on");
+            }
+            Assert.IsTrue(missed);
+            yield return EncoreToTicket(SnackRight);
+            Assert.IsEmpty(_errors, string.Join("\n", _errors));
+        }
+
+        IEnumerator SnackRight(ShowScreen show, int i)
+        {
+            ShowEngine engine = show.Engine;
+            FracMulMode mode = null;
+            yield return Until(() => engine.Index == i && (mode = ModeAt<FracMulMode>(show, i)) != null && (mode.Round != null || mode.Picks != null) && !engine.Resolved, 10f, "song " + (i + 1) + " never became playable");
+            if (mode.Picks != null) yield return Tap(FindDeep(mode.transform, "Choice " + mode.Picks.RightIndex).gameObject);
+            else yield return TypedRight(mode.Pad, mode.Problem);
             yield return Until(() => engine.Resolved, 3f, "song " + (i + 1) + " did not resolve");
         }
 

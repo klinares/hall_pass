@@ -375,6 +375,8 @@ namespace WorldTour.Game.Tests
             ScreenStack stack = null;
             yield return Until(() => (stack = UnityEngine.Object.FindFirstObjectByType<ScreenStack>()) != null && stack.Top is MapScreen, 30f, "the map never showed");
             _stack = stack;
+            // phase 7.1: a skill nobody has played starts at the level-0 warm-up; the beat maker test below is written for level 1
+            if (modeId == "beat" && Boot.Store != null) Boot.Store.Blob.Skills["frac"] = new SkillRecord { Level = 1, A = 1 };
             Press(FindDeep(stack.Top.transform, "Venue_coffee").gameObject);
             yield return Until(() => stack.Top is VenueCard, 5f, "the venue card never opened");
             yield return null; yield return null;

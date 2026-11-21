@@ -32,19 +32,23 @@ namespace WorldTour.Game.Data
         public static List<string> Messages =>
             (Weeks?.Findings ?? new List<Finding>()).Concat(Math?.Findings ?? new List<Finding>()).Select(f => f.ToString()).ToList();
 
+        /// <summary>Tests only: read math_config.json from this folder instead of StreamingAssets, so play-mode tests do not depend on the shipped config. Null in the game.</summary>
+        public static string MathConfigFolder;
+
         public static IEnumerator Load(string folder = null)
         {
             Loaded = false;
             folder = folder ?? Application.streamingAssetsPath;
             string weeksText = null, weeksFail = null, configText = null, configFail = null;
             yield return Fetch(folder, DataFiles.WeeksFileName, (t, e) => { weeksText = t; weeksFail = e; });
-            yield return Fetch(folder, DataFiles.MathConfigFileName, (t, e) => { configText = t; configFail = e; });
+            yield return Fetch(MathConfigFolder ?? folder, DataFiles.MathConfigFileName, (t, e) => { configText = t; configFail = e; });
 
             Weeks = Guard(() => weeksFail != null ? Missing(new WeeksLoad(), DataFiles.WeeksFileName, weeksFail) : DataFiles.LoadWeeks(weeksText),
                 e => Missing(new WeeksLoad(), DataFiles.WeeksFileName, "could not be read (" + e.Message + ")"));
             Math = Guard(() => configFail != null ? MissingConfig(configFail) : DataFiles.LoadMathConfig(configText),
                 e => MissingConfig("could not be read (" + e.Message + ")"));
 
+            WorldTour.Core.Maths.Gen.FracMul.DivisionEnabled = Math.Config.fmDivision;   // snack table: math_config.json fmDivision
             foreach (string m in Messages) Debug.LogWarning("[data] " + m);
             Loaded = true;
         }

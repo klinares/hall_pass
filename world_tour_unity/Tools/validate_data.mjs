@@ -414,8 +414,20 @@ function rawWeek(f, file, wk, i) {
 
 /* ---------------- math_config.json (mirror of DataFiles.LoadMathConfig and MathConfig.Validate) ---------------- */
 
-const SKILLS = ['dec', 'md', 'frac', 'xy', 'vol', 'ops', 'flu'];
+const SKILLS = ['dec', 'md', 'frac', 'xy', 'vol', 'ops', 'flu', 'fm'];
+const LEVEL_KEYS = ['MAX_LEVEL', 'START_LEVEL'];   /* Unity only, phase 7.1: see MATH_CONFIG.md */
+const MAX_AFTER = 20, LOWEST_LEVEL = 0, HIGHEST_LEVEL = 3;   /* MathConfig.MaxAfter, LowestLevel, HighestLevel */
 const BOUND_KEYS = ['moneyCents', 'maxDenominator', 'coordMax', 'maxVolume', 'storyDollars'];   /* storyDollars: Unity only, QUESTIONS 9.4 */
+
+/* a level: a whole number from 0 to 3 (0 is the warm-up); mirror of DataFiles.ExpectLevel */
+function expectLevel(f, file, at, key, node) {
+  const v = get(node, key);
+  if (!v) return;
+  if (!isWhole(v)) { f.push(err(file, v.line, `${at}: "${key}" should be a whole number, but it is ${describe(v)}`)); return; }
+  const neg = v.text.startsWith('-'), digits = v.text.replace(/^-/, '').replace(/^0+/, '');
+  const bad = digits.length > 1 || (digits.length === 1 && (neg || Number(digits) > HIGHEST_LEVEL));
+  if (bad) f.push(err(file, v.line, `${at}: "${key}" should be a whole number from ${LOWEST_LEVEL} to ${HIGHEST_LEVEL}, but it is ${v.text}`));
+}
 
 export function loadMathConfig(text, file = 'math_config.json') {
   const f = [];
@@ -423,7 +435,7 @@ export function loadMathConfig(text, file = 'math_config.json') {
   if (root) {
     if (root.kind !== 'object') f.push(err(file, root.line, 'the file should be a { } block holding "ENABLED_SKILLS" and "BOUNDS"'));
     else {
-      unknown(f, file, root, 'the top level', ['ENABLED_SKILLS', 'BOUNDS']);
+      unknown(f, file, root, 'the top level', ['ENABLED_SKILLS', 'BOUNDS', 'LEVEL_UP_AFTER', 'LEVEL_DOWN_AFTER', 'LEVELS', 'fmDivision']);
       const sk = get(root, 'ENABLED_SKILLS');
       if (sk && expect(f, file, 'the top level', 'ENABLED_SKILLS', sk, 'object')) {
         unknown(f, file, sk, 'ENABLED_SKILLS', SKILLS);
@@ -434,12 +446,35 @@ export function loadMathConfig(text, file = 'math_config.json') {
         unknown(f, file, b, 'BOUNDS', BOUND_KEYS);
         for (const k of BOUND_KEYS) expectInt(f, file, 'BOUNDS', k, b);
       }
+      for (const k of ['LEVEL_UP_AFTER', 'LEVEL_DOWN_AFTER']) expectInt(f, file, 'the top level', k, root);
+      expectOptional(f, file, 'the top level', 'fmDivision', root, 'bool');
+      const lv = get(root, 'LEVELS');
+      if (lv && expect(f, file, 'the top level', 'LEVELS', lv, 'object')) {
+        unknown(f, file, lv, 'LEVELS', SKILLS);
+        for (const sk of SKILLS) {
+          const one = get(lv, sk);
+          if (!one || !expect(f, file, 'LEVELS', sk, one, 'object')) continue;
+          unknown(f, file, one, `LEVELS.${sk}`, LEVEL_KEYS);
+          for (const k of LEVEL_KEYS) expectLevel(f, file, `LEVELS.${sk}`, k, one);
+        }
+      }
       if (!hasErrors(f)) {
         /* MathConfig.Validate(): a missing bound stays -1 and is reported; others must be above 0 */
         for (const k of BOUND_KEYS) {
           const v = b && get(b, k) ? Number(get(b, k).text) : -1;
           if (v === -1) f.push(err(file, 0, `BOUNDS.${k} is missing.`));
           else if (v <= 0) f.push(err(file, 0, `BOUNDS.${k} must be a whole number above 0 (it is ${v}).`));
+        }
+        for (const k of ['LEVEL_UP_AFTER', 'LEVEL_DOWN_AFTER']) {
+          const v = get(root, k) ? Number(get(root, k).text) : null;
+          if (v !== null && v > MAX_AFTER) f.push(err(file, 0, `${k} must be ${MAX_AFTER} or less (it is ${v}).`));
+        }
+        /* a start above the cap is not wrong enough to refuse the file: the game starts at the cap */
+        for (const sk of SKILLS) {
+          const one = lv && get(lv, sk);
+          const num = (key, dflt) => one && get(one, key) ? Number(get(one, key).text) : dflt;
+          const max = num('MAX_LEVEL', HIGHEST_LEVEL), start = num('START_LEVEL', LOWEST_LEVEL);
+          if (start > max) f.push(warn(file, 0, `LEVELS.${sk}: START_LEVEL (${start}) is above MAX_LEVEL (${max}), so the game starts it at ${max}`));
         }
       }
     }

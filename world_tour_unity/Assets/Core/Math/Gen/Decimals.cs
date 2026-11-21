@@ -9,6 +9,7 @@ namespace WorldTour.Core.Maths.Gen
     /// <summary>
     /// MERCH TABLE: adding, subtracting and multiplying decimals with money (5.NBT.7). Ported from
     /// world_tour/math/gen/decimals.js; every RNG call happens in the same order, so problems match the JS.
+    /// L0 (Unity only, warm-up): 2 items priced in whole dollars and 50 cents, the total or the change from $10.
     /// L1: 2 items under $10, the total or the change from $10.
     /// L2: 3 items, one bought as quantity x price, the total or the change from $20.
     /// L3: decimal x decimal (2.5 ounces at $1.20 an ounce), alone or with change from $50.
@@ -105,11 +106,13 @@ namespace WorldTour.Core.Maths.Gen
             List<string> steps;
             string prompt, label;
 
-            if (level == 1)
+            if (level <= 1)
             {
-                List<Item> pool = r.Shuffle(Items.Where(Fits(105, 475)).ToList());
+                // level 0 prices every item at a whole dollar or 50 cents, so the sums need no regrouping of cents
+                int lo = level == 0 ? 100 : 105, hi = level == 0 ? 450 : 475, step = level == 0 ? 50 : 5;
+                List<Item> pool = r.Shuffle(Items.Where(Fits(lo, hi)).ToList());
                 lines = new List<Line>();
-                for (int i = 0; i < 2; i++) lines.Add(Line.Of(pool[i], 1, PriceFor(r, pool[i], 105, 475, 5)));
+                for (int i = 0; i < 2; i++) lines.Add(Line.Of(pool[i], 1, PriceFor(r, pool[i], lo, hi, step)));
                 total = lines[0].Each + lines[1].Each;
                 kind = r.Chance(.5) ? "total" : "change";
             }
@@ -151,7 +154,7 @@ namespace WorldTour.Core.Maths.Gen
 
             if (kind == "change")
             {
-                paid = level == 1 ? 1000 : level == 2 ? 2000 : 5000;
+                paid = level <= 1 ? 1000 : level == 2 ? 2000 : 5000;
                 answer = Answer.Money(paid - total);
                 traps.Add(new Trap(MathValue.Num(total), "gave-total"));
                 traps.Add(new Trap(MathValue.Num(Money.NoBorrowSub(paid, total)), "no-borrow"));

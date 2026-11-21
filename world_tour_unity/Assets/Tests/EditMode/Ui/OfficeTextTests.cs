@@ -67,7 +67,7 @@ namespace WorldTour.Game.EditTests
                 string today = f[1];
                 LoadResult r = SaveJson.Load(f[2], today);
                 Assert.IsFalse(r.Unreadable, "seed " + f[0] + ": " + r.Error);
-                OfficeReport o = OfficeRules.Build(r.Blob, ModeCatalog.Infos, today);
+                OfficeReport o = OfficeRules.Build(r.Blob, ModeCatalog.Infos.Where(m => m.Id != "snack").ToList(), today)   /* the web office has no snack table */;
                 string got = OfficeText.Trace(o);
                 n++;
                 if (got != f[3])

@@ -45,12 +45,21 @@ namespace WorldTour.Core.Shows
         public const int DownAfter = 2;
 
         /// <summary>
+        /// A record nobody has played: level 1 with nothing attempted. progress.js creates records on demand at level 1,
+        /// so this is what a skill she never started looks like; it takes the policy's start level instead.
+        /// </summary>
+        public static bool Untouched(SkillRecord k) => k.A == 0 && k.Level == MinLevel;
+
+        /// <summary>
         /// JS <c>recordSkill(id, { correct, hinted, mistake })</c> on the record itself. Returns how the level
         /// moved: 1 up, -1 down, 0 not at all. Moving resets the run that caused it.
         /// </summary>
-        public static int Record(SkillRecord k, bool correct, bool hinted = false, string mistake = null)
+        public static int Record(SkillRecord k, bool correct, bool hinted = false, string mistake = null, LevelPolicy policy = null)
         {
-            int[] lv = Row(k, k.Level);
+            policy = policy ?? LevelPolicy.Legacy;
+            // a saved level above the cap plays at the cap; the saved level is only changed when it moves
+            int level = policy.Effective(k.Level);
+            int[] lv = Row(k, level);
             k.A++;
             lv[0]++;
             if (hinted) k.H++;
@@ -62,13 +71,13 @@ namespace WorldTour.Core.Shows
                 lv[1]++;
                 k.MissRun = 0;
                 k.Run++;
-                if (k.Run >= UpAfter && k.Level < MaxLevel) { k.Level++; k.Run = 0; moved = 1; }
+                if (k.Run >= policy.UpAfter && level < policy.Cap) { k.Level = level + 1; k.Run = 0; moved = 1; }
             }
             else
             {
                 k.Run = 0;
                 k.MissRun++;
-                if (k.MissRun >= DownAfter && k.Level > MinLevel) { k.Level--; k.MissRun = 0; moved = -1; }
+                if (k.MissRun >= policy.DownAfter && level > policy.Floor) { k.Level = level - 1; k.MissRun = 0; moved = -1; }
             }
             return moved;
         }

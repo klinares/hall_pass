@@ -129,8 +129,9 @@ namespace WorldTour.Core.Tests
         [Test]
         public void MathConfigFileMatchesTheWebGameAndValidates()
         {
-            string path = Path.Combine(Application.dataPath, "StreamingAssets", "math_config.json");
-            Assert.IsTrue(File.Exists(path), "missing " + path + "; run node Tools/config_to_json.mjs");
+            // a fixture, not the shipped file: the shipped config turns skills off and sets caps
+            string path = Path.Combine(DataTestPaths.EditMode, "Fixtures", "config_web_defaults.json");
+            Assert.IsTrue(File.Exists(path), "missing " + path);
             var config = JsonUtility.FromJson<MathConfig>(File.ReadAllText(path));
             Assert.IsNotNull(config);
             CollectionAssert.IsEmpty(config.Validate());

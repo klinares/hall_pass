@@ -33,12 +33,33 @@
   ],
   "config_frac_off.json": [],
   "config_fracc.json": [
-   "E|10|0|ENABLED_SKILLS: \"fracc\" is not a field the game knows (fields here: dec, md, frac, xy, vol, ops, flu)"
+   "E|10|0|ENABLED_SKILLS: \"fracc\" is not a field the game knows (fields here: dec, md, frac, xy, vol, ops, flu, fm)"
   ],
   "config_good.json": [],
   "config_int_max.json": [],
   "config_int_max_plus_one.json": [
    "E|15|0|BOUNDS: \"maxVolume\" is 2147483648, which is too big (the largest allowed is 2147483647)"
+  ],
+  "config_levels_bad_types.json": [
+   "E|18|0|the top level: \"LEVEL_UP_AFTER\" should be a whole number, but it is the text \"six\"",
+   "E|19|0|the top level: \"LEVEL_DOWN_AFTER\" should be a whole number above 0, but it is 0",
+   "E|29|0|LEVELS: \"Vol\" is not a field the game knows (did you mean \"vol\"? names are case-sensitive)",
+   "E|22|0|LEVELS.md: \"MAX_LEVEL\" should be a whole number from 0 to 3, but it is 4",
+   "E|23|0|LEVELS.md: \"START_LEVEL\" should be a whole number from 0 to 3, but it is -1",
+   "E|26|0|LEVELS.ops: \"MAX_LEVEL\" should be a whole number, but it is 1.5",
+   "E|28|0|LEVELS: \"flu\" should be a { } block, but it is 5"
+  ],
+  "config_levels_good.json": [],
+  "config_levels_start_above_cap.json": [
+   "W|0|0|LEVELS.md: START_LEVEL (2) is above MAX_LEVEL (1), so the game starts it at 1"
+  ],
+  "config_levels_too_many.json": [
+   "E|0|0|LEVEL_UP_AFTER must be 20 or less (it is 25).",
+   "E|0|0|LEVEL_DOWN_AFTER must be 20 or less (it is 21)."
+  ],
+  "config_levels_unknown_key.json": [
+   "E|23|0|the top level: \"LEVEL_UP\" is not a field the game knows (fields here: ENABLED_SKILLS, BOUNDS, LEVEL_UP_AFTER, LEVEL_DOWN_AFTER, LEVELS, fmDivision)",
+   "E|20|0|LEVELS.md: \"MAX\" is not a field the game knows (fields here: MAX_LEVEL, START_LEVEL)"
   ],
   "config_malformed.json": [
    "E|5|5|a comma is missing before this field"
@@ -82,7 +103,7 @@
    "E|1|1|this { is never closed"
   ],
   "config_unknown_top.json": [
-   "E|18|0|the top level: \"BOUND\" is not a field the game knows (fields here: ENABLED_SKILLS, BOUNDS)"
+   "E|18|0|the top level: \"BOUND\" is not a field the game knows (fields here: ENABLED_SKILLS, BOUNDS, LEVEL_UP_AFTER, LEVEL_DOWN_AFTER, LEVELS, fmDivision)"
   ],
   "config_zero.json": [
    "E|14|0|BOUNDS: \"coordMax\" should be a whole number above 0, but it is 0"

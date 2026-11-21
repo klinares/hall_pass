@@ -1,0 +1,34 @@
+{
+  "ENABLED_SKILLS": {
+    "dec": false,
+    "md": true,
+    "frac": false,
+    "xy": false,
+    "vol": true,
+    "ops": true,
+    "flu": true
+  },
+  "BOUNDS": {
+    "moneyCents": 10000,
+    "maxDenominator": 12,
+    "coordMax": 10,
+    "maxVolume": 1000,
+    "storyDollars": 150
+  },
+  "LEVEL_UP_AFTER": 6,
+  "LEVEL_DOWN_AFTER": 2,
+  "LEVELS": {
+    "md": {
+      "MAX_LEVEL": 1,
+      "START_LEVEL": 0
+    },
+    "ops": {
+      "MAX_LEVEL": 2
+    },
+    "flu": {
+      "MAX_LEVEL": 2,
+      "START_LEVEL": 1
+    },
+    "vol": {}
+  }
+}

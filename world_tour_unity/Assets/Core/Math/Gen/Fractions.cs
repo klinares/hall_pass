@@ -9,6 +9,8 @@ namespace WorldTour.Core.Maths.Gen
     /// BEAT MAKER: adding and subtracting fractions (5.NF.1-2). Ported from world_tour/math/gen/fractions.js;
     /// every RNG call happens in the same order, so problems match the JS.
     /// A measure is one whole. Note blocks are unit fractions: 1/2 1/4 1/8 1/3 1/6 1/12.
+    /// L0 (Unity only, warm-up): like denominators only, from {3, 4, 6, 8}: fill the measure with one size of note,
+    /// or add two notes that are the same size.
     /// L1: fill one whole with halves, quarters, eighths.
     /// L2: unlike denominators from {2,3,4,6,8,12}: fill the measure, or add two notes.
     /// L3: mixed-number targets (two measures), taking notes out, or subtracting.
@@ -90,8 +92,83 @@ namespace WorldTour.Core.Maths.Gen
 
         public static Problem Generate(int level, long seed) => Guard.Guarded(Build, level, seed);
 
+        private static readonly int[] L0Denoms = { 3, 4, 6, 8 };
+        private static readonly string[] KindsL0 = { "fill", "fill", "sum" };
+
+        /// <summary>
+        /// Level 0, like denominators only. "fill": 1 to d-2 notes of 1/d already written (so 2 to 4 are missing); the
+        /// palette is the one size. "sum": x/d + y/d, both in lowest terms (so the denominators the player reads really
+        /// match), adding to less than one whole.
+        /// </summary>
+        private static Problem BuildLike(long seed, Rng r)
+        {
+            string kind = r.Pick(KindsL0);
+            int d = r.Pick(L0Denoms);
+            var palette = new List<int> { d };
+            Rational one = Rational.R(1);
+            Answer answer;
+            string prompt, label;
+            List<string> steps;
+            var traps = new List<Trap>();
+            JsonValue parameters;
+            if (kind == "fill")
+            {
+                int count = r.Int(Math.Max(1, d - 4), d - 2);
+                var pre = new List<int>();
+                for (int i = 0; i < count; i++) pre.Add(d);
+                Rational have = SumUnits(pre), need = Rational.Sub(one, have);
+                answer = Answer.Fraction(need);
+                parameters = JsonValue.Obj()
+                    .Set("target", one).Set("grid", d).Set("bars", 1)
+                    .Set("pre", JsonValue.Ints(pre)).Set("palette", JsonValue.Ints(palette)).Set("removable", false);
+                prompt = "finish the measure: add notes until it" + Glyph.Apos + "s exactly one whole.";
+                label = "fill " + F(one) + " measure";
+                List<int> fill = Decompose(need, palette);
+                steps = new List<string>
+                {
+                    "the measure holds one whole. how much is already written? count it in " + Plural(d) + ".",
+                    "written so far: " + InGrid(have, d) + ". you need " + InGrid(need, d) + " more.",
+                    string.Join(" + ", fill.Select(x => F(Unit(x)))) + " = " + F(need) + ". that fills it to one whole."
+                };
+            }
+            else
+            {
+                int x, y;
+                do
+                {
+                    x = r.Int(1, d - 2);
+                    y = r.Int(1, Math.Max(1, d - 1 - x));
+                } while (x + y >= d || Rational.R(x, d).D != d || Rational.R(y, d).D != d);
+                Rational A = Rational.R(x, d), B = Rational.R(y, d), res = Rational.Add(A, B);
+                answer = Answer.Fraction(res);
+                parameters = JsonValue.Obj()
+                    .Set("target", JsonValue.Null).Set("grid", d).Set("bars", 1L)
+                    .Set("a", A).Set("b", B).Set("op", "+")
+                    .Set("palette", JsonValue.Ints(palette)).Set("pre", JsonValue.Arr()).Set("removable", false);
+                prompt = "the bass plays " + F(A) + " of a measure, then the drums play " + F(B) + ". how much is that together?";
+                label = F(A) + " + " + F(B);
+                steps = new List<string>
+                {
+                    "the denominators match, so every note is the same size. what stays the same, and what gets added?",
+                    "one note is " + F(Unit(d)) + ". the bass plays " + S(x) + " of them and the drums play " + S(y) + ". how many notes is that together?",
+                    InGrid(A, d) + " + " + InGrid(B, d) + " = [[" + S(x + y) + "/" + S(d) + "]]" + (Rational.R(x + y, d).D != d ? " = " + F(res) : "")
+                };
+                traps.Add(new Trap(MathValue.Frac(Rational.R(x + y, 2 * d)), "added-denominators"));
+                traps.Add(new Trap(MathValue.Frac(Rational.R(x + y, 1)), "added-tops-only"));
+            }
+            return new Problem
+            {
+                Skill = Skill, Level = 0, Kind = kind, Seed = seed,
+                Params = parameters, Prompt = prompt, Label = label, Answer = answer,
+                Simplest = false, Choices = null,
+                Traps = Mistakes.CleanTraps(answer, traps), Steps = steps,
+                Builder = kind != "sum"
+            };
+        }
+
         private static Problem Build(int level, long seed, Rng r)
         {
+            if (level == 0) return BuildLike(seed, r);
             string kind = level == 1 ? "fill" : level == 2 ? r.Pick(KindsL2) : r.Pick(KindsL3);
             Rational target = Rational.R(1);
             var pre = new List<int>();

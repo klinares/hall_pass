@@ -9,6 +9,7 @@ namespace WorldTour.Core.Maths.Gen
     /// SOUNDCHECK: quick facts and powers of ten (5.NBT.1-2). Ported from world_tour/math/gen/fluency.js; every
     /// RNG call happens in the same order, so problems match the JS. Multiple choice, with a timer that only
     /// changes bonus fans.
+    /// L0 (Unity only, warm-up): x and / facts to 5, with a longer 10 seconds.
     /// L1: x and / facts to 10.
     /// L2: facts to 12, x and / by 10 and 100.
     /// L3: x and / by 10, 100, 1000 with decimals, and powers of ten (10^3, 4.5 x 10^2).
@@ -77,7 +78,7 @@ namespace WorldTour.Core.Maths.Gen
 
         private static Problem Build(int level, long seed, Rng r)
         {
-            string kind = level == 1 ? r.Pick(KindsL1) : level == 2 ? r.Pick(KindsL2) : r.Pick(KindsL3);
+            string kind = level <= 1 ? r.Pick(KindsL1) : level == 2 ? r.Pick(KindsL2) : r.Pick(KindsL3);
             Answer answer;
             string prompt, label;
             List<Trap> traps;
@@ -87,7 +88,7 @@ namespace WorldTour.Core.Maths.Gen
 
             if (kind == "mul" || kind == "div")
             {
-                int top = level == 1 ? 10 : 12;
+                int top = level == 0 ? 5 : level == 1 ? 10 : 12;
                 int a = r.Int(2, top), b = r.Int(2, top), p = a * b;
                 if (kind == "mul")
                 {
@@ -267,7 +268,7 @@ namespace WorldTour.Core.Maths.Gen
             return new Problem
             {
                 Skill = Skill, Level = level, Kind = kind, Seed = seed,
-                Params = JsonValue.Obj().Set("seconds", level == 1 ? 8 : level == 2 ? 9 : 12),
+                Params = JsonValue.Obj().Set("seconds", level == 0 ? 10 : level == 1 ? 8 : level == 2 ? 9 : 12),
                 Prompt = prompt + " = ?", Label = label, Answer = answer, Simplest = false,
                 Choices = choices,
                 // JS: choices.filter(c => !c.correct).map(c => ({ value: c.value, why: c.why })), not through cleanTraps

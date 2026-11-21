@@ -210,10 +210,14 @@ namespace WorldTour.Game.Show
                     w => ProgressRules.WordAttempts(Save, w), _random).Cast<ShowItem>().ToList();
             }
 
+            // phase 7.1: the level rules for this skill (math_config.json, and the office's gentle switch); a skill nobody
+            // has played starts at the policy's start level
+            string skillId = isMath ? skill : "spell:" + request.ModeId;
+            LevelPolicy policy = ProgressRules.PolicyFor(Save, skillId, config);
             Engine = new ShowEngine(new ShowSetup
             {
                 IsMath = isMath, ModeId = request.ModeId, Skill = skill, VenueId = request.VenueId, Items = items, Encore = request.Encore,
-                SkillRecord = ProgressRules.Skill(Save, isMath ? skill : "spell:" + request.ModeId)
+                SkillRecord = ProgressRules.SkillForShow(Save, skillId, policy), Policy = policy
             });
             _result = new ShowResult { Request = request, Engine = Engine, Week = request.Week };
             // Attach first, so the save (and the stickers) are done before this screen reacts to ShowFinished.
@@ -335,6 +339,7 @@ namespace WorldTour.Game.Show
                 case "truck": return host.AddComponent<TruckMode>();
                 case "budget": return host.AddComponent<BudgetMode>();
                 case "soundcheck": return host.AddComponent<SoundcheckMode>();
+                case "snack": return host.AddComponent<FracMulMode>();
                 default: throw new NotSupportedException("mode " + id + " isn't built yet");
             }
         }

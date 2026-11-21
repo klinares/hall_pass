@@ -185,11 +185,11 @@ namespace WorldTour.Game.EditTests
         public void ModeCatalog_IsTheWebRegistry_PlayableSoFar()
         {
             CollectionAssert.AreEqual(new[] { "slots", "vowels", "remix", "fanmail", "studio", "lyric", "prefix",
-                "merch", "beat", "tickets", "stage", "truck", "budget", "soundcheck" }, ModeCatalog.All.Select(m => m.Id).ToArray());
-            CollectionAssert.AreEqual(new[] { "slots", "vowels", "remix", "fanmail", "studio", "lyric", "prefix", "merch", "beat", "tickets", "stage", "truck", "budget", "soundcheck" }, ModeCatalog.All.Where(m => m.Playable).Select(m => m.Id).ToArray());
+                "merch", "beat", "tickets", "stage", "truck", "budget", "soundcheck", "snack" }, ModeCatalog.All.Select(m => m.Id).ToArray());
+            CollectionAssert.AreEqual(new[] { "slots", "vowels", "remix", "fanmail", "studio", "lyric", "prefix", "merch", "beat", "tickets", "stage", "truck", "budget", "soundcheck", "snack" }, ModeCatalog.All.Where(m => m.Playable).Select(m => m.Id).ToArray());
             Assert.AreEqual("tap the letter stickers in order", ModeCatalog.ById("remix").Sub);
             Assert.AreEqual("cassette", ModeCatalog.ById("remix").Sticker);
-            Assert.AreEqual(14, ModeCatalog.Infos.Count);
+            Assert.AreEqual(15, ModeCatalog.Infos.Count);
         }
 
         // ---------- model ----------

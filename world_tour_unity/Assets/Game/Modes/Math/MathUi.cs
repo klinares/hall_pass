@@ -54,7 +54,7 @@ namespace WorldTour.Game.Modes
         public static void TopPivot(RectTransform rt) { rt.pivot = new Vector2(.5f, 1f); }
 
         /// <summary>parts.js:14-22 promptCard: the torn clue card with its label chip (.cluelbl) and the problem (.mathq p).</summary>
-        public static RectTransform PromptCard(RectTransform parent, string text, string label)
+        public static RectTransform PromptCard(RectTransform parent, string text, string label, float maxTextHeight = 0f)
         {
             RectTransform card = ShowUi.Rect("Prompt", parent);
             TopPivot(card);
@@ -91,7 +91,8 @@ namespace WorldTour.Game.Modes
             t.raycastTarget = false;
             t.richText = true;
             t.text = MathText.ToTmp(text, MathText.PromptScale);
-            pr.gameObject.AddComponent<PromptFit>();
+            if (maxTextHeight > 0f) t.margin = new Vector4(0f, 6f, 0f, 0f);   // keeps line one clear of the tilted label chip once the lines are tightened
+            pr.gameObject.AddComponent<PromptFit>().MaxHeight = maxTextHeight;
             return card;
         }
 
@@ -102,11 +103,19 @@ namespace WorldTour.Game.Modes
         sealed class PromptFit : MonoBehaviour
         {
             TextMeshProUGUI _t; LayoutElement _le;
+            /// <summary>0 = never shrink. Otherwise a long prompt (stacked fractions make the lines tall) steps its font down until it is this tall or less, so the keypad under it keeps its room.</summary>
+            public float MaxHeight;
             void Awake() { _t = GetComponent<TextMeshProUGUI>(); _le = gameObject.AddComponent<LayoutElement>(); }
             void LateUpdate()
             {
                 if (_t == null || _t.textInfo == null || _t.textInfo.lineCount == 0) return;
-                float h = Mathf.Ceil(_t.textBounds.size.y) + 4f;
+                float h = Mathf.Ceil(_t.textBounds.size.y) + 4f + _t.margin.y;
+                if (MaxHeight > 0f && h > MaxHeight && (_t.lineSpacing > 6f || _t.fontSize > 15.4f))
+                {
+                    if (_t.lineSpacing > 6f) _t.lineSpacing = Mathf.Max(6f, _t.lineSpacing - 4f);   // tighter lines first (never so tight that the label chip covers line one), then a smaller font
+                    else _t.fontSize = Mathf.Max(15.4f, _t.fontSize - .5f);
+                    return;
+                }
                 if (Mathf.Abs(h - _le.minHeight) < 1f) return;
                 _le.minHeight = h;
                 LayoutRebuilder.MarkLayoutForRebuild(transform.parent as RectTransform);

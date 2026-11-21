@@ -335,15 +335,16 @@ namespace WorldTour.Game.Map
             SaveBlob s = MapScreen.Blob;
             for (int i = 0; i < modes.Count; i++)
             {
-                int level = s != null ? ProgressRules.Level(s, modes[i].Info.Skill) : 1;
+                int level = ProgressRules.PlayedLevel(s, modes[i].Info.Skill, ProgressRules.PolicyFor(s, modes[i].Info.Skill, config));
                 y = ModeRow(v, wk, modes[i], i, x0, y, cw, level) + 14f;
             }
             return y;
         }
 
-        float ModeRow(Venue v, Week wk, ModeEntry m, int i, float x0, float y, float cw, int mathLevel = 0)
+        float ModeRow(Venue v, Week wk, ModeEntry m, int i, float x0, float y, float cw, int mathLevel = -1)
         {
-            bool math = mathLevel > 0;
+            // -1 = a spelling row; math levels run from 0 (the warm-up) to 3
+            bool math = mathLevel >= 0;
             float h = math ? 100f : 84f;
             RectTransform root = UiKit.Place(UiKit.Rect("Mode_" + m.Id, _content), new Vector2(x0 + cw * 0.5f, y + h * 0.5f), new Vector2(cw, h), UiKit.Center);
             // venue.js:49 --r (spelling rows -1, 1, ...; math rows 1, -1, ..., venue.js:62)
@@ -374,7 +375,7 @@ namespace WorldTour.Game.Map
                 // .mlvl: the stars in accent-2 at 1rem, letter-spaced, then "level n" small in ink
                 TextMeshProUGUI lvl = UiKit.Text(face, "Level", "", FontRole.Body, 16f, ColorRole.Accent2, TextAlignmentOptions.TopLeft, false);
                 lvl.characterSpacing = 8f;
-                lvl.text = MapText.LevelStars(mathLevel) + " <cspace=0><size=11.5><color=#" + ColorUtility.ToHtmlStringRGB(Theme.Color(ColorRole.Ink)) + ">level " + mathLevel + "</color></size></cspace>";
+                lvl.text = MapText.LevelStars(mathLevel) + " <cspace=0><size=11.5><color=#" + ColorUtility.ToHtmlStringRGB(Theme.Color(ColorRole.Ink)) + ">" + (mathLevel == 0 ? "warm-up" : "level " + mathLevel) + "</color></size></cspace>";
                 UiKit.Place(lvl.rectTransform, new Vector2(x, 70f), new Vector2(textW, 20f), UiKit.TopLeft);
             }
             TextMeshProUGUI arrow = UiKit.Text(face, "Arrow", MapText.Arrow, FontRole.Body, 25.6f, ColorRole.Ink, TextAlignmentOptions.Center, false);

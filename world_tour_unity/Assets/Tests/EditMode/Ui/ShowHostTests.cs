@@ -28,10 +28,10 @@ namespace WorldTour.Game.EditTests
         }
 
         [Test]
-        public void ModeList_IsTheWebGameSetlist()
+        public void ModeList_IsTheWebGameSetlistPlusTheSnackTable()
         {
             CollectionAssert.AreEqual(
-                new[] { "slots", "vowels", "remix", "fanmail", "studio", "lyric", "prefix", "merch", "beat", "tickets", "stage", "truck", "budget", "soundcheck" },
+                new[] { "slots", "vowels", "remix", "fanmail", "studio", "lyric", "prefix", "merch", "beat", "tickets", "stage", "truck", "budget", "soundcheck", "snack" },
                 ModeList.All(null).Select(m => m.Id).ToArray());
             Assert.AreEqual("remix", ModeList.ById("remix", null).Name);
             Assert.AreEqual("frac", ModeList.ById("beat", null).Skill);
@@ -45,7 +45,7 @@ namespace WorldTour.Game.EditTests
             config.ENABLED_SKILLS.frac = false;
             var ids = ModeList.All(config).Select(m => m.Id).ToList();
             CollectionAssert.DoesNotContain(ids, "beat");
-            Assert.AreEqual(13, ids.Count);
+            Assert.AreEqual(14, ids.Count);
             Assert.IsNull(ModeList.ById("beat", config));
         }
     }

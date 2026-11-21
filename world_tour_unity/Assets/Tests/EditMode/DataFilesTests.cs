@@ -80,7 +80,7 @@ namespace WorldTour.Core.Tests
 
         // ---------- math_config.json raw checks (the 1.2 tester's JsonUtility cases) ----------
 
-        [TestCase("config_fracc.json", "ENABLED_SKILLS: \"fracc\" is not a field the game knows (fields here: dec, md, frac, xy, vol, ops, flu)")]
+        [TestCase("config_fracc.json", "ENABLED_SKILLS: \"fracc\" is not a field the game knows (fields here: dec, md, frac, xy, vol, ops, flu, fm)")]
         [TestCase("config_Frac.json", "ENABLED_SKILLS: \"Frac\" is not a field the game knows (did you mean \"frac\"? names are case-sensitive)")]
         [TestCase("config_12_5.json", "BOUNDS: \"maxDenominator\" should be a whole number, but it is 12.5")]
         [TestCase("config_no.json", "ENABLED_SKILLS: \"frac\" should be true or false (without quotes), but it is the text \"no\"")]

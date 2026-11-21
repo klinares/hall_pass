@@ -8,6 +8,8 @@ namespace WorldTour.Core.Maths.Gen
     /// <summary>
     /// TICKET SALES: multi-digit multiplication and division (5.NBT.5-6). Ported from
     /// world_tour/math/gen/multdiv.js; every RNG call happens in the same order, so problems match the JS.
+    /// L0 (Unity only, warm-up): 4th-grade review. Single-digit facts, 2-digit x 1-digit (factor up to 5),
+    /// division facts, and 2-digit / 1-digit (divisor up to 5).
     /// L1: 2-digit x 1-digit, 3-digit / 1-digit.
     /// L2: 2-digit x 2-digit, 3-digit / 2-digit.
     /// L3: 3-digit x 2-digit, 4-digit / 2-digit, and "how many full rows" with a remainder.
@@ -22,6 +24,7 @@ namespace WorldTour.Core.Maths.Gen
         private static readonly string[] KindsL3 = { "mul", "div", "rows" };
         private static readonly string[] KindsL12 = { "mul", "div" };
         private static readonly string[] Tales = { "rows", "boxes", "other" };
+        private static readonly string[] TalesNoBoxes = { "rows", "other" };
 
         // JS: f = n => n.toLocaleString('en-US'), for whole numbers
         private static string F(long n) => n.ToString("#,##0", CultureInfo.InvariantCulture);
@@ -56,9 +59,14 @@ namespace WorldTour.Core.Maths.Gen
 
             if (kind == "mul")
             {
-                string tale = r.Pick(Tales);
+                // level 0 only: half the problems are single-digit facts (no box sizes: they start at 12)
+                bool fact = level == 0 && r.Chance(.5);
+                string tale = r.Pick(fact ? TalesNoBoxes : Tales);
                 List<int> small = BoxSizes.Where(n => n < 100).ToList();
-                if (tale == "boxes")
+                if (fact) { a = r.Int(2, 9); b = r.Int(3, 9); }
+                else if (level == 0 && tale == "boxes") { a = r.Pick(small); b = r.Int(2, 5); }
+                else if (level == 0) { a = r.Int(12, 49); b = r.Int(2, 5); }
+                else if (tale == "boxes")
                 {
                     // posters ship in real box sizes. level 3 needs 3-digit x 2-digit, so either a 144 box
                     // (x100 is too easy to count) or a 2-digit box size and a 3-digit number of boxes
@@ -87,15 +95,25 @@ namespace WorldTour.Core.Maths.Gen
                     : "each fan-club bus brings " + S(a) + " fans. " + S(b) + " buses pull in. how many fans is that?";
                 label = F(a) + times + S(b);
                 // break the smaller factor into tens and ones (or the 1-digit factor's partner, at level 1)
-                List<long> split = level == 1 ? Parts(a) : Parts(b);
-                long other = level == 1 ? b : a;
+                // a fact (level 0) is split as one group short plus one more, the way its hints go
+                List<long> split = fact ? new List<long> { b - 1, 1 } : level <= 1 ? Parts(a) : Parts(b);
+                long other = fact ? a : level <= 1 ? b : a;
                 List<long> pp = split.Select(s => s * other).ToList();
                 work = JsonValue.Obj().Set("kind", "area").Set("rowParts", JsonValue.Ints(new[] { other })).Set("colParts", JsonValue.Ints(split));
-                if (split.Count > 1)
+                if (fact)
                 {
                     steps = new List<string>
                     {
-                        "break " + S(level == 1 ? a : b) + " into " + string.Join(" + ", split.Select(F)) + ", and multiply each part by " + F(other) + ".",
+                        "think of " + S(b) + " groups of " + S(a) + ". start from a fact you know that is close.",
+                        S(a) + times + S(b - 1) + " = " + S(a * (b - 1)) + ". one more " + S(a) + Glyph.Ellipsis,
+                        S(a * (b - 1)) + " + " + S(a) + " = <b>" + S(p) + "</b>"
+                    };
+                }
+                else if (split.Count > 1)
+                {
+                    steps = new List<string>
+                    {
+                        "break " + S(level <= 1 ? a : b) + " into " + string.Join(" + ", split.Select(F)) + ", and multiply each part by " + F(other) + ".",
                         string.Join(", ", split.Select((s, i) => F(other) + times + F(s) + " = " + F(pp[i]))) + ". now add those up.",
                         string.Join(" + ", pp.Select(F)) + " = <b>" + F(p) + "</b>"
                     };
@@ -111,7 +129,8 @@ namespace WorldTour.Core.Maths.Gen
                         F(other * digit) + times + "10 = <b>" + F(p) + "</b>"
                     };
                 }
-                traps = new List<Trap> { new Trap(MathValue.Num(Money.NoCarryAdd(pp)), "no-carry") };
+                traps = fact ? new List<Trap> { new Trap(MathValue.Num(a * (b - 1)), "one-group-short") }
+                    : new List<Trap> { new Trap(MathValue.Num(Money.NoCarryAdd(pp)), "no-carry") };
                 if (level > 1) traps.Add(new Trap(MathValue.Num(a * (b % 10)), "partial-only"));
                 if (level > 1) traps.Add(new Trap(MathValue.Num(a * (b / 10 + b % 10)), "no-placeholder"));
                 traps.Add(new Trap(MathValue.Num(a + b), "added-instead"));
@@ -120,7 +139,13 @@ namespace WorldTour.Core.Maths.Gen
             else if (kind == "div")
             {
                 int d, q;
-                if (level == 1) { d = r.Int(2, 9); q = r.Int(CeilDiv(100, d), 999 / d); }
+                if (level == 0)
+                {
+                    // facts to 9 x 9, or a 2-digit number shared among 2 to 5
+                    if (r.Chance(.5)) { d = r.Int(2, 9); q = r.Int(2, 9); }
+                    else { d = r.Int(2, 5); q = r.Int(10, 99 / d); }
+                }
+                else if (level == 1) { d = r.Int(2, 9); q = r.Int(CeilDiv(100, d), 999 / d); }
                 else if (level == 2) { d = r.Int(11, 49); q = r.Int(Math.Max(2, CeilDiv(100, d)), 999 / d); }
                 else { d = r.Int(11, 99); q = r.Int(CeilDiv(1000, d), Math.Min(999, 9999 / d)); }
                 long N = (long)d * q;
@@ -169,6 +194,10 @@ namespace WorldTour.Core.Maths.Gen
                         ? "how many tens of " + ds + " fit in " + F(N) + "? one ten of " + ds + " is " + ds + times + "10 = " + F(d * 10L) + "."
                     : q <= 3
                         ? "how many " + ds + "s fit in " + F(N) + "? " + ds + times + S(q - 1) + " = " + F(d * (q - 1L)) + ". is there room for another?"
+                    // level 0 (Unity only): a short list of multiples can land on the quotient itself (2 x 3 = 6 for 12 / 2),
+                    // so the nudge names no products
+                    : level == 0
+                        ? "how many " + ds + "s fit in " + F(N) + "? use the " + ds + "s facts you know to get close."
                         : "how many " + ds + "s fit in " + F(N) + "? try a few: " + ds + times + "2 = " + F(d * 2L) + ", " + ds + times + "3 = " + F(d * 3L) + Glyph.Ellipsis,
                     q >= 10
                         ? (lower != null ? (first % 10 != 0 ? "start with " : "start with " + tensWord(first) + " of " + ds + ": ")

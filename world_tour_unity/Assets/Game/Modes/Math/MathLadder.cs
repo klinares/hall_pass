@@ -78,12 +78,13 @@ namespace WorldTour.Game.Modes
                 Over = true;
                 Shown = 3;
                 Step(3);
-                _ctx.Reveal(MathLines.ComeBackAfter(_prob.Steps[2] + (_revealExtra.Length > 0 ? " " + _revealExtra : "")));
+                string worked = _prob.Steps[2] + (_revealExtra.Length > 0 ? " " + _revealExtra : "");
+                _ctx.Reveal(_prob.Skill == "fm" ? MathLines.WorkedOnly(worked) : MathLines.ComeBackAfter(worked));
                 return true;
             }
             Shown = Math.Min(2, Math.Max(Shown, tries));
             string lead;
-            if (trap != null && MathLines.Trap.TryGetValue(trap, out string line)) lead = line + " ";
+            if (trap != null && (MathLines.Trap.TryGetValue(trap, out string line) || FracMulLines.Trap.TryGetValue(trap, out line))) lead = line + " ";
             else lead = tries == 1 ? MathLines.NotQuite : MathLines.KeepGoing;
             _ctx.Say(lead + _prob.Steps[Shown - 1], "oops");
             Step(Shown);

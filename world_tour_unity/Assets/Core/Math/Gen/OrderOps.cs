@@ -10,6 +10,7 @@ namespace WorldTour.Core.Maths.Gen
     /// <summary>
     /// TOUR BUDGET: order of operations (5.OA.1-2). Ported from world_tour/math/gen/orderops.js; every RNG call
     /// happens in the same order, so problems match the JS.
+    /// L0 (Unity only, warm-up): 2 operations and no parentheses.
     /// L1: 2 operations with parentheses. L2: 3 operations. L3: pick the expression for a 2-step story, then
     /// work it out (multiple choice with text choices). Every step along the way stays a whole number, never
     /// negative, every division exact.
@@ -178,6 +179,11 @@ namespace WorldTour.Core.Maths.Gen
             "(a + b) " + D + " c", "a " + M + " (b + c)", "(a " + M + " b) " + D + " c"
         };
 
+        private static readonly string[] L0 =
+        {
+            "a + b " + X + " c", "a " + X + " b + c", "a " + M + " b " + X + " c", "a + b " + D + " c", "a " + D + " b + c", "a " + X + " b " + M + " c"
+        };
+
         private static readonly string[] L2 =
         {
             "a + b " + X + " (c " + M + " d)", "(a + b) " + X + " c " + M + " d", "a " + X + " b " + M + " c " + X + " d",
@@ -336,13 +342,15 @@ namespace WorldTour.Core.Maths.Gen
         private static Problem Build(int level, long seed, Rng r)
         {
             if (level == 3) return BuildStory(r, seed);
-            string tpl = r.Pick(level == 1 ? L1 : L2);
-            int[][] ranges = level == 1
+            string tpl = r.Pick(level == 0 ? L0 : level == 1 ? L1 : L2);
+            int[][] ranges = level == 0
+                ? new[] { new[] { 2, 20 }, new[] { 2, 9 }, new[] { 2, 9 }, new[] { 2, 9 } }
+                : level == 1
                 ? new[] { new[] { 2, 15 }, new[] { 2, 12 }, new[] { 2, 9 }, new[] { 2, 9 } }
                 : new[] { new[] { 2, 20 }, new[] { 2, 12 }, new[] { 2, 12 }, new[] { 2, 9 } };
             Filled? got = Fill(r, tpl, ranges);
             if (got == null)
-                got = Fill(r, level == 1 ? "(a + b) " + X + " c" : "(a + b) " + X + " c " + M + " d",
+                got = Fill(r, level == 0 ? "a + b " + X + " c" : level == 1 ? "(a + b) " + X + " c" : "(a + b) " + X + " c " + M + " d",
                     new[] { new[] { 2, 9 }, new[] { 2, 9 }, new[] { 2, 5 }, new[] { 1, 5 } });
             if (got == null) throw new InvalidOperationException("no expression found"); // the JS would throw here too
             string expr = got.Value.Expr;
@@ -357,7 +365,9 @@ namespace WorldTour.Core.Maths.Gen
                 Traps = Traps(answer, expr),
                 Steps = new List<string>
                 {
-                    "parentheses first, then " + X + " and " + D + ", then + and " + M + ".",
+                    level == 0
+                        ? X + " and " + D + " come before + and " + M + ". which part do you do first?"
+                        : "parentheses first, then " + X + " and " + D + ", then + and " + M + ".",
                     "first: <b>" + s.Did[0] + "</b>. that leaves " + s.States[1] + ".",
                     Worked(s.States)
                 }

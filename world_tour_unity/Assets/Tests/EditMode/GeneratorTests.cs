@@ -56,7 +56,7 @@ namespace WorldTour.Core.Tests
         private static IEnumerable<TestCaseData> Cases()
         {
             foreach (string skill in Generators.Skills)
-                for (int level = 1; level <= 3; level++)
+                for (int level = 0; level <= 3; level++)
                     yield return new TestCaseData(skill, level).SetName("Volume " + skill + " level " + level);
         }
 
@@ -118,8 +118,14 @@ namespace WorldTour.Core.Tests
             Assert.AreEqual(AnswerType.Money, p.Answer.Type, "money answer" + at);
             Assert.AreEqual((double)want, p.Answer.Value.Number, "answer" + at);
             Assert.IsTrue(want > 0 && want < bounds.moneyCents, "money under the moneyCents bound: " + want + at);
-            if (p.Kind == "change") Assert.AreEqual(new long[] { 0, 1000, 2000, 5000 }[level], paid, "paid" + at);
-            if (level == 1) { Assert.AreEqual(2, lines.Count, at); Assert.IsTrue(total < 1000, at); }
+            if (p.Kind == "change") Assert.AreEqual(new long[] { 1000, 1000, 2000, 5000 }[level], paid, "paid" + at);
+            if (level == 0)
+            {
+                // warm-up: two items, every price a whole dollar or 50 cents, so the sum is too
+                Assert.IsTrue(lines.All(l => l["each"].Long % 50 == 0 && l["qty"].Long == 1 && l["unit"].IsNull), "whole dollars and 50 cents" + at);
+                Assert.IsTrue(total % 50 == 0, "the total is whole dollars or 50 cents" + at);
+            }
+            if (level <= 1) { Assert.AreEqual(2, lines.Count, at); Assert.IsTrue(total < 1000, at); }
             if (level == 2) { Assert.AreEqual(3, lines.Count, at); Assert.IsTrue(lines.Any(l => l["qty"].Long > 1), at); Assert.IsTrue(total < 2000, at); }
             if (level == 3)
             {
@@ -149,9 +155,14 @@ namespace WorldTour.Core.Tests
             {
                 long a = p.Params["a"].Long, b = p.Params["b"].Long;
                 Assert.AreEqual(a * b, answer, "product" + at);
-                int[] want = new[] { new[] { 2, 1 }, new[] { 2, 2 }, new[] { 3, 2 } }[level - 1];
-                Assert.AreEqual(want[0], Digits(a), "digits of a" + at);
-                Assert.AreEqual(want[1], Digits(b), "digits of b" + at);
+                if (level == 0)
+                    Assert.IsTrue(a >= 2 && b >= 2 && (a <= 9 && b <= 9 || a >= 12 && a <= 50 && b <= 5), "a fact, or 2-digit x 1-digit with a factor to 5: " + a + " x " + b + at);
+                else
+                {
+                    int[] want = new[] { new[] { 2, 1 }, new[] { 2, 2 }, new[] { 3, 2 } }[level - 1];
+                    Assert.AreEqual(want[0], Digits(a), "digits of a" + at);
+                    Assert.AreEqual(want[1], Digits(b), "digits of b" + at);
+                }
                 if (p.Prompt.Contains("poster"))
                 {
                     Match m = PosterPer.Match(p.Prompt);
@@ -174,9 +185,14 @@ namespace WorldTour.Core.Tests
                 if (answer > 10) Assert.IsTrue(p.Steps[0].StartsWith("how many tens of", StringComparison.Ordinal), at);
                 Assert.AreEqual(0, N % d, "exact division" + at);
                 Assert.AreEqual(N / d, answer, at);
-                int[] want = new[] { new[] { 3, 1 }, new[] { 3, 2 }, new[] { 4, 2 } }[level - 1];
-                Assert.AreEqual(want[0], Digits(N), "digits of N" + at);
-                Assert.AreEqual(want[1], Digits(d), "digits of d" + at);
+                if (level == 0)
+                    Assert.IsTrue(d >= 2 && answer >= 2 && (d <= 9 && answer <= 9 || d <= 5 && Digits(N) == 2 && answer >= 10), "a division fact, or a 2-digit number shared among up to 5: " + N + " / " + d + at);
+                else
+                {
+                    int[] want = new[] { new[] { 3, 1 }, new[] { 3, 2 }, new[] { 4, 2 } }[level - 1];
+                    Assert.AreEqual(want[0], Digits(N), "digits of N" + at);
+                    Assert.AreEqual(want[1], Digits(d), "digits of d" + at);
+                }
             }
             else
             {
@@ -223,6 +239,13 @@ namespace WorldTour.Core.Tests
                     Assert.IsTrue(palette.All(x => x == 2 || x == 4 || x == 8), at);
                     Assert.AreEqual(1.0, target, at);
                 }
+                if (level == 0)
+                {
+                    Assert.AreEqual(1, palette.Count, "one size of note" + at);
+                    Assert.IsTrue(palette[0] == 3 || palette[0] == 4 || palette[0] == 6 || palette[0] == 8, "like denominators from 3, 4, 6, 8" + at);
+                    Assert.IsTrue(pre.All(x => x == palette[0]), "every written note is that size" + at);
+                    Assert.AreEqual(1.0, target, at);
+                }
                 if (p.Kind == "mixed") { Assert.IsTrue(target > 1 && target < 2, at); Assert.AreEqual(2, pr["bars"].Long, at); }
             }
             else
@@ -231,7 +254,8 @@ namespace WorldTour.Core.Tests
                 Rational a = pr["a"].AsRational(), b = pr["b"].AsRational();
                 double A = Rational.Num(a), B = Rational.Num(b);
                 Assert.IsTrue(Close(v, pr["op"].String == "+" ? A + B : A - B), "typed answer matches" + at);
-                Assert.AreNotEqual(a.D, b.D, "unlike denominators" + at);
+                if (level == 0) { Assert.AreEqual(a.D, b.D, "like denominators" + at); Assert.AreEqual(p.Params["grid"].Long, a.D, "written over that denominator" + at); Assert.IsTrue(v < 1, "less than one whole" + at); }
+                else Assert.AreNotEqual(a.D, b.D, "unlike denominators" + at);
                 Assert.IsTrue(a.D <= bounds.maxDenominator && b.D <= bounds.maxDenominator, at);
                 if (p.Kind == "diff") Assert.AreEqual(true, p.Simplest, at);
             }
@@ -245,7 +269,7 @@ namespace WorldTour.Core.Tests
             Assert.AreEqual(AnswerType.Point, p.Answer.Type, at);
             double x = p.Answer.Value.X, y = p.Answer.Value.Y;
             long max = p.Params["max"].Long;
-            Assert.AreEqual(level == 1 ? 6 : 10, max, "axes" + at);
+            Assert.AreEqual(level == 0 ? 4 : level == 1 ? 6 : 10, max, "axes" + at);
             Assert.IsTrue(max <= bounds.coordMax, "axes within coordMax" + at);
             Assert.IsTrue(x >= 0 && y >= 0 && x <= max && y <= max, "on the grid" + at);
             if (p.Kind == "move")
@@ -278,6 +302,13 @@ namespace WorldTour.Core.Tests
             else if (p.Kind == "missing") Assert.AreEqual(V, answer * bx[0]["l"].Long * bx[0]["w"].Long, at);
             else Assert.AreEqual(V, answer, at);
             if (level == 1) Assert.IsTrue(V <= 36, "level 1 stacks are small enough to count" + at);
+            if (level == 0)
+            {
+                Assert.AreEqual("count", p.Kind, at);
+                Assert.AreEqual(1, bx.Count, at);
+                Assert.AreEqual(1, bx[0]["h"].Long, "a single visible layer" + at);
+                Assert.IsTrue(bx[0]["l"].Long >= 2 && bx[0]["l"].Long <= 5 && bx[0]["w"].Long >= 2 && bx[0]["w"].Long <= 4, "2 to 5 across and 2 to 4 deep" + at);
+            }
             if (p.Kind == "two") Assert.IsTrue(bx[1]["l"].Long <= bx[0]["l"].Long && bx[1]["w"].Long <= bx[0]["w"].Long, "the riser fits on top" + at);
             Assert.AreEqual(p.Kind == "build", p.Builder == true, "builder only for build" + at);
         }
@@ -297,6 +328,7 @@ namespace WorldTour.Core.Tests
             Assert.IsTrue(MathValue.IsInteger(v) && v > 0 && v <= 300, at);
             Assert.IsNotNull(OrderOps.Solve(expr), "every step stays whole and non-negative" + at);
             int nops = OpSigns.Matches(expr).Count;
+            if (level == 0) { Assert.AreEqual(2, nops, at); Assert.IsFalse(expr.Contains("("), "no parentheses at level 0" + at); }
             if (level == 1) { Assert.AreEqual(2, nops, at); Assert.IsTrue(expr.Contains("("), at); }
             if (level == 2) Assert.AreEqual(3, nops, at);
             if (level == 1 && expr.Contains("(")) Assert.AreNotEqual(ExprEval.Eval(expr.Replace("(", "").Replace(")", "")), v, "the parentheses matter" + at);
@@ -333,13 +365,13 @@ namespace WorldTour.Core.Tests
             double v = ExprEval.Eval(expr);
             Assert.IsTrue(Close(Rational.Num(Answers.ValueOf(p.Answer)), v), p.Prompt + " -> " + v + at);
             Assert.AreEqual(4, p.Choices.Count, "four choices" + at);
-            if (level == 1) Assert.IsTrue(FluL1Prompt.IsMatch(p.Prompt), at);
+            if (level <= 1) Assert.IsTrue(FluL1Prompt.IsMatch(p.Prompt), at);
             if (level < 3) Assert.IsTrue(MathValue.IsInteger(v), "whole numbers below level 3" + at);
             if (p.Kind == "mul" || p.Kind == "div")
             {
                 string[] ab = FluSplit.Split(p.Label);
                 double a = double.Parse(ab[0], CultureInfo.InvariantCulture), b = double.Parse(ab[1], CultureInfo.InvariantCulture);
-                int top = level == 1 ? 10 : 12;
+                int top = level == 0 ? 5 : level == 1 ? 10 : 12;
                 if (p.Kind == "mul") Assert.IsTrue(a <= top && b <= top, at);
                 else Assert.IsTrue(b <= top && v <= top, at);
             }

@@ -46,7 +46,7 @@ namespace WorldTour.Core.Progress
         // after the known keys, the order JS { ...defaults, ...raw } gives.
         /// <summary>The top-level keys this version knows (anything else is kept as stored).</summary>
         public static readonly string[] TopKeys = { "v", "created", "updated", "settings", "fans", "streak", "venues", "skills", "words", "review", "shows", "time", "inventory", "journal" };
-        private static readonly string[] SettingsKeys = { "sound", "theme", "motion" };
+        private static readonly string[] SettingsKeys = { "sound", "theme", "motion", "gentleSpelling", "gentleMath" };
         private static readonly string[] FansKeys = { "balance", "lifetime" };
         private static readonly string[] StreakKeys = { "days", "best", "last" };
         private static readonly string[] VenuesKeys = { "unlocked", "seen" };
@@ -110,6 +110,8 @@ namespace WorldTour.Core.Progress
                 if (s["sound"] != null && s["sound"].Kind == JsonKind.Bool) d.Settings.Sound = s["sound"].BoolValue;
                 d.Settings.Theme = JsonTree.Str(s["theme"]) ?? d.Settings.Theme;
                 d.Settings.Motion = JsonTree.Str(s["motion"]) ?? d.Settings.Motion;
+                if (s["gentleSpelling"] != null && s["gentleSpelling"].Kind == JsonKind.Bool) d.Settings.GentleSpelling = s["gentleSpelling"].BoolValue;
+                if (s["gentleMath"] != null && s["gentleMath"].Kind == JsonKind.Bool) d.Settings.GentleMath = s["gentleMath"].BoolValue;
                 d.Settings.Extra = Unknown(s, SettingsKeys);
             }
             JsonValue f = Obj(raw["fans"]);
@@ -350,7 +352,7 @@ namespace WorldTour.Core.Progress
                 .Set("v", b.V)
                 .Set("created", b.Created)
                 .Set("updated", b.Updated)
-                .Set("settings", WithExtra(JsonValue.Obj().Set("sound", b.Settings.Sound).Set("theme", b.Settings.Theme).Set("motion", b.Settings.Motion), b.Settings.Extra))
+                .Set("settings", WithExtra(WriteSettings(b.Settings), b.Settings.Extra))
                 .Set("fans", WithExtra(JsonValue.Obj().Set("balance", b.Fans.Balance).Set("lifetime", b.Fans.Lifetime), b.Fans.Extra))
                 .Set("streak", WithExtra(JsonValue.Obj().Set("days", b.Streak.Days).Set("best", b.Streak.Best).Set("last", b.Streak.Last), b.Streak.Extra))
                 .Set("venues", WithExtra(JsonValue.Obj().Set("unlocked", StrArr(b.Venues.Unlocked)).Set("seen", StrArr(b.Venues.Seen)), b.Venues.Extra));
@@ -411,6 +413,15 @@ namespace WorldTour.Core.Progress
         public static string ToCanonical(SaveBlob b)
         {
             return Write(b).ToCanonicalJson();
+        }
+
+        /// <summary>The known settings; the two gentle switches are written only when on, so saves without them match the web game's.</summary>
+        private static JsonValue WriteSettings(SettingsData st)
+        {
+            JsonValue o = JsonValue.Obj().Set("sound", st.Sound).Set("theme", st.Theme).Set("motion", st.Motion);
+            if (st.GentleSpelling) o.Set("gentleSpelling", true);
+            if (st.GentleMath) o.Set("gentleMath", true);
+            return o;
         }
 
         private static JsonValue WriteSkill(SkillRecord k)

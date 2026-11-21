@@ -15,6 +15,9 @@ namespace WorldTour.Core.Maths.Gen
             Decimals.Skill, MultDiv.Skill, Fractions.Skill, Coords.Skill, Volume.Skill, OrderOps.Skill, Fluency.Skill
         };
 
+        /// <summary>Skills with no JS twin (Unity only), kept out of <see cref="Skills"/> so the JS vectors stay one to one: fm, snack table.</summary>
+        public static readonly IReadOnlyList<string> UnitySkills = new[] { FracMul.Skill };
+
         /// <summary>JS: <c>generate(skill, level, seed)</c>. Throws ArgumentException for a skill with no generator.</summary>
         public static Problem Generate(string skill, int level, long seed)
         {
@@ -27,6 +30,7 @@ namespace WorldTour.Core.Maths.Gen
                 case Volume.Skill: return Volume.Generate(level, seed);
                 case OrderOps.Skill: return OrderOps.Generate(level, seed);
                 case Fluency.Skill: return Fluency.Generate(level, seed);
+                case FracMul.Skill: return FracMul.Generate(level, seed);
                 default: throw new ArgumentException("no generator for skill '" + skill + "'", nameof(skill));
             }
         }

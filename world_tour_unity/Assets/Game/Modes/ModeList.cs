@@ -33,13 +33,18 @@ namespace WorldTour.Game.Modes
             new ModeInfo("truck", "pack the truck", ModeInfo.Math, "vol"),
             new ModeInfo("budget", "tour budget", ModeInfo.Math, "ops"),
             new ModeInfo("soundcheck", "soundcheck", ModeInfo.Math, "flu"),
+            new ModeInfo("snack", "snack table", ModeInfo.Math, "fm"),
         };
 
         /// <summary>index.js MODES: the spelling modes, then the math modes whose skill is switched on.</summary>
         public static List<ModeInfo> All(MathConfig config)
         {
             var list = new List<ModeInfo>(Spelling);
-            list.AddRange(MathModes.Where(m => config == null || config.IsEnabled(m.Skill)));
+            foreach (ModeInfo m in MathModes)
+            {
+                if (config != null && !config.IsEnabled(m.Skill)) continue;
+                list.Add(config == null ? m : m.WithMaxLevel(config.LimitsFor(m.Skill).MAX_LEVEL));   // stickers: maxed = the config cap
+            }
             return list;
         }
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using WorldTour.Core.Data;
+using WorldTour.Core.Maths;
 using WorldTour.Core.Meta;
 using WorldTour.Core.Shows;
 
@@ -113,6 +114,36 @@ namespace WorldTour.Core.Progress
                 s.Skills[id] = k;
             }
             return k;
+        }
+
+        /// <summary>
+        /// The skill's record for a show, with a skill nobody has played yet (no record, or an untouched level-1 one the
+        /// map made while drawing) put at the policy's start level (phase 7.1: new skills start at the warm-up).
+        /// </summary>
+        public static SkillRecord SkillForShow(SaveBlob s, string id, LevelPolicy policy)
+        {
+            SkillRecord k = Skill(s, id);
+            if (policy != null && LevelRules.Untouched(k)) k.Level = policy.Start;
+            return k;
+        }
+
+        /// <summary>
+        /// The level a skill plays at, for display, without creating a record: an unplayed skill is at the policy's start,
+        /// a saved level above the cap shows as the cap.
+        /// </summary>
+        public static int PlayedLevel(SaveBlob s, string id, LevelPolicy policy)
+        {
+            SkillRecord k;
+            if (s == null || !s.Skills.TryGetValue(id, out k) || k == null || LevelRules.Untouched(k)) return policy.Start;
+            return policy.Effective(k.Level);
+        }
+
+        /// <summary>The level policy for a skill id in this save: math skills read the config, spelling its own rules; each honours its gentle switch.</summary>
+        public static LevelPolicy PolicyFor(SaveBlob s, string id, MathConfig config)
+        {
+            bool spelling = id != null && id.StartsWith("spell:", StringComparison.Ordinal);
+            bool gentle = s != null && (spelling ? s.Settings.GentleSpelling : s.Settings.GentleMath);
+            return spelling ? LevelPolicy.ForSpelling(gentle) : LevelPolicy.ForMath(config, id, gentle);
         }
 
         /// <summary>progress.js:47 <c>level(id)</c>.</summary>

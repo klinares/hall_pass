@@ -75,8 +75,8 @@ namespace WorldTour.Game.Modes
             RectTransform head = SpellingUi.Box("Head", _paper, -1, 32);
             KeepHeight(head);
             ShowUi.Label(head, "Title", BudgetLines.Head, 27.2f, FontRole.Display, ColorRole.Ink, TextAlignmentOptions.BottomLeft);
-            TMP_Text rule = ShowUi.Label(head, "Rule", "", 12f, FontRole.Body, ColorRole.Ink, TextAlignmentOptions.BottomRight);
-            rule.text = BudgetLines.Rule;
+            TMP_Text rule = ShowUi.Label(head, "Rule", "", 20f, FontRole.BodyBold, ColorRole.Ink, TextAlignmentOptions.BottomRight);
+            rule.text = p.Level == 0 ? BudgetLines.RuleNoParens : BudgetLines.Rule;   // the warm-up has no parentheses to list
             RectTransform dbl = SpellingUi.Box("Double", _paper, -1, 7);
             KeepHeight(dbl);
             UiKit.Stretch(UiKit.Box(dbl, "Ink", ColorRole.Ink).rectTransform);

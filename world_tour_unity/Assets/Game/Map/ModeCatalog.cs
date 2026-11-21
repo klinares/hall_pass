@@ -50,6 +50,7 @@ namespace WorldTour.Game.Map
             new ModeEntry(new ModeInfo("truck", "pack the truck", ModeInfo.Math, "vol"), "volume: fill the trailer", "bus", true),
             new ModeEntry(new ModeInfo("budget", "tour budget", ModeInfo.Math, "ops"), "order of operations on the books", "setlist", true),
             new ModeEntry(new ModeInfo("soundcheck", "soundcheck", ModeInfo.Math, "flu"), "fast facts and powers of ten", "amp", true),
+            new ModeEntry(new ModeInfo("snack", "snack table", ModeInfo.Math, "fm"), "parts of parts of a tray", "coffee", true),
         };
 
         static List<ModeInfo> s_Infos;

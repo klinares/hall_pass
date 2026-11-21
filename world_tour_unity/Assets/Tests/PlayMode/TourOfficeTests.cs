@@ -149,6 +149,29 @@ namespace WorldTour.Game.Tests
             yield return Tap(office.MotionCheck.gameObject);
             Assert.AreEqual(wasOn ? MotionMode.Reduce : MotionMode.Auto, GameSettings.Motion);
 
+            // ---- gentle or standard, per subject (phase 7.1): by mouse, then by keyboard; kept in the save
+            Assert.IsFalse(office.GentleMathCheck.IsOn || office.GentleSpellingCheck.IsOn, "standard to begin with");
+            StringAssert.Contains("math goes up a level after 6 right in a row", office.RuleLine.text);
+            yield return Tap(office.GentleMathCheck.gameObject);
+            Assert.IsTrue(office.GentleMathCheck.IsOn);
+            Assert.IsTrue(store.Blob.Settings.GentleMath);
+            Assert.IsFalse(store.Blob.Settings.GentleSpelling, "the other subject is untouched");
+            StringAssert.Contains("\"gentleMath\":true", File.ReadAllText(PathOf(SaveBlob.Key)), "saved at once");
+            StringAssert.Contains("math goes up a level after 8 right in a row", office.RuleLine.text);
+            StringAssert.Contains("spelling goes up after 4", office.RuleLine.text);
+            EventSystem.current.SetSelectedGameObject(office.GentleSpellingCheck.gameObject);
+            yield return new WaitForSecondsRealtime(ClickGuard.DefaultWindow + .05f);
+            ExecuteEvents.Execute(EventSystem.current.currentSelectedGameObject, new BaseEventData(EventSystem.current), ExecuteEvents.submitHandler);
+            yield return null;
+            Assert.IsTrue(office.GentleSpellingCheck.IsOn, "Enter works on the switch");
+            SaveBlob reloaded = SaveJson.Load(File.ReadAllText(PathOf(SaveBlob.Key)), today).Blob;
+            Assert.IsTrue(reloaded.Settings.GentleMath && reloaded.Settings.GentleSpelling, "both survive a reload");
+            Assert.IsTrue(_logs.Any(l => l.StartsWith(OfficeScreen.GentleLog + " subject=math gentle=true saved=true")));
+            yield return Tap(office.GentleMathCheck.gameObject);
+            yield return Tap(office.GentleSpellingCheck.gameObject);
+            Assert.IsFalse(store.Blob.Settings.GentleMath || store.Blob.Settings.GentleSpelling, "back to standard");
+            StringAssert.DoesNotContain("gentle", File.ReadAllText(PathOf(SaveBlob.Key)));
+
             // ---- reset: erase does nothing before the question; Enter on cancel closes it
             office.ConfirmReset();
             Assert.AreEqual(4321, store.Blob.Fans.Lifetime, "no erase without the question");

@@ -6,6 +6,7 @@ namespace WorldTour.Core.Maths.Gen
     /// <summary>
     /// PACK THE TRUCK: volume of rectangular prisms (5.MD.3-5). Ported from world_tour/math/gen/volume.js;
     /// every RNG call happens in the same order, so problems match the JS.
+    /// L0 (Unity only, warm-up): count the crates in a single visible layer, 2 to 5 across and 2 to 4 deep.
     /// L1: count unit crates in a small stack, all visible.
     /// L2: l x w x h from labeled sides, or load the truck floor to an exact count.
     /// L3: two boxes stacked (add the volumes), or find a missing side.
@@ -26,7 +27,7 @@ namespace WorldTour.Core.Maths.Gen
 
         private static Problem Build(int level, long seed, Rng r)
         {
-            string kind = level == 1 ? "count" : level == 2 ? r.Pick(KindsL2) : r.Pick(KindsL3);
+            string kind = level <= 1 ? "count" : level == 2 ? r.Pick(KindsL2) : r.Pick(KindsL3);
             Answer answer;
             string prompt, label;
             List<string> steps;
@@ -37,7 +38,8 @@ namespace WorldTour.Core.Maths.Gen
 
             if (kind == "count")
             {
-                int l = r.Int(2, 4), w = r.Int(1, 3), h = r.Int(1, 3);
+                // level 0 is one flat layer (h = 1) with rows of at least 2, so nothing is hidden behind anything
+                int l = level == 0 ? r.Int(2, 5) : r.Int(2, 4), w = level == 0 ? r.Int(2, 4) : r.Int(1, 3), h = level == 0 ? 1 : r.Int(1, 3);
                 if (w * h == 1) h = 2;
                 int V = l * w * h;
                 boxes.Add(Box(l, w, h));
@@ -46,16 +48,20 @@ namespace WorldTour.Core.Maths.Gen
                 label = "count " + S(l) + Glyph.Times + S(w) + Glyph.Times + S(h);
                 steps = new List<string>
                 {
-                    "count the crates in the top layer, then count how many layers.",
+                    level == 0
+                        ? "this is one layer. count the crates in one row, then count how many rows."
+                        : "count the crates in the top layer, then count how many layers.",
                     // Unity (QUESTIONS 9.2, an intended difference from the JS): with one layer, "that's l*w crates"
                     // is the answer, so hint 2 describes the layer without the total.
                     h == 1
                         ? "the top layer is " + S(l) + " across and " + S(w) + " deep. how many crates is that? there is 1 layer."
                         : "the top layer is " + S(l) + " by " + S(w) + ": that" + Glyph.Apos + "s " + S(l * w) + " crates. there are " + S(h) + " layers.",
-                    S(l * w) + x + S(h) + " = <b>" + S(V) + "</b> cubic units."
+                    level == 0
+                        ? S(l) + x + S(w) + " = <b>" + S(V) + "</b> crates, and with 1 layer that is " + S(V) + " cubic units."
+                        : S(l * w) + x + S(h) + " = <b>" + S(V) + "</b> cubic units."
                 };
                 traps.Add(new Trap(MathValue.Num(l + w + h), "added-sides"));
-                traps.Add(new Trap(MathValue.Num(l * w), "one-layer"));
+                traps.Add(new Trap(MathValue.Num(level == 0 ? l : l * w), level == 0 ? "one-row" : "one-layer"));
                 traps.Add(new Trap(MathValue.Num(l * h + l * w), "visible-faces"));
             }
             else if (kind == "lwh")

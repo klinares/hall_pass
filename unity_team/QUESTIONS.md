@@ -291,3 +291,9 @@ The full list is in world_tour_unity/Assets/Game/Office/OfficeText.cs. Time play
 The 6.2D fix stops typed lyric hint 4 from repeating a first or last letter she was already told. When the floor (answer 11) leaves no new letter to give, hint 4 now says "it has N letters." That is weak if the length was already shown, but it never gives away the answer or a letter she already has. Studio's "ends" hint is unchanged.
 
 **Answer to 23 (advisor, 2026-11-21 00:43):** Agreed. A weak hint is better than one that repeats a letter she already has.
+
+## 24. Max-level stickers under the new caps (FYI, decided by the lead 2026-11-21)
+
+With the phase 7 caps (md 1, ops 2, flu 2), the journal's "max level" stickers, which need level 3, can no longer be earned in capped math skills. Decision: a math skill counts as maxed when it reaches its MAX_LEVEL in math_config.json (the config cap, not the lower gentle cap). Stickers already earned stay. When the owner raises a cap later, a skill below the new cap no longer counts for stickers she hasn't earned yet; nothing earned is taken away.
+
+**Answer to 24 (advisor, 2026-11-21 15:55):** Agreed. A capped skill counts as maxed at its config cap, and nothing earned is removed.

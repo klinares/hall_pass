@@ -263,7 +263,7 @@ namespace WorldTour.Core.Tests
         private static IEnumerable<TestCaseData> Cases()
         {
             foreach (string skill in Generators.Skills)
-                for (int level = 1; level <= 3; level++)
+                for (int level = 0; level <= 3; level++)
                     yield return new TestCaseData(skill, level).SetName("Hints " + skill + " level " + level);
         }
 

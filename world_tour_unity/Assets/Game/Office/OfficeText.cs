@@ -63,6 +63,24 @@ namespace WorldTour.Game.Office
         public const string AccuracyHead = "accuracy by mode";
         public static readonly string AccuracyFoot = Lq2 + "right" + Rq2 + " means she got there before the answer was shown (hints allowed); " + Lq2 + "hints" + Rq2
             + " is how often she used the bulb. levels go up after 4 right in a row and down after 2 misses in a row.";
+        /// <summary>
+        /// The accuracy note as the Unity build shows it: the web's first sentence, then the level rules actually in force per subject
+        /// (the web's flat "4 right in a row" is only true of spelling here). <see cref="AccuracyFoot"/> stays the web's wording for the copy test.
+        /// </summary>
+        public static string AccuracyNote(int spellUp, int spellDown, int mathUp, int mathDown)
+        {
+            return Lq2 + "right" + Rq2 + " means she got there before the answer was shown (hints allowed); " + Lq2 + "hints" + Rq2
+                + " is how often she used the bulb. levels go up after " + spellUp + " right in a row in spelling and " + mathUp
+                + " in math, and down after " + (spellDown == mathDown ? spellDown + " misses in a row" : spellDown + " (spelling) or " + mathDown + " (math) misses in a row") + ".";
+        }
+
+        /// <summary>The level column for the office's math and spelling rows: "warm-up", "level 2", "level 2 (top for now)".</summary>
+        public static string LevelCell(int level, int cap, int highest)
+        {
+            string s = level == 0 ? "warm-up" : "level " + level.ToString(CultureInfo.InvariantCulture);
+            return cap < highest && level >= cap ? s + " (top for now)" : s;
+        }
+
         public const string Spelling = "spelling";
         public const string Math = "math";
         public static readonly string[] SkillHeads = { "mode", "level", "tries", "right", "hints", "shows" };
@@ -75,6 +93,19 @@ namespace WorldTour.Game.Office
         public const string MistakesEmpty = "no math mistakes recorded yet.";
         public const string SettingsHead = "settings";
         public const string ReduceMotion = "reduce motion (also follows the device setting)";
+        // ---------- how hard it plays (Unity only, phase 7.1; parent-facing) ----------
+        public const string DifficultyHead = "how hard it plays";
+        public const string DifficultyBody = "gentle takes the top level of a subject one step lower and asks for 8 right answers in a row before the level goes up. nothing she has earned changes either way. standard is the normal game.";
+        public const string GentleSpelling = "gentle spelling";
+        public const string GentleMath = "gentle math";
+
+        /// <summary>The numbers in force right now, for the line under the switches.</summary>
+        public static string RuleFoot(int mathUp, int mathDown, int spellUp, int spellDown)
+        {
+            return "right now, math goes up a level after " + mathUp + " right in a row and down after " + mathDown + " misses in a row; spelling goes up after "
+                + spellUp + " and down after " + spellDown + ". each math mode" + Rq + "s top level is set in math_config.json.";
+        }
+
         public const string ResetHead = "start over";
         public static readonly string ResetBody = "erases fans, levels, stickers, purchases and history on this device. the weekly words aren" + Rq + "t affected.";
         public static readonly string ResetButton = "reset progress" + Ell;

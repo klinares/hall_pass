@@ -15,6 +15,8 @@ namespace WorldTour.Game.Modes
         /// <summary>budget.js:41 the sheet's heading and its small print.</summary>
         public const string Head = "tour budget";
         public static readonly string Rule = "parentheses " + Star + " " + (char)0x00D7 + " " + (char)0x00F7 + " " + Star + " + " + (char)0x2212;
+        /// <summary>The warm-up's small print: no parentheses there, so the order starts at x and /.</summary>
+        public static readonly string RuleNoParens = (char)0x00D7 + " " + (char)0x00F7 + " first, then + " + (char)0x2212;
         /// <summary>budget.js:42 a story problem's sheet before she picks.</summary>
         public const string WhichOne = "which one matches?";
         /// <summary>budget.js:45 the prompt card: the story, or this for an expression to work out.</summary>

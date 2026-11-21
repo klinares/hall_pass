@@ -65,6 +65,15 @@ namespace WorldTour.Game.Modes
             return (worked ?? "") + (ends ? "" : ".") + ComeBack;
         }
 
+        /// <summary>The worked line alone, ending a sentence (the snack table, whose reveal has no "it'll come back around").</summary>
+        public static string WorkedOnly(string worked)
+        {
+            string plain = System.Text.RegularExpressions.Regex.Replace(worked ?? "", "<[^>]+>", "").TrimEnd();
+            char last = plain.Length > 0 ? plain[plain.Length - 1] : '.';
+            bool ends = last == '.' || last == '?' || last == '!' || last == ')';
+            return (worked ?? "") + (ends ? "" : ".");
+        }
+
         /// <summary>parts.js:39 the keypad's submit label.</summary>
         public const string LockItIn = "lock it in";
         /// <summary>parts.js:44 the mixed-number key.</summary>

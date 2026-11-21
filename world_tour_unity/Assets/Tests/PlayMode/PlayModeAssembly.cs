@@ -1,8 +1,20 @@
+using NUnit.Framework;
+using UnityEngine;
+using WorldTour.Game.Data;
+
 namespace WorldTour.Game.Tests
 {
-    // Holds no tests. Unity skips (and warns about) an assembly definition with no scripts,
-    // so this keeps the play-mode test assembly compiling until the first play-mode test lands.
-    internal static class PlayModeAssembly
+    /// <summary>
+    /// Runs once before every play-mode test: the game reads math_config.json from a fixture (every skill on, no level
+    /// caps), not from StreamingAssets, so the tests do not change when the shipped config does.
+    /// </summary>
+    [SetUpFixture]
+    public class PlayModeAssembly
     {
+        [OneTimeSetUp]
+        public void UseTheFixtureConfig()
+        {
+            DataLoader.MathConfigFolder = Application.dataPath + "/Tests/PlayMode/Fixtures";
+        }
     }
 }

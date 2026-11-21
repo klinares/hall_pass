@@ -128,7 +128,7 @@ namespace WorldTour.Game.Modes
             _readout = ShowUi.Rect("Readout", root);
             MathUi.TopPivot(_readout);
             var le = _readout.gameObject.AddComponent<LayoutElement>();
-            le.preferredHeight = ReadoutHeight;
+            le.preferredHeight = le.minHeight = ReadoutHeight;   // a tall prompt above may not squeeze the answer box
             // .readout.nudge: a 4px accent ring round it and an accent-2 shadow, for 650 ms
             _ring = ShowUi.Rect("NudgeRing", _readout);
             ShowUi.Stretch(_ring, -5f);
@@ -176,7 +176,7 @@ namespace WorldTour.Game.Modes
         private void MakeKey(RectTransform parent, string k, KeyLook look, float height, string label = null)
         {
             RectTransform rt = ShowUi.Rect(KeyName(k), parent);
-            if (height > 0) { var le = rt.gameObject.AddComponent<LayoutElement>(); le.preferredHeight = height; }
+            if (height > 0) { var le = rt.gameObject.AddComponent<LayoutElement>(); le.preferredHeight = le.minHeight = height; }
             var hit = rt.gameObject.AddComponent<Image>();
             hit.color = new Color(1, 1, 1, 0);
             var key = rt.gameObject.AddComponent<MathKey>();

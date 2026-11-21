@@ -2,6 +2,52 @@
 
 The advisor reads `REPORT.md`, `QUESTIONS.md`, `DECISIONS.md` and the plan about every 30 minutes and writes here. Lead: re-read this file and `QUESTIONS.md` before starting each task and before you stop for any reason. Notes are instructions unless marked "FYI". Newest first. Answers to numbered questions go under the question in `QUESTIONS.md`, not here.
 
+## 2026-11-21 15:55 - billing rule from the owner, and one more task: 7.4 kid-fit review
+
+**Billing (the owner's words: "only use my monthly tokens, nothing else").** Work only on the plan allowance of this interactive session.
+- Never run `claude -p` or any headless, SDK or API call; an `ANTHROPIC_API_KEY` is set on this machine and those would bill it per token. Do not read, use or export that key.
+- Never accept or turn on extra or overage usage. If the plan limit is reached, stop cleanly, write the state into TODO.md, and wait for the reset; do not look for another route.
+- No paid services, assets or cloud builds of any kind.
+- Keep workers on Sonnet, two at most, short prompts and hand-backs, as in the 20:58 note.
+
+**7.4 Kid-fit review (after 7.3, before the final report).** The owner wants the game "polished and relevant to kids", and his daughter's first reaction was that it was too hard. One tester pass, playing as an 11-year-old on her first day, with a fresh save and the shipped config, in pink at 1366x768:
+1. First five minutes: start card to the first finished show without reading any instructions. Note every moment she would not know what to do next.
+2. Play one full show of every enabled math mode from level 0 and one spelling mode. For each, record how many of the first ten questions a child in her class would get right without a hint (she is in unit 3 of grade 5: fraction multiplication and division; volume done; no decimal operations, no unlike-denominator addition, no coordinate plane, no multi-digit algorithms). The target is seven or more of the first ten. Anything under that goes back for an easier level 0 or level 1.
+3. Read every sentence shown in those shows. Flag words or sentence shapes above a 5th-grade reading level, and any prompt longer than three short lines.
+4. Rewards: she should earn something she can see (fans, a sticker, an unlock) by the end of her first show, and be able to afford something backstage within her first two or three shows. If not, lower the cheapest prices.
+5. Fix what this finds (two fix rounds at most), rebuild, commit, and put the findings in REPORT.md as a short table: mode, first-ten score, what changed.
+
+Then the final report and stop. Do not push.
+
+## 2026-11-21 12:05 - PHASE 7: fit the math to her class (the owner's daughter found the math too hard)
+
+She played the live game this morning. Her feedback: the math is too hard, fractions and decimals most of all. Her class (Amplify Desmos Math grade 5, which follows Illustrative Mathematics) is in Unit 3, multiplying and dividing fractions. Volume and fraction-as-division are behind her; multi-digit algorithms, decimal operations, adding fractions with unlike denominators and the coordinate plane have NOT been taught yet. So merch table and beat maker were asking for things she has not met.
+
+Already done by the advisor (no build needed): `tour/StreamingAssets/math_config.json` now has `dec`, `frac` and `xy` switched off. Do not turn them back on.
+
+One phase, Sonnet workers, at most two builders and one tester pass with two fix rounds:
+
+**7.1 Difficulty controls in math_config.json (read at start, no rebuild to change).**
+- Per skill: `MAX_LEVEL` (cap) and `START_LEVEL`. Global: `LEVEL_UP_AFTER` (default 6, was 4) and `LEVEL_DOWN_AFTER` (stays 2). A save whose level is above a cap plays at the cap; nothing she earned is removed.
+- A new warm-up level 0 in every math generator, made of 4th-grade review: single-digit facts and 2-digit by 1-digit for ticket sales, a single visible layer for pack the truck, two operations without parentheses for tour budget, facts to 5 for soundcheck, whole-dollar and 50-cent sums for merch table, like denominators only for beat maker, axes to 4 for stage designer. New skills start at level 0.
+- Manager's office: a "gentle / standard" switch per subject. Gentle = caps one level lower and 8 in a row to move up. Parent-facing text only.
+- Ship these defaults: `md` MAX_LEVEL 1, `ops` MAX_LEVEL 2, `flu` MAX_LEVEL 2, `vol` uncapped, `dec`/`frac`/`xy` off.
+
+**7.2 A new math mode for what she is learning now: fraction multiplication and division (skill `fm`).**
+Name and theme it inside the tour world (for example the green room's snack table: parts of parts of a tray). Reuse the tour budget layout (prompt card, choices or keypad, hint sheet). Levels:
+- L0: a unit fraction of a whole number that divides evenly (1/4 of 12).
+- L1: unit fraction x unit fraction (1/2 of 1/4), shown as "a part of a part".
+- L2: unit x non-unit and non-unit x non-unit, denominators up to 6; also "which expression matches the shaded region".
+- L3: a mixed number x a fraction; a missing factor (2/3 x ? = 20/21); and comparing a product with one factor using <, > or = without multiplying.
+- Division kinds, mixed into L2 and L3 behind a config switch `fmDivision` (default true; her class started it on Nov 20): a unit fraction shared by a whole number (1/4 / 2), and how many unit fractions are in a whole number (2 / 1/4).
+- Visual model: an area diagram (rows x columns of one whole) for multiplication, a tape diagram for division. Hint 1 names the idea ("a part of a part"; "how many 1/4s fit in 2?"). Hint 2 draws the partitioned whole WITHOUT shading the product or counting it for her. Hint 3 is the worked solution: multiply numerators and denominators, or the division fact with its multiplication partner. Answers 8, 9, 11 and 16 apply.
+- Accept any equivalent fraction (7/56 and 1/8 are both right), and mixed-number or improper forms. Never require simplest form in this mode.
+- Distractors model real mistakes: adding numerators and denominators, multiplying only the numerators, dividing by the denominator the wrong way round.
+- Write every story and number yourself in the game's voice. Do not copy problems, names or stories from the curriculum.
+- Pure generator in Core with seeded tests (a few thousand seeds per level: one correct answer, unique among choices, denominators within bounds, hint rules hold). No JS twin exists; that is fine.
+
+**7.3 Tester pass, final build, commit, short REPORT.md.** Include a table for the owner: each math mode, whether it is on, its cap, and which class unit it matches, so he can switch things on as the year goes (decimals: unit 5; unlike denominators: unit 6; coordinates: unit 7). Do not push.
+
 ## 2026-11-21 02:18 - close out the polish task and finish
 
 The polish task has run for over four hours and several builds, and TODO.md has not been updated since the first rejection. To finish tonight:

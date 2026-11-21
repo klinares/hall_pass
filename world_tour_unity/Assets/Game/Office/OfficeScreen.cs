@@ -7,8 +7,11 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using WorldTour.Core.Data;
+using WorldTour.Core.Maths;
 using WorldTour.Core.Meta;
 using WorldTour.Core.Progress;
+using WorldTour.Core.Shows;
+using WorldTour.Game.Data;
 using WorldTour.Game.Map;
 using WorldTour.Game.Prefs;
 using WorldTour.Game.Save;
@@ -35,6 +38,7 @@ namespace WorldTour.Game.Office
         public const string CheckLog = "WT_OFFICE_CHECK";
         public const string ImportLog = "WT_OFFICE_IMPORT";
         public const string ResetLog = "WT_OFFICE_RESET";
+        public const string GentleLog = "WT_OFFICE_GENTLE";
 
         /// <summary>Where the office finds the save. Defaults to Boot's; a session-only save when Main was opened without Boot.</summary>
         public static Func<SaveStore> StoreSource = () => Boot.Store;
@@ -51,6 +55,9 @@ namespace WorldTour.Game.Office
         // the parts tests and the keyboard reach
         public OfficeButton BackButton { get; private set; }
         public OfficeCheck MotionCheck { get; private set; }
+        public OfficeCheck GentleSpellingCheck { get; private set; }
+        public OfficeCheck GentleMathCheck { get; private set; }
+        public TMP_Text RuleLine { get; private set; }
         public OfficeButton DownloadButton { get; private set; }
         public OfficeButton CopyButton { get; private set; }
         public OfficeButton PickButton { get; private set; }
@@ -131,6 +138,26 @@ namespace WorldTour.Game.Office
         {
             // office.js: P.setSetting('motion', checked ? 'reduced' : 'auto')
             GameSettings.Motion = MotionCheck.IsOn ? MotionMode.Reduce : MotionMode.Auto;
+        }
+
+        /// <summary>The gentle switch for one subject: kept in the save at once, and the line under the switches follows.</summary>
+        void SetGentle(bool math, bool on)
+        {
+            SettingsData st = _store.Blob.Settings;
+            if (math) st.GentleMath = on; else st.GentleSpelling = on;
+            bool saved = _store.Save();
+            RuleLine.SetLower(RuleText());
+            Debug.Log(GentleLog + " subject=" + (math ? "math" : "spelling") + " gentle=" + (on ? "true" : "false") + " saved=" + (saved ? "true" : "false")
+                + " mathUp=" + LevelPolicy.ForMath(Config(), "md", st.GentleMath).UpAfter + " spellUp=" + LevelPolicy.ForSpelling(st.GentleSpelling).UpAfter);
+        }
+
+        static MathConfig Config() { return DataLoader.Math != null ? DataLoader.Math.Config : null; }
+
+        string RuleText()
+        {
+            SettingsData st = _store.Blob.Settings;
+            LevelPolicy m = LevelPolicy.ForMath(Config(), "md", st.GentleMath), sp = LevelPolicy.ForSpelling(st.GentleSpelling);
+            return OfficeText.RuleFoot(m.UpAfter, m.DownAfter, sp.UpAfter, sp.DownAfter);
         }
 
         void Download()
@@ -475,14 +502,23 @@ namespace WorldTour.Game.Office
 
             // accuracy
             card = Card("Accuracy", OfficeText.AccuracyHead);
-            Foot(card, OfficeText.AccuracyFoot);
-            float[] skillCols = { -1f, 52f, 52f, 56f, 56f, 52f };
+            LevelPolicy fsp = LevelPolicy.ForSpelling(s.Settings.GentleSpelling), fm = LevelPolicy.ForMath(Config(), "md", s.Settings.GentleMath);
+            Text(card, "Foot", OfficeText.AccuracyNote(fsp.UpAfter, fsp.DownAfter, fm.UpAfter, fm.DownAfter), OfficeUi.FsSmall, FontRole.BodyBold);
+            float[] skillCols = { -1f, 150f, 52f, 56f, 56f, 52f };
             foreach (string kind in new[] { ModeInfo.Spelling, ModeInfo.Math })
             {
                 Text(card, "H3", kind == ModeInfo.Spelling ? OfficeText.Spelling : OfficeText.Math, OfficeUi.FsH3, FontRole.BodyBold);
                 TableRow(card, OfficeText.SkillHeads, skillCols, head: true);
                 foreach (OfficeSkill k in o.Skills.Where(x => x.Kind == kind))
-                    TableRow(card, OfficeText.SkillRow(k), skillCols, head: false, faded: OfficeText.Unplayed(k));
+                {
+                    ModeEntry me = ModeCatalog.ById(k.Id);
+                    if (kind == ModeInfo.Math && (me == null || !me.Playable || (Config() != null && !Config().IsEnabled(me.Info.Skill)))) continue;
+                    string[] cells = OfficeText.SkillRow(k);
+                    string key = Milestones.SkillKey(me.Info);
+                    LevelPolicy pol = ProgressRules.PolicyFor(s, key, Config());
+                    cells[1] = OfficeText.LevelCell(ProgressRules.PlayedLevel(s, key, pol), pol.Cap, MathConfig.HighestLevel);
+                    TableRow(card, cells, skillCols, head: false);
+                }
             }
 
             // words missed most
@@ -510,6 +546,15 @@ namespace WorldTour.Game.Office
             card = Card("Settings", OfficeText.SettingsHead);
             MotionCheck = OfficeCheck.Create(card, "ReduceMotion", OfficeText.ReduceMotion, s.Settings.Motion == MotionModes.ReduceText);
             MotionCheck.Clicked += ToggleMotion;
+
+            // how hard it plays (phase 7.1): gentle or standard, per subject
+            card = Card("Difficulty", OfficeText.DifficultyHead);
+            Text(card, "Body", OfficeText.DifficultyBody, OfficeUi.FsBody, FontRole.Body);
+            GentleSpellingCheck = OfficeCheck.Create(card, "GentleSpelling", OfficeText.GentleSpelling, s.Settings.GentleSpelling);
+            GentleSpellingCheck.Clicked += () => SetGentle(false, GentleSpellingCheck.IsOn);
+            GentleMathCheck = OfficeCheck.Create(card, "GentleMath", OfficeText.GentleMath, s.Settings.GentleMath);
+            GentleMathCheck.Clicked += () => SetGentle(true, GentleMathCheck.IsOn);
+            RuleLine = Text(card, "Rule", RuleText(), OfficeUi.FsSmall, FontRole.Body);
 
             // keep a copy (Unity only)
             card = Card("Keep", OfficeText.KeepHead);
@@ -663,7 +708,7 @@ namespace WorldTour.Game.Office
             RectTransform row = Row(card, head ? "Head" : "Row", 8f);
             var h = row.GetComponent<HorizontalLayoutGroup>();
             h.padding = new RectOffset(0, 0, head ? 2 : 5, head ? 4 : 5);
-            if (faded) row.gameObject.AddComponent<CanvasGroup>().alpha = .5f;
+            if (faded) row.gameObject.AddComponent<CanvasGroup>().alpha = .75f;
             // border-bottom: 1px ink at 18% (2px ink under the head)
             RectTransform line = OfficeUi.Rect("Rule", row);
             line.anchorMin = new Vector2(0f, 0f); line.anchorMax = new Vector2(1f, 0f); line.pivot = new Vector2(.5f, 0f);
@@ -674,7 +719,7 @@ namespace WorldTour.Game.Office
             for (int i = 0; i < cells.Count && i < widths.Length; i++)
             {
                 bool first = i == 0;
-                TMP_Text t = OfficeUi.Text(row, "C" + i, cells[i], head ? FontRole.BodyBold : FontRole.Body, head ? OfficeUi.FsHead : OfficeUi.FsBody, ColorRole.Ink,
+                TMP_Text t = OfficeUi.Text(row, "C" + i, cells[i], FontRole.BodyBold, head ? OfficeUi.FsHead : OfficeUi.FsBody, ColorRole.Ink,
                     first ? TextAlignmentOptions.MidlineLeft : TextAlignmentOptions.MidlineRight, wrap: first);
                 var le = t.gameObject.AddComponent<LayoutElement>();
                 if (first) { le.flexibleWidth = 1f; le.minWidth = 60f; le.preferredWidth = 60f; }

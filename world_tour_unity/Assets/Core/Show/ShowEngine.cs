@@ -24,6 +24,8 @@ namespace WorldTour.Core.Shows
         public bool Encore;
         /// <summary>The saved record for <see cref="Skill"/>. The engine updates it in place (JS P.recordSkill). Null = a fresh level-1 record.</summary>
         public SkillRecord SkillRecord;
+        /// <summary>Phase 7.1: the level rules (cap, floor, run lengths). Null = the web game's rules (levels 1 to 3, up after 4).</summary>
+        public LevelPolicy Policy;
         /// <summary>JS <c>mode.generate(level, seed)</c>. Null = <c>Generators.Generate(Skill, level, seed)</c>.</summary>
         public Func<int, long, Problem> Generate;
         /// <summary>Milliseconds now, for the show's length in seconds (JS Date.now). Null = the system clock.</summary>
@@ -82,6 +84,10 @@ namespace WorldTour.Core.Shows
         public string Skill { get { return _setup.Skill; } }
         /// <summary>The skill record this show reads and updates.</summary>
         public SkillRecord SkillRecord { get { return _setup.SkillRecord; } }
+        /// <summary>The level rules this show plays by.</summary>
+        public LevelPolicy Policy { get { return _setup.Policy ?? LevelPolicy.Legacy; } }
+        /// <summary>The level the skill plays at now: the saved level held between the policy's floor and cap.</summary>
+        public int SkillLevel { get { return Policy.Effective(SkillRecord.Level); } }
 
         /// <summary>The queue, bonus replays included (for the pips).</summary>
         public IReadOnlyList<ShowSlot> Queue { get { return _q; } }
@@ -148,7 +154,7 @@ namespace WorldTour.Core.Shows
             get
             {
                 var m = Current != null ? Current.Item as MathItem : null;
-                return m != null && m.Level.HasValue ? m.Level.Value : SkillRecord.Level;
+                return m != null && m.Level.HasValue ? m.Level.Value : SkillLevel;
             }
         }
 
@@ -192,7 +198,7 @@ namespace WorldTour.Core.Shows
             if (IsMath && m != null)
             {
                 // show.js:201 a fresh problem takes her level now
-                if (!m.Level.HasValue) m.Level = SkillRecord.Level;
+                if (!m.Level.HasValue) m.Level = SkillLevel;
                 // show.js:202 a bonus replay reuses the same problem
                 if (m.Prob == null) m.Prob = _generate(m.Level.Value, m.Seed);
             }
@@ -310,14 +316,14 @@ namespace WorldTour.Core.Shows
         private void RecordSkill(bool correct)
         {
             bool hinted = Hints > 0;
-            int moved = LevelRules.Record(SkillRecord, correct, hinted);
+            int moved = LevelRules.Record(SkillRecord, correct, hinted, null, Policy);
             Raise(new ShowEvent
             {
                 Kind = ShowEventKind.SkillRecorded, Index = Index, Slot = Current,
-                Correct = correct, Hinted = hinted, Moved = moved, Level = SkillRecord.Level
+                Correct = correct, Hinted = hinted, Moved = moved, Level = SkillLevel
             });
             if (moved != 0)
-                Raise(new ShowEvent { Kind = ShowEventKind.LevelChanged, Index = Index, Slot = Current, Moved = moved, Level = SkillRecord.Level });
+                Raise(new ShowEvent { Kind = ShowEventKind.LevelChanged, Index = Index, Slot = Current, Moved = moved, Level = SkillLevel });
         }
 
         // show.js:182-187 requeue(), with one intended difference (QUESTIONS 10): a miss on the final song of the

@@ -46,8 +46,9 @@ namespace WorldTour.Core.Data
         private static readonly string[] WeekKeys = { "id", "label", "words" };
         private static readonly string[] WordKeys = { "w", "s", "h", "x", "prefix" };
         private static readonly string[] PrefixKeys = { "p", "root", "means" };
-        private static readonly string[] ConfigKeys = { "ENABLED_SKILLS", "BOUNDS" };
-        private static readonly string[] SkillKeys = { "dec", "md", "frac", "xy", "vol", "ops", "flu" };
+        private static readonly string[] ConfigKeys = { "ENABLED_SKILLS", "BOUNDS", "LEVEL_UP_AFTER", "LEVEL_DOWN_AFTER", "LEVELS", "fmDivision" };
+        private static readonly string[] SkillKeys = { "dec", "md", "frac", "xy", "vol", "ops", "flu", "fm" };
+        private static readonly string[] LevelKeys = { "MAX_LEVEL", "START_LEVEL" };
         private static readonly string[] BoundKeys = { "moneyCents", "maxDenominator", "coordMax", "maxVolume", "storyDollars" };
 
         // ---------------- weeks.json ----------------
@@ -182,6 +183,20 @@ namespace WorldTour.Core.Data
                         Unknown(f, file, b, "BOUNDS", BoundKeys);
                         foreach (string k in BoundKeys) ExpectInt(f, file, "BOUNDS", k, b);
                     }
+                    foreach (string k in new[] { "LEVEL_UP_AFTER", "LEVEL_DOWN_AFTER" }) ExpectInt(f, file, "the top level", k, root);
+                    ExpectOptional(f, file, "the top level", "fmDivision", root, JsonKind.Bool);
+                    JsonValue lv = root["LEVELS"];
+                    if (lv != null && Expect(f, file, "the top level", "LEVELS", lv, JsonKind.Object))
+                    {
+                        Unknown(f, file, lv, "LEVELS", SkillKeys);
+                        foreach (string sk2 in SkillKeys)
+                        {
+                            JsonValue one = lv[sk2];
+                            if (one == null || !Expect(f, file, "LEVELS", sk2, one, JsonKind.Object)) continue;
+                            Unknown(f, file, one, "LEVELS." + sk2, LevelKeys);
+                            foreach (string k in LevelKeys) ExpectLevel(f, file, "LEVELS." + sk2, k, one);
+                        }
+                    }
                     if (!load.HasErrors)
                     {
                         MathConfig cfg = MapConfig(root);
@@ -190,6 +205,13 @@ namespace WorldTour.Core.Data
                         {
                             string msg = e.StartsWith(file + ": ", StringComparison.Ordinal) ? e.Substring(file.Length + 2) : e;
                             f.Add(Err(file, 0, msg));
+                        }
+                        // a start above the cap is not wrong enough to refuse the file: the game starts at the cap
+                        foreach (string sk2 in SkillKeys)
+                        {
+                            LevelLimit lim = cfg.LimitsFor(sk2);
+                            if (lim.START_LEVEL > lim.MAX_LEVEL)
+                                f.Add(new Finding(Severity.Warning, file, 0, 0, "LEVELS." + sk2 + ": START_LEVEL (" + lim.START_LEVEL + ") is above MAX_LEVEL (" + lim.MAX_LEVEL + "), so the game starts it at " + lim.MAX_LEVEL));
                         }
                         if (!load.HasErrors) load.Config = cfg;
                     }
@@ -211,8 +233,21 @@ namespace WorldTour.Core.Data
             {
                 SkillSwitches s = cfg.ENABLED_SKILLS;
                 s.dec = Bool(sk, "dec", s.dec); s.md = Bool(sk, "md", s.md); s.frac = Bool(sk, "frac", s.frac); s.xy = Bool(sk, "xy", s.xy);
-                s.vol = Bool(sk, "vol", s.vol); s.ops = Bool(sk, "ops", s.ops); s.flu = Bool(sk, "flu", s.flu);
+                s.vol = Bool(sk, "vol", s.vol); s.ops = Bool(sk, "ops", s.ops); s.flu = Bool(sk, "flu", s.flu); s.fm = Bool(sk, "fm", s.fm);
             }
+            cfg.LEVEL_UP_AFTER = Int(root, "LEVEL_UP_AFTER", cfg.LEVEL_UP_AFTER);
+            cfg.LEVEL_DOWN_AFTER = Int(root, "LEVEL_DOWN_AFTER", cfg.LEVEL_DOWN_AFTER);
+            cfg.fmDivision = Bool(root, "fmDivision", cfg.fmDivision);
+            JsonValue lv = root["LEVELS"];
+            if (lv != null)
+                foreach (string skill in SkillKeys)
+                {
+                    JsonValue one = lv[skill];
+                    LevelLimit lim = cfg.LEVELS.For(skill);
+                    if (one == null || lim == null) continue;
+                    lim.MAX_LEVEL = Int(one, "MAX_LEVEL", lim.MAX_LEVEL);
+                    lim.START_LEVEL = Int(one, "START_LEVEL", lim.START_LEVEL);
+                }
             JsonValue b = root["BOUNDS"];
             if (b != null)
             {
@@ -280,6 +315,23 @@ namespace WorldTour.Core.Data
             // marker and would call a typed -1 missing.
             else if (neg || long.Parse(digits, System.Globalization.CultureInfo.InvariantCulture) == 0)
                 f.Add(Err(file, v.Line, at + ": \"" + key + "\" should be a whole number above 0, but it is " + raw));
+        }
+
+        /// <summary>A level: a whole number from 0 to 3 (0 is the warm-up).</summary>
+        private static void ExpectLevel(List<Finding> f, string file, string at, string key, JsonValue obj)
+        {
+            JsonValue v = obj[key];
+            if (v == null) return;
+            if (v.Kind != JsonKind.Number || !v.IsWholeNumberToken)
+            {
+                f.Add(Err(file, v.Line, at + ": \"" + key + "\" should be a whole number, but it is " + Describe(v)));
+                return;
+            }
+            string raw = Raw(v);
+            bool neg = raw.StartsWith("-", StringComparison.Ordinal);
+            string digits = raw.TrimStart('-').TrimStart('0');
+            bool bad = digits.Length > 1 || (digits.Length == 1 && (neg || digits[0] > '0' + MathConfig.HighestLevel));
+            if (bad) f.Add(Err(file, v.Line, at + ": \"" + key + "\" should be a whole number from " + MathConfig.LowestLevel + " to " + MathConfig.HighestLevel + ", but it is " + raw));
         }
 
         private static string Expected(JsonKind kind)

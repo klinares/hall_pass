@@ -8,6 +8,7 @@ namespace WorldTour.Core.Maths.Gen
     /// <summary>
     /// STAGE DESIGNER: the first quadrant of the coordinate plane (5.G.1-2). Ported from
     /// world_tour/math/gen/coords.js; every RNG call happens in the same order, so problems match the JS.
+    /// L0 (Unity only, warm-up): place or read a light, axes to 4.
     /// L1: place a light at a point, or read where one is, axes to 6.
     /// L2: the same with axes to 10.
     /// L3: "move it 3 right and 2 up": tap where it ends up, axes to 10.
@@ -34,7 +35,7 @@ namespace WorldTour.Core.Maths.Gen
 
         private static Problem Build(int level, long seed, Rng r)
         {
-            int max = level == 1 ? 6 : 10;
+            int max = level == 0 ? 4 : level == 1 ? 6 : 10;
             string kind = level == 3 ? r.Pick(KindsL3) : r.Pick(KindsL12);
             string[] gi = r.Pick(Gear);
             string gear = gi[0], icon = gi[1];

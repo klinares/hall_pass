@@ -1,76 +1,82 @@
-# World Tour (Unity): report
+# World Tour (Unity): final report
 
-## For the owner
+## For the owner: what you do next
 
-- **`world_tour/` is ready for you to commit.** It's five files, unstaged:
-  - js/show.js
-  - math/gen/fluency.js
-  - math/gen/multdiv.js
-  - math/gen/volume.js
-  - tests/math/generators.test.mjs
+1. **Listen once** for the game's sound and the read-aloud voice (studio sessions and lyric lines). No test can hear them.
+2. **Play it with your daughter.** From the repo root, run `node world_tour_unity/Tests/Web/server.mjs tour`, open the address in Chrome, and press start.
+3. **Commit `world_tour/`.** It's ready, and these six files changed in it:
+   - js/show.js
+   - math/gen/fluency.js
+   - math/gen/multdiv.js
+   - math/gen/volume.js
+   - data/weeks.js
+   - tests/math/generators.test.mjs
 
-  Math tests pass 41/41, and the Chromium math suites pass 9/9 and 28/28.
-- **Please listen once** to the game's sound and the studio session voice.
+   Math tests pass 41/41.
+4. **Push to GitHub.** Everything else is committed locally (last commit 60e9548).
 
 ## Phase and status
 
-Phase 5 (backstage, journal, manager's office, second theme, export and import) is **done** and committed locally. Next is phase 6:
-1. The advisor's irrational and illogical clue rewording.
-2. A polish pass over everything a player sees, including peach stickers, venues and riff.
-3. The final build and the README.
+Phase 6 is **done**, and with it the whole build (phases 0–6):
+- The irrational and illogical clue rewording is done. It was committed in 1589654, and the advisor applied the matching edit to `world_tour/data/weeks.js`.
+- The polish pass is closed per the advisor's 02:18 note.
+- The final build is in `tour/`, and the README is written.
 
 ## What now works
 
-- **Backstage shop:** buy with fans using a two-tap buy, and try items on first.
-- **Peach and navy theme:** it re-skins every screen and survives a reload.
-- **Tour journal:** a paged sticker book. New stickers peel on, and she can move them by drag, by click or with the arrow keys.
-- **Manager's office:**
-  - parent stats and time played;
-  - "keep a copy" (save file or code) and "load a copy" (file or paste, with a preview and a confirm);
-  - "start over" with two confirms.
+All twelve modes, the map, shows, tickets, backstage shop, journal, manager's office, both themes, and save export and import.
 
-  Before an import or a reset, the current save is backed up. A save from the web game, copied into a file, also loads.
-- **Saving:** old saves upgrade to the new version, and fields the game doesn't know are kept.
+The polish pass:
+- readable text at 1366x768;
+- no overlapping or clipped text on the screens the tester checked;
+- the win toast, confetti, end-of-show burst and a crowd that grows and reacts, all off with reduce motion;
+- curly apostrophes and "the zeros";
+- venue card Tab order;
+- hints that never repeat a letter she was already told;
+- peach art for the dog, stickers and venues.
+
+`world_tour_unity/README.md` covers adding a week of words (no rebuild needed) and rebuilding.
 
 ## Test results
 
-- Edit-mode 1661/1661, play-mode 23/23, browser 18/18. 0 compile warnings.
-- Playthroughs: shop and journal 4/4, office 8/8 (both themes, both sizes, mouse and keyboard), and a remix show in peach. 0 console errors.
-- Download 13.05 MB (budget 20 MB).
+- Edit-mode 1678/1678, play-mode 23/23, browser 18/18.
+- Final polish sweep: 51 mode runs plus map, meta, office and effects runs, at both sizes in both themes. 0 console errors.
+- A real Ctrl+V paste of a save code in Chrome worked 3 of 3 times.
+- Download 13.26 MB (budget 20 MB), largest file 7.9 MB. Cold load to the title screen 1.34 s (median of 3).
 
 ## What the tester looked at
 
-Every new screen in both themes at both sizes. A truncated import, a purchase without enough fans, reload persistence, and the reset confirms.
+Every screen at 1366 and 1920, in pink and peach, over three passes. The last 6.2F fixes were checked from the builder's own screenshots, per the advisor's limit of one more tester pass.
 
 ## Not done or not verified
 
-- **Polish list (phase 6):**
-  - stickers, venues and riff stay pink in peach;
-  - backstage's "yours!" stamp overlaps a caption at 1366;
-  - the ticket's "sold out" stays black in peach.
-- **Unverified:** a full save hitting the browser's storage quota; sound by ear.
+**Polish later (also in TODO.md):**
+- In the "record store" sign, the disc covers the word. This is in the art itself and needs new art.
+- Peach still has some pink art: the awning, the vinyl label and the map stickers.
+- Long letter patterns shrink small in the dog's bubble.
+- Faint beat slot numbers.
+- A tiny fraction-key icon.
+- Peach "rehearse again" is only just readable.
+- A short peach lyric card touches its bottom edge.
+
+**Not verified:**
+- sound by ear;
+- the fast sideways drag and the effect timings (covered by code and tests only);
+- a full save hitting the browser's storage quota.
 
 ## Departures from the brief
 
-- Two builds each for 5.1 and 5.2 (one fix round each).
-- The first phase 5 builders were stopped and restarted.
-- From 21:00 the workers ran on Sonnet, per the advisor; builders before that ran on Opus.
-- Departures 35–38 are listed in IntendedDifferences.md.
+- The polish pass ran six fix rounds; the advisor lifted the two-round cap for it.
+- The workers ran on Sonnet from 21:00, per the advisor's note; builders before that ran on Opus. No task needed the fallback to my model.
+- Departures are listed in IntendedDifferences.md. The answer-14 mask stays until the math vectors are regenerated.
 
 ## Open questions
 
-None for the owner. Questions go to the advisor in QUESTIONS.md.
-
-## How to try it
-
-From the repo root, run `node world_tour_unity/Tests/Web/server.mjs tour`, open the address in Chrome, and press start.
+None. Questions 1–23 are answered in QUESTIONS.md.
 
 ## Files changed
 
-- **`world_tour_unity/Assets/`:**
-  - Core/Meta and Core/Progress/SaveTransfer
-  - Game/Meta, Game/Office, Game/Save (PlayTimer), Ui (ThemeSkin)
-  - the peach decor
-  - Editor builders and tests
-- **`world_tour_unity/Tests/Web/` and `Tools/`.**
-- **`tour/`** (rebuilt) and **`unity_team/`**.
+- **`world_tour_unity/Assets/`:** Game (Show, Meta, Map, Modes, Ticket, Mascot, Ui), Core text rules, the WebGL template, peach dog art, tests.
+- **`world_tour_unity/README.md`.**
+- **`tour/`** (final build).
+- **`unity_team/`** (TODO, QUESTIONS, DECISIONS, REPORT).

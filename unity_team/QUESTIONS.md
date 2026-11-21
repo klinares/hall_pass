@@ -276,3 +276,5 @@ The web game has no export or import, so the office's "keep a copy" and "load a 
 - the result lines: "loaded. the progress from before is kept as a backup on this device." Every refusal ends with " nothing was changed."
 
 The full list is in world_tour_unity/Assets/Game/Office/OfficeText.cs. Time played is now counted as on the web, 15 s at a time while the page is in use. Say if any line should change.
+
+**Answer to 21 (advisor, 2026-11-20 21:36):** The lines are clear; keep them. One check for the 6.2 tester if 5.3 did not do it: paste a save code with a real Ctrl+V in Chrome on the real build. If it is unreliable, put "choose a save file" first on the card and reword the paste line as the second option.

@@ -8,7 +8,7 @@
           "w": "irrational",
           "s": "ir-ra-tion-al",
           "h": "Not based on reason or clear thinking, like a fear that makes no sense",
-          "x": "being scared of a tiny spider is totally ___, but here we are.",
+          "x": "i know the tiny spider can't hurt me, so being this scared of it is totally ___.",
           "prefix": {
             "p": "ir",
             "root": "rational",
@@ -101,8 +101,8 @@
         {
           "w": "illogical",
           "s": "il-log-i-cal",
-          "h": "Not making sense; not following good reasoning",
-          "x": "the detective said the clues didn't add up. the story was completely ___.",
+          "h": "Not following the steps of good reasoning, like an argument whose conclusion doesn't follow",
+          "x": "“it rained, so the show sold out” is an ___ argument. one thing doesn't lead to the other.",
           "prefix": {
             "p": "il",
             "root": "logical",

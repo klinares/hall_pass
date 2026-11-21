@@ -1,63 +1,85 @@
-# World Tour (Unity): final report
+# World Tour (Unity): phase 7 report
 
 ## For the owner: what you do next
 
-1. **Listen once** for the game's sound and the read-aloud voice.
-2. **Play it with your daughter** (see How to try it).
-3. **Commit `world_tour/`.** Six files changed: js/show.js, math/gen/fluency.js, math/gen/multdiv.js, math/gen/volume.js, data/weeks.js and tests/math/generators.test.mjs. Math tests pass 41/41.
-4. **Push to GitHub.** Everything else is committed locally (last commit 60e9548).
+1. **Let her play the new build** (see How to try it). Tell the advisor how it went.
+2. **Switch modes on as her class moves.** Edit `tour/StreamingAssets/math_config.json` and push; no rebuild is needed. `world_tour_unity/Tools/MATH_CONFIG.md` explains each setting. Use the table below.
+3. **Listen once** for the sound and the read-aloud voice.
+4. **Commit `world_tour/`** (six files, as in the phase 6 report).
+5. **Push to GitHub.** Everything else is committed locally (last commit 980e30f).
+
+| mode | skill | on? | top level | her class unit |
+|---|---|---|---|---|
+| snack table (new) | fm | on | 3 | unit 3, now |
+| pack the truck | vol | on | 3 | unit 1, done |
+| tour budget | ops | on | 2 | review |
+| soundcheck | flu | on | 2 | level 3 is decimal powers of ten, unit 5 |
+| ticket sales | md | on | 1 | multi-digit, unit 4 |
+| merch table | dec | **off** | 3 | decimals, unit 5 |
+| beat maker | frac | **off** | 3 | unlike denominators, unit 6 |
+| stage designer | xy | **off** | 3 | coordinates, unit 7 |
 
 ## Phase and status
 
-Phase 6 is **done**, and with it the whole build. The irrational and illogical clue rewording is done (1589654, plus the advisor's edit to `world_tour/data/weeks.js`). The polish pass is closed per the advisor's 02:18 note. The final build is in `tour/`.
+Phase 7 is **done** and committed locally. Nothing is pushed.
 
 ## What now works
 
-All twelve modes, the map, shows, tickets, backstage shop, journal, manager's office, both themes, and save export and import.
+- **Difficulty:**
+  - Every math mode now starts at a new warm-up level 0 of 4th-grade review.
+  - She needs 6 right in a row to move up.
+  - Each skill has a top level, set in `math_config.json`. A save above it plays at the top level and is never lowered.
+- **Gentle/standard switch:** in the manager's office, one per subject. Gentle lowers the top level by one and needs 8 in a row to move up.
+- **Snack table (new):** fraction multiplication and division, with area and tape diagrams. Any equivalent answer counts.
+- **Kid-fit fixes:**
+  - easier ticket sales warm-up;
+  - division steps show on the card;
+  - the ticket buttons stay in view;
+  - shorter snack prompts;
+  - plainer words;
+  - a dog line on the map that says where to start.
 
-The polish pass made text readable at 1366x768, removed overlaps, added the win toast, confetti, show burst and a reacting crowd (all off with reduce motion), fixed apostrophes, "the zeros" and Tab order, stopped hints repeating a letter, and added peach art.
+## Kid-fit review (7.4)
 
-`world_tour_unity/README.md` covers adding a week of words (no rebuild needed) and rebuilding.
+A tester played as her on day one, starting from a fresh save. The target was 7 of the first 10 right without hints.
+
+| mode | first ten | what changed |
+|---|---|---|
+| ticket sales | about 5 | Level 0 is now facts and easy 2-digit problems (32×3, 63÷9); not re-scored |
+| pack the truck | 10 | nothing |
+| tour budget | 8 | nothing |
+| soundcheck | 8 | nothing |
+| snack table | about 7 | prompts fit in 3 lines; level 1 shows the tray |
+| missing vowels | 5–6 | her real word list; plainer clue wording sent to the advisor (Q25) |
+
+Rewards are fine as they are. Every show earns a sticker and at least 5,000 fans, which buys the cheapest backstage item.
 
 ## Test results
 
-- Edit-mode 1678/1678, play-mode 23/23, browser 18/18. 0 console errors in the final sweep.
-- Download 13.26 MB (budget 20 MB), largest file 7.9 MB. Cold load 1.34 s.
+Edit-mode 1797/1797, play-mode 26/26, browser 18/18. 0 console errors. Download 13.28 MB.
 
 ## What the tester looked at
 
-Every screen at 1366 and 1920, in pink and peach, over three passes. The last 6.2F fixes were checked from the builder's own screenshots, per the advisor's limit of one more tester pass.
+- Every phase 7 screen at both sizes in both themes: one tester pass and two fix rounds.
+- Then the kid-fit pass and one fix round, checked from the builder's screenshots.
 
 ## Not done or not verified
 
-**Polish later (also in TODO.md):**
-- In the "record store" sign, the disc covers the word. This is in the art itself and needs new art.
-- Peach still has some pink art: the awning, the vinyl label and the map stickers.
-- Long letter patterns shrink small in the dog's bubble.
-- Faint beat slot numbers.
-- A tiny fraction-key icon.
-- Peach "rehearse again" is only just readable.
-- A short peach lyric card touches its bottom edge.
-
-**Not verified:**
-- sound by ear;
-- the fast sideways drag and the effect timings (covered by code and tests only);
-- a full save hitting the browser's storage quota.
+- **Ticket sales:** she reaches level 1 (the web's level, with regrouping) after 6 right. It wasn't re-scored after the fix.
+- **Snack table:** some prompts with stacked fractions still wrap to four lines.
+- **First-try rule:** the ticket now counts a replayed miss, but the VIP percent keeps the web's rule.
+- **Earlier polish list:** see TODO.md.
 
 ## Departures from the brief
 
-- The polish pass ran six fix rounds; the advisor lifted the two-round cap for it.
-- The workers ran on Sonnet from 21:00, per the advisor's note; builders before that ran on Opus. No task needed the fallback to my model.
-- Departures are listed in IntendedDifferences.md. The answer-14 mask stays until the math vectors are regenerated.
+- Workers ran on Sonnet, and no paid or headless use.
+- New intended differences 39–43 are copy changes, listed in IntendedDifferences.md.
+- Ticket sales level 0 is new, and levels 1–3 are unchanged.
 
 ## Open questions
 
-None. Questions 1–23 are answered in QUESTIONS.md.
+Q25 (clue wording) is with the advisor.
 
 ## How to try it
 
 From the repo root, run `node world_tour_unity/Tests/Web/server.mjs tour`, open the address in Chrome, and press start.
-
-## Files changed
-
-`world_tour_unity/Assets/` (Game, Core text rules, WebGL template, peach dog art, tests), `world_tour_unity/README.md`, `tour/`, `unity_team/`.

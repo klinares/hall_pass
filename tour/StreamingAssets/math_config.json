@@ -1,9 +1,9 @@
 {
   "ENABLED_SKILLS": {
-    "dec": true,
+    "dec": false,
     "md": true,
-    "frac": true,
-    "xy": true,
+    "frac": false,
+    "xy": false,
     "vol": true,
     "ops": true,
     "flu": true

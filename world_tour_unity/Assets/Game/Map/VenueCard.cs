@@ -39,6 +39,9 @@ namespace WorldTour.Game.Map
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void ResetStatics() { s_ChosenWeek = null; StartShowRequested = null; }
 
+        /// <summary>The rows come first in order, then the sound toggle (polish 6.2B item 9).</summary>
+        public override bool HudControlsLast { get { return true; } }
+
         /// <summary>The venue shown.</summary>
         public string VenueId { get; private set; }
 
@@ -150,7 +153,7 @@ namespace WorldTour.Game.Map
 
         float Poster(Venue v, int idx, bool open, long lifetime, float x0, float y, float cw)
         {
-            const float padX = 22f, padY = 30f, gap = 18f;
+            const float padX = 22f, padY = 30f, gap = 40f;   // polish 6.2E item 7: 40 (was 18): the sticker's outline and shadow reach past its box, and touched the title
             float inner = cw - 2f * padX;
             float artW = Mathf.Max(120f, inner * 0.38f), copyW = inner - artW - gap;
             RectTransform poster = UiKit.Place(UiKit.Rect("Poster", _content), new Vector2(x0, y), new Vector2(cw, 100f), UiKit.TopLeft);
@@ -296,14 +299,12 @@ namespace WorldTour.Game.Map
                 y = ModeRow(v, wk, m, n, x0, y, cw) + 14f;
                 n++;
             }
-            // venue.js:57 the pencil note for the modes left off this week (screens.css .pencil: small, italic look, 85%)
+            // venue.js:57 the pencil note for the modes left off this week (screens.css .pencil was small grey italic; polish 6.2B item 11: full ink, upright, 14.4 px, readable at 1366)
             string note = ModeRules.BillNote(hidden);
             if (note != null)
             {
-                TextMeshProUGUI pencil = UiKit.Text(_content, "BillNote", note.TrimEnd(), FontRole.Body, Tokens.Fs0, ColorRole.Ink);
-                pencil.fontStyle = FontStyles.Italic;
-                Color pc = pencil.color; pc.a = .85f; pencil.color = pc;
-                float w = Mathf.Min(cw, 52f * 7.7f);                       // max-width 52ch of Courier at fs-0
+                TextMeshProUGUI pencil = UiKit.Text(_content, "BillNote", note.TrimEnd(), FontRole.Body, 14.4f, ColorRole.Ink);
+                float w = Mathf.Min(cw, 52f * 8.7f);                       // max-width 52ch of Courier at 14.4 px
                 float h = UiKit.HeightFor(pencil, w) + 4f;
                 UiKit.Place(pencil.rectTransform, new Vector2(x0, y), new Vector2(w, h), UiKit.TopLeft);
                 y += h + 14f;
@@ -327,10 +328,8 @@ namespace WorldTour.Game.Map
                 TextAlignmentOptions.BottomLeft, false);
             float headW = UiKit.WidthOf(head);
             UiKit.Place(head.rectTransform, new Vector2(x0, y), new Vector2(headW + 4f, 40f), UiKit.TopLeft);
-            TextMeshProUGUI pencil = UiKit.Text(_content, "MathNote", MapText.LevelsMove, FontRole.Body, Tokens.Fs0, ColorRole.Ink,
+            TextMeshProUGUI pencil = UiKit.Text(_content, "MathNote", MapText.LevelsMove, FontRole.Body, 14.4f, ColorRole.Ink,
                 TextAlignmentOptions.BottomLeft, false);
-            pencil.fontStyle = FontStyles.Italic;
-            Color pc = pencil.color; pc.a = .85f; pencil.color = pc;
             UiKit.Place(pencil.rectTransform, new Vector2(x0 + headW + 14f, y + 10f), new Vector2(UiKit.WidthOf(pencil) + 4f, 26f), UiKit.TopLeft);
             y += 40f + 12f;
             SaveBlob s = MapScreen.Blob;

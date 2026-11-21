@@ -2,6 +2,7 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.UI;
 using WorldTour.Game.Motion;
 using WorldTour.Game.Show;
@@ -152,10 +153,38 @@ namespace WorldTour.Game.Modes
 
         public void OnBeginDrag(PointerEventData e)
         {
-            if (!IsInteractable() || e.button != PointerEventData.InputButton.Left) return;
+            if (e.button != PointerEventData.InputButton.Left) return;
+            // A fast sideways flick can move the pointer onto the neighbouring tile before the UI module handles the
+            // press, so the module hands the drag to the neighbour. The tile under the real press position takes it.
+            LetterTile owner = PressOwner(e);
+            if (owner != null && owner != this)
+            {
+                e.pointerDrag = owner.gameObject;
+                owner.OnBeginDrag(e);
+                return;
+            }
+            if (!IsInteractable()) return;
             _dragging = true;
             _home = _body.anchoredPosition;
             _group.blocksRaycasts = false;
+        }
+
+        /// <summary>The sibling tile whose rect holds the press position, when this one does not (null: keep this one).</summary>
+        private LetterTile PressOwner(PointerEventData e)
+        {
+            Vector2 press;
+            if (!PressTracker.TryGet(out press)) press = e.pressPosition;
+            var self = (RectTransform)transform;
+            if (RectTransformUtility.RectangleContainsScreenPoint(self, press, e.pressEventCamera)) return null;
+            Transform parent = transform.parent;
+            if (parent == null) return null;
+            for (int i = 0; i < parent.childCount; i++)
+            {
+                LetterTile t = parent.GetChild(i).GetComponent<LetterTile>();
+                if (t != null && t != this && t.IsInteractable()
+                    && RectTransformUtility.RectangleContainsScreenPoint((RectTransform)t.transform, press, e.pressEventCamera)) return t;
+            }
+            return null;
         }
 
         public void OnDrag(PointerEventData e)
@@ -175,5 +204,45 @@ namespace WorldTour.Game.Modes
             bool over = IsOverSlots != null && IsOverSlots(e.position, e.pressEventCamera);
             if (over && IsInteractable()) Ask();
         }
+    }
+}
+
+namespace WorldTour.Game.Modes
+{
+    /// <summary>
+    /// Where the left mouse button actually went down, read from the Input System event itself (the UI module only
+    /// knows the pointer position at the frame it handles the press, which a fast flick has already moved on).
+    /// </summary>
+    public static class PressTracker
+    {
+        static Vector2 s_Pos;
+        static bool s_Has, s_Down;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void Install()
+        {
+            s_Has = s_Down = false;
+            UnityEngine.InputSystem.InputSystem.onEvent -= OnEvent;
+            UnityEngine.InputSystem.InputSystem.onEvent += OnEvent;
+        }
+
+        static void OnEvent(UnityEngine.InputSystem.LowLevel.InputEventPtr ptr, UnityEngine.InputSystem.InputDevice device)
+        {
+            var mouse = device as UnityEngine.InputSystem.Mouse;
+            if (mouse == null || !(ptr.IsA<StateEvent>() || ptr.IsA<DeltaStateEvent>())) return;
+            float v;
+            if (!UnityEngine.InputSystem.InputControlExtensions.ReadValueFromEvent(mouse.leftButton, ptr, out v)) return;
+            bool down = v > 0.5f;
+            if (down && !s_Down)
+            {
+                Vector2 p;
+                s_Pos = UnityEngine.InputSystem.InputControlExtensions.ReadValueFromEvent(mouse.position, ptr, out p) ? p : mouse.position.ReadValue();
+                s_Has = true;
+            }
+            s_Down = down;
+        }
+
+        /// <summary>The screen position of the latest left press, if one has been seen.</summary>
+        public static bool TryGet(out Vector2 pos) { pos = s_Pos; return s_Has; }
     }
 }

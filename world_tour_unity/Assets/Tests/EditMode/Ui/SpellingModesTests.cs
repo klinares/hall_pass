@@ -96,15 +96,16 @@ namespace WorldTour.Game.EditTests
             Assert.AreEqual(3, h.Max);
             LetterHint first = h.Apply(1);
             Assert.AreEqual(-1, first.Index);
-            // civ-i-li-za-tion: chunks "civ - ___ - ___ - ___ - tion"; the blanks 1 and 3 may show, 5, 7, 9 and 10 are hers
+            // civ-i-li-za-tion: chunks "civ - ___ - ___ - ___ - tion"; the blanks 1 and 3 may show, 5, 7, 9 and 10 are hers.
+            // The chunks already name blank 1 (the i of "civ"), so the paid letter is blank 3 (polish 6.2B item 5).
             Assert.AreEqual(SpellingLines.SoundsLike("civ - ___ - ___ - ___ - t__n"), first.Line);
             LetterHint second = h.Apply(2);
-            Assert.AreEqual(1, second.Index);
+            Assert.AreEqual(3, second.Index);
             Assert.AreEqual("here" + Rsq + "s a letter for you: <b>i</b>", second.Line);
-            Assert.AreEqual(3, h.Apply(3).Index);
-            Assert.AreEqual(4, h.Remaining);
-            Assert.AreEqual(-1, h.Apply(4).Index, "past the floor only the syllables come back");
-            Assert.AreEqual(4, h.Remaining);
+            Assert.AreEqual(5, h.Remaining);
+            Assert.AreEqual(-1, h.Apply(3).Index, "past the floor only the syllables come back");
+            Assert.AreEqual(5, h.Remaining);
+            Assert.AreEqual(4, h.Unknown, "the floor holds: 4 of 12 stay unknown");
 
             // temple: 2 vowels, nothing above the floor, so the only hint is the syllables
             var t = new LetterHints("temple", "tem-ple", MissingLetters.VowelsHide("temple"));
@@ -115,6 +116,32 @@ namespace WorldTour.Game.EditTests
 
             // no vowels at all: one hint, the syllables (parts.js:74 Math.max(1, 0))
             Assert.AreEqual(1, new LetterHints("rhythm", "rhythm", new List<int>()).Max);
+        }
+
+        [Test]
+        public void LetterHints_PaidLetterNeverRepeatsAFirstMissStartsWith()
+        {
+            // polish 6.2B item 5: imagination hides its vowels, the first one is the first letter. The first miss says
+            // 'starts with "i"', so the paid letter must be the next blank, and the floor (4 of 11 unknown) still holds.
+            const string w = "imagination";
+            var h = new LetterHints(w, "i-mag-i-na-tion", MissingLetters.VowelsHide(w));
+            Assert.AreEqual(0, h.Hide[0]);
+            Assert.AreEqual(2, h.Givable);
+            h.NoteLadder(1);
+            Assert.IsTrue(h.IsTold(0));
+            LetterHint paid = h.Apply(2);
+            Assert.AreEqual(2, paid.Index, "skips the told first letter");
+            StringAssert.Contains("<b>a</b>", paid.Line);
+            StringAssert.DoesNotContain("<b>i</b>", paid.Line);
+            Assert.AreEqual(-1, h.Apply(3).Index, "the floor holds: no more letters once 4 are unknown");
+            Assert.GreaterOrEqual(h.Unknown, SpellingHints.MinHidden(w.Length));
+
+            // the ladder's second line (chunks) tells its letters too
+            var g = new LetterHints(w, "i-mag-i-na-tion", MissingLetters.VowelsHide(w));
+            g.NoteLadder(2);
+            var toldBefore = g.Hide.Where(g.IsTold).ToList();
+            Assert.IsNotEmpty(toldBefore);
+            Assert.IsFalse(toldBefore.Contains(g.Apply(2).Index));
         }
 
         private static List<Word> LiveWords()
@@ -136,23 +163,25 @@ namespace WorldTour.Game.EditTests
             Assert.LessOrEqual(h.Max, h.WebMax, at + ": never more hints than the web game");
             int floor = SpellingHints.MinHidden(w.Length);
             var given = new List<int>();
+            // hint 1 (the syllables) names its chunk letters; a paid letter never repeats one (polish 6.2B item 5)
+            HashSet<int> told = MaskedChunks.Render(w, s, h.Masked).Shown;
             for (int n = 1; n <= h.Max; n++)
             {
                 LetterHint x = h.Apply(n);
                 if (n == 1) Assert.AreEqual(-1, x.Index, at + ": hint 1 is the syllables");
+                else if (x.Index < 0) Assert.AreEqual(-1, x.Index);                      // nothing new may be said: the syllables again
                 else
                 {
-                    Assert.GreaterOrEqual(x.Index, 0, at + ": hint " + n + " gives a letter");
                     Assert.IsTrue(hide.Contains(x.Index), at + ": only a blank is filled");
-                    Assert.AreEqual(hide.First(k => !given.Contains(k)), x.Index, at + ": the leftmost open blank");
+                    Assert.IsFalse(told.Contains(x.Index) || given.Contains(x.Index), at + ": hint " + n + " repeats a letter already told");
+                    Assert.AreEqual(hide.First(k => !given.Contains(k) && !told.Contains(k)), x.Index, at + ": the leftmost untold blank");
                     given.Add(x.Index);
                 }
             }
-            int left = hide.Count - given.Count;
+            int left = hide.Count(k => !given.Contains(k) && !told.Contains(k));
             Assert.GreaterOrEqual(left, Math.Min(hide.Count, floor), at + ": too few blanks left (" + left + ")");
-            if (hide.Count > floor) Assert.AreEqual(floor, left, at + ": the floor, and no tighter");
-            // the last hidden letters are hers: none of the rightmost `left` blanks was given
-            CollectionAssert.AreEqual(hide.Skip(given.Count), hide.Where(k => !given.Contains(k)), at);
+            // the last hidden letters are hers: every letter a paid hint gave is one the floor allows
+            Assert.IsTrue(given.All(k => h.Allowed.Contains(k)), at);
             // every pre-reveal hint together: the visible row, the given letters, the sounds-like text, the ladder's line 2
             var known = new HashSet<int>(Enumerable.Range(0, w.Length).Where(i => !hide.Contains(i)));
             known.UnionWith(given);

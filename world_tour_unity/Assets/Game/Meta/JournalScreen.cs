@@ -124,7 +124,7 @@ namespace WorldTour.Game.Meta
             TextMeshProUGUI title = MetaUi.Shout(_root, "Title", JournalText.Title, Tokens.Fs4, shout);
             UiKit.Place(title.rectTransform, new Vector2(x0, 104f), new Vector2(cw * 0.6f, 62f), UiKit.TopLeft);
 
-            _cap = UiKit.Text(_root, "Caption", "", FontRole.Body, 13.6f, ColorRole.Ink, TextAlignmentOptions.TopLeft, false);
+            _cap = UiKit.Text(_root, "Caption", "", FontRole.BodyBold, 16f, ColorRole.Ink, TextAlignmentOptions.TopLeft, false);
             UiKit.Place(_cap.rectTransform, new Vector2(x0, 174f), new Vector2(cw, 20f), UiKit.TopLeft);
             DefaultCaption();
 
@@ -144,7 +144,7 @@ namespace WorldTour.Game.Meta
                 float bw = srt.sizeDelta.x;
                 UiKit.Place(srt, new Vector2(x0 + cw - bw * 0.5f - 6f, rowY + Tokens.Tap * 0.5f), srt.sizeDelta, UiKit.Center);
                 _shop.OnClick.AddListener(() => { if (Stack != null) BackstageScreen.Open(Stack); });
-                TextMeshProUGUI more = UiKit.Text(_root, "MoreStickers", JournalText.MoreStickers, FontRole.Body, 13.6f, ColorRole.Ink, TextAlignmentOptions.Right, false);
+                TextMeshProUGUI more = UiKit.Text(_root, "MoreStickers", JournalText.MoreStickers, FontRole.BodyBold, 16f, ColorRole.Ink, TextAlignmentOptions.Right, false);
                 float mw = UiKit.WidthOf(more) + 4f;
                 UiKit.Place(more.rectTransform, new Vector2(x0 + cw - bw - 18f - mw, rowY), new Vector2(mw, Tokens.Tap), UiKit.TopLeft);
             }
@@ -237,15 +237,15 @@ namespace WorldTour.Game.Meta
             if (sp != null)
             {
                 string sn = SpriteName(sl.Art, true);
-                Image im = UiKit.Sticker(root, "Art", sp, art.Box(sn), new Vector2((w - 60f) * 0.5f, y), 60f);
+                Image im = UiKit.Sticker(root, "Art", sp, art.Box(sn), new Vector2((w - 50f) * 0.5f, y), 50f);   // 50 (was 60): room for the 16 px how-to-earn line (polish 6.2E item 5)
                 Greyscale.Set(im, true, GreyStyle.Unearned);
             }
-            y += 66f;
-            TextMeshProUGUI name = UiKit.Text(root, "Name", sl.Name, FontRole.BodyBold, 13f, ColorRole.Ink, TextAlignmentOptions.Top);
+            y += 56f;
+            TextMeshProUGUI name = UiKit.Text(root, "Name", sl.Name, FontRole.BodyBold, 14f, ColorRole.Ink, TextAlignmentOptions.Top);
             float nh = UiKit.HeightFor(name, w - 16f);
             UiKit.Place(name.rectTransform, new Vector2(8f, y), new Vector2(w - 16f, nh), UiKit.TopLeft);
             y += nh + 4f;
-            TextMeshProUGUI how = UiKit.Text(root, "How", sl.Note, FontRole.Body, 11.5f, ColorRole.Ink, TextAlignmentOptions.Top);
+            TextMeshProUGUI how = UiKit.Text(root, "How", sl.Note, FontRole.BodyBold, 16f, ColorRole.Ink, TextAlignmentOptions.Top);
             UiKit.Place(how.rectTransform, new Vector2(8f, y), new Vector2(w - 16f, Mathf.Max(20f, h - y - 6f)), UiKit.TopLeft);
             how.overflowMode = TextOverflowModes.Ellipsis;
         }

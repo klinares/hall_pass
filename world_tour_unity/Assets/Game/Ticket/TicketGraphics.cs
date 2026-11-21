@@ -113,41 +113,4 @@ namespace WorldTour.Game.Ticket
             for (int i = 0; i < n; i++) vh.AddTriangle(0, 1 + i, 1 + (i + 1) % n);
         }
     }
-
-    /// <summary>
-    /// The wavy underline under a missed word (screens.css:184 <c>text-decoration: underline wavy var(--paper-deep) 2px;
-    /// text-underline-offset: 4px</c>), as a sine stroke along the bottom of this rect.
-    /// </summary>
-    [RequireComponent(typeof(CanvasRenderer))]
-    public sealed class TicketWavyLine : MaskableGraphic
-    {
-        /// <summary>Stroke width (CSS 2px).</summary>
-        public float Thickness = 2f;
-        /// <summary>One wave's length in canvas units.</summary>
-        public float Wavelength = 8f;
-
-        protected override void OnPopulateMesh(VertexHelper vh)
-        {
-            vh.Clear();
-            Rect r = rectTransform.rect;
-            float amp = Mathf.Max(0f, (r.height - Thickness) * 0.5f);
-            float midY = r.center.y;
-            int steps = Mathf.Max(2, Mathf.CeilToInt(r.width / 2f));
-            Color32 c = color;
-            for (int i = 0; i <= steps; i++)
-            {
-                float x = r.xMin + r.width * i / steps;
-                float ph = (x - r.xMin) / Wavelength * Mathf.PI * 2f;
-                float y = midY + Mathf.Sin(ph) * amp;
-                vh.AddVert(new Vector3(x, y - Thickness * 0.5f), c, Vector2.zero);
-                vh.AddVert(new Vector3(x, y + Thickness * 0.5f), c, Vector2.zero);
-                if (i > 0)
-                {
-                    int b = i * 2;
-                    vh.AddTriangle(b - 2, b - 1, b + 1);
-                    vh.AddTriangle(b + 1, b, b - 2);
-                }
-            }
-        }
-    }
 }

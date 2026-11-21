@@ -186,6 +186,18 @@ namespace WorldTour.Game.Modes
             return global::WorldTour.Game.Modes.Pat.Of(Word, (c, i) => ok.Contains(i));
         }
 
+        /// <summary>
+        /// Polish 6.2D item 8: a pattern that gives only letters she has not been told yet (positions in <see cref="Shown"/> before
+        /// this call stay hidden), or null when the floor lets no new one through. Same floor as <see cref="Pat"/>.
+        /// </summary>
+        public string NewPat(Func<char, int, bool> show)
+        {
+            var before = new HashSet<int>(_shown);
+            HashSet<int> ok = Allow(Enumerable.Range(0, Word.Length).Where(i => show(Word[i], i)));
+            ok.ExceptWith(before);
+            return ok.Count == 0 ? null : global::WorldTour.Game.Modes.Pat.Of(Word, (c, i) => ok.Contains(i));
+        }
+
         /// <summary>May the first letter be named ("starts with x")?</summary>
         public bool First() { return Word.Length > 0 && Allow(new[] { 0 }).Contains(0); }
 
@@ -262,7 +274,12 @@ namespace WorldTour.Game.Modes
                 // a first letter past the floor is left out: "it has N letters." (the web line trimmed)
                 case "start": h.Line = Floor.First() ? SpellingLines.StartsWith(Word) : Spelling3Lines.HasLetters(Word); break;
                 case "chunks": h.Line = SpellingLines.SoundsLike(Floor.Chunks()); break;
-                default: h.Line = Floor.Pat((c, i) => i == 0 || i == Word.Length - 1); break;
+                default:
+                    // the first and last letters, but never one a hint or the ladder already told her ("starts with i" then "i _ _ l"):
+                    // with nothing new the floor allows, it falls back to the letter count
+                    string pat = Floor.NewPat((c, i) => i == 0 || i == Word.Length - 1);
+                    h.Line = pat ?? Spelling3Lines.HasLetters(Word);
+                    break;
             }
             return h;
         }
@@ -484,7 +501,7 @@ namespace WorldTour.Game.Modes
 
         private Prefix Pf { get { return Word.prefix; } }
         private string E(string s) { return Spelling3Lines.Esc(s); }
-        private string ClueLower { get { return E((Word.h ?? "").ToLowerInvariant()); } }
+        private string ClueLower { get { return E(WorldTour.Core.Data.TextRules.Curly(Word.h ?? "").ToLowerInvariant()); } }
 
         public bool ChipGone(int i) { return i >= 0 && i < _chipGone.Length && _chipGone[i]; }
         public bool MeaningGone(int i) { return i >= 0 && i < _meanGone.Length && _meanGone[i]; }

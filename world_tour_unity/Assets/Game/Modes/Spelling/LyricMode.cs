@@ -34,7 +34,7 @@ namespace WorldTour.Game.Modes
         {
             _ctx = ctx;
             string w = ctx.Item.W;
-            string[] halves = LyricRules.Halves(ctx.Word != null ? ctx.Word.x : "");
+            string[] halves = LyricRules.Halves(ctx.Word != null ? WorldTour.Core.Data.TextRules.Curly(ctx.Word.x) : "");
             _before = halves[0]; _after = halves[1];
             RectTransform area = ctx.Area;
             SpellingUi.Column(area);
@@ -147,7 +147,7 @@ namespace WorldTour.Game.Modes
             // .blank: a fixed-width ink rule (min-width 5.5em), the same for every word. TMP draws no underline under
             // spaces, so it is a run of underscores, which Caveat Brush joins into one line.
             if (word == null) blank = "<color=#" + Hex(ColorRole.Ink) + ">" + new string('_', 8) + "</color>";
-            else blank = "<color=#" + Hex(ok ? ColorRole.Accent2 : ColorRole.PaperDeep) + ">" + (ok ? "<u>" + word + "</u>" : word) + "</color>";
+            else blank = "<color=#" + Hex(ok ? ColorRole.Accent2 : ColorRole.Muted) + ">" + (ok ? "<u>" + word + "</u>" : word) + "</color>";
             // lyric.js:59 the text sits against the blank, which has a .15em margin each side
             const string Gap = "<space=0.15em>";
             _line.text = Lower.Of("<noparse>" + _before + "</noparse>") + Gap + blank + Gap + Lower.Of("<noparse>" + _after + "</noparse>");

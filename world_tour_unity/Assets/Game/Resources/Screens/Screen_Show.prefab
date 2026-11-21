@@ -65,4 +65,5 @@ MonoBehaviour:
   buttonPrefab: {fileID: 2345145129357551469, guid: 3864e575125930b49bcbf091022095d3, type: 3}
   streakIcon: {fileID: 21300000, guid: e63af2c1c386de641b10dc432771e087, type: 3}
   recordSticker: {fileID: 21300000, guid: 8480266828e5764409aff408477c1306, type: 3}
+  shout: {fileID: 2100000, guid: b135d1e0316acd1489cf6cf6e79cbd8b, type: 2}
   art: {fileID: 11400000, guid: fa9f3ebc616815947af15d1ed473a6aa, type: 2}

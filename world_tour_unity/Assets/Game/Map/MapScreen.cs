@@ -471,7 +471,8 @@ namespace WorldTour.Game.Map
                 if (bus != null)
                 {
                     float bw = w * 0.44f;
-                    RectTransform holder = UiKit.Place(UiKit.Rect("Bus", body), new Vector2(w * 1.10f - bw * 0.5f, h * 0.30f + bw * 0.5f), new Vector2(bw, bw), UiKit.Center);
+                    // polish 6.2F item 2: parked above the roof, clear of the sign text
+                    RectTransform holder = UiKit.Place(UiKit.Rect("Bus", body), new Vector2(w * 0.80f, -bw * 0.22f), new Vector2(bw, bw), UiKit.Center);
                     holder.localEulerAngles = new Vector3(0f, 0f, MapLayout.UnityTilt(-8f));
                     UiKit.Sticker(holder, "Sticker", bus, art.Box("bus_sm"), Vector2.zero, bw);
                 }

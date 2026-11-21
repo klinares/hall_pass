@@ -86,7 +86,7 @@ namespace WorldTour.Game.Modes
             public void Say(string line, string pose) { _c.Say(line, pose); }
             public void Next(float seconds) { _c.Next(seconds); }
             // the second line's chunks keep the masked blanks hidden (QUESTIONS 11, lead's 3.1 ruling)
-            public string Ladder(int tries) { return MaskedChunks.Ladder(_c.Item.W, _c.Item.S, tries, _c.Random, _h.Masked); }
+            public string Ladder(int tries) { string t = MaskedChunks.Ladder(_c.Item.W, _c.Item.S, tries, _c.Random, _h.Masked); _h.NoteLadder(tries); return t; }
             public void Log(string line) { Debug.Log(line); }
             public void Error(System.Exception e) { Debug.LogException(e); }
         }

@@ -66,10 +66,34 @@ namespace WorldTour.Core.Tests
             Assert.AreEqual(Glyph.Times + " 1,000 moves every digit 3 places to the left. what fills the empty place?", Fluency.PlaceValueHint(true, 1000, 3, true));
             Assert.AreEqual(Glyph.Divide + " 100 moves every digit 2 places to the right.", Fluency.PlaceValueHint(false, 100, 2, false));
             Assert.AreEqual(Glyph.Divide + " 10 moves every digit 1 place to the right. what happens to the 0 at the end?", Fluency.PlaceValueHint(false, 10, 1, true));
+            Assert.AreEqual(Glyph.Divide + " 100 moves every digit 2 places to the right. what happens to the zeros at the end?", Fluency.PlaceValueHint(false, 100, 2, true, 2));
+        }
+
+        [Test]
+        public void Soundcheck_TwoZerosDrop_SaysZerosPlural()
+        {
+            Problem p = FindL3("900" + D + "100");
+            Assert.AreEqual(Glyph.Divide + " 100 moves every digit 2 places to the right. what happens to the zeros at the end?", p.Steps[1]);
+            Problem q = FindL3("140" + D + "10");
+            StringAssert.EndsWith("what happens to the 0 at the end?", q.Steps[1]);
+        }
+
+        [Test]
+        public void Soundcheck_BigNumbersInHintsUseCommas()
+        {
+            // polish 6.2B item 7: hint 3 printed 8400 where level 2 printed 5,380.
+            for (long s = 1; s < 20000; s++)
+            {
+                Problem p = Fluency.Generate(3, s);
+                foreach (string line in p.Steps)
+                    Assert.IsFalse(Regex.IsMatch(line, "(?<![0-9,.])[0-9]{4,}(?![0-9,])"), "seed " + s + ": " + line);
+            }
+            Problem t = FindL3("8.4" + X + "1,000");
+            StringAssert.Contains("<b>8,400</b>", t.Steps[2]);
         }
 
         private static readonly Regex PlaceValueLine = new Regex(
-            "^([" + Glyph.Times + Glyph.Divide + "]) ([0-9,]+) moves every digit ([0-9]+) (place|places) to the (left|right)\\.( what fills the empty place\\?| what happens to the 0 at the end\\?)?$",
+            "^([" + Glyph.Times + Glyph.Divide + "]) ([0-9,]+) moves every digit ([0-9]+) (place|places) to the (left|right)\\.( what fills the empty place\\?| what happens to the (?:0|zeros) at the end\\?)?$",
             RegexOptions.CultureInvariant);
         private static readonly Regex Level2Line = new Regex(
             "^(multiplying|dividing) by ([0-9,]+) moves every digit ([0-9]+) (place|places) to the (left|right)\\.$", RegexOptions.CultureInvariant);
@@ -150,7 +174,7 @@ namespace WorldTour.Core.Tests
                     if (filled) Assert.AreEqual(da + new string('0', dans.Length - da.Length), dans, where + "filled zeros");
                     if (dropped) Assert.AreEqual(dans + new string('0', da.Length - dans.Length), da, where + "dropped zeros");
                     if (!filled && !dropped) Assert.AreEqual(da, dans, where + "same digits");
-                    string want = filled ? " what fills the empty place?" : dropped ? " what happens to the 0 at the end?" : "";
+                    string want = filled ? " what fills the empty place?" : dropped ? (da.Length - dans.Length >= 2 ? " what happens to the zeros at the end?" : " what happens to the 0 at the end?") : "";
                     Assert.AreEqual(want, m.Groups[6].Value, where + h2);
                     Assert.IsFalse(times && dropped, where + "x never drops a zero");
                     Assert.IsFalse(!times && filled, where + "/ never fills one in at the end");
@@ -233,6 +257,7 @@ namespace WorldTour.Core.Tests
             {
                 { IntendedDifferences.MdSmallQuotient, 28 }, { IntendedDifferences.MdQuotientTen, 49 },
                 { IntendedDifferences.VolOneLayer, 675 }, { IntendedDifferences.FluDecimalPoint, 529 + 245 },
+                { IntendedDifferences.FluBigNumberCommas, GeneratorContract.Seeds(3).Select(sd => Fluency.Generate(3, sd)).Count(q => q.Kind == "exp" && q.Label.Contains(".") && Rational.Num(Answers.ValueOf(q.Answer)) >= 1000) },
                 // QUESTIONS 14: hint 2 of every other decimal-point problem (x and / by 100 and 1,000) changed too.
                 { IntendedDifferences.FluDecimalPointMore, GeneratorContract.Seeds(3).Select(sd => Fluency.Generate(3, sd)).Count(q => q.Kind == "decpow" || q.Kind == "decdiv") - (529 + 245) }
             };

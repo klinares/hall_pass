@@ -25,6 +25,8 @@ public static class SpriteImport
     public const string Root = "Assets/Art/Sprites";
     public const string AtlasFolder = "Assets/Art/Atlases";
     public const float PixelsPerUnit = 200f;
+    /// <summary>A group folder with this suffix (decor_peach-navy, dog_peach-navy) holds the peach + navy twins of that group.</summary>
+    public const string ThemeSuffix = "_peach-navy";
     public const int MaxSize = 2048;
     public const int Quality = 75;
     public static readonly string[] AtlasGroups = { "stickers", "map", "dog", "ui", "decor" };
@@ -76,7 +78,13 @@ public static class SpriteImport
         string rel = assetPath.Substring(Root.Length + 1);
         // A theme's twin of a decor piece (decor_peach-navy/bubble.png, phase 5) has the same size, pivot and border as the
         // tour-pink piece (the exporter's peach-navy manifest matches entry for entry), so it imports with that entry.
-        if (rel.StartsWith("decor_", StringComparison.Ordinal) && rel.IndexOf('/') > 0) rel = "decor" + rel.Substring(rel.IndexOf('/'));
+        // The same goes for riff's layers (dog_peach-navy/, 6.2A): only the pieces whose pixels differ have a twin.
+        int slash = rel.IndexOf('/');
+        if (slash > 0)
+        {
+            string group = rel.Substring(0, slash);
+            if (group.EndsWith(ThemeSuffix, StringComparison.Ordinal)) rel = group.Substring(0, group.Length - ThemeSuffix.Length) + rel.Substring(slash);
+        }
         byFile.TryGetValue(rel, out var hit);
         return hit;
     }
@@ -183,7 +191,7 @@ public static class SpriteImport
         try { foreach (var p in pngs) { AssetDatabase.ImportAsset(p, ImportAssetOptions.ForceUpdate); sum.imported++; } }
         finally { AssetDatabase.StopAssetEditing(); }
         var listed = new HashSet<string>(m.sprites.Select(e => Root + "/" + e.file), StringComparer.Ordinal);
-        foreach (var p in pngs) if (!listed.Contains(p) && p.IndexOf("/decor_", StringComparison.Ordinal) < 0) sum.warnings.Add(p + " is not in the manifest (left from an older export?)");
+        foreach (var p in pngs) if (!listed.Contains(p) && p.IndexOf(ThemeSuffix + "/", StringComparison.Ordinal) < 0) sum.warnings.Add(p + " is not in the manifest (left from an older export?)");
 
         // 2. check each manifest sprite against what Unity imported
         foreach (var e in m.sprites)

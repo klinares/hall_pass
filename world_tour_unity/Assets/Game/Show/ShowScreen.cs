@@ -14,6 +14,8 @@ using WorldTour.Core.Shows;
 using WorldTour.Game.Audio;
 using WorldTour.Game.Data;
 using WorldTour.Game.Modes;
+using WorldTour.Game.Mascot;
+using WorldTour.Game.Meta;
 using WorldTour.Game.Motion;
 using WorldTour.Game.Save;
 using WorldTour.Game.Ui;
@@ -80,6 +82,8 @@ namespace WorldTour.Game.Show
         [SerializeField] Sprite streakIcon;
         [Tooltip("studio.js:20: the vinyl sticker on the record button (stickers/vinyl).")]
         [SerializeField] Sprite recordSticker;
+        [Tooltip("fx.js toast: the shout preset (white face, ink outline) for the win word. Null = plain ink text.")]
+        [SerializeField] Material shout;
         [Tooltip("The map's sprite set (stickers by name): the merch table's item stickers.")]
         [SerializeField] WorldTour.Game.Map.MapArt art;
 
@@ -116,8 +120,12 @@ namespace WorldTour.Game.Show
         private bool _hintBlocked;
         private float _nudgeAt = -1;
         private RectTransform _play, _pips;
+        private ShowCrowd _crowd;
         private TMP_Text _songNo, _fans, _streak;
         private readonly List<Image> _pipImages = new List<Image>();
+
+        private void Awake() { Hud.ShowScreenChanged(true); }
+        private void OnDestroy() { Hud.ShowScreenChanged(false); }
 
         // ---------- opening ----------
 
@@ -235,17 +243,20 @@ namespace WorldTour.Game.Show
                     break;
                 case ShowEventKind.WrongTry:
                     Sfx.Play(SfxId.Thud);
+                    if (_crowd != null) _crowd.Sag();                     // a gentle sag, never red
                     break;
                 case ShowEventKind.Answered:
                     Sfx.Play(SfxId.Strum);
                     Debug.Log("WT_SONG_RESULT i=" + (e.Index + 1) + " kind=" + (e.Win == WinKind.Clean ? "clean" : e.Win == WinKind.HintOnly ? "hinted" : "wrong"));
                     _nudgeAt = -1;
                     PaintHint();                                         // show.js win(): lockHints(), the button goes off (fix round 1, P1)
+                    Win(e.Win == WinKind.Clean);
                     break;
                 case ShowEventKind.Revealed:
                     Debug.Log("WT_SONG_RESULT i=" + (e.Index + 1) + " kind=revealed");
                     _nudgeAt = -1;
                     PaintHint();                                         // show.js reveal(): lockHints()
+                    if (_crowd != null) _crowd.Sag();
                     break;
                 case ShowEventKind.FansAwarded:
                 case ShowEventKind.ItemRecorded:
@@ -257,6 +268,16 @@ namespace WorldTour.Game.Show
                     return;
             }
             Stats();
+        }
+
+        /// <summary>show.js win(): burst(clean ? 34 : 18) and the toast ("3 in a row!" on a clean streak of 3+, else a cheer), and the crowd cheers.</summary>
+        private void Win(bool clean)
+        {
+            ConfettiLayer.Burst(Rect, clean ? 34 : 18, new Vector2(.5f, .62f), ConfettiLayer.WinSeconds);
+            // polish 6.2D item 5: in the top bar's clear middle (between the song number and the chips), where no mode puts a tile,
+            // answer, keypad or prompt; 52 px, held 0.12 s then faded in 0.24 s: 0.36 s in all
+            MetaUi.FeelToast(this, Rect, DogLines.Toast(clean, Engine.Streak, _random), shout, new Vector2(.5f, 1f), 52f, 0.12f, new Vector2(0f, -48f));
+            if (_crowd != null) _crowd.Cheer();
         }
 
         private void OnFinished(ShowSummary summary)
@@ -457,11 +478,14 @@ namespace WorldTour.Game.Show
 
             // the stage: play area, and the coach (dog) beside it
             _play = ShowUi.Rect("Play", root);
+            // polish 6.2D item 4: the play area ends above the crowd's own strip
             _play.anchorMin = new Vector2(0, 0); _play.anchorMax = new Vector2(1, 1);
-            _play.offsetMin = new Vector2(Tokens.Gutter, Tokens.Gutter); _play.offsetMax = new Vector2(-Tokens.Gutter - 300, -118);
+            _play.offsetMin = new Vector2(Tokens.Gutter, ShowCrowd.StripHeight + 4f); _play.offsetMax = new Vector2(-Tokens.Gutter - 300, -118);
             CoachArea = ShowUi.Rect("Coach", root);
             CoachArea.anchorMin = new Vector2(1, 0); CoachArea.anchorMax = new Vector2(1, 1); CoachArea.pivot = new Vector2(1, .5f);
-            CoachArea.offsetMin = new Vector2(-Tokens.Gutter - 280, Tokens.Gutter); CoachArea.offsetMax = new Vector2(-Tokens.Gutter, -118);
+            CoachArea.offsetMin = new Vector2(-Tokens.Gutter - 280, ShowCrowd.StripHeight + 4f); CoachArea.offsetMax = new Vector2(-Tokens.Gutter, -118);
+
+            _crowd = ShowCrowd.Create(root);                 // behind everything, along the bottom edge
         }
 
         private TMP_Text Chip(RectTransform bar, string name, Vector2 offset, string small, Sprite icon = null)
@@ -496,13 +520,14 @@ namespace WorldTour.Game.Show
             if (Engine == null || _songNo == null) return;
             _fans.SetLower(Engine.Fans.ToString("#,##0", CultureInfo.InvariantCulture) + " <size=60%>fans</size>");
             _streak.SetLower(Engine.Streak.ToString(CultureInfo.InvariantCulture));
+            if (_crowd != null) _crowd.SetFans(Engine.Fans);
             if (Engine.IsBonus) _songNo.SetLower("bonus song <size=60%>" + (char)0x2736 + " one more try</size>");
             else _songNo.SetLower("song " + Engine.SongNumber + " <size=60%>of " + Engine.SongCount + "</size>");
 
             while (_pipImages.Count < Engine.Queue.Count)
             {
                 RectTransform p = ShowUi.Rect("Pip", _pips);
-                _pipImages.Add(ShowUi.Panel(p, ColorRole.Card, .5f));
+                _pipImages.Add(ShowUi.Panel(p, ColorRole.Card));
             }
             int index = Engine.Finished ? Engine.Queue.Count : Engine.Index;
             for (int i = 0; i < _pipImages.Count; i++)
@@ -513,7 +538,9 @@ namespace WorldTour.Game.Show
                 Color c;
                 if (i < index) c = Theme.Color(s.State == SlotState.Miss ? ColorRole.Muted : ColorRole.Ink);
                 else if (i == index) c = Theme.Color(ColorRole.Accent);
-                else { c = Theme.Color(ColorRole.Card); c.a = s.Bonus ? .25f : .5f; }
+                // color-mix(card 50%, transparent) over the paper, worked out in sRGB: a translucent fill blends in linear space here
+                // and comes out too dark (8% white over black shows 31% grey)
+                else c = MetaColor.Solid(Theme.Color(ColorRole.Card), s.Bonus ? .25f : .5f, Theme.Color(ColorRole.Paper));
                 img.color = c;
                 img.rectTransform.localScale = new Vector3(1, i == index ? 1.35f : 1, 1);
             }

@@ -19,6 +19,9 @@ namespace WorldTour.Game.Ui
 
         public RectTransform Rect { get { return (RectTransform)transform; } }
 
+        /// <summary>Tab visits the HUD's controls (sound toggle) after every control of this screen, not by position.</summary>
+        public virtual bool HudControlsLast { get { return false; } }
+
         public CanvasGroup Group { get { return GetComponent<CanvasGroup>(); } }
 
         public Selectable FirstSelected { get { return firstSelected; } set { firstSelected = value; } }

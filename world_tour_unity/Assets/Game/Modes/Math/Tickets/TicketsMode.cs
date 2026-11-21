@@ -188,9 +188,8 @@ namespace WorldTour.Game.Modes
                 a.richText = false; a.text = r.Text;
                 if (r.Note != null)
                 {
-                    // .crow small: readable at 1366 (P9): 14.4 px, ink at 75% instead of the muted pencil grey
-                    TMP_Text n = ShowUi.Label(row, "Note", "", 14.4f, FontRole.Body, ColorRole.Ink, TextAlignmentOptions.MidlineRight);
-                    Color nc = n.color; nc.a = .75f; n.color = nc;
+                    // .crow small: readable at 1366 (P9, polish 6.2B item 11): 16 px bold in full ink (6.2D item 3: thin Courier at 15 px antialiased to grey)
+                    TMP_Text n = ShowUi.Label(row, "Note", "", 16f, FontRole.BodyBold, ColorRole.Ink, TextAlignmentOptions.MidlineRight);
                     n.richText = false; n.text = r.Note;
                 }
             }
@@ -198,14 +197,14 @@ namespace WorldTour.Game.Modes
 
         private static void Rows(RectTransform paper, TicketsWork w)
         {
-            const float sw = 26f, sh = 17f;                                    // a little larger than .seatrows i (P9)
+            const float sw = 30f, sh = 22f; const int perRow = 10;              // larger than .seatrows i (P9, polish 6.2B item 11: 26 x 17 read as specks); 10 across fits the 348 px paper
             RectTransform flow = SpellingUi.Box("Seats", paper, -1, -1);
             var fl = flow.gameObject.AddComponent<GridLayoutGroup>();
             fl.cellSize = new Vector2(sw, sh); fl.spacing = new Vector2(4, 6);
-            fl.constraint = GridLayoutGroup.Constraint.FixedColumnCount; fl.constraintCount = 12;
+            fl.constraint = GridLayoutGroup.Constraint.FixedColumnCount; fl.constraintCount = perRow;
             fl.childAlignment = TextAnchor.MiddleLeft;
             int cells = w.Full + 1 + (w.Gap ? 1 : 0);
-            flow.GetComponent<LayoutElement>().preferredHeight = Mathf.Ceil(cells / 12f) * (sh + 6f);
+            flow.GetComponent<LayoutElement>().preferredHeight = Mathf.Ceil(cells / (float)perRow) * (sh + 6f);
             for (int i = 0; i < w.Full; i++) Seat(flow, 1.0);
             if (w.Gap)
             {

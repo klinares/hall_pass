@@ -11,6 +11,7 @@ using WorldTour.Game.Map;
 using WorldTour.Game.Mascot;
 using WorldTour.Game.Motion;
 using WorldTour.Game.Prefs;
+using WorldTour.Game.Show;
 using WorldTour.Game.Ui;
 
 namespace WorldTour.Game.Meta
@@ -223,7 +224,7 @@ namespace WorldTour.Game.Meta
                 new Vector2(padX, cy), Tokens.ButtonMinHeight, inner);
             if (_act != null)
             {
-                _act.DisabledAlpha = 0.55f;                 // screens.css .mirror .btn[disabled]{opacity:.55}
+                _act.DisabledAlpha = MetaColor.Alpha(0.55f, 0.2f, 1f);   // screens.css .mirror .btn[disabled]{opacity:.55}, corrected for linear blending
                 _act.interactable = m.Does != MirrorAction.None;
                 _act.PlaySound = false;          // backstage.js plays its own sound per outcome
                 _act.OnClick.AddListener(Press);
@@ -304,7 +305,7 @@ namespace WorldTour.Game.Meta
             RectTransform thumb = UiKit.Place(UiKit.Rect("Thumb", face), new Vector2(fw * 0.5f, 10f + 36f - Tokens.BorderWidth), new Vector2(72f, 72f), UiKit.Center);
             var tg = thumb.gameObject.AddComponent<CanvasGroup>();
             tg.blocksRaycasts = false;
-            if (tag.Short) tg.alpha = 0.6f;
+            if (tag.Short) tg.alpha = MetaColor.Alpha(0.6f, 0.5f, 1f);   // .item.short .thumb{opacity:.6}, corrected for linear blending
             Thumb(it, thumb);
 
             TextMeshProUGUI name = UiKit.Text(face, "Name", it.Name, FontRole.BodyBold, 13.6f, ColorRole.Ink, TextAlignmentOptions.Top);
@@ -406,7 +407,9 @@ namespace WorldTour.Game.Meta
                     GameSettings.Apply();          // applyLook(): a new theme re-skins everything (Build runs on Theme.Changed)
                     Build();
                     Feedback.Pop(_stageLook);
-                    MetaUi.Toast(this, _root, Backstage.BoughtToast(it), shout);
+                    // up in the head row, clear of the mirror's blurb ("yours!" sat on "changes the whole game" at the middle of the screen)
+                    MetaUi.Toast(this, _root, Backstage.BoughtToast(it), shout, new Vector2(0.62f, 0.9f));
+                    ConfettiLayer.Burst(_root, 40, new Vector2(0.62f, 0.88f), ConfettiLayer.WinSeconds);
                     break;
                 case PressOutcome.Equipped:
                     MapScreen.Persist();

@@ -118,7 +118,10 @@ namespace WorldTour.Game.EditTests
             for (int k = 0; k < js.Count; k++)
             {
                 if (js[k] == p.Steps[k]) continue;
-                Assert.IsTrue(p.Skill == Fluency.Skill && (p.Kind == "decpow" || p.Kind == "decdiv") && k == 1,
+                // polish 6.2B item 7: hint 3 of a level 3 soundcheck groups thousands in its bold answer (8,400 for the web's 8400)
+                bool commas = p.Skill == Fluency.Skill && p.Level == 3 && k == 2
+                    && System.Text.RegularExpressions.Regex.Replace(p.Steps[k], "<b>([^<]*)</b>", m => "<b>" + m.Groups[1].Value.Replace(",", "") + "</b>") == js[k];
+                Assert.IsTrue(commas || (p.Skill == Fluency.Skill && (p.Kind == "decpow" || p.Kind == "decdiv") && k == 1),
                     at + ": hint " + (k + 1) + " differs from the web game's and isn't an intended difference: " + js[k] + " / " + p.Steps[k]);
                 l.Add(new KeyValuePair<string, string>(js[k], p.Steps[k]));
             }

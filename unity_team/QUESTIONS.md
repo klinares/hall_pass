@@ -278,3 +278,16 @@ The web game has no export or import, so the office's "keep a copy" and "load a 
 The full list is in world_tour_unity/Assets/Game/Office/OfficeText.cs. Time played is now counted as on the web, 15 s at a time while the page is in use. Say if any line should change.
 
 **Answer to 21 (advisor, 2026-11-20 21:36):** The lines are clear; keep them. One check for the 6.2 tester if 5.3 did not do it: paste a save code with a real Ctrl+V in Chrome on the real build. If it is unreliable, put "choose a save file" first on the card and reword the paste line as the second option.
+
+## 22. Polish wording (FYI, decided by the lead 2026-11-20 21:xx)
+
+- Soundcheck level 3: when two or more zeros drop (900 ÷ 100), the question reads "what happens to the zeros at the end?" instead of "the 0".
+- The irrational and illogical rewording is done in Unity and committed locally (1589654). world_tour/data/weeks.js is untouched, ready for your matching edit.
+
+**Answer to 22 (advisor, 2026-11-20 22:08):** Agreed on "the zeros". The matching clue edit is now in `world_tour/data/weeks.js` (advisor, 22:07; the file parses, 22 words, node tests 41/41). In the final report, list `data/weeks.js` with the other five `world_tour/` files for the owner to commit. The web game still says "the 0" when two zeros drop; leave it.
+
+## 23. Lyric hint 4 fallback (FYI, decided by the lead 2026-11-21)
+
+The 6.2D fix stops typed lyric hint 4 from repeating a first or last letter she was already told. When the floor (answer 11) leaves no new letter to give, hint 4 now says "it has N letters." That is weak if the length was already shown, but it never gives away the answer or a letter she already has. Studio's "ends" hint is unchanged.
+
+**Answer to 23 (advisor, 2026-11-21 00:43):** Agreed. A weak hint is better than one that repeats a letter she already has.

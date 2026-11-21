@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,7 +17,7 @@ namespace WorldTour.Game.Mascot
         [SerializeField] DogArt art;
         [SerializeField] TMP_FontAsset bodyFont;      // Courier Prime SDF (made at "go")
         [SerializeField] float minHeight = 64;
-        [SerializeField] float fontSize = 16;         // .bubble font-size: 1rem
+        [SerializeField] float fontSize = 18;         // .bubble is 1rem on the web; 18 reads better in Courier Prime (polish 6.2E item 5)
         [SerializeField] Color ink = Color.black;     // tokens.css --ink; the 2.2 Theme can set it
         /// <summary>The tail's x as a fraction of the width: .5 for the show coach, .48 on the home screen.</summary>
         [SerializeField] float tailAt = .5f;
@@ -24,6 +25,8 @@ namespace WorldTour.Game.Mascot
         const float PadX = 3 + 16, PadY = 3 + 12;
 
         Image _body, _tail;
+        string _raw;           // the line as given, so it can be fitted again when the bubble's width changes
+        float _fitWidth = -1f;
         TextMeshProUGUI _text;
 
         public string Text => _text != null ? _text.text : null;
@@ -93,8 +96,54 @@ namespace WorldTour.Game.Mascot
             Build();
             if (_text == null) return;
             gameObject.SetActive(!string.IsNullOrEmpty(line));
-            _text.text = WorldTour.Game.Ui.Blanks.Spread(line ?? "");    // "____" would print as one line in Courier Prime
+            _raw = line ?? "";
+            Fit();
+        }
+
+        void Fit()
+        {
+            float w = ((RectTransform)transform).rect.width;
+            _fitWidth = w;
+            float avail = Mathf.Max(0, w - 2 * PadX);
+            string kept = KeepPatterns(_raw, avail, s => _text.GetPreferredValues(WorldTour.Game.Ui.Blanks.Spread(s), 100000f, 0).x);
+            _text.text = WorldTour.Game.Ui.Blanks.Spread(kept);          // "____" would print as one line in Courier Prime
             Layout();
+        }
+
+        // The column the bubble sits in is laid out after the first line is said, so its width is unknown then (polish 6.2E item 1):
+        // fit the patterns again once the width is real or changes.
+        void LateUpdate()
+        {
+            if (_text == null || string.IsNullOrEmpty(_raw) || _raw.IndexOf('_') < 0) return;
+            if (!Mathf.Approximately(((RectTransform)transform).rect.width, _fitWidth)) Fit();
+        }
+
+        // A letter pattern keeps to one line: bold text with an underscore in it (chunk hints like "ir - ___ - al"), or a
+        // run of three or more single characters with a blank among them ("i _ _ _ e"). Polish 6.2B item 3.
+        static readonly Regex PatternRe = new Regex(@"<b>[^<]*_[^<]*</b>|(?<![\w_])(?:[A-Za-z_] ){2,}[A-Za-z_](?![\w_])", RegexOptions.CultureInvariant);
+
+        /// <summary>
+        /// Wraps every letter pattern in TMP's nobr so it never breaks mid-pattern; one wider than <paramref name="width"/>
+        /// (when known) shrinks to fit instead, never below 55%. <paramref name="measure"/> gives a text's one-line width.
+        /// </summary>
+        public static string KeepPatterns(string line, float width, System.Func<string, float> measure)
+        {
+            if (string.IsNullOrEmpty(line) || line.IndexOf('_') < 0) return line ?? "";
+            return PatternRe.Replace(line, m =>
+            {
+                string s = m.Value;
+                if (s.IndexOf('_') < 0) return s;
+                bool bold = s.StartsWith("<b>", System.StringComparison.Ordinal);
+                string inner = bold ? s.Substring(3, s.Length - 7) : s;
+                string wrapped = "<nobr>" + inner + "</nobr>";
+                if (width > 1f && measure != null)
+                {
+                    // measure it as it will be drawn (bold is wider), with a little spare so it never lands on the edge
+                    float w = measure(bold ? "<b>" + inner + "</b>" : inner) * 1.04f;
+                    if (w > width) wrapped = "<size=" + Mathf.Max(55, Mathf.FloorToInt(width / w * 100f)).ToString(System.Globalization.CultureInfo.InvariantCulture) + "%>" + wrapped + "</size>";
+                }
+                return bold ? "<b>" + wrapped + "</b>" : wrapped;
+            });
         }
 
         void Layout()

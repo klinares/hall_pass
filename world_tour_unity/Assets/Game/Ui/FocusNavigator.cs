@@ -89,14 +89,27 @@ namespace WorldTour.Game.Ui
                 if (!Visible((RectTransform)t)) continue;
                 _list.Add(s);
             }
-            _list.Sort((a, b) =>
+            Transform hudRoot = _hud != null ? _hud.transform : null;
+            bool hudLast = _stack.Top != null && _stack.Top.HudControlsLast;
+            _list.Sort((a, b) => Compare(a, b, hudRoot, hudLast));
+        }
+
+        /// <summary>
+        /// Reading order: top to bottom, then left to right (same row when the vertical centres are within half the
+        /// shorter height). With <paramref name="hudLast"/> the HUD's controls (the sound toggle) come after every
+        /// control of the screen, so a corner button never lands between a screen's rows (polish 6.2B item 9).
+        /// </summary>
+        public static int Compare(Selectable a, Selectable b, Transform hudRoot, bool hudLast)
+        {
+            if (hudLast && hudRoot != null)
             {
-                Rect ra = WorldRect((RectTransform)a.transform), rb = WorldRect((RectTransform)b.transform);
-                // same row when the vertical centres are within half the shorter height
-                float tol = Mathf.Min(ra.height, rb.height) * .5f;
-                if (Mathf.Abs(ra.center.y - rb.center.y) > tol) return rb.center.y.CompareTo(ra.center.y);   // higher first
-                return ra.center.x.CompareTo(rb.center.x);
-            });
+                bool ha = a.transform.IsChildOf(hudRoot), hb = b.transform.IsChildOf(hudRoot);
+                if (ha != hb) return ha ? 1 : -1;
+            }
+            Rect ra = WorldRect((RectTransform)a.transform), rb = WorldRect((RectTransform)b.transform);
+            float tol = Mathf.Min(ra.height, rb.height) * .5f;
+            if (Mathf.Abs(ra.center.y - rb.center.y) > tol) return rb.center.y.CompareTo(ra.center.y);   // higher first
+            return ra.center.x.CompareTo(rb.center.x);
         }
 
         static Rect WorldRect(RectTransform rt)

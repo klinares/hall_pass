@@ -49,6 +49,9 @@ public static class ShowScreenBuilder
         var art = AssetDatabase.LoadAssetAtPath<WorldTour.Game.Map.MapArt>("Assets/Game/Map/MapArt.asset");
         if (art == null) Debug.LogWarning("[show] Assets/Game/Map/MapArt.asset is missing (run MapBuilder.Build); the merch table draws no stickers");
         so.FindProperty("art").objectReferenceValue = art;
+        var shout = AssetDatabase.LoadAssetAtPath<Material>("Assets/Art/Ticket/CaveatBrush SDF - Shout.mat");
+        if (shout == null) Debug.LogWarning("[show] the shout material is missing; the win toast is plain ink text");
+        so.FindProperty("shout").objectReferenceValue = shout;
         so.ApplyModifiedPropertiesWithoutUndo();
         GameObject saved = PrefabUtility.SaveAsPrefabAsset(root, PrefabPath, out bool ok);
         UnityEngine.Object.DestroyImmediate(root);

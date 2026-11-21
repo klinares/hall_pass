@@ -146,6 +146,7 @@ namespace WorldTour.Game.Modes
     public sealed class LetterHints
     {
         private readonly HashSet<int> _given = new HashSet<int>();
+        private readonly HashSet<int> _told = new HashSet<int>();
 
         public readonly string Word;
         public readonly string Syllables;
@@ -172,6 +173,28 @@ namespace WorldTour.Game.Modes
         public int Remaining { get { return Hide.Count - _given.Count; } }
 
         public bool IsGiven(int index) { return _given.Contains(index); }
+
+        /// <summary>Has a hint or ladder line already named the letter at this index (polish 6.2B item 5)?</summary>
+        public bool IsTold(int index) { return _told.Contains(index) || _given.Contains(index); }
+
+        /// <summary>Blanks she has not been told, by a letter hint or a line that named the letter.</summary>
+        public int Unknown { get { int n = 0; foreach (int k in Hide) if (!IsTold(k)) n++; return n; } }
+
+        /// <summary>The "sounds like" chunks (hint 1 or the ladder's second line) name their letters; remember them.</summary>
+        public void NoteChunks()
+        {
+            _told.UnionWith(MaskedChunks.Render(Word, Syllables, Masked).Shown);
+        }
+
+        /// <summary>
+        /// A ladder line for this many wrong tries was shown: try 1 names the first letter ("starts with i") unless it is
+        /// one of her masked blanks; try 2 shows the chunks. A later letter hint must pick another hidden letter.
+        /// </summary>
+        public void NoteLadder(int tries)
+        {
+            if (tries == 1) { if (Word.Length > 0 && !Masked.Contains(0)) _told.Add(0); }
+            else NoteChunks();
+        }
 
         /// <summary>
         /// The blanks a hint may ever show: the leftmost <see cref="Givable"/> (the same ones the letter hints fill, in
@@ -208,9 +231,9 @@ namespace WorldTour.Game.Modes
         public LetterHint Apply(int level)
         {
             int i = -1;
-            if (level > 1 && Remaining - 1 >= SpellingHints.MinHidden(Word.Length))
-                foreach (int k in Hide) if (!_given.Contains(k)) { i = k; break; }
-            if (i < 0) return new LetterHint { Line = SpellingLines.SoundsLike(SoundsLikeText) };
+            if (level > 1 && Unknown - 1 >= SpellingHints.MinHidden(Word.Length))
+                foreach (int k in Hide) if (!_given.Contains(k) && !_told.Contains(k)) { i = k; break; }
+            if (i < 0) { NoteChunks(); return new LetterHint { Line = SpellingLines.SoundsLike(SoundsLikeText) }; }
             _given.Add(i);
             return new LetterHint { Index = i, Line = SpellingLines.LetterForYou(Word[i]) };
         }

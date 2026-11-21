@@ -330,6 +330,43 @@ namespace WorldTour.Game.EditTests
             }
         }
 
+        [Test]
+        public void Curly_TurnsStraightApostrophesIntoTheCopysCurlyOne()
+        {
+            Assert.AreEqual("it" + (char)0x2019 + "s can" + (char)0x2019 + "t", TextRules.Curly("it's can't"));
+            Assert.IsNull(TextRules.Curly(null));
+            Assert.AreEqual("no marks", TextRules.Curly("no marks"));
+        }
+
+        [Test]
+        public void LyricHint4_NeverRepeatsALetterAlreadyTold_AndKeepsTheFloor()
+        {
+            foreach (Word v in LiveWords())
+            {
+                var f = new HintFloor(v.w, v.s);
+                var h = new LyricHints(v.w, v.s, v.h, f);
+                h.Apply(1); h.Apply(2); h.Apply(3);
+                var told = new HashSet<int>(f.Shown);
+                string line = h.Apply(4).Line;
+                if (line.StartsWith("it has", StringComparison.Ordinal)) StringAssert.Contains("letters", line, v.w);
+                else
+                {
+                    string[] cells = line.Split(' ');
+                    Assert.AreEqual(v.w.Length, cells.Length, v.w + ": " + line);
+                    Assert.IsTrue(cells.Any(c => c != "_"), v.w + ": a pattern with no letter gives nothing: " + line);
+                    for (int i = 0; i < cells.Length; i++)
+                        if (cells[i] != "_") Assert.IsFalse(told.Contains(i), v.w + ": hint 4 repeats the letter at " + i + ": " + line);
+                }
+                Assert.GreaterOrEqual(f.Unknown, SpellingHints.MinHidden(v.w.Length), v.w);
+            }
+            // the tester's case: hint 2 told the first letter, so hint 4 gives the last letter alone
+            var g = new HintFloor("illogical", "il-log-i-cal");
+            var lh = new LyricHints("illogical", "il-log-i-cal", "x", g);
+            lh.Apply(1); lh.Apply(2);
+            string four = lh.Apply(4).Line;
+            Assert.AreEqual("_ _ _ _ _ _ _ _ l", four, "the first letter was told by hint 2");
+        }
+
         // ---------- copy, word for word from the web game ----------
 
         private static string WebFile(string rel)

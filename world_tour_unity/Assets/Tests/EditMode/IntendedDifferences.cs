@@ -17,6 +17,7 @@ namespace WorldTour.Core.Tests
         /// <summary>Shape names, for counting what was restored.</summary>
         public const string FluDecimalPoint = "flu L3 decimal point one place: hint 2 (9.1, 14)";
         public const string FluDecimalPointMore = "flu L3 decimal point 2 or 3 places: hint 2 (14)";
+        public const string FluBigNumberCommas = "flu L3 decimal times a power of ten, 1,000 or more: hint 3 commas (6.2B 7)";
         public const string MdSmallQuotient = "md L2 quotient 2 or 3: hint 1 (8.1)";
         public const string MdQuotientTen = "md L2 quotient 10: hint 1 (8.2)";
         public const string VolOneLayer = "vol L1 one-layer stack: hint 2 (9.2)";
@@ -54,6 +55,7 @@ namespace WorldTour.Core.Tests
                     Rational v = DecimalText(ab[0]);
                     Rational ten = mul ? Rational.Mul(v, Rational.R(10)) : Rational.Div(v, Rational.R(10));
                     p.Steps[1] = ab[0] + (mul ? Times : " " + Glyph.Divide + " ") + "10 = " + Rational.Dec(ten) + ". keep going" + Glyph.Ellipsis;
+                    Uncomma(p);
                     return FluDecimalPointMore;
                 }
                 if (mul)
@@ -62,7 +64,14 @@ namespace WorldTour.Core.Tests
                     p.Steps[1] = "the digits stay " + S(xv.N) + "; only the decimal point moves, one place right.";
                 }
                 else p.Steps[1] = "the digits stay " + ab[0] + "; the decimal point moves one place left.";
+                Uncomma(p);
                 return FluDecimalPoint;
+            }
+            if (p.Skill == Fluency.Skill && p.Kind == "exp" && p.Label.Contains("."))
+            {
+                string before = p.Steps[2];
+                Uncomma(p);
+                return before == p.Steps[2] ? null : FluBigNumberCommas;
             }
             if (p.Skill == MultDiv.Skill && p.Kind == "div")
             {
@@ -89,6 +98,12 @@ namespace WorldTour.Core.Tests
                 return VolOneLayer;
             }
             return null;
+        }
+
+        /// <summary>6.2B item 7: hint 3 groups thousands in its bold answer (8,400); the web printed 8400.</summary>
+        private static void Uncomma(Problem p)
+        {
+            p.Steps[2] = System.Text.RegularExpressions.Regex.Replace(p.Steps[2], "<b>([^<]*)</b>", m => "<b>" + m.Groups[1].Value.Replace(",", "") + "</b>");
         }
 
         /// <summary>"8.82" as a reduced fraction (441/50), the way the JS held it.</summary>

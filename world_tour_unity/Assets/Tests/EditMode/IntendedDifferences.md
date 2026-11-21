@@ -17,7 +17,7 @@ The Unity version matches `world_tour/` exactly, except for the items below. Eac
    "8.8 x 10 = 88. keep going..." for 100 and 1,000. Now place-value wording, true for every problem:
    "x 100 moves every digit 2 places to the left." plus " what fills the empty place?" exactly when a zero is filled in
    (8.8 x 100 = 880), and "/ 10 moves every digit 1 place to the right." plus " what happens to the 0 at the end?"
-   exactly when zeros drop (140 / 10 = 14). Never prints the digits or the answer. Every decpow and decdiv problem
+   exactly when zeros drop (140 / 10 = 14); when two or more drop (900 / 100 = 9) it says "what happens to the zeros at the end?". Hint 3 puts thousands commas in numbers of 4 or more digits (8,400, as level 2 prints 5,380). Never prints the digits or the answer. Every decpow and decdiv problem
    (774 at 10: 529 x, 245 /; the rest at 100 and 1,000). Level 2's "the 0 in the ones place drops off" is unchanged.
    Tests: `IntendedDifferenceTests.Soundcheck_PlaceValueHint_TrueForEveryDecimalPointProblem`,
    `HintLadderTests.NoHintStatesAFalseNumber`.

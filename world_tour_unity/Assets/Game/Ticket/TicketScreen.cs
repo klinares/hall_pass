@@ -10,6 +10,8 @@ using WorldTour.Core.Data;
 using WorldTour.Core.Meta;
 using WorldTour.Core.Shows;
 using WorldTour.Game.Audio;
+using WorldTour.Game.Meta;
+using WorldTour.Game.Show;
 using WorldTour.Game.Motion;
 using WorldTour.Game.Ui;
 using WorldTour.Game.Util;
@@ -111,6 +113,7 @@ namespace WorldTour.Game.Ticket
             // show.js:229 snd.crowd(V.crowd), right after renderTicket
             Sfx.Crowd(Model.Venue != null ? Model.Venue.Crowd : 0.3);
             Animate();
+            ConfettiLayer.Burst(Rect, 70, new Vector2(.5f, .66f), ConfettiLayer.TicketSeconds);   // the bigger end-of-show burst
             Debug.Log(Model.LogLine);
             var h = Opened; if (h != null) h(this);
         }
@@ -327,11 +330,14 @@ namespace WorldTour.Game.Ticket
             float my = 0f;
 
             // .tk-top: "admit one" + heart, hand 1.7rem, paper-deep with a .6px ink stroke
+            // paper-deep on the card is 2.3:1 in tour pink; darken it until it reads at 4.5:1 (polish 6.2A)
+            Color admit = AdmitInk();
             TMP_Text top = Text(main, "Top", TicketText.AdmitOne, 27.2f, FontRole.Display, ColorRole.PaperDeep);
+            top.color = admit;
             Stroke(top, 0.6f);
             Vector2 ts = Measure(top, 0f);
             Place(top.rectTransform, 0f, my, ts.x + 2f, 27.2f);
-            Glyph(main, TicketText.Heart, TicketGlyphGraphic.Shape.Heart, ColorRole.PaperDeep, ts.x + 27.2f * 0.6f, my + 27.2f * 0.15f, 27.2f * 0.7f);
+            Glyph(main, TicketText.Heart, TicketGlyphGraphic.Shape.Heart, ColorRole.PaperDeep, ts.x + 27.2f * 0.6f, my + 27.2f * 0.15f, 27.2f * 0.7f, admit);
             my += 27.2f;
 
             // .tk-venue, margin-top 4
@@ -348,6 +354,7 @@ namespace WorldTour.Game.Ticket
             my += 45f + 8f;
 
             // .tk-rows: a 2px rule, padding-top 8, three columns (gap 6)
+            float ruleTop = 18f + my;                       // from the ticket's top edge (Main's top padding is 18)
             RectTransform rule = NewRect("Rule", main);
             Place(rule, 0f, my, mw, 2f);
             var ruleImg = rule.gameObject.AddComponent<Image>();
@@ -407,10 +414,12 @@ namespace WorldTour.Game.Ticket
             if (m.ShowStamp)
             {
                 _stamp = NewRect("Stamp", _ticketWrap);
-                _stamp.anchorMin = _stamp.anchorMax = new Vector2(1f, 0f);
+                _stamp.anchorMin = _stamp.anchorMax = new Vector2(1f, 1f);
                 _stamp.pivot = new Vector2(.5f, .5f);
                 _stamp.sizeDelta = new Vector2(84f, 84f);
-                _stamp.anchoredPosition = new Vector2(-100f - 42f, -26f + 42f);
+                // polish 6.2D item 6: inside the card, clear of the notch, the tape below and the ticket's shadow strip (the web's -26 hung it over all three)
+                // polish 6.2E item 4: its bottom edge sits 6 above the divider rule (it crossed the rule at 1920), in the open space right of the fans number
+                _stamp.anchoredPosition = new Vector2(-190f, -(ruleTop - 6f - 42f));
                 _stamp.localEulerAngles = new Vector3(0, 0, 14f);
                 Image si = _stamp.gameObject.AddComponent<Image>();
                 si.raycastTarget = false;
@@ -568,7 +577,8 @@ namespace WorldTour.Game.Ticket
                 float tagW = 150f;
                 TMP_Text tag = Text(wrap, "Tag" + i, s.TagText, 20.8f, FontRole.Display, TagColour(s.Tag));
                 tag.alignment = TextAlignmentOptions.MidlineRight;
-                if (s.Tag == SetlistTag.Miss) Stroke(tag, 0.5f);
+                if (s.Tag == SetlistTag.Miss) tag.color = AdmitInk();     // "rehearse again": readable, 4.5:1 on the lined paper
+
                 Place(tag.rectTransform, padL + iw - tagW, ly, tagW, line);
 
                 // .w::before "01. " at .8rem, then the word (escaped: words come from weeks.json)
@@ -577,20 +587,16 @@ namespace WorldTour.Game.Ticket
                 w.overflowMode = TextOverflowModes.Ellipsis;
                 Place(w.rectTransform, padL, ly, iw - tagW - 10f, line);
 
-                if (s.Tag == SetlistTag.Miss)
-                {
-                    // underline wavy paper-deep 2px, offset 4px, under the word only
-                    float numW = w.GetPreferredValues("<size=12.8>" + s.Number + ". </size>", 100000f, 0f).x;
-                    float wordW = Mathf.Min(Measure(w, 0f).x - numW, iw - tagW - 10f - numW);
-                    RectTransform wave = NewRect("Wave" + i, wrap);
-                    Place(wave, padL + numW, ly + line / 2f + 16.8f * 0.35f + 4f - 3f, Mathf.Max(0f, wordW), 6f);
-                    var wl = wave.gameObject.AddComponent<TicketWavyLine>();
-                    wl.color = Theme.Color(ColorRole.PaperDeep);
-                    wl.raycastTarget = false;
-                }
+                // the web underlines a missed word with a wavy line; here it looked like a spell-check mark, so the tag says it (polish 6.2A)
                 ly += line;
             }
             return y + h;
+        }
+
+        /// <summary>The "admit one" and "rehearse again" ink: paper-deep, darkened toward the theme's ink until it reads at 4.5:1 on the card.</summary>
+        static Color AdmitInk()
+        {
+            return MetaColor.Readable(Theme.Color(ColorRole.PaperDeep), Theme.Color(ColorRole.Card), Theme.Color(ColorRole.Ink));
         }
 
         static ColorRole TagColour(SetlistTag t)
@@ -666,8 +672,9 @@ namespace WorldTour.Game.Ticket
         }
 
         /// <summary>A glyph the fonts lack: the TMP sprite asset's (builder 5), else the ticket art's sprite, else drawn.</summary>
-        void Glyph(RectTransform parent, string ch, TicketGlyphGraphic.Shape shape, ColorRole colour, float x, float y, float size)
+        void Glyph(RectTransform parent, string ch, TicketGlyphGraphic.Shape shape, ColorRole colour, float x, float y, float size, Color? tint = null)
         {
+            Color paint = tint ?? Theme.Color(colour);
             RectTransform g = NewRect("Glyph", parent);
             Place(g, x, y, size, size);
             Sprite sp = art != null ? (shape == TicketGlyphGraphic.Shape.Heart ? art.heart : art.star6) : null;
@@ -676,7 +683,7 @@ namespace WorldTour.Game.Ticket
                 var t = g.gameObject.AddComponent<TextMeshProUGUI>();
                 Theme.ApplyFont(t, FontRole.Body);
                 t.fontSize = size;
-                t.color = Theme.Color(colour);
+                t.color = paint;
                 t.alignment = TextAlignmentOptions.Center;
                 t.raycastTarget = false;
                 t.text = ch;
@@ -687,14 +694,14 @@ namespace WorldTour.Game.Ticket
                 var img = g.gameObject.AddComponent<Image>();
                 img.sprite = sp;
                 img.preserveAspect = true;
-                img.color = Theme.Color(colour);
+                img.color = paint;
                 img.raycastTarget = false;
             }
             else
             {
                 var gl = g.gameObject.AddComponent<TicketGlyphGraphic>();
                 gl.GlyphShape = shape;
-                gl.color = Theme.Color(colour);
+                gl.color = paint;
                 gl.raycastTarget = false;
             }
         }
@@ -745,14 +752,14 @@ namespace WorldTour.Game.Ticket
         /// <summary>The .shout look: the art's material preset (white face, ink outline, ink offset shadow), else plain ink text.</summary>
         void Shout(TMP_Text t)
         {
-            if (art != null && art.shout != null && t.font != null && art.shout.mainTexture == t.font.material.mainTexture) t.fontSharedMaterial = art.shout;
+            if (art != null && art.shout != null && t.font != null && art.shout.mainTexture == t.font.material.mainTexture) t.fontSharedMaterial = MetaUi.Themed(art.shout);   // a copy wearing the live theme's ink (the preset has black baked in)
             else t.color = Theme.Color(ColorRole.Ink);
         }
 
         /// <summary>-webkit-text-stroke on a display label, via the art's stroke preset (skipped when it isn't there).</summary>
         void Stroke(TMP_Text t, float px)
         {
-            if (art != null && art.stroke != null && t.font != null && art.stroke.mainTexture == t.font.material.mainTexture) t.fontSharedMaterial = art.stroke;
+            if (art != null && art.stroke != null && t.font != null && art.stroke.mainTexture == t.font.material.mainTexture) t.fontSharedMaterial = MetaUi.Themed(art.stroke);
         }
 
         /// <summary>TMP lineSpacing (em/100 added to the font's line height) that gives a CSS line-height of <paramref name="cssLineHeight"/>.</summary>

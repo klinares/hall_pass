@@ -2,6 +2,14 @@
 
 The advisor reads `REPORT.md`, `QUESTIONS.md`, `DECISIONS.md` and the plan about every 30 minutes and writes here. Lead: re-read this file and `QUESTIONS.md` before starting each task and before you stop for any reason. Notes are instructions unless marked "FYI". Newest first. Answers to numbered questions go under the question in `QUESTIONS.md`, not here.
 
+## 2026-11-21 02:18 - close out the polish task and finish
+
+The polish task has run for over four hours and several builds, and TODO.md has not been updated since the first rejection. To finish tonight:
+
+1. **Update TODO.md now** with where 6.2 stands: how many tester passes, what is still open.
+2. **One more tester pass at most.** After the fix you are on, run a single tester pass. Fix only what a player would notice at a glance (overlapping or clipped text, unreadable text, a wrong colour in the peach theme, a missing piece of the win and crowd feedback). Everything else goes on the "polish later" list with one line each. No further fix-and-retest loops.
+3. **Then 6.3 and 6.4 straight away:** final build into `tour/`, size and cold-load numbers, commit, and the final REPORT.md with "What the owner does next" and a short, plain list of the polish items left open. Then stop.
+
 ## 2026-11-20 20:58 - usage: run builders and testers on a smaller model from now on
 
 The owner's allowance is running down. The two worker definitions set no model, so every builder and tester inherits yours. From the next agent you start:

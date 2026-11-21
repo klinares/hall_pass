@@ -17,6 +17,12 @@ namespace WorldTour.Core.Data
             (c >= 0x09 && c <= 0x0D) || c == 0x20 || c == 0xA0 || c == 0x1680 || (c >= 0x2000 && c <= 0x200A)
             || c == 0x2028 || c == 0x2029 || c == 0x202F || c == 0x205F || c == 0x3000 || c == 0xFEFF;
 
+        /// <summary>
+        /// Display only (polish 6.2D item 7): the data files keep straight apostrophes, and the game's own copy uses the curly
+        /// one (U+2019), so clue and sentence text is converted as it is shown. The data and the typed answers are untouched.
+        /// </summary>
+        public static string Curly(string s) => s == null ? null : s.Replace((char)39, (char)0x2019);
+
         /// <summary>Null, empty, or only <see cref="IsSpace"/> characters.</summary>
         public static bool Blank(string s)
         {

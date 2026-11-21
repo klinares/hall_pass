@@ -40,7 +40,7 @@ namespace WorldTour.Game.Show
         /// <summary>studio.js:20 the vinyl sticker for the record button, or null.</summary>
         public Sprite RecordSticker { get { return _host != null ? _host.RecordStickerSprite : null; } }
         /// <summary>The clue (word.h).</summary>
-        public string Clue { get { return Word != null ? Word.h ?? "" : ""; } }
+        public string Clue { get { return Word != null ? WorldTour.Core.Data.TextRules.Curly(Word.h ?? "") : ""; } }
         /// <summary>show.js:208 <c>level</c>: the skill's level for a spelling song.</summary>
         public int Level { get { return Engine.CurrentLevel; } }
         public bool Bonus { get { return Slot.Bonus; } }

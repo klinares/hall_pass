@@ -21,6 +21,8 @@ public static class MetaBuilder
 {
     const string DecorPink = "Assets/Art/Sprites/decor";
     const string DecorPeach = "Assets/Art/Sprites/decor_peach-navy";
+    const string DogPink = "Assets/Art/Sprites/dog";
+    const string DogPeach = "Assets/Art/Sprites/dog_peach-navy";
     const string ThemePath = "Assets/Resources/WorldTour/Theme.asset";
     const string ArtPath = "Assets/Game/Map/MapArt.asset";
     const string ButtonPrefabPath = "Assets/Game/Ui/Prefabs/StickerButton.prefab";
@@ -33,6 +35,7 @@ public static class MetaBuilder
         public string method;
         public bool ok;
         public int twins;
+        public int dogTwins;
         public List<string> created = new List<string>();
         public List<string> wired = new List<string>();
         public List<string> warnings = new List<string>();
@@ -89,6 +92,21 @@ public static class MetaBuilder
         if (theme == null) throw new Exception(ThemePath + " not found: run UiBuilder.BuildAll first");
         theme.peachDecor = new List<ThemeAsset.DecorTwin>();
         if (!AssetDatabase.IsValidFolder(DecorPeach)) { s_Summary.warnings.Add(DecorPeach + " is missing: the peach theme keeps the tour-pink decor"); EditorUtility.SetDirty(theme); return; }
+        s_Dog = false;
+        WireFolder(theme, DecorPeach, DecorPink);
+        // riff's twins (6.2A): stickers and venues are drawn in fixed colours (no theme variables), so their peach render is
+        // pixel-identical and has no twin; only the dog layers that take theme colours do.
+        s_Dog = true;
+        WireFolder(theme, DogPeach, DogPink);
+        EditorUtility.SetDirty(theme);
+        s_Summary.wired.Add(ThemePath + ": peachDecor x" + s_Summary.twins + " (dog x" + s_Summary.dogTwins + ")");
+    }
+
+    static bool s_Dog;
+
+    static void WireFolder(ThemeAsset theme, string DecorPeach, string DecorPink)
+    {
+        if (!AssetDatabase.IsValidFolder(DecorPeach)) { s_Summary.warnings.Add(DecorPeach + " is missing"); return; }
         foreach (string guid in AssetDatabase.FindAssets("t:Texture2D", new[] { DecorPeach }))
         {
             string p = AssetDatabase.GUIDToAssetPath(guid);
@@ -101,9 +119,8 @@ public static class MetaBuilder
                 s_Summary.errors.Add(name + ": the twin's size, border or pivot differs from tour pink");
             theme.peachDecor.Add(new ThemeAsset.DecorTwin { tourPink = pink, peachNavy = peach });
             s_Summary.twins++;
+            if (s_Dog) s_Summary.dogTwins++;
         }
-        EditorUtility.SetDirty(theme);
-        s_Summary.wired.Add(ThemePath + ": peachDecor x" + s_Summary.twins);
     }
 
     static void MakeScreen<T>(string name, MapArt art, StickerButton button, Material shout) where T : GameScreen

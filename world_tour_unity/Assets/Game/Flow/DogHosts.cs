@@ -123,7 +123,7 @@ namespace WorldTour.Game.Flow
             bubbleRt.anchoredPosition = new Vector2(0f, CoachDog + 18f);
             bubbleRt.sizeDelta = new Vector2(0f, 64f);
             DogBubble bubble = bubbleGo.AddComponent<DogBubble>();
-            bubble.Init(Art, Theme.Font(FontRole.Body));
+            bubble.Init(Art, Theme.Font(FontRole.BodyBold));   // polish 6.2E item 5: the regular weight read light grey at 1366
             bubble.Say(null);
 
             DogShowDirector director = go.AddComponent<DogShowDirector>();

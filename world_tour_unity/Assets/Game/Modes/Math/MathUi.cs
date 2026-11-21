@@ -91,7 +91,26 @@ namespace WorldTour.Game.Modes
             t.raycastTarget = false;
             t.richText = true;
             t.text = MathText.ToTmp(text, MathText.PromptScale);
+            pr.gameObject.AddComponent<PromptFit>();
             return card;
+        }
+
+        /// <summary>
+        /// polish 6.2F item 1: stacked fractions make some lines taller than TMP's preferred height allows for, so the card's
+        /// last line clipped. This asks the layout for the height the text really rendered at.
+        /// </summary>
+        sealed class PromptFit : MonoBehaviour
+        {
+            TextMeshProUGUI _t; LayoutElement _le;
+            void Awake() { _t = GetComponent<TextMeshProUGUI>(); _le = gameObject.AddComponent<LayoutElement>(); }
+            void LateUpdate()
+            {
+                if (_t == null || _t.textInfo == null || _t.textInfo.lineCount == 0) return;
+                float h = Mathf.Ceil(_t.textBounds.size.y) + 4f;
+                if (Mathf.Abs(h - _le.minHeight) < 1f) return;
+                _le.minHeight = h;
+                LayoutRebuilder.MarkLayoutForRebuild(transform.parent as RectTransform);
+            }
         }
 
         /// <summary>

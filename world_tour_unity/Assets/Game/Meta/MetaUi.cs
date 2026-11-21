@@ -72,16 +72,30 @@ namespace WorldTour.Game.Meta
         public static TextMeshProUGUI Shout(Transform parent, string name, string text, float size, Material shout)
         {
             TextMeshProUGUI t = UiKit.Text(parent, name, text, FontRole.Display, size, ColorRole.Card, TextAlignmentOptions.BottomLeft, false);
-            if (shout != null)
-            {
-                var m = new Material(shout);
-                Color ink = Theme.Color(ColorRole.Ink);
-                if (m.HasProperty(ShaderUtilities.ID_OutlineColor)) m.SetColor(ShaderUtilities.ID_OutlineColor, ink);
-                if (m.HasProperty(ShaderUtilities.ID_UnderlayColor)) m.SetColor(ShaderUtilities.ID_UnderlayColor, ink);
-                t.fontSharedMaterial = m;
-            }
+            if (shout != null) t.fontSharedMaterial = Themed(shout);
             else t.color = Theme.Color(ColorRole.Ink);
             return t;
+        }
+
+        static readonly Dictionary<string, Material> s_Themed = new Dictionary<string, Material>();
+
+        /// <summary>
+        /// A copy of a TMP material preset (the ticket's shout and stroke) whose outline and underlay are the live palette's ink.
+        /// The presets are saved with black baked in, so used as they are they stay black in peach + navy. Cached per preset
+        /// and palette, so a screen that rebuilds itself shares one material.
+        /// </summary>
+        public static Material Themed(Material src)
+        {
+            if (src == null) return null;
+            Color ink = Theme.Color(ColorRole.Ink);
+            string key = src.GetInstanceID() + "/" + Theme.Palette.Id;
+            Material m;
+            if (s_Themed.TryGetValue(key, out m) && m != null) return m;
+            m = new Material(src);
+            if (m.HasProperty(ShaderUtilities.ID_OutlineColor)) m.SetColor(ShaderUtilities.ID_OutlineColor, ink);
+            if (m.HasProperty(ShaderUtilities.ID_UnderlayColor)) m.SetColor(ShaderUtilities.ID_UnderlayColor, ink);
+            s_Themed[key] = m;
+            return m;
         }
 
         /// <summary>A rectangle outline (rounded corners not needed): <paramref name="dash"/> 0 for solid.</summary>
@@ -122,25 +136,61 @@ namespace WorldTour.Game.Meta
         /// fx.js toast(): a big .shout word at 32% of the height, tilted -5 deg, that pops in and goes after a moment.
         /// It never takes clicks.
         /// </summary>
-        public static void Toast(MonoBehaviour host, RectTransform parent, string text, Material shout)
+        public static void Toast(MonoBehaviour host, RectTransform parent, string text, Material shout, Vector2? anchor = null,
+            float size = 80f, float holdSeconds = 0.9f, Vector2 offset = default(Vector2), bool inkFace = false)
         {
-            TextMeshProUGUI t = Shout(parent, "Toast", text, 80f, shout);
+            TextMeshProUGUI t = Shout(parent, "Toast", text, size, shout);
+            if (inkFace) InkFace(t);
             t.alignment = TextAlignmentOptions.Center;
             RectTransform rt = t.rectTransform;
-            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.68f);
+            rt.anchorMin = rt.anchorMax = anchor ?? new Vector2(0.5f, 0.68f);
             rt.pivot = new Vector2(0.5f, 0.5f);
-            rt.sizeDelta = new Vector2(900f, 110f);
-            rt.anchoredPosition = Vector2.zero;
+            rt.sizeDelta = new Vector2(Mathf.Min(900f, size * 11f), size * 1.4f);
+            rt.anchoredPosition = offset;
             rt.localEulerAngles = new Vector3(0f, 0f, 5f);   // CSS rotate(-5deg)
             var g = t.gameObject.AddComponent<CanvasGroup>();
             g.blocksRaycasts = false; g.interactable = false;
             Feedback.Pop(rt);
-            host.StartCoroutine(FadeAway(t.gameObject, g));
+            host.StartCoroutine(FadeAway(t.gameObject, g, holdSeconds));
         }
 
-        static IEnumerator FadeAway(GameObject go, CanvasGroup g)
+        /// <summary>
+        /// A toast that is only a feel effect (the show's win word): advisor rule, "off when reduce motion is on", so with
+        /// reduce motion it is skipped entirely (polish 6.2E item 3). Returns whether one was made.
+        /// </summary>
+        public static bool FeelToast(MonoBehaviour host, RectTransform parent, string text, Material shout, Vector2? anchor = null,
+            float size = 80f, float holdSeconds = 0.9f, Vector2 offset = default(Vector2))
         {
-            yield return new WaitForSecondsRealtime(0.9f);
+            if (WorldTour.Game.Motion.MotionPrefs.Reduced) return false;
+            Toast(host, parent, text, shout, anchor, size, holdSeconds, offset, true);
+            return true;
+        }
+
+        static readonly Dictionary<string, Material> s_InkFace = new Dictionary<string, Material>();
+
+        /// <summary>polish 6.2F item 4: an ink face with a card-coloured outline, so the win word reads on pink and on peach.</summary>
+        static void InkFace(TextMeshProUGUI t)
+        {
+            Material src = t.fontSharedMaterial;
+            if (src == null) { t.color = Theme.Color(ColorRole.Ink); return; }
+            string key = src.GetInstanceID() + "/" + Theme.Palette.Id;
+            Material m;
+            if (!s_InkFace.TryGetValue(key, out m) || m == null)
+            {
+                m = new Material(src);
+                m.SetColor(ShaderUtilities.ID_FaceColor, Theme.Color(ColorRole.Ink));
+                if (m.HasProperty(ShaderUtilities.ID_OutlineWidth)) m.SetFloat(ShaderUtilities.ID_OutlineWidth, 0.08f);   // the preset's 0.3 swallows the face at 52 px
+                if (m.HasProperty(ShaderUtilities.ID_OutlineColor)) m.SetColor(ShaderUtilities.ID_OutlineColor, Theme.Color(ColorRole.Card));
+                if (m.HasProperty(ShaderUtilities.ID_UnderlayColor)) m.SetColor(ShaderUtilities.ID_UnderlayColor, Theme.Color(ColorRole.Card));
+                s_InkFace[key] = m;
+            }
+            t.fontSharedMaterial = m;
+            t.color = Color.white;   // the face colour lives on the material
+        }
+
+        static IEnumerator FadeAway(GameObject go, CanvasGroup g, float hold)
+        {
+            yield return new WaitForSecondsRealtime(hold);
             if (go == null) yield break;
             Tweener.AlphaTo(g, 0f, Tokens.TMed, () => { if (go != null) Object.Destroy(go); });
         }

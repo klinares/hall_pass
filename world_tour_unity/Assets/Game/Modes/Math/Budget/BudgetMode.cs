@@ -67,19 +67,23 @@ namespace WorldTour.Game.Modes
 
             // .budget: a torn lined page with tape; .bhead: the heading and the rule, over a double line
             _paper = SpellingUi.Box("Budget", left, -1, -1);
+            MathUi.TopPivot(_paper);          // polish 6.2D item 1: a tween (or the grown 4-line sheet) keeps the top edge; a centre pivot grew the page upward over "song n of m"
             ShowUi.Panel(_paper, ColorRole.Card, 1f, SpriteRole.PaperPanel);
             var v = _paper.gameObject.AddComponent<VerticalLayoutGroup>();
             v.padding = new RectOffset(46, 18, 22, 22); v.spacing = 6;
             v.childControlWidth = true; v.childControlHeight = true; v.childForceExpandWidth = true; v.childForceExpandHeight = false;
             RectTransform head = SpellingUi.Box("Head", _paper, -1, 32);
+            KeepHeight(head);
             ShowUi.Label(head, "Title", BudgetLines.Head, 27.2f, FontRole.Display, ColorRole.Ink, TextAlignmentOptions.BottomLeft);
             TMP_Text rule = ShowUi.Label(head, "Rule", "", 12f, FontRole.Body, ColorRole.Ink, TextAlignmentOptions.BottomRight);
             rule.text = BudgetLines.Rule;
             RectTransform dbl = SpellingUi.Box("Double", _paper, -1, 7);
+            KeepHeight(dbl);
             UiKit.Stretch(UiKit.Box(dbl, "Ink", ColorRole.Ink).rectTransform);
             Image gap = UiKit.Box(dbl, "Gap", ColorRole.Card);
             UiKit.Stretch(gap.rectTransform); gap.rectTransform.offsetMin = new Vector2(0, 2); gap.rectTransform.offsetMax = new Vector2(0, -2);
             _sheet = SpellingUi.Box("Sheet", _paper, -1, -1);
+            MathUi.TopPivot(_sheet);
             var sv = _sheet.gameObject.AddComponent<VerticalLayoutGroup>();
             sv.spacing = 2; sv.childControlWidth = true; sv.childControlHeight = true; sv.childForceExpandWidth = true; sv.childForceExpandHeight = false;
 
@@ -102,6 +106,17 @@ namespace WorldTour.Game.Modes
             _padSlot.gameObject.SetActive(!Game.Story);
         }
 
+        /// <summary>
+        /// Minimum height = preferred height. Without it a sheet that grows to 3 or 4 lines at the worked step is squeezed
+        /// by the column's layout, and its lines (centred in their squeezed rows) spill upward over "song n of m". With it
+        /// the column keeps its top edge and the extra height goes downward.
+        /// </summary>
+        private static void KeepHeight(RectTransform rt)
+        {
+            var le = rt.GetComponent<LayoutElement>();
+            if (le != null) le.minHeight = le.preferredHeight;
+        }
+
         private void Pick(int i)
         {
             BudgetPick r = Game.Pick(i);
@@ -119,6 +134,7 @@ namespace WorldTour.Game.Modes
             foreach (SheetLine l in Game.Sheet())
             {
                 RectTransform row = SpellingUi.Box("Line", _sheet, -1, l.Question ? 38f : 46f);
+                KeepHeight(row);                                              // polish 6.2B item 2: a line is never squeezed shorter than its text
                 TMP_Text t = ShowUi.Label(row, "T", "", l.Question ? 24f : 30f, l.Question ? FontRole.Display : FontRole.BodyBold,
                     l.Final ? ColorRole.Accent2 : ColorRole.Ink, TextAlignmentOptions.MidlineLeft);
                 t.textWrappingMode = TextWrappingModes.NoWrap;

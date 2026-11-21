@@ -105,7 +105,7 @@ namespace WorldTour.Game.Mascot
             if (_pool.TryGetValue(l.name, out var img) && img != null) return img;
             var go = new GameObject(l.name, typeof(RectTransform), typeof(Image));
             img = go.GetComponent<Image>();
-            img.sprite = l.sprite;
+            img.sprite = WorldTour.Game.Ui.ThemeSkin.For(l.sprite);   // the live theme's twin (peach + navy riff)
             img.raycastTarget = false;
             img.type = Image.Type.Simple;
             var rt = (RectTransform)go.transform;
@@ -139,6 +139,8 @@ namespace WorldTour.Game.Mascot
                 rt.localRotation = Quaternion.identity;
                 rt.localScale = Vector3.one;
                 img.color = Color.white;
+                // resolved on every pose change, so a layer first shown after a theme switch is never the other theme's (no flicker)
+                img.sprite = WorldTour.Game.Ui.ThemeSkin.For(l.sprite);
                 img.gameObject.SetActive(true);
                 rt.SetSiblingIndex(_active.Count);
                 _active.Add(img);

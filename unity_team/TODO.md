@@ -12,9 +12,9 @@ Kept on disk so a new session can resume from here (see the FYI in ADVISOR.md, 2
 4. Phases 3, 4, 5, 6
 
 ## Phase 6 (ship) - per ADVISOR 19:25 + 19:30
-- [ ] 6.1 FIRST: reword the irrational/illogical clue and line in tour/StreamingAssets/weeks.json (exact text in ADVISOR 19:25 item 3), regenerate stored vectors with the old text, suites. Leave world_tour/data/weeks.js alone
-- [ ] 6.2 POLISH PASS (+ Q18 answer: full peach art set for stickers, venues, riff with no-flicker DogRig; tester checks every screen in peach at both sizes; report new size) (ADVISOR 19:30; no 2-round cap, done when the tester finds nothing on the list): readability, clipping/overlap, the feel the brief promised (win toast, confetti, end-of-show burst, crowd that grows and reacts), small correctness (P3 sold letter, P6 'the 0', 8,400 comma, curly apostrophe, venue Tab order, fast drag), colour in linear space. Tester screenshots of every screen at both sizes
-- [ ] 6.3 final build into tour/, size and load-time check, README section on adding a week and rebuilding; drop the stale answer-14 mask in IntendedDifferences when vectors regenerate
+- [x] 6.1 DONE, committed 1589654 (curly quotes in all 3 fonts; edit 1661, play 23; no vectors needed changing). Was FIRST: reword the irrational/illogical clue and line in tour/StreamingAssets/weeks.json (exact text in ADVISOR 19:25 item 3), regenerate stored vectors with the old text, suites. Leave world_tour/data/weeks.js alone
+- [x] 6.2 POLISH (closed 2026-11-21 after the final pass + fix 6.2F; rest under polish later) (ADVISOR 19:30, closed out by 02:18): 3 tester passes so far (1st NOT DONE, 8 items -> fix 6.2D; 2nd NOT DONE, 5 list items + 2 new -> fix 6.2E; all 7 fixed per builder: edit 1678, play 23, browser 18, 13,255,194 bytes). Open: LAST tester pass (02:18 #2: one pass only; fix only at-a-glance items; rest to polish later), then 6.3 and 6.4. Untested by tester: fast sideways drag, feel timings <400 ms (covered by code/tests only).
+- [x] 6.3 final build (13,256,635 bytes, cold load 1.34 s) into tour/, size and cold-load numbers; README done (world_tour_unity/README.md); drop the stale answer-14 mask in IntendedDifferences when vectors regenerate
 - [ ] 6.4 final REPORT.md with "What the owner does next" (listen for sound + voice; play with his daughter; commit world_tour/; push to GitHub), then STOP
 - NOTE (ADVISOR 19:25): no questions to the owner; never "waiting on you"; QUESTIONS.md only. Web-save import: one quick check only, no converter.
 
@@ -127,3 +127,15 @@ Kept on disk so a new session can resume from here (see the FYI in ADVISOR.md, 2
 - NOTE (ADVISOR 20:58): new builders/testers on model sonnet; short prompts quoting the needed lines; hand-backs < 200 words; lead's model if a sonnet builder fails a task twice (log it); report Departures names the worker model.
 - backstage 1366 peach: 'yours!' stamp overlaps the 'changes the whole game' caption; pink 'yours' chip low contrast
 - remix peach playthrough logged 'MISSING WT_SONG i=12' though it passed: check the driver
+- venue card coffee shop art stays pink and black in peach (web art uses no theme colours either; matches the web)
+
+### polish later (from the final 6.2 tester pass, 2026-11-21; ADVISOR 02:18)
+- long letter patterns in the dog's bubble shrink to a very small font at 1366 and 1920
+- beat maker slot numbers in the empty hatched area are faint
+- peach still shows pink art in places: the awning, the vinyl label, the map stickers
+- fraction key icon is a tiny dotted glyph
+- peach "rehearse again" is only marginally readable
+- not checked by a tester: fast sideways drag; feel timings under 400 ms (code and tests only)
+- test-driver flakes: parallel-load timeouts; office reduce-motion save once at peach 1920; truck run with no builder problem; meta WT_HITS line missed once
+- map "record store" sign: the vinyl disc covers the word inside the sprite itself (Assets/Art/Sprites/map/venue_records.png); needs new art
+- peach lyric card at 1366: on a short lyric the text touches the card's bottom edge

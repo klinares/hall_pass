@@ -42,7 +42,8 @@ namespace WorldTour.Game.Modes
             }
         }
 
-        public const float RowHeight = 58f;
+        /// <summary>Tall enough for the stacked fraction (two 19 px lines) above the 14 px cell numbers, at hint 2 and the worked step (polish 6.2B item 1; was 58).</summary>
+        public const float RowHeight = 86f;
 
         private SongContext _ctx;
         private Problem _p;
@@ -117,7 +118,7 @@ namespace WorldTour.Game.Modes
         /// <summary>math.css .nblock: the note's length as a bar, its fraction, its name.</summary>
         private BeatChip Chip(RectTransform parent, int d)
         {
-            RectTransform rt = SpellingUi.Box("Block " + d, parent, 78, 68);
+            RectTransform rt = SpellingUi.Box("Block " + d, parent, 78, 82);
             var hit = rt.gameObject.AddComponent<Image>();
             hit.color = new Color(1, 1, 1, 0);
             var chip = rt.gameObject.AddComponent<BeatChip>();
@@ -145,11 +146,11 @@ namespace WorldTour.Game.Modes
             Color bc = Theme.Color(ColorRole.Ink); bc.a = .7f; bi.color = bc; bi.raycastTarget = false;
             // .nblock: 1.15rem bold, the fraction at that size
             RectTransform f = MathUi.Frac(face.rectTransform, null, "1", d.ToString(System.Globalization.CultureInfo.InvariantCulture), 17f, ColorRole.Ink, true);
-            f.anchorMin = f.anchorMax = new Vector2(.5f, .5f); f.pivot = new Vector2(.5f, .5f); f.anchoredPosition = new Vector2(0, -1);
+            f.anchorMin = f.anchorMax = new Vector2(.5f, .5f); f.pivot = new Vector2(.5f, .5f); f.anchoredPosition = new Vector2(0, 3);
             RectTransform small = ShowUi.Rect("Name", face.rectTransform);
             small.anchorMin = new Vector2(0, 0); small.anchorMax = new Vector2(1, 0); small.pivot = new Vector2(.5f, 0);
-            small.sizeDelta = new Vector2(0, 14); small.anchoredPosition = new Vector2(0, 2);
-            ShowUi.Label(small, "Text", Fractions.Names[d], 10.4f, FontRole.Body, ColorRole.Ink);
+            small.sizeDelta = new Vector2(0, 19); small.anchoredPosition = new Vector2(0, 2);   // polish 6.2E item 2: 14 px, bold, ink (was 10.4)
+            ShowUi.Label(small, "Text", Fractions.Names[d], 14f, FontRole.BodyBold, ColorRole.Ink);
 
             chip.Tapped = c => Add(c.D);
             chip.Dropped = c => Add(c.D);
@@ -273,6 +274,7 @@ namespace WorldTour.Game.Modes
             for (int r = 0; r < rows; r++)
             {
                 RectTransform row = SpellingUi.Box("Row " + r, _track, -1, RowHeight);
+                row.GetComponent<LayoutElement>().minHeight = RowHeight;
                 _rows.Add(row);
                 // .mrow: a card-coloured border, a faint fill and a grid line every 1/grid
                 Image ring = UiKit.Box(row, "Ring", ColorRole.Card);
@@ -384,7 +386,7 @@ namespace WorldTour.Game.Modes
                     // (fix round 2: at 20 px, centred, the denominator touched them)
                     RectTransform f = MathUi.Frac(face.rectTransform, s.Whole, s.Num, s.Den, 19f, ColorRole.Ink, true);
                     f.anchorMin = f.anchorMax = f.pivot = new Vector2(.5f, .5f);
-                    f.anchoredPosition = new Vector2(0f, 6.5f);
+                    f.anchoredPosition = new Vector2(0f, 14f);
                 }
             }
             if (tap && !b.Pre)
@@ -392,9 +394,8 @@ namespace WorldTour.Game.Modes
                 // button.note.new::after: a small x in the corner
                 RectTransform x = ShowUi.Rect("X", face.rectTransform);
                 x.anchorMin = x.anchorMax = x.pivot = new Vector2(1, 1);
-                x.sizeDelta = new Vector2(12, 12); x.anchoredPosition = new Vector2(-2, -1);
-                TMP_Text xt = ShowUi.Label(x, "Text", "x", 11.2f, FontRole.Body, ColorRole.Ink);
-                Color xc = xt.color; xc.a = .6f; xt.color = xc;
+                x.sizeDelta = new Vector2(16, 18); x.anchoredPosition = new Vector2(-3, -1);   // polish 6.2E item 2: 15 px bold, full ink (was 11.2 at .85)
+                ShowUi.Label(x, "Text", "x", 15f, FontRole.BodyBold, ColorRole.Ink);
             }
             if (tap && pc.First)
             {
@@ -435,6 +436,7 @@ namespace WorldTour.Game.Modes
             for (int r = 0; r < rows.Count; r++)
             {
                 RectTransform row = SpellingUi.Box("Row " + r, _track, -1, RowHeight);
+                row.GetComponent<LayoutElement>().minHeight = RowHeight;
                 _rows.Add(row);
                 Image ring = UiKit.Box(row, "Ring", ColorRole.Card);
                 UiKit.Stretch(ring.rectTransform);
@@ -467,9 +469,9 @@ namespace WorldTour.Game.Modes
                 RectTransform n = ShowUi.Rect("GridNo", row);
                 n.anchorMin = new Vector2((float)k / grid, 0); n.anchorMax = new Vector2((float)(k + 1) / grid, 0);
                 n.pivot = new Vector2(.5f, 0);
-                n.sizeDelta = new Vector2(0, 15); n.anchoredPosition = new Vector2(0, 0);
-                TMP_Text t = ShowUi.Label(n, "Text", (k + 1).ToString(System.Globalization.CultureInfo.InvariantCulture), 14f, FontRole.BodyBold, ColorRole.Ink);
-                t.outlineWidth = .3f;
+                n.sizeDelta = new Vector2(0, 22); n.anchoredPosition = new Vector2(0, 0);   // 16 px digits need 20+ px of line
+                TMP_Text t = ShowUi.Label(n, "Text", (k + 1).ToString(System.Globalization.CultureInfo.InvariantCulture), 16f, FontRole.BodyBold, ColorRole.Ink);
+                t.outlineWidth = .25f;
                 t.outlineColor = Theme.Color(ColorRole.Card);
             }
         }

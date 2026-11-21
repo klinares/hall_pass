@@ -43,16 +43,35 @@ namespace WorldTour.Core.Maths.Gen
         private static MathValue N(long v) => MathValue.Num(v);
         private static string Dec(Rational r) => Rational.Dec(r);
 
+        private static string DecF(Rational r)
+        {
+            string d = Dec(r);
+            int start = d.StartsWith("-", System.StringComparison.Ordinal) ? 1 : 0;
+            int dot = d.IndexOf('.');
+            string whole = dot < 0 ? d.Substring(start) : d.Substring(start, dot - start);
+            if (whole.Length < 4) return d;
+            string rest = dot < 0 ? "" : d.Substring(dot);
+            return d.Substring(0, start) + long.Parse(whole, CultureInfo.InvariantCulture).ToString("#,##0", CultureInfo.InvariantCulture) + rest;
+        }
+
+        /// <summary>How many 0s fall off the end of n when it is divided by 10^k: its trailing zeros, at most k.</summary>
+        private static int DroppedZeros(long n, int k)
+        {
+            int z = 0;
+            while (z < k && n > 0 && n % 10 == 0) { n /= 10; z++; }
+            return z;
+        }
+
         /// <summary>
         /// Hint 2 for moving the decimal point (QUESTIONS 9.1 and 14, an intended difference from the JS): place-value
         /// wording that is true for every problem. x 10, 100, 1000 moves every digit left; / moves it right. When a
         /// zero has to be filled in (8.8 x 100) or drops off the end (140 / 10), it asks about the zero instead of
         /// saying it, so the last step stays hers. Never prints the digits or the answer.
         /// </summary>
-        public static string PlaceValueHint(bool times, long power, int places, bool zeroChanges) =>
+        public static string PlaceValueHint(bool times, long power, int places, bool zeroChanges, int zerosDropped = 1) =>
             (times ? Glyph.Times : Glyph.Divide) + " " + F(power) + " moves every digit " + S(places) + " place" + (places == 1 ? "" : "s")
             + " to the " + (times ? "left" : "right") + "."
-            + (zeroChanges ? (times ? " what fills the empty place?" : " what happens to the 0 at the end?") : "");
+            + (zeroChanges ? (times ? " what fills the empty place?" : zerosDropped >= 2 ? " what happens to the zeros at the end?" : " what happens to the 0 at the end?") : "");
 
         public static Problem Generate(int level, long seed) => Guard.Guarded(Build, level, seed);
 
@@ -168,7 +187,7 @@ namespace WorldTour.Core.Maths.Gen
                         // (wrong for 8.82, the answer for 6.1) and "x 10 = ... keep going" for 100 and 1000. A zero is
                         // filled in exactly when the power has more zeros than xv has decimal places (8.8 x 100 = 880).
                         PlaceValueHint(true, p, k, k > pl),
-                        Dec(xv) + x + F(p) + " = <b>" + Dec(ans) + "</b>"
+                        Dec(xv) + x + F(p) + " = <b>" + DecF(ans) + "</b>"
                     };
                 }
                 else
@@ -190,8 +209,8 @@ namespace WorldTour.Core.Maths.Gen
                         Glyph.Divide + " " + F(p) + " moves the decimal point " + places + " to the left.",
                         // Unity (QUESTIONS 9.1, 14): the JS printed n's digits for / 10 ("the digits stay 7") and
                         // "/ 10 = ... keep going" for 100 and 1000. A 0 drops off the end exactly when n ends in 0.
-                        PlaceValueHint(false, p, k, n % 10 == 0),
-                        F(n) + dv + F(p) + " = <b>" + Dec(ans) + "</b>"
+                        PlaceValueHint(false, p, k, n % 10 == 0, DroppedZeros(n, k)),
+                        F(n) + dv + F(p) + " = <b>" + DecF(ans) + "</b>"
                     };
                 }
                 label = prompt;
@@ -238,7 +257,7 @@ namespace WorldTour.Core.Maths.Gen
                     {
                         "10" + Sup(kk) + " = " + F(Pow10(kk)) + ". so this is " + Dec(xv) + x + F(Pow10(kk)) + ".",
                         Glyph.Times + " " + F(Pow10(kk)) + " moves the decimal point " + S(kk) + " places to the right.",
-                        Dec(xv) + x + F(Pow10(kk)) + " = <b>" + Dec(ans) + "</b>"
+                        Dec(xv) + x + F(Pow10(kk)) + " = <b>" + DecF(ans) + "</b>"
                     };
                 }
                 label = prompt;

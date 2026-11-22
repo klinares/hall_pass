@@ -6,300 +6,310 @@ METHOD:PUBLISH
 X-WR-CALNAME:Fallsmead ES Menus
 X-WR-TIMEZONE:America/New_York
 BEGIN:VEVENT
-UID:20261012-breakfast1@lunchline.local
-DTSTAMP:20261011T144613Z
-DTSTART;VALUE=DATE:20261012
-DTEND;VALUE=DATE:20261013
-SUMMARY:Breakfast 1: Mini Strawberry Bagel
-DESCRIPTION:VEGETABLE\nMini Strawberry Bagel\nMini Cinnamon Cream Cheese Bagel\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\nTurkey Sausage Egg & Cheese Pocket\nBanana Bread\nBeef & Cheese Spicy Breakfast Taco\nMaryland Made Cinnamon Roll\nMini Pancakes\n\nGRAINS\nApple Juice\nCraisins\n
+UID:20261109-breakfast@lunchline.local
+DTSTAMP:20261109T010417Z
+DTSTART;VALUE=DATE:20261109
+DTEND;VALUE=DATE:20261110
+SUMMARY:Breakfast: Mini Strawberry Bagel
+DESCRIPTION:VEGETABLE\nMini Strawberry Bagel\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\nMaryland Made Cinnamon Roll\n\nGRAINS\nApple Juice\nApplesauce Cup\n
 TRANSP:TRANSPARENT
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:20261012-breakfast2@lunchline.local
-DTSTAMP:20261011T144613Z
-DTSTART;VALUE=DATE:20261012
-DTEND;VALUE=DATE:20261013
-SUMMARY:Breakfast 2: Turkey Sausage Egg & Cheese Pocket
-DESCRIPTION:VEGETABLE\nMini Strawberry Bagel\nMini Cinnamon Cream Cheese Bagel\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\nTurkey Sausage Egg & Cheese Pocket\nBanana Bread\nBeef & Cheese Spicy Breakfast Taco\nMaryland Made Cinnamon Roll\nMini Pancakes\n\nGRAINS\nApple Juice\nCraisins\n
-TRANSP:TRANSPARENT
-STATUS:CONFIRMED
-END:VEVENT
-BEGIN:VEVENT
-UID:20261012-breakfast3@lunchline.local
-DTSTAMP:20261011T144613Z
-DTSTART;VALUE=DATE:20261012
-DTEND;VALUE=DATE:20261013
-SUMMARY:Breakfast 3: Beef & Cheese Spicy Breakfast Taco
-DESCRIPTION:VEGETABLE\nMini Strawberry Bagel\nMini Cinnamon Cream Cheese Bagel\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\nTurkey Sausage Egg & Cheese Pocket\nBanana Bread\nBeef & Cheese Spicy Breakfast Taco\nMaryland Made Cinnamon Roll\nMini Pancakes\n\nGRAINS\nApple Juice\nCraisins\n
-TRANSP:TRANSPARENT
-STATUS:CONFIRMED
-END:VEVENT
-BEGIN:VEVENT
-UID:20261012-lunch1@lunchline.local
-DTSTAMP:20261011T144613Z
-DTSTART;VALUE=DATE:20261012
-DTEND;VALUE=DATE:20261013
+UID:20261109-lunch1@lunchline.local
+DTSTAMP:20261109T010417Z
+DTSTART;VALUE=DATE:20261109
+DTEND;VALUE=DATE:20261110
 SUMMARY:Lunch 1: Spicy Chicken Tenders w/ Green Beans & Roll
-DESCRIPTION:VEGETABLE\nSpicy Chicken Tenders w/ Green Beans & Roll\nVeggie Burger w/ Bun & Green Beans\n\nFRUIT\nBaby Carrots\nHummus\nCrinkle Cut Potatoes\nCucumbers & Tomatoes\nRoasted Chickpeas\n\nGRAINS\nFresh Sliced Apple\nFresh Grapes\n
+DESCRIPTION:VEGETABLE\nSpicy Chicken Tenders w/ Green Beans & Roll\nVeggie Burger w/ Bun & Green Beans\n\nFRUIT\nHummus\nCrinkle Cut Potatoes\nRoasted Chickpeas\nCelery Sticks\n\nGRAINS\nFresh Sliced Apple\nFresh Apple\n
 TRANSP:TRANSPARENT
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:20261012-lunch2@lunchline.local
-DTSTAMP:20261011T144613Z
-DTSTART;VALUE=DATE:20261012
-DTEND;VALUE=DATE:20261013
+UID:20261109-lunch2@lunchline.local
+DTSTAMP:20261109T010417Z
+DTSTART;VALUE=DATE:20261109
+DTEND;VALUE=DATE:20261110
 SUMMARY:Lunch 2: Veggie Burger w/ Bun & Green Beans
-DESCRIPTION:VEGETABLE\nSpicy Chicken Tenders w/ Green Beans & Roll\nVeggie Burger w/ Bun & Green Beans\n\nFRUIT\nBaby Carrots\nHummus\nCrinkle Cut Potatoes\nCucumbers & Tomatoes\nRoasted Chickpeas\n\nGRAINS\nFresh Sliced Apple\nFresh Grapes\n
+DESCRIPTION:VEGETABLE\nSpicy Chicken Tenders w/ Green Beans & Roll\nVeggie Burger w/ Bun & Green Beans\n\nFRUIT\nHummus\nCrinkle Cut Potatoes\nRoasted Chickpeas\nCelery Sticks\n\nGRAINS\nFresh Sliced Apple\nFresh Apple\n
 TRANSP:TRANSPARENT
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:20261013-breakfast@lunchline.local
-DTSTAMP:20261011T144613Z
-DTSTART;VALUE=DATE:20261013
-DTEND;VALUE=DATE:20261014
+UID:20261110-breakfast@lunchline.local
+DTSTAMP:20261109T010417Z
+DTSTART;VALUE=DATE:20261110
+DTEND;VALUE=DATE:20261111
 SUMMARY:Breakfast: Mini Pancakes
 DESCRIPTION:VEGETABLE\nMini Pancakes\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\n\nGRAINS\nOrange Juice\nCraisins\n
 TRANSP:TRANSPARENT
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:20261013-lunch1@lunchline.local
-DTSTAMP:20261011T144613Z
-DTSTART;VALUE=DATE:20261013
-DTEND;VALUE=DATE:20261014
+UID:20261110-lunch1@lunchline.local
+DTSTAMP:20261109T010417Z
+DTSTART;VALUE=DATE:20261110
+DTEND;VALUE=DATE:20261111
 SUMMARY:Lunch 1: Chicken Walking Taco w/ Corn & Chips
 DESCRIPTION:VEGETABLE\nChicken Walking Taco w/ Corn & Chips\nSpicy Chik'n Sandwich\n\nFRUIT\nCucumber Coins\nHummus\n\nGRAINS\nFresh Sliced Apple\n
 TRANSP:TRANSPARENT
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:20261013-lunch2@lunchline.local
-DTSTAMP:20261011T144613Z
-DTSTART;VALUE=DATE:20261013
-DTEND;VALUE=DATE:20261014
+UID:20261110-lunch2@lunchline.local
+DTSTAMP:20261109T010417Z
+DTSTART;VALUE=DATE:20261110
+DTEND;VALUE=DATE:20261111
 SUMMARY:Lunch 2: Spicy Chik'n Sandwich
 DESCRIPTION:VEGETABLE\nChicken Walking Taco w/ Corn & Chips\nSpicy Chik'n Sandwich\n\nFRUIT\nCucumber Coins\nHummus\n\nGRAINS\nFresh Sliced Apple\n
 TRANSP:TRANSPARENT
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:20261014-breakfast@lunchline.local
-DTSTAMP:20261011T144613Z
-DTSTART;VALUE=DATE:20261014
-DTEND;VALUE=DATE:20261015
+UID:20261111-breakfast@lunchline.local
+DTSTAMP:20261109T010417Z
+DTSTART;VALUE=DATE:20261111
+DTEND;VALUE=DATE:20261112
 SUMMARY:Breakfast: Banana Bread
 DESCRIPTION:VEGETABLE\nBanana Bread\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\n\nGRAINS\nApple Juice\nCraisins\n
 TRANSP:TRANSPARENT
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:20261014-lunch1@lunchline.local
-DTSTAMP:20261011T144613Z
-DTSTART;VALUE=DATE:20261014
-DTEND;VALUE=DATE:20261015
-SUMMARY:Lunch 1: Chickpea Tikka Masala w/ Rice
-DESCRIPTION:VEGETABLE\nChickpea Tikka Masala w/ Rice\nMini Chicken Bites w/ Baked Beans\n\nFRUIT\nSide Salad\nGrape Tomatoes\nHummus\n\nGRAINS\nFresh Sliced Apple\n
+UID:20261111-lunch1@lunchline.local
+DTSTAMP:20261109T010417Z
+DTSTART;VALUE=DATE:20261111
+DTEND;VALUE=DATE:20261112
+SUMMARY:Lunch 1: Lasagna w/ Marinara Sauce & Dinner Roll
+DESCRIPTION:VEGETABLE\nLasagna w/ Marinara Sauce & Dinner Roll\nMini Chicken Bites w/ Green Beans\, Corn\, and Dinne\n\nFRUIT\nSide Salad\nGrape Tomatoes\nHummus\n\nGRAINS\nFresh Sliced Apple\n
 TRANSP:TRANSPARENT
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:20261014-lunch2@lunchline.local
-DTSTAMP:20261011T144613Z
-DTSTART;VALUE=DATE:20261014
-DTEND;VALUE=DATE:20261015
-SUMMARY:Lunch 2: Mini Chicken Bites w/ Baked Beans
-DESCRIPTION:VEGETABLE\nChickpea Tikka Masala w/ Rice\nMini Chicken Bites w/ Baked Beans\n\nFRUIT\nSide Salad\nGrape Tomatoes\nHummus\n\nGRAINS\nFresh Sliced Apple\n
+UID:20261111-lunch2@lunchline.local
+DTSTAMP:20261109T010417Z
+DTSTART;VALUE=DATE:20261111
+DTEND;VALUE=DATE:20261112
+SUMMARY:Lunch 2: Mini Chicken Bites w/ Green Beans\, Corn\, and Dinne
+DESCRIPTION:VEGETABLE\nLasagna w/ Marinara Sauce & Dinner Roll\nMini Chicken Bites w/ Green Beans\, Corn\, and Dinne\n\nFRUIT\nSide Salad\nGrape Tomatoes\nHummus\n\nGRAINS\nFresh Sliced Apple\n
 TRANSP:TRANSPARENT
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:20261015-breakfast@lunchline.local
-DTSTAMP:20261011T144613Z
-DTSTART;VALUE=DATE:20261015
-DTEND;VALUE=DATE:20261016
+UID:20261112-breakfast@lunchline.local
+DTSTAMP:20261109T010417Z
+DTSTART;VALUE=DATE:20261112
+DTEND;VALUE=DATE:20261113
 SUMMARY:Breakfast: Beef Sausage & Cheese WG Mini Bagel
 DESCRIPTION:VEGETABLE\nBeef Sausage & Cheese WG Mini Bagel\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\n\nGRAINS\nOrange Juice\nCraisins\n
 TRANSP:TRANSPARENT
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:20261015-lunch1@lunchline.local
-DTSTAMP:20261011T144613Z
-DTSTART;VALUE=DATE:20261015
-DTEND;VALUE=DATE:20261016
-SUMMARY:Lunch 1: Cheese Pizza
-DESCRIPTION:VEGETABLE\nCheese Pizza\nPepperoni Pizza\nMandarin Orange Salad w/ Crispy Noodles\n\nFRUIT\nSide Salad\nCelery Sticks\nHummus\n\nGRAINS\nFresh Sliced Apple\n
+UID:20261112-lunch1@lunchline.local
+DTSTAMP:20261109T010417Z
+DTSTART;VALUE=DATE:20261112
+DTEND;VALUE=DATE:20261113
+SUMMARY:Lunch 1: Korean BBQ Turkey w/ Veggie Rice & Dinner Roll
+DESCRIPTION:VEGETABLE\nKorean BBQ Turkey w/ Veggie Rice & Dinner Roll\nMini Pancakes\, Yogurt & Cheese\n\nFRUIT\nSide Salad\nCelery Sticks\nHummus\n\nGRAINS\nFresh Sliced Apple\n
 TRANSP:TRANSPARENT
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:20261015-lunch2@lunchline.local
-DTSTAMP:20261011T144613Z
-DTSTART;VALUE=DATE:20261015
-DTEND;VALUE=DATE:20261016
-SUMMARY:Lunch 2: Pepperoni Pizza
-DESCRIPTION:VEGETABLE\nCheese Pizza\nPepperoni Pizza\nMandarin Orange Salad w/ Crispy Noodles\n\nFRUIT\nSide Salad\nCelery Sticks\nHummus\n\nGRAINS\nFresh Sliced Apple\n
+UID:20261112-lunch2@lunchline.local
+DTSTAMP:20261109T010417Z
+DTSTART;VALUE=DATE:20261112
+DTEND;VALUE=DATE:20261113
+SUMMARY:Lunch 2: Mini Pancakes\, Yogurt & Cheese
+DESCRIPTION:VEGETABLE\nKorean BBQ Turkey w/ Veggie Rice & Dinner Roll\nMini Pancakes\, Yogurt & Cheese\n\nFRUIT\nSide Salad\nCelery Sticks\nHummus\n\nGRAINS\nFresh Sliced Apple\n
 TRANSP:TRANSPARENT
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:20261015-lunch3@lunchline.local
-DTSTAMP:20261011T144613Z
-DTSTART;VALUE=DATE:20261015
-DTEND;VALUE=DATE:20261016
-SUMMARY:Lunch 3: Mandarin Orange Salad w/ Crispy Noodles
-DESCRIPTION:VEGETABLE\nCheese Pizza\nPepperoni Pizza\nMandarin Orange Salad w/ Crispy Noodles\n\nFRUIT\nSide Salad\nCelery Sticks\nHummus\n\nGRAINS\nFresh Sliced Apple\n
-TRANSP:TRANSPARENT
-STATUS:CONFIRMED
-END:VEVENT
-BEGIN:VEVENT
-UID:20261019-breakfast@lunchline.local
-DTSTAMP:20261011T144613Z
-DTSTART;VALUE=DATE:20261019
-DTEND;VALUE=DATE:20261020
-SUMMARY:Breakfast: Chicken Sausage & Cheese Waffle
-DESCRIPTION:VEGETABLE\nChicken Sausage & Cheese Waffle\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\n\nGRAINS\nApple Juice\nCraisins\n
-TRANSP:TRANSPARENT
-STATUS:CONFIRMED
-END:VEVENT
-BEGIN:VEVENT
-UID:20261019-lunch1@lunchline.local
-DTSTAMP:20261011T144613Z
-DTSTART;VALUE=DATE:20261019
-DTEND;VALUE=DATE:20261020
-SUMMARY:Lunch 1: French Toast w/ Veggie Sausage
-DESCRIPTION:VEGETABLE\nFrench Toast w/ Veggie Sausage\nHamburger w/ Bun & Tater Tots\n\nFRUIT\nBaby Carrots\nCrinkle Cut Potatoes\nHummus\n\nGRAINS\nFresh Sliced Apple\n
-TRANSP:TRANSPARENT
-STATUS:CONFIRMED
-END:VEVENT
-BEGIN:VEVENT
-UID:20261019-lunch2@lunchline.local
-DTSTAMP:20261011T144613Z
-DTSTART;VALUE=DATE:20261019
-DTEND;VALUE=DATE:20261020
-SUMMARY:Lunch 2: Hamburger w/ Bun & Tater Tots
-DESCRIPTION:VEGETABLE\nFrench Toast w/ Veggie Sausage\nHamburger w/ Bun & Tater Tots\n\nFRUIT\nBaby Carrots\nCrinkle Cut Potatoes\nHummus\n\nGRAINS\nFresh Sliced Apple\n
-TRANSP:TRANSPARENT
-STATUS:CONFIRMED
-END:VEVENT
-BEGIN:VEVENT
-UID:20261020-breakfast@lunchline.local
-DTSTAMP:20261011T144613Z
-DTSTART;VALUE=DATE:20261020
-DTEND;VALUE=DATE:20261021
-SUMMARY:Breakfast: Turkey Sausage Egg & Cheese Pocket
-DESCRIPTION:VEGETABLE\nTurkey Sausage Egg & Cheese Pocket\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\n\nGRAINS\nOrange Juice\nCraisins\n
-TRANSP:TRANSPARENT
-STATUS:CONFIRMED
-END:VEVENT
-BEGIN:VEVENT
-UID:20261020-lunch1@lunchline.local
-DTSTAMP:20261011T144613Z
-DTSTART;VALUE=DATE:20261020
-DTEND;VALUE=DATE:20261021
-SUMMARY:Lunch 1: Mini Chicken Bites s w/ Corn
-DESCRIPTION:VEGETABLE\nMini Chicken Bites s w/ Corn\nBean & Cheese Pupusa w/ Curtido\n\nFRUIT\nCelery Sticks\nHummus\n\nGRAINS\nFresh Sliced Apple\n
-TRANSP:TRANSPARENT
-STATUS:CONFIRMED
-END:VEVENT
-BEGIN:VEVENT
-UID:20261020-lunch2@lunchline.local
-DTSTAMP:20261011T144613Z
-DTSTART;VALUE=DATE:20261020
-DTEND;VALUE=DATE:20261021
-SUMMARY:Lunch 2: Bean & Cheese Pupusa w/ Curtido
-DESCRIPTION:VEGETABLE\nMini Chicken Bites s w/ Corn\nBean & Cheese Pupusa w/ Curtido\n\nFRUIT\nCelery Sticks\nHummus\n\nGRAINS\nFresh Sliced Apple\n
-TRANSP:TRANSPARENT
-STATUS:CONFIRMED
-END:VEVENT
-BEGIN:VEVENT
-UID:20261021-breakfast@lunchline.local
-DTSTAMP:20261011T144613Z
-DTSTART;VALUE=DATE:20261021
-DTEND;VALUE=DATE:20261022
-SUMMARY:Breakfast: Banana Bread
-DESCRIPTION:VEGETABLE\nBanana Bread\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\n\nGRAINS\nApple Juice\nCraisins\n
-TRANSP:TRANSPARENT
-STATUS:CONFIRMED
-END:VEVENT
-BEGIN:VEVENT
-UID:20261021-lunch1@lunchline.local
-DTSTAMP:20261011T144613Z
-DTSTART;VALUE=DATE:20261021
-DTEND;VALUE=DATE:20261022
-SUMMARY:Lunch 1: Chik'N Parmesan w/ Penne Pasta & Dinner Roll
-DESCRIPTION:VEGETABLE\nChik'N Parmesan w/ Penne Pasta & Dinner Roll\nBeef & Cheese CrispUps\n\nFRUIT\nSpring Salad\nGrape Tomatoes\nHummus\n\nGRAINS\nFresh Sliced Apple\n
-TRANSP:TRANSPARENT
-STATUS:CONFIRMED
-END:VEVENT
-BEGIN:VEVENT
-UID:20261021-lunch2@lunchline.local
-DTSTAMP:20261011T144613Z
-DTSTART;VALUE=DATE:20261021
-DTEND;VALUE=DATE:20261022
-SUMMARY:Lunch 2: Beef & Cheese CrispUps
-DESCRIPTION:VEGETABLE\nChik'N Parmesan w/ Penne Pasta & Dinner Roll\nBeef & Cheese CrispUps\n\nFRUIT\nSpring Salad\nGrape Tomatoes\nHummus\n\nGRAINS\nFresh Sliced Apple\n
-TRANSP:TRANSPARENT
-STATUS:CONFIRMED
-END:VEVENT
-BEGIN:VEVENT
-UID:20261022-breakfast@lunchline.local
-DTSTAMP:20261011T144613Z
-DTSTART;VALUE=DATE:20261022
-DTEND;VALUE=DATE:20261023
-SUMMARY:Breakfast: Beef & Cheese Spicy Breakfast Taco
-DESCRIPTION:VEGETABLE\nBeef & Cheese Spicy Breakfast Taco\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\n\nGRAINS\nOrange Juice\nCraisins\n
-TRANSP:TRANSPARENT
-STATUS:CONFIRMED
-END:VEVENT
-BEGIN:VEVENT
-UID:20261022-lunch@lunchline.local
-DTSTAMP:20261011T144613Z
-DTSTART;VALUE=DATE:20261022
-DTEND;VALUE=DATE:20261023
-SUMMARY:Lunch: Korean BBQ Turkey w/ Veggie Rice & Dinner Roll
-DESCRIPTION:VEGETABLE\nKorean BBQ Turkey w/ Veggie Rice & Dinner Roll\nGrilled Cheese Sandwich\n\nFRUIT\nSpring Salad\nCucumber Coins\nHummus\n\nGRAINS\nFresh Sliced Apple\n
-TRANSP:TRANSPARENT
-STATUS:CONFIRMED
-END:VEVENT
-BEGIN:VEVENT
-UID:20261023-breakfast@lunchline.local
-DTSTAMP:20261011T144613Z
-DTSTART;VALUE=DATE:20261023
-DTEND;VALUE=DATE:20261024
+UID:20261113-breakfast@lunchline.local
+DTSTAMP:20261109T010417Z
+DTSTART;VALUE=DATE:20261113
+DTEND;VALUE=DATE:20261114
 SUMMARY:Breakfast: Maryland Made Cinnamon Roll
 DESCRIPTION:VEGETABLE\nMaryland Made Cinnamon Roll\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\n\nGRAINS\nApple Juice\nCraisins\n
 TRANSP:TRANSPARENT
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:20261023-lunch1@lunchline.local
-DTSTAMP:20261011T144613Z
-DTSTART;VALUE=DATE:20261023
-DTEND;VALUE=DATE:20261024
+UID:20261113-lunch1@lunchline.local
+DTSTAMP:20261109T010417Z
+DTSTART;VALUE=DATE:20261113
+DTEND;VALUE=DATE:20261114
+SUMMARY:Lunch 1: Cheese Pizza
+DESCRIPTION:ALL OPTIONS\nCrispy Chow Mein Noodles\n\nVEGETABLE\nCheese Pizza\nPepperoni Pizza\nMandarin Orange Salad w/ Crispy Noodles\n\nFRUIT\nAssorted Fresh Vegetables\nHummus\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261113-lunch2@lunchline.local
+DTSTAMP:20261109T010417Z
+DTSTART;VALUE=DATE:20261113
+DTEND;VALUE=DATE:20261114
+SUMMARY:Lunch 2: Pepperoni Pizza
+DESCRIPTION:ALL OPTIONS\nCrispy Chow Mein Noodles\n\nVEGETABLE\nCheese Pizza\nPepperoni Pizza\nMandarin Orange Salad w/ Crispy Noodles\n\nFRUIT\nAssorted Fresh Vegetables\nHummus\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261113-lunch3@lunchline.local
+DTSTAMP:20261109T010417Z
+DTSTART;VALUE=DATE:20261113
+DTEND;VALUE=DATE:20261114
+SUMMARY:Lunch 3: Mandarin Orange Salad w/ Crispy Noodles
+DESCRIPTION:ALL OPTIONS\nCrispy Chow Mein Noodles\n\nVEGETABLE\nCheese Pizza\nPepperoni Pizza\nMandarin Orange Salad w/ Crispy Noodles\n\nFRUIT\nAssorted Fresh Vegetables\nHummus\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261116-breakfast@lunchline.local
+DTSTAMP:20261109T010417Z
+DTSTART;VALUE=DATE:20261116
+DTEND;VALUE=DATE:20261117
+SUMMARY:Breakfast: Chicken Sausage & Cheese Waffle
+DESCRIPTION:VEGETABLE\nChicken Sausage & Cheese Waffle\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\n\nGRAINS\nApple Juice\nCraisins\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261116-lunch1@lunchline.local
+DTSTAMP:20261109T010417Z
+DTSTART;VALUE=DATE:20261116
+DTEND;VALUE=DATE:20261117
+SUMMARY:Lunch 1: French Toast w/ Veggie Sausage
+DESCRIPTION:VEGETABLE\nFrench Toast w/ Veggie Sausage\nHamburger w/ Bun & Tater Tots\n\nFRUIT\nBaby Carrots\nCrinkle Cut Potatoes\nHummus\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261116-lunch2@lunchline.local
+DTSTAMP:20261109T010417Z
+DTSTART;VALUE=DATE:20261116
+DTEND;VALUE=DATE:20261117
+SUMMARY:Lunch 2: Hamburger w/ Bun & Tater Tots
+DESCRIPTION:VEGETABLE\nFrench Toast w/ Veggie Sausage\nHamburger w/ Bun & Tater Tots\n\nFRUIT\nBaby Carrots\nCrinkle Cut Potatoes\nHummus\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261117-breakfast@lunchline.local
+DTSTAMP:20261109T010417Z
+DTSTART;VALUE=DATE:20261117
+DTEND;VALUE=DATE:20261118
+SUMMARY:Breakfast: Turkey Sausage Egg & Cheese Pocket
+DESCRIPTION:VEGETABLE\nTurkey Sausage Egg & Cheese Pocket\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\n\nGRAINS\nOrange Juice\nCraisins\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261117-lunch1@lunchline.local
+DTSTAMP:20261109T010417Z
+DTSTART;VALUE=DATE:20261117
+DTEND;VALUE=DATE:20261118
+SUMMARY:Lunch 1: Mini Chicken Bites w/ Tater Tots & Dinner Roll
+DESCRIPTION:VEGETABLE\nMini Chicken Bites w/ Tater Tots & Dinner Roll\nBean & Cheese Pupusa w/ Curtido\n\nFRUIT\nCelery Sticks\nHummus\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261117-lunch2@lunchline.local
+DTSTAMP:20261109T010417Z
+DTSTART;VALUE=DATE:20261117
+DTEND;VALUE=DATE:20261118
+SUMMARY:Lunch 2: Bean & Cheese Pupusa w/ Curtido
+DESCRIPTION:VEGETABLE\nMini Chicken Bites w/ Tater Tots & Dinner Roll\nBean & Cheese Pupusa w/ Curtido\n\nFRUIT\nCelery Sticks\nHummus\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261118-breakfast@lunchline.local
+DTSTAMP:20261109T010417Z
+DTSTART;VALUE=DATE:20261118
+DTEND;VALUE=DATE:20261119
+SUMMARY:Breakfast: Banana Bread
+DESCRIPTION:VEGETABLE\nBanana Bread\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\n\nGRAINS\nApple Juice\nCraisins\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261118-lunch1@lunchline.local
+DTSTAMP:20261109T010417Z
+DTSTART;VALUE=DATE:20261118
+DTEND;VALUE=DATE:20261119
+SUMMARY:Lunch 1: Chik'N Parmesan w/ Penne Pasta & Dinner Roll
+DESCRIPTION:VEGETABLE\nChik'N Parmesan w/ Penne Pasta & Dinner Roll\nBeef & Cheese CrispUps\n\nFRUIT\nSpring Salad\nGrape Tomatoes\nHummus\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261118-lunch2@lunchline.local
+DTSTAMP:20261109T010417Z
+DTSTART;VALUE=DATE:20261118
+DTEND;VALUE=DATE:20261119
+SUMMARY:Lunch 2: Beef & Cheese CrispUps
+DESCRIPTION:VEGETABLE\nChik'N Parmesan w/ Penne Pasta & Dinner Roll\nBeef & Cheese CrispUps\n\nFRUIT\nSpring Salad\nGrape Tomatoes\nHummus\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261119-breakfast@lunchline.local
+DTSTAMP:20261109T010417Z
+DTSTART;VALUE=DATE:20261119
+DTEND;VALUE=DATE:20261120
+SUMMARY:Breakfast: Beef & Cheese Spicy Breakfast Taco
+DESCRIPTION:VEGETABLE\nBeef & Cheese Spicy Breakfast Taco\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\n\nGRAINS\nOrange Juice\nCraisins\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261119-lunch@lunchline.local
+DTSTAMP:20261109T010417Z
+DTSTART;VALUE=DATE:20261119
+DTEND;VALUE=DATE:20261120
+SUMMARY:Lunch: Egg Bite and Sausage Link w/ Apple Bread
+DESCRIPTION:VEGETABLE\nEgg Bite and Sausage Link w/ Apple Bread\nGrilled Cheese Sandwich\n\nFRUIT\nSpring Salad\nCucumber Coins\nHummus\n\nGRAINS\nFresh Sliced Apple\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261120-breakfast@lunchline.local
+DTSTAMP:20261109T010417Z
+DTSTART;VALUE=DATE:20261120
+DTEND;VALUE=DATE:20261121
+SUMMARY:Breakfast: Maryland Made Cinnamon Roll
+DESCRIPTION:VEGETABLE\nMaryland Made Cinnamon Roll\nGrab N Go Yogurt & Granola\nBlueberry Chex Cereal\nHoney O's Cereal\n\nGRAINS\nApple Juice\nCraisins\n
+TRANSP:TRANSPARENT
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:20261120-lunch1@lunchline.local
+DTSTAMP:20261109T010417Z
+DTSTART;VALUE=DATE:20261120
+DTEND;VALUE=DATE:20261121
 SUMMARY:Lunch 1: Pepperoni Pizza
 DESCRIPTION:VEGETABLE\nPepperoni Pizza\nCheese Pizza\nSmoked Turkey & Cheese Croissant Sandwich\n\nFRUIT\nMixed Sweet Peppers\nHummus\n\nGRAINS\nFresh Sliced Apple\n
 TRANSP:TRANSPARENT
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:20261023-lunch2@lunchline.local
-DTSTAMP:20261011T144613Z
-DTSTART;VALUE=DATE:20261023
-DTEND;VALUE=DATE:20261024
+UID:20261120-lunch2@lunchline.local
+DTSTAMP:20261109T010417Z
+DTSTART;VALUE=DATE:20261120
+DTEND;VALUE=DATE:20261121
 SUMMARY:Lunch 2: Cheese Pizza
 DESCRIPTION:VEGETABLE\nPepperoni Pizza\nCheese Pizza\nSmoked Turkey & Cheese Croissant Sandwich\n\nFRUIT\nMixed Sweet Peppers\nHummus\n\nGRAINS\nFresh Sliced Apple\n
 TRANSP:TRANSPARENT
 STATUS:CONFIRMED
 END:VEVENT
 BEGIN:VEVENT
-UID:20261023-lunch3@lunchline.local
-DTSTAMP:20261011T144613Z
-DTSTART;VALUE=DATE:20261023
-DTEND;VALUE=DATE:20261024
+UID:20261120-lunch3@lunchline.local
+DTSTAMP:20261109T010417Z
+DTSTART;VALUE=DATE:20261120
+DTEND;VALUE=DATE:20261121
 SUMMARY:Lunch 3: Smoked Turkey & Cheese Croissant Sandwich
 DESCRIPTION:VEGETABLE\nPepperoni Pizza\nCheese Pizza\nSmoked Turkey & Cheese Croissant Sandwich\n\nFRUIT\nMixed Sweet Peppers\nHummus\n\nGRAINS\nFresh Sliced Apple\n
 TRANSP:TRANSPARENT

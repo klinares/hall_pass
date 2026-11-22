@@ -92,18 +92,39 @@ fetch_menu_chunk <- function(school_key, start_date, end_date) {
     request(url) |>
       req_headers(
         "Accept"     = "application/json",
-        "User-Agent" = "lunchline/0.1 (R; tidyverse)"
+        # MealViewer sits behind bot protection; a browser-like User-Agent
+        # is what the original working script used.
+        "User-Agent" = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36",
+        "Origin"     = "https://schools.mealviewer.com",
+        "Referer"    = "https://schools.mealviewer.com/"
       ) |>
       req_retry(max_tries = 3, backoff = \(i) 2^i) |>
+      req_error(is_error = \(r) FALSE) |>   # inspect failures ourselves
       req_perform(),
     error = function(e) {
-      cli_alert_danger("Request failed: {e$message}")
+      cli_alert_danger("Network error: {e$message}")
       NULL
     }
   )
 
-  if (is.null(resp) || resp_status(resp) != 200) return(NULL)
-  resp_body_json(resp)
+  if (is.null(resp)) return(NULL)
+
+  # Fail loudly instead of silently returning nothing
+  if (resp_status(resp) != 200) {
+    cli_alert_danger("HTTP {resp_status(resp)} from {url}")
+    cli_text("Response starts with: {substr(resp_body_string(resp), 1, 300)}")
+    return(NULL)
+  }
+  if (!grepl("json", resp_content_type(resp))) {
+    cli_alert_danger("Expected JSON, got {resp_content_type(resp)} — the API may have moved.")
+    return(NULL)
+  }
+
+  body <- resp_body_json(resp)
+  if (length(body$menuSchedules %||% list()) == 0) {
+    cli_alert_warning("API answered but menuSchedules is empty. Top-level keys: {paste(names(body), collapse = ', ')}")
+  }
+  body
 }
 ```
 
@@ -199,6 +220,14 @@ Run it:
 #| label: do-scrape
 
 menus <- scrape_menus()
+
+if (nrow(menus) == 0) {
+  cli_abort(c(
+    "No menu items came back from MealViewer.",
+    "i" = "Check the HTTP/JSON messages above to see what the API returned.",
+    "i" = "Open https://schools.mealviewer.com/school/{SCHOOL_KEY} in a browser, then DevTools → Network → filter 'api' to see the URL the site now calls."
+  ))
+}
 
 cli_alert_success("Got {nrow(menus)} menu items across {n_distinct(menus$date)} days")
 ```

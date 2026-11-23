@@ -1,0 +1,17 @@
+# Root ignores for every project in hall_pass.
+# Each project folder may add its own .gitignore on top of this.
+
+# R / RStudio
+.Rhistory
+.RData
+.RDataTmp
+.Rproj.user/
+.Renviron
+
+# OS clutter
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Node
+node_modules/

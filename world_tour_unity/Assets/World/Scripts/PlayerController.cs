@@ -10,25 +10,73 @@ namespace WorldTour.World
         public float speed = 5f;
         public float bounds = 13.5f;
         public Transform marker;
+        [Tooltip("Optional. Found on the figure when empty. Gets the float parameter \"Speed\" (0 idle, about 5 at a run).")]
+        public Animator animator;
         public float planarSpeed { get; private set; }
+        /// <summary>True while she is walking toward a clicked point.</summary>
+        public bool HasTarget { get { return hasTarget; } }
 
         bool hasTarget;
         Vector3 target;
         static readonly Plane Ground = new Plane(Vector3.up, Vector3.zero);
 
+        void Awake()
+        {
+            if (animator == null) animator = GetComponentInChildren<Animator>();
+        }
+
+        /// <summary>Walks to a ground point as if it had been clicked (phase 8.1: click on a crew member, walk up to them).</summary>
+        public void WalkTo(Vector3 point)
+        {
+            target = Clamp(point);
+            hasTarget = true;
+        }
+
+        public void StopWalking() { hasTarget = false; }
+
+        /// <summary>Puts her on a ground point at once (loading a saved position, travel).</summary>
+        public void Place(Vector3 point)
+        {
+            hasTarget = false;
+            Vector3 p = Clamp(point);
+            transform.position = p;
+        }
+
+        /// <summary>Turns her toward a point on the ground without walking.</summary>
+        public void Face(Vector3 point)
+        {
+            Vector3 to = point - transform.position; to.y = 0;
+            if (to.sqrMagnitude > 0.0001f) transform.rotation = Quaternion.LookRotation(to.normalized, Vector3.up);
+        }
+
         void Update()
         {
+            if (WorldInput.Paused)
+            {
+                hasTarget = false;
+                planarSpeed = 0f;
+                AnimSafe.Float(animator, "Speed", 0f);
+                if (marker != null) marker.gameObject.SetActive(false);
+                return;
+            }
+
             Vector2 key = ReadKeys();
             Vector3 move = Vector3.zero;
 
             var mouse = Mouse.current;
             if (mouse != null && mouse.leftButton.wasPressedThisFrame && cam != null)
             {
-                Ray ray = cam.ScreenPointToRay(mouse.position.ReadValue());
-                if (Ground.Raycast(ray, out float t))
+                Vector2 sp = mouse.position.ReadValue();
+                bool onUi = WorldInput.ClickIsOnUi != null && WorldInput.ClickIsOnUi(sp);
+                bool used = !onUi && WorldInput.ClickUsed != null && WorldInput.ClickUsed(sp);
+                if (!onUi && !used)
                 {
-                    target = Clamp(ray.GetPoint(t));
-                    hasTarget = true;
+                    Ray ray = cam.ScreenPointToRay(sp);
+                    if (Ground.Raycast(ray, out float t))
+                    {
+                        target = Clamp(ray.GetPoint(t));
+                        hasTarget = true;
+                    }
                 }
             }
 
@@ -51,6 +99,7 @@ namespace WorldTour.World
             transform.position = pos;
 
             planarSpeed = (pos - before).magnitude / Mathf.Max(Time.deltaTime, 0.0001f);
+            AnimSafe.Float(animator, "Speed", planarSpeed);
             // Walking into a blocker on the way to a click target: give up on it.
             if (hasTarget && move.sqrMagnitude > 0 && planarSpeed < speed * 0.15f) hasTarget = false;
 

@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29f3256026f05374b9916c522b5736ac, type: 3}
+  m_Name: WorldGameplayAssets
+  m_EditorClassIdentifier: WorldTour.World.Gameplay::WorldTour.World.Gameplay.WorldGameplayAssets
+  buttonPrefab: {fileID: 2345145129357551469, guid: 3864e575125930b49bcbf091022095d3, type: 3}
+  burstMaterial: {fileID: 2100000, guid: 60e490e4b1b1af4479a66e36f24a9827, type: 2}
+  figureMaterials:
+  - {fileID: 2100000, guid: 637d61f5ea1d51d48857de42222327b2, type: 2}
+  - {fileID: 2100000, guid: 17ff39fe3a0ed51418a802096299f459, type: 2}
+  - {fileID: 2100000, guid: 3f9c76e8b74ab734e98789078f39f9c1, type: 2}
+  - {fileID: 2100000, guid: 0164e61475e00844fa7981abbaec25ce, type: 2}
+  - {fileID: 2100000, guid: a082205368c11a94aa207185f0fce958, type: 2}
+  - {fileID: 2100000, guid: 308fcee8ff643d943a6a1a99bed247c6, type: 2}
+  capsuleMesh: {fileID: 10205, guid: 0000000000000000e000000000000000, type: 0}
+  sphereMesh: {fileID: 10200, guid: 0000000000000000e000000000000000, type: 0}
+  crowdFigures:
+  - {fileID: 3104151661934907533, guid: 49dbd28f1a66e3646bccd5b7221da890, type: 3}
+  - {fileID: 6226830461716726682, guid: 2da4221a2b4e2104b92b7e1b73ca8c93, type: 3}
+  - {fileID: 7452251696964827039, guid: 72f790f6742eedf4685b5d35f2fb7a1c, type: 3}
+  - {fileID: 6357036491671617794, guid: 2c3cb049735e3284ebcaa78dbbbd372c, type: 3}
+  - {fileID: 6853296227303462044, guid: 97b9d1956a8448c4fb66b9502c53d6e0, type: 3}
+  - {fileID: 6678778749487168740, guid: db5ec99f9c49f65419ac5922a03a607b, type: 3}
+  - {fileID: 3925271129567307410, guid: 561cda2f03c94394db2e1f842eefc888, type: 3}
+  - {fileID: 3809129396978485746, guid: a594bc70a58cd5e488982d7076cf7a39, type: 3}
+  - {fileID: 1989638405575838846, guid: 5d8976fc61d1e1b4387305c8a1a4629b, type: 3}
+  - {fileID: 8939257627153946261, guid: ae6ba4dadf64ee542b154dd2e80f4f59, type: 3}
+  - {fileID: 6953000019483269377, guid: 6ae8d8027ccf5e54f84fed2e31cddac8, type: 3}
+  - {fileID: 6414862959662713685, guid: 4efa9681cd616da4aa211f9c01a2e621, type: 3}
+  - {fileID: 4485245436885500923, guid: deabbc54e5b4dfe42aa64aefff746cae, type: 3}

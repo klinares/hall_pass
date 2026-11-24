@@ -113,6 +113,8 @@ namespace WorldTour.Core.Shows
         public int Best;
         public bool Sold;
         public bool Encore;
+        /// <summary>Phase 8.1: a short gig (3 to 5 songs) from the 3D world; never sold out, not kept in the show history.</summary>
+        public bool Gig;
 
         // ticket fields
         public double Pct;

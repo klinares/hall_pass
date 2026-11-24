@@ -1,7 +1,7 @@
 // BuildWeb.BuildWorld: builds the 3D scene(s) into world/ at the repo root. Same allowlist, staging and publish
 // code as BuildWeb.Build (this is a partial of that class), with these differences:
 //   - the output folder is only ever exactly <repo>/world (or a folder outside the repo, same rules as Build);
-//   - the scene list is the world scenes below, not the 2D build list;
+//   - the scene list is the world scenes below (Place_Coffee first), not the 2D build list;
 //   - for the length of the build the quality levels and the default pipeline point at UniversalRP_3D (3D
 //     renderer, HDR, shadows), then everything is put back, so tour/ builds and renders exactly as before;
 //   - weeks.json and math_config.json are copied FROM tour/StreamingAssets/ into world/StreamingAssets/ (overwriting
@@ -20,7 +20,9 @@ public static partial class BuildWeb
 {
     const string QualityFile = "ProjectSettings/QualitySettings.asset";
     const string GlobalFile = "Assets/Settings/UniversalRenderPipelineGlobalSettings.asset";
-    static readonly string[] WorldScenes = { WorldSpikeBuilder.ScenePath };
+    static readonly string[] DefaultWorldScenes = { PlaceCoffeeBuilder.ScenePath };   // phase 8.1: Place_Coffee is the first scene; WorldSpike stays out of the build
+    // 8.1 builder B: -worldScenes "a.unity;b.unity" overrides the list (the gameplay was tested on WorldSpike before Place_Coffee existed)
+    static string[] WorldScenes { get { string a = Arg("-worldScenes"); return string.IsNullOrEmpty(a) ? DefaultWorldScenes : a.Split(';'); } }
 
     public static void BuildWorld()
     {
@@ -30,6 +32,8 @@ public static partial class BuildWeb
         var savedRefs = new System.Collections.Generic.List<UnityEngine.Object>();
         SerializedObject qualitySO = null;
         byte[] qualityBytes = null, globalBytes = null;
+        var savedAA = new System.Collections.Generic.List<int>();
+        int savedGlobalAA = 0;
         RenderPipelineAsset savedDefault = null;
         bool swapped = false;
         try
@@ -44,6 +48,7 @@ public static partial class BuildWeb
             summaryPath = ResolveSummaryPath(project, outDir, staging, defaultSummary, summary);
 
             if (!CheckPaths(project, outDir, staging, summary, "world")) throw new Exception("path check failed");
+            CleanStaleWorldBuild(outDir, summary);
 
             if (EditorUserBuildSettings.activeBuildTarget != BuildTarget.WebGL &&
                 !EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.WebGL, BuildTarget.WebGL))
@@ -69,6 +74,11 @@ public static partial class BuildWeb
             var levels = qualitySO.FindProperty("m_QualitySettings");
             for (int i = 0; i < levels.arraySize; i++)
                 savedRefs.Add(levels.GetArrayElementAtIndex(i).FindPropertyRelative("customRenderPipeline").objectReferenceValue);
+            // URP copies the pipeline asset's MSAA setting into QualitySettings.antiAliasing when the pipeline changes, so the 0 the
+            // quality levels have flips to 2 and Unity saves it at exit. Remember every level's value and put it back (8.1 housekeeping).
+            savedGlobalAA = QualitySettings.antiAliasing;
+            for (int i = 0; i < levels.arraySize; i++)
+                savedAA.Add(levels.GetArrayElementAtIndex(i).FindPropertyRelative("antiAliasing").intValue);
             Debug.Log("BuildWorld: saved quality pipelines: " + string.Join(", ", savedRefs.Select(r => r == null ? "null" : r.name)));
             qualityBytes = File.ReadAllBytes(QualityFile);
             globalBytes = File.ReadAllBytes(GlobalFile);
@@ -138,8 +148,11 @@ public static partial class BuildWeb
                     var levels = qualitySO.FindProperty("m_QualitySettings");
                     for (int i = 0; i < levels.arraySize && i < savedRefs.Count; i++)
                         levels.GetArrayElementAtIndex(i).FindPropertyRelative("customRenderPipeline").objectReferenceValue = savedRefs[i];
+                    for (int i = 0; i < levels.arraySize && i < savedAA.Count; i++)
+                        levels.GetArrayElementAtIndex(i).FindPropertyRelative("antiAliasing").intValue = savedAA[i];
                     qualitySO.ApplyModifiedPropertiesWithoutUndo();
                     GraphicsSettings.defaultRenderPipeline = savedDefault;
+                    QualitySettings.antiAliasing = savedGlobalAA;
                     AssetDatabase.SaveAssets();
                     // Belt and braces: if the file on disk still differs from what it was, put the original bytes back.
                     if (qualityBytes != null && !File.ReadAllBytes(QualityFile).AsSpan().SequenceEqual(qualityBytes))
@@ -167,5 +180,35 @@ public static partial class BuildWeb
             !(defaultSummary != null && summaryPath != defaultSummary && WriteSummaryFallback(summaryPath, defaultSummary, summary)))
             ok = false;
         EditorApplication.Exit(ok ? 0 : 1);
+    }
+
+    static readonly System.Text.RegularExpressions.Regex HashedBuildFile = new System.Text.RegularExpressions.Regex(
+        @"^[0-9a-f]{32}\.(loader\.js|framework\.js|data|wasm)(\.unityweb|\.br|\.gz)?$");
+
+    /// <summary>
+    /// A build that failed half way through publishing can leave hash-named Build/ files that no manifest lists. Before a new
+    /// build, delete only files that are provably this builder's: the folder's build.json is written by BuildWeb, the file is
+    /// in Build/, its name is the 32-hex-digit name a Unity Web build gives its loader, framework, data and wasm, it is in
+    /// neither the current nor the previous set, and the live index.html does not mention it. Nothing else is ever touched.
+    /// </summary>
+    static void CleanStaleWorldBuild(string outDir, Summary summary)
+    {
+        string manifestPath = Path.Combine(outDir, "build.json"), buildDir = Path.Combine(outDir, "Build");
+        if (!File.Exists(manifestPath) || !Directory.Exists(buildDir)) return;
+        Manifest m;
+        try { m = JsonUtility.FromJson<Manifest>(File.ReadAllText(manifestPath)); } catch { return; }
+        if (m == null || m.writer != WriterId || m.current == null) return;
+        var known = new System.Collections.Generic.HashSet<string>(BuildFiles(m.current));
+        if (m.previous != null) known.UnionWith(BuildFiles(m.previous));
+        string indexPath = Path.Combine(outDir, "index.html");
+        string index = File.Exists(indexPath) ? File.ReadAllText(indexPath) : "";
+        foreach (var f in Directory.GetFiles(buildDir))
+        {
+            string name = Path.GetFileName(f), rel = Rel(outDir, f);
+            if (known.Contains(rel) || !HashedBuildFile.IsMatch(name) || index.Contains(name)) continue;
+            File.Delete(f);
+            summary.pruned.Add(rel);
+            Debug.Log("BuildWorld: removed stale " + rel + " (listed in no build.json set, not used by index.html)");
+        }
     }
 }

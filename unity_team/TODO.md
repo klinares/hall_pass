@@ -13,8 +13,8 @@ Kept on disk so a new session can resume from here (see the FYI in ADVISOR.md, 2
 
 ## Phase 8 (3D explorable World Tour -> world/) - ADVISOR 2026-11-23 20:50; sonnet workers, max 2 builders + 1 tester
 - Owner approved CC0 art AND audio downloads (2026-11-23, asked directly; DECISIONS). List every pack in world_tour_unity/ASSETS.md.
-- [ ] 8.0 spike: URP 3D renderer, primitive character, follow camera, click-to-move, BuildWeb.BuildWorld -> world/, browser test, size/fps/shot (builder running). CC0 pack search + licence check into scratchpadssets_quarantine (worker running)
-- [ ] 8.1 first place end to end (walk, talk, spelling + math gig panels, stage show, rewards, save, unlock); tester + look review both sizes; kid-fit script; two fix rounds; lead judges look before 8.2 (reasons in DECISIONS)
+- [x] 8.0 spike (1457487): world/ 12.05 MB, 60 fps GPU at both sizes (SwiftShader 10/5 fps -> Q26: fps floor measured with --gpu d3d11). Art set chosen (DECISIONS); all packs have FBX, so no glTF package
+- [ ] 8.1 (running: builder A art + Place_Coffee + ASSETS.md; builder B talk/gigs/stage/save/unlock; contract = empties PlayerSpawn, Crew_1..3, StageSpot, CrowdArea, ExitSpot + animator Speed/Talk/Cheer/Listen) first place end to end (walk, talk, spelling + math gig panels, stage show, rewards, save, unlock); tester + look review both sizes; kid-fit script; two fix rounds; lead judges look before 8.2 (reasons in DECISIONS)
 - [ ] 8.2 other seven places (shared kit; per-place layout, palette, landmark, time of day); two builders
 - [ ] 8.3 wearable shop items, crowd growth, travel moments, footsteps/ambience sound
 - [ ] 8.4 whole-tour tester + kid-fit, two fix rounds, final build, commit world/ world_tour_unity/ unity_team/, REPORT.md + 8 shots in unity_team/shots/phase8/. Do not push.

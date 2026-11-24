@@ -69,6 +69,20 @@ namespace WorldTour.Game
         }
 
         /// <summary>
+        /// Phase 8.1: the world game's start. Loads weeks.json and math_config.json and opens the same save as Boot does
+        /// (logging WT_DATA_READY and WT_SAVE_READY), with no start card and no scene change. Safe to run more than once.
+        /// </summary>
+        public static IEnumerator BootForWorld()
+        {
+            if (Ready) yield break;
+            yield return DataLoader.Load();
+            try { Debug.Log(DataSummary(LocalClock.TodayIso())); }
+            catch (Exception e) { Debug.LogWarning("boot: could not summarize the data: " + e.Message); }
+            OpenSave();
+            Ready = true;
+        }
+
+        /// <summary>
         /// Opens the save (localStorage on the web, memory when storage is blocked), writes it once, and logs
         /// "WT_SAVE_READY persistent=true fans=0 unlocked=1 v=1 recovered=false". recovered = an unreadable save was found
         /// and kept in a rescue slot (worldtour.v1.unreadable, or .unreadable.2) before being replaced. If it couldn't be

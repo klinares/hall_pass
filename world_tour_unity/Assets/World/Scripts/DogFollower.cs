@@ -8,7 +8,11 @@ namespace WorldTour.World
         public Transform target;
         public Transform rig, tail, legFL, legFR, legBL, legBR;
         public float followDistance = 1.7f, speed = 5.6f;
+        [Tooltip("Optional. Found on the figure when empty. Gets the float parameter \"Speed\" (phase 8.1 contract).")]
+        public Animator animator;
         float phase, trot;
+
+        void Awake() { if (animator == null) animator = GetComponentInChildren<Animator>(); }
 
         void Update()
         {
@@ -29,6 +33,7 @@ namespace WorldTour.World
                 Quaternion want = Quaternion.LookRotation(to / d, Vector3.up);
                 transform.rotation = Quaternion.Slerp(transform.rotation, want, 1f - Mathf.Exp(-9f * Time.deltaTime));
             }
+            AnimSafe.Float(animator, "Speed", moved);
             trot = Mathf.MoveTowards(trot, Mathf.Clamp01(moved / 2f), Time.deltaTime * 6f);
             phase += Time.deltaTime * (9f + moved) * trot;
             float s = Mathf.Sin(phase) * 35f * trot;

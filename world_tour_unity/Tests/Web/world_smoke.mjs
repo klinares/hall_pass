@@ -50,6 +50,183 @@ const RAF_COUNTER = `(() => {
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 let browser = null, server = null;
+
+// ---------------------------------------------------------------------------------------------------------------
+// Phase 8.1 gameplay: walk to a crew member (click on them), talk, play the gig to the end (3 to 5 questions, answered
+// from the answer the game logs in WT_MATH, typed on the keyboard as the 2D tests do), walk to the stage, start the show,
+// play all ten songs to the ticket, go back to the world, then reload and check the fans persisted. The page is opened
+// with ?wt_test, which makes the game log the screen position of each crew member, the stage and the exit.
+// ---------------------------------------------------------------------------------------------------------------
+async function gameplay() {
+  const [vw, vh] = sizes[0];
+  const g = results.gameplay = { size: `${vw}x${vh}`, steps: [], errors: [], numbers: {} };
+  const step = m => { g.steps.push(m); console.log('  gameplay: ' + m); };
+  const gfail = m => { g.steps.push('FAIL ' + m); fail('gameplay: ' + m); };
+  const ctx = await browser.newContext({ viewport: { width: vw, height: vh } });
+  const page = await ctx.newPage();
+  const lines = [];
+  page.on('console', m => {
+    const text = m.text();
+    if (m.type() === 'error') g.errors.push(text);
+    lines.push({ t: Date.now(), text });
+  });
+  page.on('pageerror', e => g.errors.push('pageerror: ' + e.message));
+  const mark = () => lines.length;
+  const waitAny = async (res, ms, from = 0) => {
+    const end = Date.now() + ms;
+    for (;;) {
+      for (let i = from; i < lines.length; i++) if (res.some(r => r.test(lines[i].text))) return { i, text: lines[i].text };
+      if (Date.now() > end) return null;
+      await sleep(40);
+    }
+  };
+  const waitLine = async (re, ms, from = 0) => (await waitAny([re], ms, from));
+  const lastTargets = () => {
+    for (let i = lines.length - 1; i >= 0; i--) if (lines[i].text.startsWith('WT_WORLD_TARGETS')) return lines[i].text;
+    return null;
+  };
+  const target = (name) => {
+    const t = lastTargets();
+    const m = t && new RegExp(`${name}=(-?\\d+):(-?\\d+)(?:;(\\w*))?`).exec(t);
+    return m ? { x: +m[1], y: +m[2], mode: m[3] || '' } : null;
+  };
+  const shot = async name => { await page.screenshot({ path: path.join(shotsDir, `world_${name}_${vw}x${vh}.png`) }); };
+  const storedFans = async () => page.evaluate(() => { try { const j = JSON.parse(localStorage.getItem('worldtour.v1')); return j ? j.fans.lifetime : null; } catch (e) { return null; } });
+
+  // plays every question of a gig or show by typing the logged answer; returns the number of songs answered
+  async function playSongs(doneRe, label, from) {
+    let m = from, songs = 0;
+    for (let guard = 0; guard < 40; guard++) {
+      const hit = await waitAny([/^WT_MATH mode=/, doneRe], 25000, m);
+      if (!hit) { gfail(`${label}: neither a question nor the end after ${songs} songs`); return songs; }
+      if (doneRe.test(hit.text)) return songs;
+      const raw = /answer=(\S+)/.exec(hit.text);
+      if (!raw) { gfail(`${label}: no answer in "${hit.text}"`); return songs; }
+      const ans = raw[1].replace(/[^0-9.\-]/g, '');
+      await sleep(900);                                  // let the mode finish drawing and the keypad listen
+      await page.keyboard.type(ans, { delay: 70 });
+      await page.keyboard.press('Enter');
+      const res = await waitLine(/^WT_SONG_RESULT/, 12000, hit.i + 1);
+      if (!res) { gfail(`${label}: no result for "${hit.text}" typing ${ans}`); return songs; }
+      if (!/kind=clean/.test(res.text)) gfail(`${label}: answer ${ans} was not clean: ${res.text}`);
+      songs++;
+      m = res.i + 1;
+    }
+    return songs;
+  }
+
+  await page.goto(server.url + '?wt_test=1', { waitUntil: 'load' });
+  const ready = await waitLine(/^WT_WORLD_GAME_READY/, READY_TIMEOUT_MS);
+  if (!ready) { gfail('no WT_WORLD_GAME_READY'); await ctx.close(); return; }
+  step(ready.text);
+  await page.evaluate(() => { const c = document.getElementById('unity-canvas'); if (c) c.focus(); });
+  await sleep(1500);
+
+  // ---- walk to the first crew member by clicking them, then talk
+  const crewT = target('crew1');
+  if (!crewT) { gfail('no crew1 position logged'); await ctx.close(); return; }
+  g.crewMode = crewT.mode;
+  if (crewT.mode !== 'tickets') gfail(`crew1 offers "${crewT.mode}", the test types ticket sales answers`);
+  await page.mouse.click(crewT.x, crewT.y);
+  const talk = await waitLine(/^WT_WORLD_TALK crew=Crew_1/, 25000);
+  if (!talk) { gfail('clicking crew 1 never started a talk'); await shot('talk_missing'); await ctx.close(); return; }
+  step('talk: ' + talk.text);
+  await sleep(700);
+  await shot('talk');
+
+  // ---- accept the gig (Enter) and play it to the end
+  let m0 = mark();
+  await page.keyboard.press('Enter');
+  const start = await waitLine(/^WT_GIG_START/, 8000, m0);
+  if (!start) { gfail('Enter on the offer did not start a gig'); await shot('gig_missing'); await ctx.close(); return; }
+  const gigN = +/n=(\d+)/.exec(start.text)[1];
+  g.gigLength = gigN;
+  if (gigN < 3 || gigN > 5) gfail(`gig length ${gigN} is outside 3 to 5`);
+  await sleep(1800);
+  await shot('gig');
+  const songs = await playSongs(/^WT_GIG_DONE/, "gig", m0);
+  g.gigSongs = songs;
+  if (songs !== gigN) gfail(`the gig had ${gigN} songs but ${songs} were answered`);
+  await sleep(700);
+  await shot('gig_done');
+  m0 = mark();
+  await page.keyboard.press('Enter');                    // "keep exploring"
+  if (!await waitLine(/^WT_WORLD_MODE mode=Free/, 8000, m0)) gfail('the world did not come back after the gig card');
+  const fansGig = await storedFans();
+  g.numbers.fansAfterGig = fansGig;
+  if (!(fansGig > 0)) gfail(`no fans saved after the gig (${fansGig})`);
+  // 3 clean songs earn 1000 + 2000 + 3000; the saved count must have moved by the gig's own total
+  step(`gig of ${gigN}: fans saved ${fansGig}`);
+
+  // ---- the stage: walk onto it, play the show
+  await sleep(1200);
+  const stageT = target('stage');
+  if (!stageT) { gfail('no stage position logged'); await ctx.close(); return; }
+  m0 = mark();
+  await page.mouse.click(stageT.x, stageT.y);
+  if (!await waitLine(/^WT_WORLD_STAGE_OFFER/, 30000, m0)) { gfail('walking onto the stage never offered the show'); await shot('stage_missing'); await ctx.close(); return; }
+  await sleep(500);
+  await shot('stage_offer');
+  m0 = mark();
+  await page.keyboard.press('Enter');
+  if (!await waitLine(/^WT_WORLD_SHOW_START/, 6000, m0)) { gfail('Enter on the stage offer did not start the show'); await ctx.close(); return; }
+  const showStart = await waitLine(/^WT_SHOW_START/, 12000, m0);
+  if (!showStart) { gfail('the show never started'); await shot('show_missing'); await ctx.close(); return; }
+  step(showStart.text);
+  await sleep(1500);
+  await shot('show');
+  const showSongs = await playSongs(/^WT_SHOW_DONE/, "show", m0);
+  g.showSongs = showSongs;
+  if (showSongs !== 10) gfail(`the show had ${showSongs} songs, want 10`);
+  const ticket = await waitLine(/^WT_TICKET_SHOWN/, 12000, m0);
+  if (!ticket) gfail('no ticket after the show'); else step(ticket.text);
+  await sleep(1200);
+  await shot('ticket');
+
+  // ---- back to the world from the ticket (Tab, ArrowRight or ArrowDown then Enter, as the 2D test does)
+  m0 = mark();
+  let back = false;
+  for (const k of ['Tab', 'ArrowRight', 'ArrowDown']) {
+    const mm = mark();
+    await page.keyboard.press(k); await sleep(120); await page.keyboard.press('Enter');
+    if (await waitLine(/^WT_TICKET_ACTION action=map/, 1500, mm)) { back = true; break; }
+    if (lines.slice(mm).some(l => /^WT_TICKET_ACTION action=again/.test(l.text))) { gfail('reached play again, not back to the map'); break; }
+  }
+  if (!back) gfail('could not reach "back to the map" on the ticket');
+  if (!await waitLine(/^WT_WORLD_MODE mode=(Free|Dialog)/, 8000, m0)) gfail('the world did not come back after the ticket');
+  await sleep(1500);
+  await shot('after_show');
+  const fansShow = await storedFans();
+  g.numbers.fansAfterShow = fansShow;
+  if (!(fansShow > fansGig)) gfail(`the show added no fans (${fansGig} to ${fansShow})`);
+
+  // ---- reload: the fans (and where she is) persist
+  await sleep(500);
+  const json = await page.evaluate(() => localStorage.getItem('worldtour.v1'));
+  const saved = JSON.parse(json);
+  g.world = saved.world;
+  if (!saved.world || saved.world.place !== 'coffee' || !saved.world.position || !(saved.world.metCrew || []).includes('coffee/Crew_1'))
+    gfail('the save has no usable world key: ' + JSON.stringify(saved.world));
+  const keys = Object.keys(saved);
+  for (const k of ['v', 'fans', 'venues', 'skills', 'words', 'streak', 'inventory', 'journal']) if (!keys.includes(k)) gfail('the save lost key ' + k);
+  m0 = mark();
+  await page.reload({ waitUntil: 'load' });
+  const ready2 = await waitLine(/^WT_WORLD_GAME_READY/, READY_TIMEOUT_MS, m0);
+  if (!ready2) { gfail('no ready line after reload'); await ctx.close(); return; }
+  const fansAfterReload = +/fans=(\d+)/.exec(ready2.text)[1];
+  g.numbers.fansAfterReload = fansAfterReload;
+  if (fansAfterReload !== fansShow) gfail(`reload shows ${fansAfterReload} fans, the save had ${fansShow}`);
+  const sr = await waitLine(/^WT_SAVE_READY/, 5000, m0);
+  if (!sr || !new RegExp(`fans=${fansShow}\\b`).test(sr.text)) gfail('WT_SAVE_READY after reload: ' + (sr && sr.text));
+  step(`reload: ${ready2.text}`);
+  await sleep(1500);
+  await shot('after_reload');
+
+  if (g.errors.length) gfail(`${g.errors.length} console error(s): ${g.errors.slice(0, 3).join(' | ').slice(0, 300)}`);
+  console.log(`gameplay: gig ${gigN} songs, show ${showSongs} songs, fans ${fansGig} -> ${fansShow} -> reload ${fansAfterReload}`);
+  await ctx.close();
+}
+
 try {
   if (!fs.existsSync(path.join(site, 'index.html'))) throw new Error(`no index.html in ${site}; run BuildWeb.BuildWorld first`);
   server = await startServer(site);
@@ -141,6 +318,7 @@ try {
     console.log(`${key}: ready ${r.readyMs} ms, ${r.fps} fps (unity ${r.unityFps}), renderer "${r.renderer}", ${(r.bytes / 1e6).toFixed(1)} MB over the wire`);
     await ctx.close();
   }
+  if (!argv.includes('--no-gameplay')) await gameplay();
 } catch (e) {
   results.failures.push('runner: ' + (e && e.stack || e));
   console.error(e);

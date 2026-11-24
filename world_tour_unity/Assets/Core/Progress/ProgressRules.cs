@@ -336,7 +336,8 @@ namespace WorldTour.Core.Progress
                         break;
                     case ShowEventKind.ShowFinished:
                         string day = today();
-                        FinishShow(s, e.Summary, day);
+                        if (e.Summary.Gig) TickStreak(s, day);   // phase 8.1: a gig counts for the day streak, not the show history
+                        else FinishShow(s, e.Summary, day);
                         List<Milestone> fresh = AwardStickers(s, modes, day);
                         if (onStickers != null) onStickers(fresh);
                         break;

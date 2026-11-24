@@ -22,6 +22,8 @@ namespace WorldTour.Core.Shows
         /// <summary>The songs, in order (from <see cref="ShowPicker"/>, or the encore list).</summary>
         public IReadOnlyList<ShowItem> Items;
         public bool Encore;
+        /// <summary>Phase 8.1: a short gig in the 3D world. It plays by the show rules; it just is not a sold-out night and is not written to the show history (the day streak still ticks).</summary>
+        public bool Gig;
         /// <summary>The saved record for <see cref="Skill"/>. The engine updates it in place (JS P.recordSkill). Null = a fresh level-1 record.</summary>
         public SkillRecord SkillRecord;
         /// <summary>Phase 7.1: the level rules (cap, floor, run lengths). Null = the web game's rules (levels 1 to 3, up after 4).</summary>
@@ -373,7 +375,8 @@ namespace WorldTour.Core.Shows
                 Fans = Fans,
                 Secs = (int)Math.Floor(ms / 1000.0 + 0.5),
                 Best = Best,
-                Sold = Scoring.SoldOut(IsEncore, n, pct),
+                Gig = _setup.Gig,
+                Sold = !_setup.Gig && Scoring.SoldOut(IsEncore, n, pct),
                 Encore = IsEncore,
                 Pct = pct,
                 Vip = pct >= Scoring.VipAt,

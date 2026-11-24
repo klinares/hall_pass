@@ -41,6 +41,10 @@ namespace WorldTour.Game.Show
         /// <summary>Songs already chosen (the encore); null = pick from the week (show.js pickWords).</summary>
         public List<ShowItem> Items;
         public bool Encore;
+        /// <summary>Phase 8.1: how many songs to pick; null = the full show (Scoring.ShowLength). A gig in the 3D world passes 3 to 5.</summary>
+        public int? Length;
+        /// <summary>Phase 8.1: a short gig (see ShowSetup.Gig).</summary>
+        public bool Gig;
         /// <summary>Seed for every random choice in the show; null = a new one from the clock. Tests pass one.</summary>
         public long? Seed;
         /// <summary>The save; null = Boot.Store, or an unsaved fresh save if there is none (Main opened alone).</summary>
@@ -198,8 +202,9 @@ namespace WorldTour.Game.Show
             bool isMath = info != null && info.Kind == ModeInfo.Math;
             string skill = isMath ? info.Skill : null;
             List<ShowItem> items = request.Items;
+            int songs = request.Length ?? Scoring.ShowLength;
             if (items == null && isMath)
-                items = ShowPicker.PickProblems(skill, ProgressRules.ReviewItems(Save, skill), _random);
+                items = ShowPicker.PickProblems(skill, ProgressRules.ReviewItems(Save, skill), _random, songs);
             if (items == null)
             {
                 // index.js poolFor: lyric writer and prefix mixer play only their own words (lyric.js:70, prefix.js:156)
@@ -207,7 +212,7 @@ namespace WorldTour.Game.Show
                     .Where(w => w != null && !string.IsNullOrEmpty(w.w))
                     .Select(w => new WordItem(w.w, w.s, w)).ToList();
                 items = ShowPicker.PickWords(pool, new HashSet<string>(ProgressRules.ReviewWords(Save)),
-                    w => ProgressRules.WordAttempts(Save, w), _random).Cast<ShowItem>().ToList();
+                    w => ProgressRules.WordAttempts(Save, w), _random, songs).Cast<ShowItem>().ToList();
             }
 
             // phase 7.1: the level rules for this skill (math_config.json, and the office's gentle switch); a skill nobody
@@ -216,7 +221,7 @@ namespace WorldTour.Game.Show
             LevelPolicy policy = ProgressRules.PolicyFor(Save, skillId, config);
             Engine = new ShowEngine(new ShowSetup
             {
-                IsMath = isMath, ModeId = request.ModeId, Skill = skill, VenueId = request.VenueId, Items = items, Encore = request.Encore,
+                IsMath = isMath, ModeId = request.ModeId, Skill = skill, VenueId = request.VenueId, Items = items, Encore = request.Encore, Gig = request.Gig,
                 SkillRecord = ProgressRules.SkillForShow(Save, skillId, policy), Policy = policy
             });
             _result = new ShowResult { Request = request, Engine = Engine, Week = request.Week };

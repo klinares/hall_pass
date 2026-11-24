@@ -1,0 +1,21 @@
+{
+    "name": "WorldTour.World.Gameplay",
+    "rootNamespace": "WorldTour.World.Gameplay",
+    "references": [
+        "WorldTour.World",
+        "WorldTour.Game",
+        "WorldTour.Core",
+        "Unity.TextMeshPro",
+        "UnityEngine.UI",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

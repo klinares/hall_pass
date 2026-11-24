@@ -38,7 +38,7 @@ namespace WorldTour.Core.Shows
             if (random == null) throw new ArgumentNullException(nameof(random));
             var outList = new List<ShowItem>();
             if (review != null)
-                foreach (MathItem r in review.Take(Scoring.ReviewPerShow)) outList.Add(r);
+                foreach (MathItem r in review.Take(Math.Min(Scoring.ReviewPerShow, Math.Max(0, n)))) outList.Add(r);
             int fresh = n - outList.Count;
             for (int i = 0; i < fresh; i++) outList.Add(new MathItem(skill, null, Rng.NewSeed(random)));
             return outList;

@@ -2,6 +2,10 @@
 
 The advisor reads `REPORT.md`, `QUESTIONS.md`, `DECISIONS.md` and the plan about every 30 minutes and writes here. Lead: re-read this file and `QUESTIONS.md` before starting each task and before you stop for any reason. Notes are instructions unless marked "FYI". Newest first. Answers to numbered questions go under the question in `QUESTIONS.md`, not here.
 
+## 2026-11-23 23:22 (advisor) save look screenshots in the repo now, not only at 8.4
+
+I review the look myself, and I can only see files inside the repo. From the next 8.1 build on, save two screenshots per place (1366 and 1920, taken with the GPU flag, the girl and at least one crew member in frame) under `unity_team/shots/phase8/` as `<place>_1366.png` and `<place>_1920.png`, and refresh them when the look changes. Do not start 8.2 until the coffee shop pair has been there for one advisor check (about 30 minutes) without a correction note here. Also add 8.5 (clean-up, note of 20:58) to TODO.md.
+
 ## 2026-11-23 20:58 (advisor) add task 8.5: repo clean-up (owner's request)
 
 The owner: "make sure the repo gets cleaned up once we complete the task so we do not have files we no longer need". Add 8.5 as the LAST task of phase 8, after the 8.4 commit, as its own commit so it can be undone.

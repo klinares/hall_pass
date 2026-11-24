@@ -1,0 +1,707 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
+using WorldTour.Core.Data;
+using WorldTour.Core.Maths;
+using WorldTour.Core.Meta;
+using WorldTour.Core.Progress;
+using WorldTour.Core.Shows;
+using WorldTour.Core.Tour;
+using WorldTour.Game;
+using WorldTour.Game.Audio;
+using WorldTour.Game.Data;
+using WorldTour.Game.Flow;
+using WorldTour.Game.Modes;
+using WorldTour.Game.Prefs;
+using WorldTour.Game.Save;
+using WorldTour.Game.Show;
+using WorldTour.Game.Ticket;
+using WorldTour.Game.Ui;
+using WorldTour.Game.Util;
+
+namespace WorldTour.World.Gameplay
+{
+    /// <summary>
+    /// Phase 8.1: the game on top of the 3D world. It starts itself when a scene has a <see cref="PlayerController"/>, opens the same
+    /// save as the 2D game (<see cref="Boot.BootForWorld"/>), and binds the scene by name: the empties PlayerSpawn, Crew_1 to Crew_3,
+    /// StageSpot, CrowdArea and ExitSpot. Then:
+    /// talk (E, Space or a click on a crew member, within 2.5 m) gives one line and a gig offer; a gig opens the 2D mode screen as a
+    /// panel over the world, 3 to 5 questions; the stage spot offers the full ten-song show over a stage camera, with a crowd that grows
+    /// with her fans, then the ticket; the exit spot is the travel moment to the next place.
+    /// Nothing here can lose fans or progress, and nothing runs on a timer that costs her anything.
+    /// Log lines for the browser test (the ones marked test only print when the page URL has wt_test): WT_WORLD_GAME_READY, WT_WORLD_TALK,
+    /// WT_GIG_START, WT_GIG_DONE, WT_WORLD_STAGE_OFFER, WT_WORLD_SHOW_START, WT_WORLD_TRAVEL, WT_WORLD_TARGETS (test only).
+    /// </summary>
+    public sealed class WorldGame : MonoBehaviour
+    {
+        public const string ReadyLog = "WT_WORLD_GAME_READY";
+        public const float TalkRange = 2.5f, StageRadius = 1.4f, ExitRadius = 1.5f;
+
+        enum Mode { Boot, Free, Dialog, Panel, Travel }
+        enum Run { None, Gig, Show }
+
+        sealed class Crew
+        {
+            public string Name;      // Crew_1
+            public int Index;
+            public Transform T;
+            public Animator Anim;
+            public string Mode = "";
+        }
+
+        public static WorldGame Instance { get; private set; }
+        /// <summary>The page was opened with ?wt_test, so the browser test gets screen positions to click.</summary>
+        public static bool TestMode { get; private set; }
+
+        // scene
+        PlayerController _player;
+        Camera _cam;
+        FollowCamera _follow;
+        Transform _spawn, _stage, _crowdArea, _exit;
+        readonly List<Crew> _crew = new List<Crew>();
+        CrowdField _crowd;
+        string _placeId = Venues.First;
+
+        // game
+        WorldUi _ui;
+        WorldGameplayAssets _assets;
+        WorldState _world = new WorldState();
+        Mode _mode = Mode.Boot;
+        Run _run = Run.None;
+        int _modeFrame;
+        Crew _pending, _talking;
+        bool _stageArmed = true, _exitArmed = true;
+        List<ModeInfo> _stageModes = new List<ModeInfo>();
+        int _stageModeIndex;
+        bool _soundUnlocked;
+        float _nextSave, _nextTargets;
+        Vector3 _lastSavedPos = new Vector3(9999, 0, 9999);
+        Coroutine _cameraRoutine;
+        Quaternion _stageRot;
+        Vector3 _stagePos;
+        readonly Rng _rng = new Rng(DateTime.UtcNow.Ticks ^ Environment.TickCount);
+
+        // ---------- start ----------
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        static void Bootstrap()
+        {
+            if (Instance != null) return;
+            if (UnityEngine.Object.FindFirstObjectByType<PlayerController>() == null) return;
+            var go = new GameObject("WorldGame");
+            DontDestroyOnLoad(go);
+            go.AddComponent<WorldGame>();
+        }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetStatics() { Instance = null; TestMode = false; }
+
+        void Awake()
+        {
+            Instance = this;
+            string url = Application.absoluteURL ?? "";
+            TestMode = url.IndexOf("wt_test", StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        IEnumerator Start()
+        {
+            _assets = WorldGameplayAssets.Load();
+            yield return Boot.BootForWorld();
+            SaveStore store = Boot.Store;
+            if (store != null) GameSettings.Bind(store); else GameSettings.Apply();
+            Sfx.Prepare();
+
+            _ui = WorldUi.Create(_assets);
+            _ui.AddHud(store);
+            gameObject.AddComponent<PlayTimer>();
+            ThemeSkin.Attach(gameObject, _ui.Stack);
+            gameObject.AddComponent<FocusNavigator>().Init(_ui.Stack, _ui.Hud);
+            _ui.Stack.TopChanged += OnTopChanged;
+            WorldInput.ClickIsOnUi = _ => _ui != null && _ui.PointerOverUi();
+            WorldInput.ClickUsed = OnWorldClick;
+            SceneManager.sceneLoaded += OnSceneLoaded;
+
+            Bind();
+            SetMode(Mode.Free);
+            Debug.Log(ReadyLog + " place=" + _placeId + " crew=" + string.Join(",", _crew.Select(c => c.Mode))
+                + " fans=" + Fans() + " crowd=" + (_crowd != null ? _crowd.Count : 0));
+        }
+
+        void OnDestroy()
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+            if (_ui != null && _ui.Stack != null) _ui.Stack.TopChanged -= OnTopChanged;
+            if (WorldInput.ClickUsed == (Func<Vector2, bool>)OnWorldClick) WorldInput.ClickUsed = null;
+            WorldInput.Paused = false;
+            if (Instance == this) Instance = null;
+        }
+
+        void OnSceneLoaded(Scene scene, LoadSceneMode loadMode)
+        {
+            if (_mode == Mode.Boot || _travelLoading) return;
+            Bind();
+        }
+
+        // ---------- binding the scene by name ----------
+
+        void Bind()
+        {
+            _player = UnityEngine.Object.FindFirstObjectByType<PlayerController>();
+            if (_player == null) { Debug.LogWarning("[world] no PlayerController in the scene"); return; }
+            _cam = _player.cam != null ? _player.cam : Camera.main;
+            _follow = _cam != null ? _cam.GetComponent<FollowCamera>() : null;
+            if (_cam != null && _cam.GetComponent<AudioListener>() == null && UnityEngine.Object.FindFirstObjectByType<AudioListener>() == null)
+                _cam.gameObject.AddComponent<AudioListener>();
+            _spawn = Find("PlayerSpawn");
+            _stage = Find("StageSpot");
+            _crowdArea = Find("CrowdArea");
+            _exit = Find("ExitSpot");
+            _crew.Clear();
+            for (int i = 1; i <= 3; i++)
+            {
+                Transform t = Find("Crew_" + i);
+                if (t == null) continue;
+                _crew.Add(new Crew { Name = "Crew_" + i, Index = i - 1, T = t, Anim = t.GetComponentInChildren<Animator>() });
+            }
+            _placeId = WorldPlace.Resolve(SceneManager.GetActiveScene().name);
+
+            // which mode each crew member offers
+            Week week = CurrentWeek();
+            List<string> math = MathModes();
+            List<string> spelling = SpellingModes(week);
+            string[] plan = GigPlan.Assign(_placeId, _crew.Count, math, spelling);
+            for (int i = 0; i < _crew.Count; i++) _crew[i].Mode = plan[i];
+            _stageModes = ModeList.All(Config()).Where(m => math.Contains(m.Id) || spelling.Contains(m.Id)).ToList();
+            string first = plan.Length > 0 ? plan[0] : "";
+            _stageModeIndex = Mathf.Max(0, _stageModes.FindIndex(m => m.Id == first));
+
+            // where she starts: the saved spot in this place, else PlayerSpawn
+            SaveStore store = Boot.Store;
+            _world = store != null ? WorldSave.Read(store.Blob) : new WorldState();
+            if (_world.Place == _placeId && _world.HasPosition) _player.Place(new Vector3(_world.X, 0, _world.Z));
+            else if (_spawn != null) { _player.Place(_spawn.position); _player.transform.rotation = _spawn.rotation; }
+            if (_follow != null) { _follow.frozen = false; _follow.transform.position = _follow.FollowPosition; _follow.ResetVelocity(); }
+
+            // the crowd
+            if (_crowd != null) Destroy(_crowd);
+            if (_crowdArea != null)
+            {
+                _crowd = gameObject.AddComponent<CrowdField>();
+                Vector3 face = _stage != null ? _stage.position : _crowdArea.position + Vector3.forward;
+                _crowd.Setup(_crowdArea, face, _assets, GigPlan.PlaceIndex(_placeId) * 31 + 7);
+                _crowd.SetFans(Fans());
+            }
+            _stageArmed = _stage == null || FlatDist(_player.transform.position, _stage.position) > StageRadius + 0.6f;
+            _exitArmed = _exit == null || FlatDist(_player.transform.position, _exit.position) > ExitRadius + 0.6f;
+        }
+
+        static Transform Find(string name)
+        {
+            GameObject go = GameObject.Find(name);
+            return go != null ? go.transform : null;
+        }
+
+        // ---------- what can be offered ----------
+
+        static MathConfig Config() { return DataLoader.Math != null ? DataLoader.Math.Config : null; }
+
+        static List<string> MathModes()
+        {
+            return ModeList.All(Config()).Where(m => m.Kind == ModeInfo.Math).Select(m => m.Id).ToList();
+        }
+
+        static List<string> SpellingModes(Week week)
+        {
+            if (week == null) return new List<string>();
+            return ModeList.All(null).Where(m => m.Kind == ModeInfo.Spelling && ModeRules.IsAvailable(m.Id, week)).Select(m => m.Id).ToList();
+        }
+
+        static Week CurrentWeek()
+        {
+            var weeks = DataLoader.Weeks != null && DataLoader.Weeks.File != null && DataLoader.Weeks.File.weeks != null
+                ? DataLoader.Weeks.File.weeks : new Week[0];
+            return WeekRules.DefaultWeek(weeks, LocalClock.TodayIso());
+        }
+
+        static long Fans() { return Boot.Store != null ? Boot.Store.Blob.Fans.Lifetime : 0; }
+
+        // ---------- the loop ----------
+
+        void SetMode(Mode m)
+        {
+            _mode = m;
+            _modeFrame = Time.frameCount;
+            WorldInput.Paused = m != Mode.Free;
+            if (TestMode) Debug.Log("WT_WORLD_MODE mode=" + m + " run=" + _run);
+        }
+
+        void Update()
+        {
+            if (_mode == Mode.Boot || _player == null) return;
+            UnlockSoundOnFirstPress();
+            if (_mode == Mode.Free && Time.frameCount > _modeFrame) UpdateFree();
+            else if (_mode == Mode.Dialog && _talking != null && _ui.DialogOpen && _cam != null) _ui.MoveDialogAnchor(HeadScreen(_talking.T));
+            if (TestMode && Time.unscaledTime >= _nextTargets) { _nextTargets = Time.unscaledTime + 0.4f; LogTargets(); }
+        }
+
+        void UnlockSoundOnFirstPress()
+        {
+            if (_soundUnlocked) return;
+            Mouse m = Mouse.current; Keyboard k = Keyboard.current;
+            if ((m != null && m.leftButton.wasPressedThisFrame) || (k != null && k.anyKey.wasPressedThisFrame))
+            {
+                _soundUnlocked = true;
+                Sfx.Unlock();
+            }
+        }
+
+        void UpdateFree()
+        {
+            Vector3 p = _player.transform.position;
+            Keyboard k = Keyboard.current;
+
+            Crew near = Nearest(p, TalkRange);
+            if (near != null && _cam != null) _ui.ShowTag(HeadScreen(near.T), "e  talk"); else _ui.HideTag();
+            bool talkKey = k != null && (k.eKey.wasPressedThisFrame || k.spaceKey.wasPressedThisFrame);
+            if (talkKey && near != null) { StartTalk(near); return; }
+
+            // a click on a crew member: she walks up, then they talk
+            if (_pending != null)
+            {
+                if (FlatDist(p, _pending.T.position) <= TalkRange - 0.2f) { StartTalk(_pending); return; }
+                if (!_player.HasTarget) _pending = null;
+            }
+
+            if (_stage != null)
+            {
+                float d = FlatDist(p, _stage.position);
+                if (_stageArmed && d < StageRadius) { OfferStage(); return; }
+                if (!_stageArmed && d > StageRadius + 1.2f) _stageArmed = true;
+            }
+            if (_exit != null)
+            {
+                float d = FlatDist(p, _exit.position);
+                if (_exitArmed && d < ExitRadius) { StartCoroutine(Travel()); return; }
+                if (!_exitArmed && d > ExitRadius + 1.3f) _exitArmed = true;
+            }
+
+            // keep where she stands in the save, now and then (never during a gig or show: those save themselves)
+            if (Time.unscaledTime >= _nextSave)
+            {
+                _nextSave = Time.unscaledTime + 6f;
+                if ((p - _lastSavedPos).sqrMagnitude > 0.16f) SaveWorld();
+            }
+        }
+
+        Crew Nearest(Vector3 p, float range)
+        {
+            Crew best = null; float bd = range;
+            foreach (Crew c in _crew)
+            {
+                float d = FlatDist(p, c.T.position);
+                if (d <= bd) { bd = d; best = c; }
+            }
+            return best;
+        }
+
+        static float FlatDist(Vector3 a, Vector3 b) { a.y = 0; b.y = 0; return Vector3.Distance(a, b); }
+
+        Vector2 HeadScreen(Transform t)
+        {
+            return _cam.WorldToScreenPoint(t.position + Vector3.up * 2.1f);
+        }
+
+        // ---------- clicking a crew member ----------
+
+        bool OnWorldClick(Vector2 screen)
+        {
+            if (_mode != Mode.Free || _cam == null) return false;
+            Crew hit = null; float best = Screen.height * 0.1f;
+            foreach (Crew c in _crew)
+            {
+                Vector3 sp = _cam.WorldToScreenPoint(c.T.position + Vector3.up * 1.0f);
+                if (sp.z <= 0) continue;
+                float d = Vector2.Distance(screen, sp);
+                if (d < best) { best = d; hit = c; }
+            }
+            if (hit == null) return false;
+            Vector3 p = _player.transform.position;
+            if (FlatDist(p, hit.T.position) <= TalkRange - 0.2f) { StartTalk(hit); return true; }
+            // stand a little short of them, on her side
+            Vector3 to = p - hit.T.position; to.y = 0;
+            Vector3 stand = hit.T.position + (to.sqrMagnitude > 0.01f ? to.normalized : Vector3.back) * 1.7f;
+            _pending = hit;
+            _player.WalkTo(stand);
+            return true;
+        }
+
+        // ---------- talking and gigs ----------
+
+        void StartTalk(Crew c)
+        {
+            _pending = null;
+            _talking = c;
+            SetMode(Mode.Dialog);
+            _ui.HideTag();
+            _player.StopWalking();
+            _player.Face(c.T.position);
+            FaceEachOther(c);
+            AnimSafe.Trigger(c.Anim, "Talk");
+            AnimSafe.Bool(_player.animator, "Listen", true);
+
+            string key = _placeId + "/" + c.Name;
+            if (!_world.MetCrew.Contains(key)) { _world.MetCrew.Add(key); SaveWorld(); }
+            ModeInfo info = string.IsNullOrEmpty(c.Mode) ? null : ModeList.ById(c.Mode, Config());
+            Debug.Log("WT_WORLD_TALK crew=" + c.Name + " mode=" + c.Mode);
+
+            var buttons = new List<DialogButton>();
+            string line, sub = null;
+            if (info != null)
+            {
+                line = CrewLines.For(info.Id);
+                sub = "quick gig: " + info.Name;
+                buttons.Add(new DialogButton { Label = "play", OnClick = () => StartGig(c, info) });
+                buttons.Add(new DialogButton { Label = "not now", Ghost = true, OnClick = () => Decline(c) });
+            }
+            else
+            {
+                line = CrewLines.Generic;
+                buttons.Add(new DialogButton { Label = "ok", OnClick = EndTalk });
+            }
+            _ui.OpenDialog(CrewLines.Role(c.Index), line, sub, buttons, HeadScreen(c.T));
+        }
+
+        void FaceEachOther(Crew c)
+        {
+            Vector3 to = _player.transform.position - c.T.position; to.y = 0;
+            if (to.sqrMagnitude > 0.01f) c.T.rotation = Quaternion.LookRotation(to.normalized, Vector3.up);
+        }
+
+        void Decline(Crew c)
+        {
+            var ok = new List<DialogButton> { new DialogButton { Label = "ok", OnClick = EndTalk } };
+            _ui.OpenDialog(CrewLines.Role(c.Index), CrewLines.Decline, null, ok, HeadScreen(c.T));
+        }
+
+        void EndTalk()
+        {
+            _talking = null;
+            AnimSafe.Bool(_player.animator, "Listen", false);
+            SetMode(Mode.Free);
+        }
+
+        void StartGig(Crew c, ModeInfo info)
+        {
+            AnimSafe.Bool(_player.animator, "Listen", false);
+            int n = GigPlan.Length(_rng.Next);
+            _run = Run.Gig;
+            SetMode(Mode.Panel);
+            _ui.OpenPanel(0.94f, false);
+            Debug.Log("WT_GIG_START crew=" + c.Name + " mode=" + info.Id + " n=" + n);
+            OpenShow(() => ShowScreen.Open(_ui.Stack, new ShowRequest
+            {
+                ModeId = info.Id, VenueId = _placeId, Week = CurrentWeek(), Length = n, Gig = true, Store = Boot.Store
+            }));
+        }
+
+        // ---------- the stage ----------
+
+        void OfferStage()
+        {
+            if (_stageModes.Count == 0) { _stageArmed = false; return; }
+            SetMode(Mode.Dialog);
+            _talking = null;
+            _player.StopWalking();
+            _ui.HideTag();
+            Debug.Log("WT_WORLD_STAGE_OFFER mode=" + _stageModes[_stageModeIndex].Id);
+            ShowStageOffer();
+        }
+
+        void ShowStageOffer()
+        {
+            ModeInfo m = _stageModes[_stageModeIndex];
+            var buttons = new List<DialogButton>
+            {
+                new DialogButton { Label = "play the show", OnClick = StartShow },
+                new DialogButton { Label = "change set", Ghost = true, Closes = false, OnClick = () =>
+                    {
+                        _stageModeIndex = (_stageModeIndex + 1) % _stageModes.Count;
+                        ShowStageOffer();
+                    } },
+                new DialogButton { Label = "not now", Ghost = true, OnClick = () => { _stageArmed = false; SetMode(Mode.Free); } },
+            };
+            _ui.OpenDialog("the crowd", CrewLines.Stage, "tonight: " + m.Name + ", 10 songs", buttons, HeadScreen(_player.transform));
+        }
+
+        void StartShow()
+        {
+            ModeInfo m = _stageModes[_stageModeIndex];
+            _run = Run.Show;
+            SetMode(Mode.Panel);
+            Debug.Log("WT_WORLD_SHOW_START mode=" + m.Id);
+            if (_cameraRoutine != null) StopCoroutine(_cameraRoutine);
+            _cameraRoutine = StartCoroutine(StageIntro(m));
+        }
+
+        IEnumerator StageIntro(ModeInfo m)
+        {
+            if (_crowd != null) _crowd.SetFans(Fans());
+            ComputeStageCamera();
+            if (_follow != null) { _follow.frozen = true; _follow.ShowAllOccluders(); }
+            Vector3 camFrom = _cam.transform.position; Quaternion rotFrom = _cam.transform.rotation;
+            _fovBefore = _cam.fieldOfView;
+            Vector3 starFrom = _player.transform.position;
+            Vector3 spot = _stage.position; spot.y = 0;
+            float dur = GameSettings.ReducedMotion ? 0.01f : 0.9f, t = 0f;
+            while (t < dur)
+            {
+                t += Time.unscaledDeltaTime;
+                float e = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t / dur));
+                _cam.transform.position = Vector3.Lerp(camFrom, _stagePos, e);
+                _cam.transform.rotation = Quaternion.Slerp(rotFrom, _stageRot, e);
+                _cam.fieldOfView = Mathf.Lerp(_fovBefore, StageFov, e);
+                _player.transform.position = Vector3.Lerp(starFrom, spot, e);
+                FaceCrowd();
+                yield return null;
+            }
+            _cam.transform.position = _stagePos; _cam.transform.rotation = _stageRot; _cam.fieldOfView = StageFov;
+            _player.Place(spot);
+            FaceCrowd();
+            _ui.OpenPanel(0.86f, true);
+            OpenShow(() => ShowScreen.Open(_ui.Stack, new ShowRequest { ModeId = m.Id, VenueId = _placeId, Week = CurrentWeek(), Store = Boot.Store }));
+            _cameraRoutine = null;
+        }
+
+        void FaceCrowd()
+        {
+            if (_crowdArea != null) _player.Face(_crowdArea.position);
+        }
+
+        /// <summary>A fixed camera behind the crowd, looking over them at the stage spot (Star ends up low in the frame, under the panel).</summary>
+        // 9 m behind the crowd and 6.5 m up as asked; the paper panel covers the top 84% of the screen during the show, so the lens looks
+        // well above the Star (7 m) and widens to 56 degrees: the deck, the Star and the front rows of the crowd land in the strip under the panel.
+        const float StageBack = 9f, StageUp = 6.5f, StageAimUp = 7.0f, StageFov = 56f;
+        float _fovBefore = 44f;
+
+        void ComputeStageCamera()
+        {
+            Vector3 stage = _stage.position;
+            Vector3 crowd = _crowdArea != null ? _crowdArea.position : stage + Vector3.back * 6f;
+            Vector3 dir = crowd - stage; dir.y = 0;
+            dir = dir.sqrMagnitude > 0.01f ? dir.normalized : Vector3.back;
+            // phase 8.1 look pass: further back and higher (9 m behind the crowd, 6.5 m up) so the deck, the Star and the front rows all read
+            _stagePos = crowd + dir * StageBack + Vector3.up * StageUp;
+            _stageRot = Quaternion.LookRotation((stage + Vector3.up * StageAimUp) - _stagePos, Vector3.up);
+        }
+
+        IEnumerator ReturnCamera()
+        {
+            if (_follow == null || _cam == null) yield break;
+            Vector3 from = _cam.transform.position; Quaternion rotFrom = _cam.transform.rotation;
+            Vector3 to = _follow.FollowPosition; Quaternion rotTo = _follow.FollowRotation;
+            float dur = GameSettings.ReducedMotion ? 0.01f : 0.7f, t = 0f;
+            while (t < dur)
+            {
+                t += Time.unscaledDeltaTime;
+                float e = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t / dur));
+                _cam.transform.position = Vector3.Lerp(from, _follow.FollowPosition, e);
+                _cam.transform.rotation = Quaternion.Slerp(rotFrom, rotTo, e);
+                _cam.fieldOfView = Mathf.Lerp(StageFov, _fovBefore, e);
+                yield return null;
+            }
+            _cam.transform.rotation = rotTo;
+            _cam.fieldOfView = _fovBefore;
+            _follow.ResetVelocity();
+            _follow.frozen = false;
+            _cameraRoutine = null;
+        }
+
+        // ---------- running a 2D screen over the world ----------
+
+        ShowScreen OpenShow(Func<ShowScreen> open)
+        {
+            Action<ShowScreen> started = s =>
+            {
+                if (s == null) return;
+                s.Engine.Raised += OnEngineEvent;
+                s.Finished += OnShowFinished;
+            };
+            ShowScreen.Started += started;
+            try { return DogHosts.OpenWithDog(_ui.Stack, open); }
+            catch (Exception e)
+            {
+                Debug.LogWarning("[world] could not open the show: " + e.Message);
+                if (_mode == Mode.Panel) EndPanel();
+                return null;
+            }
+            finally { ShowScreen.Started -= started; }
+        }
+
+        void OnEngineEvent(ShowEvent e)
+        {
+            switch (e.Kind)
+            {
+                case ShowEventKind.Answered:
+                    // every right answer: Star cheers; at the stage the crowd hops and a burst goes up
+                    AnimSafe.Trigger(_player.animator, "Cheer");
+                    if (_talking != null) AnimSafe.Trigger(_talking.Anim, "Cheer");
+                    if (_run == Run.Show && _crowd != null) _crowd.Cheer(_player.transform.position + (_crowdArea != null ? (_crowdArea.position - _player.transform.position).normalized * 2f : Vector3.zero));
+                    break;
+                case ShowEventKind.FansAwarded:
+                    if (_crowd != null) _crowd.SetFans(Fans());   // the save already holds these fans: ProgressRules.Attach heard the event first
+                    break;
+            }
+        }
+
+        void OnShowFinished(ShowResult r)
+        {
+            if (r.Request.Gig) FinishGig(r); else FinishShow(r);
+        }
+
+        void FinishGig(ShowResult r)
+        {
+            ShowSummary s = r.Summary;
+            Debug.Log("WT_GIG_DONE fans=" + s.Fans + " n=" + s.N + " first=" + s.First);
+            string fans = "+" + s.Fans.ToString("#,##0", CultureInfo.InvariantCulture) + " fans";
+            string sub = s.First + " of " + s.N + " right on the first try";
+            var ok = new List<DialogButton> { new DialogButton { Label = "keep exploring", OnClick = () => _ui.Stack.PopToRoot() } };
+            _ui.OpenDialog("gig done", "nice set. " + fans + ".", sub, ok, null);
+        }
+
+        void FinishShow(ShowResult r)
+        {
+            var mode = ModeList.ById(r.Request.ModeId, null);
+            TicketScreen t = TicketScreen.Open(_ui.Stack, new TicketData
+            {
+                Summary = r.Summary,
+                Venue = Venues.ById(r.Request.VenueId),
+                WeekLabel = r.Week != null ? r.Week.label : null,
+                ModeName = mode != null ? mode.Name : null,
+                NewStickers = r.Stickers,
+                Unlocks = r.Unlocks
+            });
+            t.StartEncore += () => OpenShow(() => ShowScreen.OpenEncore(_ui.Stack, r, replaceTop: true));
+            t.PlayAgain += () => OpenShow(() => ShowScreen.OpenAgain(_ui.Stack, r, replaceTop: true));
+            t.BackToMap += () => _ui.Stack.PopToRoot();
+        }
+
+        /// <summary>Quit, "back to the map" or "keep exploring": the 2D screens are gone and the world is hers again.</summary>
+        void OnTopChanged(GameScreen top)
+        {
+            if (_ui == null || top != _ui.RootScreen || _mode != Mode.Panel) return;
+            EndPanel();
+        }
+
+        void EndPanel()
+        {
+            _ui.CloseDialog();
+            _ui.ClosePanel();
+            bool wasShow = _run == Run.Show;
+            _run = Run.None;
+            _talking = null;
+            if (wasShow)
+            {
+                if (_cameraRoutine != null) StopCoroutine(_cameraRoutine);
+                _cameraRoutine = StartCoroutine(ReturnCamera());
+                _stageArmed = false;
+            }
+            SaveWorld();
+            List<string> fresh = ProgressRules.UnseenUnlocks(Boot.Store != null ? Boot.Store.Blob : SaveBlob.Defaults(LocalClock.TodayIso()))
+                .Where(id => id != Venues.First).ToList();
+            if (fresh.Count > 0) ShowUnlock(fresh);
+            else SetMode(Mode.Free);
+        }
+
+        void ShowUnlock(List<string> ids)
+        {
+            SaveBlob blob = Boot.Store.Blob;
+            Venue last = Venues.ById(ids[ids.Count - 1]);
+            foreach (string id in ids) ProgressRules.MarkSeen(blob, id);
+            Boot.Store.Save();
+            SetMode(Mode.Dialog);
+            Debug.Log("WT_WORLD_UNLOCK venue=" + last.Id);
+            var ok = new List<DialogButton> { new DialogButton { Label = "nice", OnClick = () => SetMode(Mode.Free) } };
+            _ui.OpenDialog("new stop unlocked", last.Name, "find it past the exit", ok, null);
+        }
+
+        // ---------- travel ----------
+
+        bool _travelLoading;
+
+        IEnumerator Travel()
+        {
+            _exitArmed = false;
+            SetMode(Mode.Travel);
+            _ui.HideTag();
+            Venue next = Journey.Next(_placeId);
+            SaveBlob blob = Boot.Store != null ? Boot.Store.Blob : SaveBlob.Defaults(LocalClock.TodayIso());
+            bool unlocked = next != null && ProgressRules.Unlocked(blob, next.Id);
+            string scene = next != null ? WorldPlace.SceneName(next.Id) : null;
+            bool built = unlocked && scene != null && Application.CanStreamedLevelBeLoaded(scene);
+            string line = Journey.NextStopLine(next);
+            string detail = Journey.DetailLine(next, blob.Fans.Lifetime, unlocked, built);
+            Debug.Log("WT_WORLD_TRAVEL next=" + (next != null ? next.Id : "none") + " unlocked=" + unlocked + " built=" + built + " detail=" + detail);
+
+            _ui.FadeTo(0.82f, 0.3f);
+            yield return new WaitForSecondsRealtime(0.3f);
+            _ui.OpenDialog("on the road", line, string.IsNullOrEmpty(detail) ? null : detail, null, null);
+            yield return new WaitForSecondsRealtime(1.1f);
+            _ui.CloseDialog();
+            if (built)
+            {
+                _world.Place = next.Id; _world.HasPosition = false;
+                if (Boot.Store != null) { WorldSave.Write(Boot.Store.Blob, _world); Boot.Store.Save(); }
+                _travelLoading = true;
+                AsyncOperation op = SceneManager.LoadSceneAsync(scene, LoadSceneMode.Single);
+                while (op != null && !op.isDone) yield return null;
+                _travelLoading = false;
+                Bind();
+            }
+            _ui.FadeTo(0f, 0.3f);
+            yield return new WaitForSecondsRealtime(0.3f);
+            SetMode(Mode.Free);
+        }
+
+        // ---------- saving where she is ----------
+
+        void SaveWorld()
+        {
+            if (Boot.Store == null || _player == null) return;
+            _world.Place = _placeId;
+            _world.HasPosition = true;
+            Vector3 p = _player.transform.position;
+            _world.X = p.x; _world.Z = p.z;
+            _lastSavedPos = p;
+            WorldSave.Write(Boot.Store.Blob, _world);
+            Boot.Store.Save();
+        }
+
+        void OnApplicationFocus(bool focused) { if (!focused && _mode == Mode.Free) SaveWorld(); }
+        void OnApplicationPause(bool paused) { if (paused && _mode == Mode.Free) SaveWorld(); }
+
+        // ---------- the browser test ----------
+
+        void LogTargets()
+        {
+            if (_cam == null || _mode == Mode.Boot) return;
+            var sb = new System.Text.StringBuilder("WT_WORLD_TARGETS");
+            string P(Vector3 world)
+            {
+                Vector3 s = _cam.WorldToScreenPoint(world);
+                return Mathf.RoundToInt(s.x).ToString(CultureInfo.InvariantCulture) + ":" + Mathf.RoundToInt(Screen.height - s.y).ToString(CultureInfo.InvariantCulture);
+            }
+            foreach (Crew c in _crew) sb.Append(" ").Append(c.Name.ToLowerInvariant().Replace("_", "")).Append("=").Append(P(c.T.position + Vector3.up)).Append(";").Append(c.Mode);
+            if (_stage != null) sb.Append(" stage=").Append(P(_stage.position));
+            if (_exit != null) sb.Append(" exit=").Append(P(_exit.position));
+            Vector3 pp = _player.transform.position;
+            sb.Append(" star=").Append(pp.x.ToString("0.00", CultureInfo.InvariantCulture)).Append(":").Append(pp.z.ToString("0.00", CultureInfo.InvariantCulture));
+            sb.Append(" mode=").Append(_mode);
+            Debug.Log(sb.ToString());
+        }
+    }
+}

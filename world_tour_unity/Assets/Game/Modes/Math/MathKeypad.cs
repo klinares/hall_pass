@@ -153,15 +153,20 @@ namespace WorldTour.Game.Modes
             kcol.spacing = Gap;
             kcol.childControlWidth = true; kcol.childControlHeight = true; kcol.childForceExpandWidth = true; kcol.childForceExpandHeight = false;
             bool dot = _text.HasDot, frac = _text.HasFraction;
-            string[] keys = { "7", "8", "9", "4", "5", "6", "1", "2", "3", frac ? "/" : dot ? "." : "", "0", "back" };
+            // in the world's docked panel the digits sit in two rows of six (1 to 6, then 7 to 0, the dot or slash, back): half the height, so a typed song fits beside the stage
+            bool wide = ShowLayout.Compact;
+            string[] keys = wide
+                ? new[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", frac ? "/" : dot ? "." : "", "back" }
+                : new[] { "7", "8", "9", "4", "5", "6", "1", "2", "3", frac ? "/" : dot ? "." : "", "0", "back" };
             RectTransform grid = ShowUi.Rect("Grid", keysRoot);
             var gle = grid.gameObject.AddComponent<LayoutElement>();
-            gle.preferredHeight = 4 * KeyHeight + 3 * Gap;
+            int cols = wide ? 6 : 3;
+            gle.preferredHeight = (wide ? 2 : 4) * KeyHeight + (wide ? 1 : 3) * Gap;
             var g = grid.gameObject.AddComponent<GridLayoutGroup>();
-            g.cellSize = new Vector2((MathUi.RightWidth - 2 * 9f) / 3f, KeyHeight);
+            g.cellSize = new Vector2((MathUi.PadWidth - (cols - 1) * 9f) / cols, KeyHeight);
             g.spacing = new Vector2(9f, Gap);
             g.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
-            g.constraintCount = 3;
+            g.constraintCount = cols;
             foreach (string k in keys)
             {
                 if (k == "") { ShowUi.Rect("Blank", grid); continue; }

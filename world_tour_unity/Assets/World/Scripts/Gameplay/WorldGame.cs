@@ -65,6 +65,9 @@ namespace WorldTour.World.Gameplay
         Transform _spawn, _stage, _crowdArea, _exit;
         readonly List<Crew> _crew = new List<Crew>();
         CrowdField _crowd;
+        StageLights _lights;
+        PanelLensShift _lens;
+        DogFollower _dog;
         string _placeId = Venues.First;
 
         // game
@@ -138,6 +141,7 @@ namespace WorldTour.World.Gameplay
             if (_ui != null && _ui.Stack != null) _ui.Stack.TopChanged -= OnTopChanged;
             if (WorldInput.ClickUsed == (Func<Vector2, bool>)OnWorldClick) WorldInput.ClickUsed = null;
             WorldInput.Paused = false;
+            ShowLayout.Compact = false;
             if (Instance == this) Instance = null;
         }
 
@@ -157,6 +161,15 @@ namespace WorldTour.World.Gameplay
             _follow = _cam != null ? _cam.GetComponent<FollowCamera>() : null;
             if (_cam != null && _cam.GetComponent<AudioListener>() == null && UnityEngine.Object.FindFirstObjectByType<AudioListener>() == null)
                 _cam.gameObject.AddComponent<AudioListener>();
+            _lens = null;
+            if (_cam != null)
+            {
+                _lens = _cam.GetComponent<PanelLensShift>();
+                if (_lens == null) _lens = _cam.gameObject.AddComponent<PanelLensShift>();
+            }
+            _dog = UnityEngine.Object.FindFirstObjectByType<DogFollower>();
+            if (_lights == null) _lights = gameObject.AddComponent<StageLights>();
+            _lights.Find();
             _spawn = Find("PlayerSpawn");
             _stage = Find("StageSpot");
             _crowdArea = Find("CrowdArea");
@@ -246,6 +259,7 @@ namespace WorldTour.World.Gameplay
             UnlockSoundOnFirstPress();
             if (_mode == Mode.Free && Time.frameCount > _modeFrame) UpdateFree();
             else if (_mode == Mode.Dialog && _talking != null && _ui.DialogOpen && _cam != null) _ui.MoveDialogAnchor(HeadScreen(_talking.T));
+            else if (_mode == Mode.Panel && _ui.PanelCompact && _cam != null) _ui.PlaceDogBubble(DogScreen(), _run == Run.Show ? 130f : 0f);
             if (TestMode && Time.unscaledTime >= _nextTargets) { _nextTargets = Time.unscaledTime + 0.4f; LogTargets(); }
         }
 
@@ -314,6 +328,38 @@ namespace WorldTour.World.Gameplay
         Vector2 HeadScreen(Transform t)
         {
             return _cam.WorldToScreenPoint(t.position + Vector3.up * 2.1f);
+        }
+
+        /// <summary>Where riff's bubble hangs: over the 3D riff (or over her when he is not in the scene).</summary>
+        Vector2 DogScreen()
+        {
+            Transform t = _dog != null ? _dog.transform : _player.transform;
+            return _cam.WorldToScreenPoint(t.position + Vector3.up * (_dog != null ? 0.9f : 2.1f));
+        }
+
+        // ---------- the panel: docked beside the world for a gig or a show song, full for the ticket ----------
+
+        /// <summary>The compact panel for a gig or a show: the street or the stage stays visible and lit beside it (the lens shift centres the view in the open part).</summary>
+        void DockPanel()
+        {
+            ShowLayout.Compact = true;
+            _ui.OpenCompactPanel();
+            SetLens(_ui.OpenLensShift);
+        }
+
+        /// <summary>The whole-screen panel (the ticket): the 2D screens as the 2D game draws them.</summary>
+        void FullPanel(float scale)
+        {
+            ShowLayout.Compact = false;
+            _ui.OpenPanel(scale, false);
+            SetLens(0f);
+        }
+
+        void SetLens(float shift)
+        {
+            if (_lens == null) return;
+            _lens.Instant = GameSettings.ReducedMotion;
+            _lens.Target = shift;
         }
 
         // ---------- clicking a crew member ----------
@@ -401,7 +447,7 @@ namespace WorldTour.World.Gameplay
             int n = GigPlan.Length(_rng.Next);
             _run = Run.Gig;
             SetMode(Mode.Panel);
-            _ui.OpenPanel(0.94f, false);
+            DockPanel();
             Debug.Log("WT_GIG_START crew=" + c.Name + " mode=" + info.Id + " n=" + n);
             OpenShow(() => ShowScreen.Open(_ui.Stack, new ShowRequest
             {
@@ -452,6 +498,7 @@ namespace WorldTour.World.Gameplay
         {
             if (_crowd != null) _crowd.SetFans(Fans());
             ComputeStageCamera();
+            SetLens(_ui.OpenLensShift);   // the view slides left with the camera move, so the stage lands in the part the panel leaves open
             if (_follow != null) { _follow.frozen = true; _follow.ShowAllOccluders(); }
             Vector3 camFrom = _cam.transform.position; Quaternion rotFrom = _cam.transform.rotation;
             _fovBefore = _cam.fieldOfView;
@@ -472,7 +519,8 @@ namespace WorldTour.World.Gameplay
             _cam.transform.position = _stagePos; _cam.transform.rotation = _stageRot; _cam.fieldOfView = StageFov;
             _player.Place(spot);
             FaceCrowd();
-            _ui.OpenPanel(0.86f, true);
+            _ui.CloseDialog();
+            DockPanel();
             OpenShow(() => ShowScreen.Open(_ui.Stack, new ShowRequest { ModeId = m.Id, VenueId = _placeId, Week = CurrentWeek(), Store = Boot.Store }));
             _cameraRoutine = null;
         }
@@ -482,10 +530,9 @@ namespace WorldTour.World.Gameplay
             if (_crowdArea != null) _player.Face(_crowdArea.position);
         }
 
-        /// <summary>A fixed camera behind the crowd, looking over them at the stage spot (Star ends up low in the frame, under the panel).</summary>
-        // 9 m behind the crowd and 6.5 m up as asked; the paper panel covers the top 84% of the screen during the show, so the lens looks
-        // well above the Star (7 m) and widens to 56 degrees: the deck, the Star and the front rows of the crowd land in the strip under the panel.
-        const float StageBack = 9f, StageUp = 6.5f, StageAimUp = 7.0f, StageFov = 56f;
+        /// <summary>A fixed camera behind the crowd, looking at the Star from a little above and behind the front rows. The panel docks to the right, so the lens shift (PanelLensShift)
+        /// puts this view in the open left half: the whole lit stage, the Star on the deck and the front of the crowd. Chosen from renders at 1366x768 (the 1920x1080 canvas is the same 16:9 picture), phase 8.1 stage show.</summary>
+        const float StageBack = 7f, StageUp = 6.5f, StageAimUp = 3.0f, StageAimToward = 2.5f, StageFov = 57f;
         float _fovBefore = 44f;
 
         void ComputeStageCamera()
@@ -494,9 +541,8 @@ namespace WorldTour.World.Gameplay
             Vector3 crowd = _crowdArea != null ? _crowdArea.position : stage + Vector3.back * 6f;
             Vector3 dir = crowd - stage; dir.y = 0;
             dir = dir.sqrMagnitude > 0.01f ? dir.normalized : Vector3.back;
-            // phase 8.1 look pass: further back and higher (9 m behind the crowd, 6.5 m up) so the deck, the Star and the front rows all read
             _stagePos = crowd + dir * StageBack + Vector3.up * StageUp;
-            _stageRot = Quaternion.LookRotation((stage + Vector3.up * StageAimUp) - _stagePos, Vector3.up);
+            _stageRot = Quaternion.LookRotation((stage + Vector3.up * StageAimUp + dir * StageAimToward) - _stagePos, Vector3.up);
         }
 
         IEnumerator ReturnCamera()
@@ -550,6 +596,7 @@ namespace WorldTour.World.Gameplay
                     // every right answer: Star cheers; at the stage the crowd hops and a burst goes up
                     AnimSafe.Trigger(_player.animator, "Cheer");
                     if (_talking != null) AnimSafe.Trigger(_talking.Anim, "Cheer");
+                    if (_run == Run.Show && _lights != null) _lights.Flare();
                     if (_run == Run.Show && _crowd != null) _crowd.Cheer(_player.transform.position + (_crowdArea != null ? (_crowdArea.position - _player.transform.position).normalized * 2f : Vector3.zero));
                     break;
                 case ShowEventKind.FansAwarded:
@@ -576,6 +623,7 @@ namespace WorldTour.World.Gameplay
         void FinishShow(ShowResult r)
         {
             var mode = ModeList.ById(r.Request.ModeId, null);
+            FullPanel(0.96f);   // the ticket stays a full screen
             TicketScreen t = TicketScreen.Open(_ui.Stack, new TicketData
             {
                 Summary = r.Summary,
@@ -585,8 +633,8 @@ namespace WorldTour.World.Gameplay
                 NewStickers = r.Stickers,
                 Unlocks = r.Unlocks
             });
-            t.StartEncore += () => OpenShow(() => ShowScreen.OpenEncore(_ui.Stack, r, replaceTop: true));
-            t.PlayAgain += () => OpenShow(() => ShowScreen.OpenAgain(_ui.Stack, r, replaceTop: true));
+            t.StartEncore += () => { DockPanel(); OpenShow(() => ShowScreen.OpenEncore(_ui.Stack, r, replaceTop: true)); };
+            t.PlayAgain += () => { DockPanel(); OpenShow(() => ShowScreen.OpenAgain(_ui.Stack, r, replaceTop: true)); };
             t.BackToMap += () => _ui.Stack.PopToRoot();
         }
 
@@ -601,6 +649,8 @@ namespace WorldTour.World.Gameplay
         {
             _ui.CloseDialog();
             _ui.ClosePanel();
+            ShowLayout.Compact = false;
+            SetLens(0f);
             bool wasShow = _run == Run.Show;
             _run = Run.None;
             _talking = null;

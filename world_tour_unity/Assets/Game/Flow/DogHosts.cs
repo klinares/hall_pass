@@ -22,6 +22,17 @@ namespace WorldTour.Game.Flow
         /// <summary>The coach dog's size in a show (web: 190 at 1920x1080; the coach column is 280 wide).</summary>
         const float CoachDog = 190f;
 
+        /// <summary>Phase 8.1: where the world wants riff's bubble drawn while it hosts a show (<see cref="ShowLayout.Compact"/>). Null = the usual dog card.</summary>
+        public static RectTransform BubbleHost { get; set; }
+        public const float CompactBubbleWidth = 340f;
+
+        /// <summary>Destroys the world-side bubble with the show's coach.</summary>
+        sealed class BubbleOwner : MonoBehaviour
+        {
+            public GameObject Bubble;
+            void OnDestroy() { if (Bubble != null) Destroy(Bubble); }
+        }
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Wire()
         {
@@ -104,6 +115,26 @@ namespace WorldTour.Game.Flow
             root.SetParent(show.Rect, false);
             root.anchorMin = Vector2.zero; root.anchorMax = Vector2.one;
             root.offsetMin = Vector2.zero; root.offsetMax = Vector2.zero;
+
+            if (ShowLayout.Compact && BubbleHost != null)
+            {
+                // phase 8.1: the world hosts the show. No dog card in the panel: riff's lines are a speech bubble in the world's canvas, which the
+                // world places by the 3D riff. The director (and so the bubble) lives and dies with the show screen.
+                var bubbleHostGo = new GameObject("Bubble", typeof(RectTransform));
+                var hostRt = (RectTransform)bubbleHostGo.transform;
+                hostRt.SetParent(BubbleHost, false);
+                hostRt.anchorMin = hostRt.anchorMax = new Vector2(.5f, .5f);
+                hostRt.pivot = new Vector2(.5f, 0f);
+                hostRt.sizeDelta = new Vector2(CompactBubbleWidth, 64f);
+                DogBubble worldBubble = bubbleHostGo.AddComponent<DogBubble>();
+                worldBubble.Init(Art, Theme.Font(FontRole.BodyBold));
+                worldBubble.Say(null);
+                go.AddComponent<BubbleOwner>().Bubble = bubbleHostGo;
+                DogShowDirector worldDirector = go.AddComponent<DogShowDirector>();
+                worldDirector.Init(null, worldBubble);
+                worldDirector.Follow(show);
+                return;
+            }
 
             // the dog sits at the bottom of the coach column, the bubble above it
             var dogGo = new GameObject("DogBox", typeof(RectTransform));

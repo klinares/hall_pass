@@ -124,6 +124,7 @@ namespace WorldTour.Game.Show
         private bool _hintBlocked;
         private float _nudgeAt = -1;
         private RectTransform _play, _pips;
+        private CompactFit _fit;
         private ShowCrowd _crowd;
         private TMP_Text _songNo, _fans, _streak;
         private readonly List<Image> _pipImages = new List<Image>();
@@ -282,10 +283,10 @@ namespace WorldTour.Game.Show
         /// <summary>show.js win(): burst(clean ? 34 : 18) and the toast ("3 in a row!" on a clean streak of 3+, else a cheer), and the crowd cheers.</summary>
         private void Win(bool clean)
         {
-            ConfettiLayer.Burst(Rect, clean ? 34 : 18, new Vector2(.5f, .62f), ConfettiLayer.WinSeconds);
+            if (!ShowLayout.Compact) ConfettiLayer.Burst(Rect, clean ? 34 : 18, new Vector2(.5f, .62f), ConfettiLayer.WinSeconds);   // in the world the 3D crowd and lights carry it
             // polish 6.2D item 5: in the top bar's clear middle (between the song number and the chips), where no mode puts a tile,
             // answer, keypad or prompt; 52 px, held 0.12 s then faded in 0.24 s: 0.36 s in all
-            MetaUi.FeelToast(this, Rect, DogLines.Toast(clean, Engine.Streak, _random), shout, new Vector2(.5f, 1f), 52f, 0.12f, new Vector2(0f, -48f));
+            MetaUi.FeelToast(this, Rect, DogLines.Toast(clean, Engine.Streak, _random), shout, new Vector2(.5f, 1f), 52f, 0.12f, new Vector2(0f, ShowLayout.Compact ? -34f : -48f));
             if (_crowd != null) _crowd.Cheer();
         }
 
@@ -324,6 +325,7 @@ namespace WorldTour.Game.Show
             _song = new SongContext(this, e.Index, Engine, e.Slot, area, _random, buttonPrefab);
             ISongMode mode = ModeFor(Request.ModeId, area.gameObject);
             mode.Render(_song);
+            if (_fit != null) _fit.Restart();
         }
 
         private static ISongMode ModeFor(string id, GameObject host)
@@ -451,11 +453,13 @@ namespace WorldTour.Game.Show
         {
             RectTransform root = Rect;
             ShowUi.Stretch(root);
+            bool compact = ShowLayout.Compact;                // the world hosts the show: slim bar, no crowd strip, no big dog
+            float gut = compact ? ShowLayout.Gutter : Tokens.Gutter;
 
             // the top bar (show.js .showbar)
             RectTransform bar = ShowUi.Rect("ShowBar", root);
             bar.anchorMin = new Vector2(0, 1); bar.anchorMax = new Vector2(1, 1); bar.pivot = new Vector2(.5f, 1);
-            bar.offsetMin = new Vector2(Tokens.Gutter, -86); bar.offsetMax = new Vector2(-Tokens.Gutter, -12);
+            bar.offsetMin = new Vector2(gut, compact ? -62 : -86); bar.offsetMax = new Vector2(-gut, compact ? -8 : -12);
 
             RectTransform quitBox = ShowUi.Rect("Quit", bar);
             ShowUi.Place(quitBox, new Vector2(0, .5f), new Vector2(Tokens.Tap, Tokens.Tap), new Vector2(Tokens.Tap / 2, 0));
@@ -474,7 +478,7 @@ namespace WorldTour.Game.Show
                 Tokens.Fs0, FontRole.BodyBold, ColorRole.Ink, TextAlignmentOptions.Left);
             RectTransform songBox = ShowUi.Rect("SongNo", where);
             songBox.anchorMin = new Vector2(0, 0); songBox.anchorMax = new Vector2(1, .55f); songBox.offsetMin = songBox.offsetMax = Vector2.zero;
-            _songNo = ShowUi.Label(songBox, "Text", "", Tokens.Fs3, FontRole.Display, ColorRole.Ink, TextAlignmentOptions.Left);
+            _songNo = ShowUi.Label(songBox, "Text", "", compact ? 28f : Tokens.Fs3, FontRole.Display, ColorRole.Ink, TextAlignmentOptions.Left);
 
             _fans = Chip(bar, "Fans", new Vector2(-150, 0), "fans");
             _streak = Chip(bar, "Streak", new Vector2(-40, 0), null, streakIcon);
@@ -482,12 +486,28 @@ namespace WorldTour.Game.Show
             // pips (show.js .pips)
             _pips = ShowUi.Rect("Pips", root);
             _pips.anchorMin = new Vector2(0, 1); _pips.anchorMax = new Vector2(1, 1); _pips.pivot = new Vector2(.5f, 1);
-            _pips.offsetMin = new Vector2(Tokens.Gutter, -104); _pips.offsetMax = new Vector2(-Tokens.Gutter, -94);
+            _pips.offsetMin = new Vector2(gut, compact ? -78 : -104); _pips.offsetMax = new Vector2(-gut, compact ? -68 : -94);
             var hl = _pips.gameObject.AddComponent<HorizontalLayoutGroup>();
             hl.spacing = 5; hl.childForceExpandWidth = true; hl.childForceExpandHeight = true; hl.childControlWidth = true; hl.childControlHeight = true;
 
             // the stage: play area, and the coach (dog) beside it
             _play = ShowUi.Rect("Play", root);
+            if (compact)
+            {
+                // one column across the panel under the slim bar; the coach area is a zero-size stand-in (his bubble is drawn by the world)
+                _play.anchorMin = new Vector2(0, 0); _play.anchorMax = new Vector2(1, 1);
+                _play.offsetMin = new Vector2(gut, 10f); _play.offsetMax = new Vector2(-gut, -90f);
+                Vector2 panel = ShowLayout.PanelSize;
+                if (panel.x > 1f && panel.y > 1f)
+                {
+                    _fit = _play.gameObject.AddComponent<CompactFit>();   // shrinks the song to fit when a long prompt or an open hint makes it too tall
+                    _fit.Setup(panel.x - 2f * gut, panel.y - 100f, 90f);
+                }
+                CoachArea = ShowUi.Rect("Coach", root);
+                CoachArea.anchorMin = CoachArea.anchorMax = new Vector2(1, 0); CoachArea.pivot = new Vector2(1, 0);
+                CoachArea.sizeDelta = Vector2.zero;
+                return;
+            }
             // polish 6.2D item 4: the play area ends above the crowd's own strip
             _play.anchorMin = new Vector2(0, 0); _play.anchorMax = new Vector2(1, 1);
             _play.offsetMin = new Vector2(Tokens.Gutter, ShowCrowd.StripHeight + 4f); _play.offsetMax = new Vector2(-Tokens.Gutter - 300, -118);

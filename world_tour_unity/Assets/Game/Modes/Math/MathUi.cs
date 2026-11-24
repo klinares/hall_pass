@@ -18,18 +18,33 @@ namespace WorldTour.Game.Modes
     {
         /// <summary>The right column's width (the keypad's: math.css .padwrap max-width 380, less its margins).</summary>
         public const float RightWidth = 350f;
+
+        /// <summary>The right column's width: the keypad's. In the world's docked panel the keypad is wider and two rows tall (see MathKeypad), so the column is too.</summary>
+        public static float PadWidth { get { return ShowLayout.Compact ? 440f : RightWidth; } }
         public const float ColumnGap = 26f;
 
         /// <summary>Two columns side by side, top aligned: left grows, right is fixed.</summary>
         public static void Columns(RectTransform area, out RectTransform left, out RectTransform right)
         {
+            if (ShowLayout.Compact)
+            {
+                // phase 8.1: hosted by the 3D world, in a panel beside the stage: the same two columns stacked, the desk and controls first
+                var stack = area.gameObject.AddComponent<VerticalLayoutGroup>();
+                stack.spacing = 8;
+                stack.childAlignment = TextAnchor.UpperCenter;
+                stack.childControlWidth = true; stack.childControlHeight = true;
+                stack.childForceExpandWidth = false; stack.childForceExpandHeight = false;
+                left = Column(area, "Left", 640f, 0f);
+                right = Column(area, "Right", PadWidth, 0f);
+                return;
+            }
             var row = area.gameObject.AddComponent<HorizontalLayoutGroup>();
             row.spacing = ColumnGap;
             row.childAlignment = TextAnchor.UpperCenter;
             row.childControlWidth = true; row.childControlHeight = true;
             row.childForceExpandWidth = false; row.childForceExpandHeight = false;
             left = Column(area, "Left", 640f, 1f);
-            right = Column(area, "Right", RightWidth, 0f);
+            right = Column(area, "Right", PadWidth, 0f);
         }
 
         private static RectTransform Column(RectTransform parent, string name, float width, float flex)
@@ -39,7 +54,7 @@ namespace WorldTour.Game.Modes
             var le = rt.gameObject.AddComponent<LayoutElement>();
             le.preferredWidth = width; le.flexibleWidth = flex; le.minWidth = flex > 0 ? 480f : width;
             var col = rt.gameObject.AddComponent<VerticalLayoutGroup>();
-            col.spacing = 16;
+            col.spacing = ShowLayout.Compact ? 10 : 16;
             col.childAlignment = TextAnchor.UpperCenter;
             col.childControlWidth = true; col.childControlHeight = true;
             col.childForceExpandWidth = true; col.childForceExpandHeight = false;
@@ -137,6 +152,8 @@ namespace WorldTour.Game.Modes
             d.childAlignment = TextAnchor.UpperCenter;
             d.childControlWidth = true; d.childControlHeight = true; d.childForceExpandWidth = true; d.childForceExpandHeight = false;
             RichRow(desk, "Tag", tag, Tokens.Fs2 + 2f, FontRole.Display, ColorRole.OnInk, 30f);
+            // in the world's docked panel the desk can be drawn smaller (DeskFit, after its group), so a tall picture gives way before the words do
+            if (ShowLayout.Compact) desk.gameObject.AddComponent<DeskFit>();
             return desk;
         }
 

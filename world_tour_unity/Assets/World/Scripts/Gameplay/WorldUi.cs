@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
+using WorldTour.Game.Flow;
 using WorldTour.Game.Show;
 using WorldTour.Game.Ui;
 
@@ -36,6 +37,12 @@ namespace WorldTour.World.Gameplay
         public GameScreen RootScreen { get; private set; }
         public Hud Hud { get; private set; }
         public RectTransform PanelRoot { get; private set; }
+        /// <summary>Holds riff's bubble while the panel is compact (see <see cref="DogHosts.BubbleHost"/>).</summary>
+        public RectTransform BubbleHost { get; private set; }
+        /// <summary>The panel is docked to the right (a gig or a show song), leaving the world visible beside it.</summary>
+        public bool PanelCompact { get; private set; }
+        /// <summary>The lens shift (fraction of the screen width) that centres the view in the open part beside the compact panel.</summary>
+        public float OpenLensShift { get { Rect r = _canvasRt.rect; return (ShowLayout.WidthFor(r.width) + ShowLayout.PanelMargin) / (2f * Mathf.Max(1f, r.width)); } }
         public bool PanelOpen { get { return PanelRoot != null && PanelRoot.gameObject.activeSelf; } }
         public bool DialogOpen { get { return _dialog != null && _dialog.gameObject.activeSelf; } }
 
@@ -82,6 +89,11 @@ namespace WorldTour.World.Gameplay
             _dim.color = new Color(0.07f, 0.06f, 0.12f, 0.42f);
             _dim.raycastTarget = true;
             dim.gameObject.SetActive(false);
+
+            // riff's speech bubble while a show or gig is on: drawn here, beside the 3D riff, not in the panel
+            BubbleHost = ShowUi.Rect("DogBubbles", _canvasRt);
+            ShowUi.Stretch(BubbleHost);
+            DogHosts.BubbleHost = BubbleHost;
 
             // the panel that holds the 2D screens
             PanelRoot = ShowUi.Rect("Panel", _canvasRt);
@@ -252,7 +264,12 @@ namespace WorldTour.World.Gameplay
                 float tx = Mathf.Clamp(head.x - p.x, -size.x / 2f + 40f, size.x / 2f - 40f);
                 _tail.anchoredPosition = new Vector2(tx, -2f);
             }
-            else _dialog.anchoredPosition = new Vector2(0, 20f);
+            else
+            {
+                // a card: the middle of the screen, or of the part beside the docked panel
+                float cx = PanelCompact ? (_canvasRt.rect.xMin + OpenRightLocal()) / 2f : 0f;
+                _dialog.anchoredPosition = new Vector2(cx, 20f);
+            }
         }
 
         /// <summary>Moves the bubble with its crew member's head while it is open.</summary>
@@ -276,6 +293,8 @@ namespace WorldTour.World.Gameplay
             if (b.OnClick != null) b.OnClick();
         }
 
+        void OnDestroy() { if (DogHosts.BubbleHost == BubbleHost) DogHosts.BubbleHost = null; }
+
         void Update()
         {
             if (!DialogOpen || _buttons.Count == 0 || Time.frameCount <= _openedFrame) return;
@@ -292,9 +311,12 @@ namespace WorldTour.World.Gameplay
         /// <summary>Shows the dim and the panel. <paramref name="scale"/> shrinks it toward its top edge when below 1 (the stage view leaves the crowd visible below).</summary>
         public void OpenPanel(float scale, bool fromTop)
         {
+            PanelCompact = false;
             _dim.gameObject.SetActive(true);
             _dim.color = new Color(0.07f, 0.06f, 0.12f, fromTop ? 0.12f : 0.42f);
             PanelRoot.gameObject.SetActive(true);
+            PanelRoot.anchorMin = Vector2.zero; PanelRoot.anchorMax = Vector2.one;
+            PanelRoot.offsetMin = new Vector2(20f, 20f); PanelRoot.offsetMax = new Vector2(-20f, -20f);
             PanelRoot.pivot = new Vector2(.5f, fromTop ? 1f : .5f);
             PanelRoot.localScale = new Vector3(scale, scale, 1f);
             PanelRoot.SetAsLastSibling();
@@ -303,10 +325,57 @@ namespace WorldTour.World.Gameplay
             _fade.SetAsLastSibling();
         }
 
+        /// <summary>
+        /// The panel docked to the right edge (a gig or a show song): the screens inside are laid out <see cref="ShowLayout.LayoutWidth"/> wide and drawn at
+        /// <see cref="ShowLayout.PanelScale"/>, so the world shows beside it and nothing dims it. Call with <see cref="ShowLayout.Compact"/> already set.
+        /// </summary>
+        public void OpenCompactPanel()
+        {
+            PanelCompact = true;
+            _dim.gameObject.SetActive(false);
+            PanelRoot.gameObject.SetActive(true);
+            Rect c = _canvasRt.rect;
+            PanelRoot.anchorMin = PanelRoot.anchorMax = new Vector2(1f, .5f);
+            PanelRoot.pivot = new Vector2(1f, .5f);
+            PanelRoot.sizeDelta = new Vector2(ShowLayout.LayoutWidth(c.width), ShowLayout.LayoutHeight(c.height));
+            ShowLayout.PanelSize = PanelRoot.sizeDelta;   // the screens inside lay themselves out (and fit) to this
+            PanelRoot.anchoredPosition = new Vector2(-ShowLayout.PanelMargin, 0f);
+            PanelRoot.localScale = new Vector3(ShowLayout.PanelScale, ShowLayout.PanelScale, 1f);
+            PanelRoot.SetAsLastSibling();
+            if (Hud != null) Hud.Rect.SetAsLastSibling();
+            _dialog.SetAsLastSibling();
+            _fade.SetAsLastSibling();
+        }
+
         public void ClosePanel()
         {
+            PanelCompact = false;
             _dim.gameObject.SetActive(false);
             PanelRoot.gameObject.SetActive(false);
+        }
+
+        /// <summary>The world-side edge of the compact panel in screen pixels (the right edge of the open part), for placing the dog bubble.</summary>
+        float OpenRightLocal()
+        {
+            Rect r = _canvasRt.rect;
+            return PanelCompact ? r.xMax - ShowLayout.WidthFor(r.width) - ShowLayout.PanelMargin * 2f : r.xMax - 16f;
+        }
+
+        /// <summary>Hangs riff's bubble (if one is up) over a point on the screen, kept inside the open part beside the panel.</summary>
+        public void PlaceDogBubble(Vector2 screenPoint, float lift = 0f)
+        {
+            if (BubbleHost == null) return;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(_canvasRt, screenPoint, null, out Vector2 local);
+            Rect r = _canvasRt.rect;
+            for (int i = 0; i < BubbleHost.childCount; i++)
+            {
+                var rt = BubbleHost.GetChild(i) as RectTransform;
+                if (rt == null || !rt.gameObject.activeSelf) continue;
+                float w = rt.rect.width, h = rt.rect.height;
+                float x = Mathf.Clamp(local.x, r.xMin + 16f + w / 2f, Mathf.Max(r.xMin + 16f + w / 2f, OpenRightLocal() - w / 2f));
+                float y = Mathf.Clamp(local.y + 34f + lift, r.yMin + 80f, Mathf.Max(r.yMin + 80f, r.yMax - 16f - h));
+                rt.anchoredPosition = new Vector2(x, y);
+            }
         }
 
         // ---------- the fade ----------

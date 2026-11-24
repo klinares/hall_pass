@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using WorldTour.Core.Data;
 using WorldTour.Core.Tour;
 using WorldTour.Game.Prefs;
 
@@ -7,7 +8,7 @@ namespace WorldTour.World.Gameplay
 {
     /// <summary>
     /// The crowd (phase 8.1): simple placeholder figures spread over the CrowdArea, more of them as her fans grow
-    /// (<see cref="CrowdRules.Count"/>), that hop when she gets a song right, with a light burst. Under reduce motion they stay still
+    /// (<see cref="CrowdRules.CountFor"/>, scaled by the venue's crowd factor), that hop when she gets a song right, with a light burst. Under reduce motion they stay still
     /// and there is no burst. The figures are capsule-and-ball stand-ins; real art can replace <see cref="MakeFigure"/> without touching the rest.
     /// </summary>
     public sealed class CrowdField : MonoBehaviour
@@ -32,10 +33,17 @@ namespace WorldTour.World.Gameplay
         System.Random _rng;
         int _wanted;
 
-        public int Count { get { return _figures.Count; } }
+        string _placeId = Venues.First;
+        int _capacity = CrowdRules.Max;
 
-        public void Setup(Transform center, Vector3 facePoint, WorldGameplayAssets assets, int seed)
+        public int Count { get { return _figures.Count; } }
+        /// <summary>How full the crowd is, 0 to 1 (figures over this place's capacity): the sound uses it for the murmur and the cheer.</summary>
+        public float Fill { get { return _capacity > 0 ? Mathf.Clamp01(_figures.Count / (float)_capacity) : 0f; } }
+        public Vector3 Center { get { return _center != null ? _center.position : Vector3.zero; } }
+
+        public void Setup(Transform center, Vector3 facePoint, WorldGameplayAssets assets, int seed, string placeId = null)
         {
+            if (!string.IsNullOrEmpty(placeId)) { _placeId = placeId; _capacity = CrowdRules.Capacity(placeId); }
             _center = center;
             _assets = assets;
             _rng = new System.Random(seed);
@@ -56,7 +64,7 @@ namespace WorldTour.World.Gameplay
         /// <summary>Grows the crowd to match lifetime fans (never shrinks it).</summary>
         public void SetFans(long lifetimeFans)
         {
-            _wanted = Mathf.Max(_wanted, CrowdRules.Count(lifetimeFans));
+            _wanted = Mathf.Max(_wanted, CrowdRules.CountFor(lifetimeFans, _placeId));
             while (_figures.Count < _wanted) Add();
         }
 
@@ -68,7 +76,7 @@ namespace WorldTour.World.Gameplay
             int row = i / perRow, col = i % perRow;
             float u = perRow > 1 ? (col + 0.5f * (row % 2)) / perRow : 0.5f;
             float x = Mathf.Lerp(-_extent.x, _extent.x, Mathf.Clamp01(u)) + Jitter(0.25f);
-            float rowsMax = Mathf.Max(1, Mathf.CeilToInt(36f / perRow));
+            float rowsMax = Mathf.Max(1, Mathf.CeilToInt(_capacity / (float)perRow));
             float z = Mathf.Lerp(_extent.y, -_extent.y, Mathf.Clamp01(row / rowsMax)) + Jitter(0.25f);
             Vector3 right = Vector3.Cross(Vector3.up, _facing);
             Vector3 pos = _center.position + right * x + _facing * z;

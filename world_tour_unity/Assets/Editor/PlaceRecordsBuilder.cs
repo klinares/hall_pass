@@ -66,11 +66,11 @@ public static class PlaceRecordsBuilder
 
     static void MakeGround(Transform t)
     {
-        Prim(PrimitiveType.Plane, "Base", t, V(0, -0.03f, 0), V(24, 1, 24), M("base", "#8d97a3", 0.05f), null, false);
-        var walk = PavingTexture("rs_walk", "#b6bfcb", "#abb5c3", "#9aa4b3", "#d9a07a", "#e8c3a6", 21, false);
-        PavedPlane("SidewalkSouth", t, P + "walk_mat", walk, V(0, 0, -10.2f), new Vector2(28f, 6.6f), new Color(0.8f, 0.82f, 0.88f));
-        PavedPlane("SidewalkNorth", t, P + "walk_mat", walk, V(0, 0, 1.2f), new Vector2(28f, 6.4f), new Color(0.8f, 0.82f, 0.88f));
-        Prim(PrimitiveType.Plane, "Road", t, V(0, 0.01f, -4.4f), V(2.8f, 1, 0.48f), M("asphalt", "#4d5563", 0.06f), null, false);
+        Prim(PrimitiveType.Plane, "Base", t, V(0, -0.03f, 0), V(24, 1, 24), M("base", "#a09690", 0.05f), null, false);
+        var walk = PavingTexture("rs_walk", "#d0c3b8", "#c5b8ae", "#b3a59b", "#d9a07a", "#e8c3a6", 21, false);
+        PavedPlane("SidewalkSouth", t, P + "walk_mat", walk, V(0, 0, -10.2f), new Vector2(28f, 6.6f), new Color(0.9f, 0.86f, 0.82f));
+        PavedPlane("SidewalkNorth", t, P + "walk_mat", walk, V(0, 0, 1.2f), new Vector2(28f, 6.4f), new Color(0.9f, 0.86f, 0.82f));
+        Prim(PrimitiveType.Plane, "Road", t, V(0, 0.01f, -4.4f), V(2.8f, 1, 0.48f), M("asphalt", "#5a5660", 0.06f), null, false);
         var cellarFloor = PavingTexture("rs_cellar_floor", "#6a6478", "#5d5870", "#443f55", "#d9a07a", "#e8c3a6", 31, false);
         PavedPlane("CellarFloor", t, P + "cellar_floor_mat", cellarFloor, V(6.2f, 0.015f, 9.2f), new Vector2(15.4f, 9.6f), new Color(0.95f, 0.92f, 1f));
     }
@@ -88,7 +88,7 @@ public static class PlaceRecordsBuilder
         }
         for (int i = 0; i < 5; i++)
             Prim(PrimitiveType.Cube, "Zebra", t, V(-1.8f + i * 0.9f, 0.02f, -4.4f), V(0.5f, 0.02f, 4.5f), paint, null, false);
-        var kerb = M("kerb", "#dfe3ea", 0.1f);
+        var kerb = M("kerb", "#eee2d4", 0.1f);
         foreach (float z in new[] { -2.0f, -6.8f })
         {
             Prim(PrimitiveType.Cube, "KerbW", t, V(-9.1f, 0.07f, z), V(13.8f, 0.14f, 0.3f), kerb);
@@ -224,11 +224,11 @@ public static class PlaceRecordsBuilder
         }
         // a blade sign on a pole at the corner of the shop: BASEMENT, and an arrow toward the room
         var neon = NeonMat(P + "neon_live", "#ffb02e", 2.6f);
-        Prim(PrimitiveType.Cylinder, "SignPole", t, V(-0.6f, 2.2f, 3.0f), V(0.12f, 2.2f, 0.12f), trim);
-        Prim(PrimitiveType.Cube, "SignBoard", t, V(1.75f, 3.7f, 3.0f), V(4.7f, 1.0f, 0.16f), M("board", "#1b2a36", 0.25f));
-        var txt = PixelText(t, "BASEMENT", V(1.55f, 3.7f, 2.89f), 0.075f, neon, "rs_text_basement", 0.5f);
+        Prim(PrimitiveType.Cylinder, "SignPole", t, V(-0.6f, 2.75f, 3.0f), V(0.12f, 2.75f, 0.12f), trim);   // 8.3: raised to the RECORDS sign's height so crew 2's marker bubble no longer hides the end of the word
+        Prim(PrimitiveType.Cube, "SignBoard", t, V(1.75f, 4.85f, 3.0f), V(4.7f, 1.0f, 0.16f), M("board", "#1b2a36", 0.25f));
+        var txt = PixelText(t, "BASEMENT", V(1.55f, 4.85f, 2.89f), 0.075f, neon, "rs_text_basement", 0.5f);
         MakeGlow(txt, new Color(1f, 0.7f, 0.18f) * 2.6f, 5f);
-        var arrowGo = PixelText(t, ">", V(3.75f, 3.7f, 2.89f), 0.1f, neon, "rs_text_arrow", 0.5f);
+        var arrowGo = PixelText(t, ">", V(3.75f, 4.85f, 2.89f), 0.1f, neon, "rs_text_arrow", 0.5f);
         MakeGlow(arrowGo, new Color(1f, 0.7f, 0.18f) * 2.6f, 0f);
         Block(blocks, -0.6f, 3.0f, 0.3f);
 

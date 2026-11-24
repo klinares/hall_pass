@@ -38,9 +38,12 @@ namespace WorldTour.World
             public Renderer R;
             public Bounds B;
             public ShadowCastingMode Orig;
-            public bool Hidden;
+            public bool Hidden;      // the line to her is blocked by this one
+            public bool Applied;     // drawn shadows-only (or off) now: Hidden, or a flat decoration on something that is
             public float Since;
+            public int[] Attached;   // indices of the thin pieces (windows, posters, stripes) fixed to this one; null until first needed
         }
+        bool[] _mark = new bool[0];
         readonly List<Item> _items = new List<Item>();
         float _nextScan = -1f;
         int _hiddenCount;
@@ -97,8 +100,8 @@ namespace WorldTour.World
             for (int i = 0; i < _items.Count; i++)
             {
                 Item it = _items[i];
-                if (it.Hidden) SetHidden(it, false);
-                it.Hidden = false;
+                if (it.Applied) SetHidden(it, false);
+                it.Hidden = false; it.Applied = false;
                 _items[i] = it;
             }
             _hiddenCount = 0;
@@ -161,9 +164,9 @@ namespace WorldTour.World
         {
             // put back whatever was hidden, scan, and let this frame's test hide again (all before the frame is drawn)
             for (int i = 0; i < _items.Count; i++)
-                if (_items[i].Hidden) SetHidden(_items[i], false);
+                if (_items[i].Applied) SetHidden(_items[i], false);
             var hiddenBefore = new HashSet<Renderer>();
-            for (int i = 0; i < _items.Count; i++) if (_items[i].Hidden && _items[i].R != null) hiddenBefore.Add(_items[i].R);
+            for (int i = 0; i < _items.Count; i++) if (_items[i].Applied && _items[i].R != null) hiddenBefore.Add(_items[i].R);
             _items.Clear();
             _hiddenCount = 0;
             foreach (MeshRenderer r in FindObjectsByType<MeshRenderer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
@@ -174,9 +177,40 @@ namespace WorldTour.World
                 string root = r.transform.root.name;
                 if (root == "Player" || root == "Riff" || r.name.StartsWith("String")) continue;   // the string lights are one thin mesh spanning the street: never worth hiding
                 var item = new Item { R = r, B = b, Orig = r.shadowCastingMode };   // crew and their markers too: nothing may stand in front of her
-                if (hiddenBefore.Contains(r)) { item.Hidden = true; item.Since = Time.unscaledTime; SetHidden(item, true); }   // put back above, so hide it again at once
+                if (hiddenBefore.Contains(r)) { item.Hidden = true; item.Applied = true; item.Since = Time.unscaledTime; SetHidden(item, true); }   // put back above, so hide it again at once
                 _items.Add(item);
             }
+        }
+
+        static readonly int[] None = new int[0];
+
+        /// <summary>
+        /// The thin pieces (under 0.35 m in some direction: windows, window frames, posters, stripes, a star) that lie inside this renderer's bounds grown by 0.8 m, when it
+        /// is itself a wall or pier (at least 3 m tall, under 2.5 m thick). Found once per scan.
+        /// </summary>
+        int[] AttachedTo(int index)
+        {
+            Item host = _items[index];
+            if (host.Attached != null) return host.Attached;
+            var found = new List<int>();
+            Vector3 hs = host.B.size;
+            bool wall = hs.y >= 3f && Mathf.Min(hs.x, hs.z) < 2.5f;
+            if (wall)
+            {
+                Bounds big = host.B; big.Expand(1.6f);
+                for (int j = 0; j < _items.Count; j++)
+                {
+                    if (j == index || _items[j].R == null) continue;
+                    Bounds b = _items[j].B;
+                    Vector3 sz = b.size;
+                    if (Mathf.Min(sz.x, Mathf.Min(sz.y, sz.z)) > 0.35f) continue;
+                    if (sz.magnitude >= hs.magnitude) continue;
+                    if (big.Contains(b.min) && big.Contains(b.max)) found.Add(j);
+                }
+            }
+            host.Attached = found.Count > 0 ? found.ToArray() : None;
+            _items[index] = host;
+            return host.Attached;
         }
 
         void UpdateClear(Vector3 cam, Vector3 who)
@@ -197,14 +231,26 @@ namespace WorldTour.World
                 {
                     it.Hidden = block;
                     it.Since = now;
-                    SetHidden(it, block);
                     _items[i] = it;
                 }
-                if (it.Hidden)
-                {
-                    hidden++;
-                    if (it.B.size.y > 2.5f) { Bounds e = it.B; e.Expand(1.6f); if (e.Contains(cam)) lensInside = true; }
-                }
+                if (it.Hidden && it.B.size.y > 2.5f) { Bounds e = it.B; e.Expand(1.6f); if (e.Contains(cam)) lensInside = true; }
+            }
+            // a hidden wall takes its windows, posters and stripes with it (thin pieces fixed to it), so none is left floating
+            if (_mark.Length < _items.Count) _mark = new bool[_items.Count];
+            for (int i = 0; i < _items.Count; i++) _mark[i] = false;
+            for (int i = 0; i < _items.Count; i++)
+            {
+                if (!_items[i].Hidden) continue;
+                int[] att = AttachedTo(i);
+                for (int a = 0; a < att.Length; a++) _mark[att[a]] = true;
+            }
+            for (int i = 0; i < _items.Count; i++)
+            {
+                Item it = _items[i];
+                if (it.R == null) continue;
+                bool want = it.Hidden || _mark[i];
+                if (want != it.Applied) { it.Applied = want; _items[i] = it; SetHidden(it, want); }
+                if (want) hidden++;
             }
             _hiddenCount = hidden;
             // the lens is inside or hard against something tall (a wall, a tree): rise and back off a little until it has been clear for a moment

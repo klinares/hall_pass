@@ -99,6 +99,40 @@ namespace WorldTour.World.Tests
         }
 
         [Test]
+        public void AHiddenPier_TakesItsWindowsAndPostersWithIt_AndGivesThemBack()
+        {
+            // the theater: a pier 9 wide across the way, a window and a poster (0.05 m thick) on its face, off to the side of the line to her
+            var cam = new GameObject("cam", typeof(Camera), typeof(FollowCamera));
+            var who = new GameObject("who");
+            var pier = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            var window = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            var poster = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            var tree = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            try
+            {
+                var f = cam.GetComponent<FollowCamera>();
+                f.target = who.transform;
+                pier.transform.position = new Vector3(0f, 4.7f, -6f); pier.transform.localScale = new Vector3(9f, 9.4f, 1.2f);
+                window.transform.position = new Vector3(3.2f, 3.9f, -6.7f); window.transform.localScale = new Vector3(1.2f, 2.9f, 0.05f);
+                poster.transform.position = new Vector3(-3.2f, 7.3f, -6.7f); poster.transform.localScale = new Vector3(1.75f, 1.55f, 0.04f);
+                tree.transform.position = new Vector3(3.2f, 1.5f, -5.9f); tree.transform.localScale = new Vector3(0.8f, 3f, 0.8f);   // a chunky thing beside the pier is not a decoration
+                var wr = window.GetComponent<MeshRenderer>(); var pr = poster.GetComponent<MeshRenderer>(); var tr = tree.GetComponent<MeshRenderer>();
+                f.SnapForPreview();
+                Assert.AreEqual(UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly, pier.GetComponent<MeshRenderer>().shadowCastingMode, "the pier is in the way");
+                Assert.AreEqual(UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly, wr.shadowCastingMode, "its window goes with it");
+                Assert.AreEqual(UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly, pr.shadowCastingMode, "and its poster");
+                Assert.AreEqual(UnityEngine.Rendering.ShadowCastingMode.On, tr.shadowCastingMode, "a thick thing is its own business");
+                f.RefreshForTest();
+                Assert.AreEqual(UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly, wr.shadowCastingMode, "still, after a rescan");
+                pier.transform.position = new Vector3(30f, 4.7f, -6f); window.transform.position = new Vector3(33.2f, 3.9f, -6.7f); poster.transform.position = new Vector3(26.8f, 7.3f, -6.7f);
+                f.SnapForPreview();
+                Assert.AreEqual(UnityEngine.Rendering.ShadowCastingMode.On, wr.shadowCastingMode, "pier out of the way: the window is back");
+                Assert.AreEqual(UnityEngine.Rendering.ShadowCastingMode.On, pr.shadowCastingMode, "and the poster");
+            }
+            finally { foreach (var g in new[] { cam, who, pier, window, poster, tree }) Object.DestroyImmediate(g); }
+        }
+
+        [Test]
         public void IsCandidate_SkipsFloorsAndWholeDistricts_KeepsTreesAwningsAndPosts()
         {
             Assert.IsFalse(FollowCamera.IsCandidate(new Bounds(new Vector3(0, 0.05f, 0), new Vector3(40, 0.1f, 40))), "ground");

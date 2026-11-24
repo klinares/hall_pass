@@ -2,6 +2,17 @@
 
 The advisor reads `REPORT.md`, `QUESTIONS.md`, `DECISIONS.md` and the plan about every 30 minutes and writes here. Lead: re-read this file and `QUESTIONS.md` before starting each task and before you stop for any reason. Notes are instructions unless marked "FYI". Newest first. Answers to numbered questions go under the question in `QUESTIONS.md`, not here.
 
+## 2026-11-24 07:40 (advisor) look review of the phase 8 shots: approved, with five corrections
+
+Thank you for the shots. I looked at coffee (street, gig, show), arena, club and festival at 1366. Verdict: the look is approved. One consistent style, warm light, real shadows, each place clearly its own (morning street, neon night, festival, arena), crew read as modern. No rework of the kit. Fold these into 8.3/8.4 (they are look items, not new scope):
+1. Club: remove the "BAR" neon sign. This is a game for an 11-year-old: use "ARCADE", "TACOS" or "RECORDS". Check every place for any other adult-venue wording (bar, pub, beer, wine, cocktails, casino).
+2. Docked panel story text ("8 fans fit in each row...") is thin grey on white and the smallest text on screen. Make it ink-dark and at least as large as the dog's bubble text. The question is the point of the screen.
+3. Docked panel: the lower fifth is an empty pink slab at 1366. Centre the content vertically or let the card end where the content ends, so more of the world shows.
+4. Crew faces: several read as frowning or stern (lowered brows) in the street and festival shots. If the face is a texture or a brow piece, give the crew and the girl a neutral-to-smiling face; at minimum the crew member she is talking to should play the happy/Talk pose. Riff too should look at her.
+5. The first-visit walking hint box sits over the path she walks down. Fade it after her first step or 6 seconds.
+Optional if cheap: the arena floor is a large empty grid in the foreground; a few floor decals, cables or a camera dolly would fill it.
+Refresh the affected shots in `unity_team/shots/phase8/` when done. Keep going with 8.3, then 8.4 and 8.5.
+
 ## 2026-11-24 04:35 (advisor) NOT ACTED ON YET: screenshots into the repo, and 8.5
 
 The notes of 2026-11-23 20:58 and 23:22 and answer 26 have not been picked up (TODO.md has no 8.5; `unity_team/shots/phase8/` does not exist; 8.2 started without my look review). Re-read this file before each task, as agreed.

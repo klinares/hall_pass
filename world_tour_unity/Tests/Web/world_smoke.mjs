@@ -18,6 +18,7 @@ import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { startServer } from './server.mjs';
 import { placeTests } from './world_places.mjs';
+import { wardrobeTests } from './world_wardrobe.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const project = path.resolve(here, '..', '..');
@@ -235,7 +236,7 @@ try {
   browser = await chromium.launch(launchOptions());
   results.browserVersion = browser.version();
 
-  for (const [vw, vh] of (argv.includes('--places-only') ? [] : sizes)) {
+  for (const [vw, vh] of (argv.includes('--places-only') || argv.includes('--wardrobe-only') ? [] : sizes)) {
     const key = `${vw}x${vh}`;
     const r = results.sizes[key] = { errors: [], warnings: [], positions: [] };
     const ctx = await browser.newContext({ viewport: { width: vw, height: vh } });
@@ -320,9 +321,11 @@ try {
     console.log(`${key}: ready ${r.readyMs} ms, ${r.fps} fps (unity ${r.unityFps}), renderer "${r.renderer}", ${(r.bytes / 1e6).toFixed(1)} MB over the wire`);
     await ctx.close();
   }
-  if (!argv.includes('--no-gameplay') && !argv.includes('--places-only')) await gameplay();
+  if (!argv.includes('--no-gameplay') && !argv.includes('--places-only') && !argv.includes('--wardrobe-only')) await gameplay();
+  // phase 8.3: the wardrobe (world_wardrobe.mjs); --no-wardrobe skips it, --wardrobe-only runs only it
+  if (!argv.includes('--no-wardrobe') && !argv.includes('--places-only')) await wardrobeTests({ browser, server, sizes, results, fail, shotsDir, argv, READY_TIMEOUT_MS });
   // phase 8.2: the places and the travel between them (world_places.mjs); --no-places skips it, --places-only runs only it
-  if (!argv.includes('--no-places')) await placeTests({ browser, server, sizes, results, fail, shotsDir, opt, argv, READY_TIMEOUT_MS });
+  if (!argv.includes('--no-places') && !argv.includes('--wardrobe-only')) await placeTests({ browser, server, sizes, results, fail, shotsDir, opt, argv, READY_TIMEOUT_MS });
 } catch (e) {
   results.failures.push('runner: ' + (e && e.stack || e));
   console.error(e);

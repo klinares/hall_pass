@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -16,12 +17,18 @@ namespace WorldTour.World
         /// <summary>True while she is walking toward a clicked point.</summary>
         public bool HasTarget { get { return hasTarget; } }
 
+        /// <summary>Metres kept clear of a blocker when planning a click path (a little more than the 0.35 m the walk pushes out by).</summary>
+        public const float PlanMargin = 0.4f;
+        /// <summary>Where the last click path ended up: the click itself, or the nearest reachable spot when it was closed off.</summary>
+        public bool LastPathReached { get; private set; } = true;
+
         bool hasTarget;
         int lastPausedFrame = -10;
-        float blockedFor, sidestepUntil;
-        int sidesteps;
-        Vector3 sidestep;
+        float blockedFor;
+        int replans;
         Vector3 target;
+        List<Vector3> path = new List<Vector3>();
+        int pathIndex;
         static readonly Plane Ground = new Plane(Vector3.up, Vector3.zero);
 
         void Awake()
@@ -32,8 +39,26 @@ namespace WorldTour.World
         /// <summary>Walks to a ground point as if it had been clicked (phase 8.1: click on a crew member, walk up to them).</summary>
         public void WalkTo(Vector3 point)
         {
-            target = Obstacle.PushOut(Clamp(point), 0.35f);
-            hasTarget = true; sidesteps = 0; blockedFor = 0f;
+            SetTarget(point);
+        }
+
+        /// <summary>Plans a path over the flat ground round every obstacle and keep-out box (A* on a grid, see <see cref="PathGrid"/>) and starts along it.</summary>
+        void SetTarget(Vector3 point)
+        {
+            target = Obstacle.PushOut(Clamp(point), PlanMargin + 0.05f);
+            replans = 0; blockedFor = 0f;
+            Plan();
+        }
+
+        void Plan()
+        {
+            bool reached;
+            path = PathGrid.Find(transform.position, target, bounds, p => Obstacle.IsBlocked(p, PlanMargin), out reached);
+            pathIndex = 0;
+            LastPathReached = reached;
+            if (path.Count == 0) path.Add(target);   // boxed in where she stands: walk straight and let the push-out sort it
+            if (!reached) target = path[path.Count - 1];   // closed off: walk to the nearest spot she can reach
+            hasTarget = true;
         }
 
         public void StopWalking() { hasTarget = false; }
@@ -81,8 +106,7 @@ namespace WorldTour.World
                     Ray ray = cam.ScreenPointToRay(sp);
                     if (Ground.Raycast(ray, out float t))
                     {
-                        target = Obstacle.PushOut(Clamp(ray.GetPoint(t)), 0.35f);
-                        hasTarget = true; sidesteps = 0; blockedFor = 0f;
+                        SetTarget(ray.GetPoint(t));
                     }
                 }
             }
@@ -95,12 +119,13 @@ namespace WorldTour.World
             else if (hasTarget)
             {
                 Vector3 to = target - transform.position; to.y = 0;
+                // pass the waypoints (0.25 m is near enough to turn), then the target itself (0.12 m)
+                while (pathIndex < path.Count - 1 && FlatDistance(transform.position, path[pathIndex]) < 0.25f) pathIndex++;
                 if (to.magnitude < 0.12f) hasTarget = false;
                 else
                 {
-                    Vector3 aim = Obstacle.SteerAround(transform.position, target) - transform.position; aim.y = 0;
+                    Vector3 aim = (pathIndex < path.Count ? path[pathIndex] : target) - transform.position; aim.y = 0;
                     move = aim.sqrMagnitude > 0.0001f ? aim.normalized : to.normalized;
-                    if (Time.time < sidestepUntil) move = sidestep;   // stepping out of a dead end (a deck side, a table) before trying the straight way again
                 }
             }
 
@@ -112,22 +137,15 @@ namespace WorldTour.World
 
             planarSpeed = (pos - before).magnitude / Mathf.Max(Time.deltaTime, 0.0001f);
             AnimSafe.Float(animator, "Speed", planarSpeed);
-            // Walking into a blocker on the way to a click target: step out sideways (toward the freer side) a few times, then give up on it.
+            // Held up on the way (the crowd grew, a prop moved): plan again from here, a few times, then give up on it
             if (hasTarget && move.sqrMagnitude > 0 && planarSpeed < speed * 0.15f)
             {
                 blockedFor += Time.deltaTime;
-                if (blockedFor > 0.25f)
+                if (blockedFor > 0.4f)
                 {
                     blockedFor = 0f;
-                    if (sidesteps >= 8) hasTarget = false;
-                    else
-                    {
-                        sidesteps++;
-                        Vector3 left = new Vector3(-move.z, 0f, move.x), right = -left;
-                        float l = (Obstacle.PushOut(Clamp(pos + left * 1.5f), 0.35f) - pos).magnitude, r = (Obstacle.PushOut(Clamp(pos + right * 1.5f), 0.35f) - pos).magnitude;
-                        sidestep = l >= r ? left : right;
-                        sidestepUntil = Time.time + 1.0f;
-                    }
+                    if (replans >= 3) hasTarget = false;
+                    else { replans++; Plan(); }
                 }
             }
             else if (planarSpeed > speed * 0.5f) blockedFor = 0f;
@@ -149,6 +167,8 @@ namespace WorldTour.World
                 }
             }
         }
+
+        static float FlatDistance(Vector3 a, Vector3 b) { a.y = 0; b.y = 0; return Vector3.Distance(a, b); }
 
         Vector3 Clamp(Vector3 p)
         {

@@ -26,7 +26,7 @@ namespace WorldTour.Game.Meta
     /// "WT_BACKSTAGE_READY", "WT_SHOP_SELECT id=..", "WT_SHOP_PRESS id=.. outcome=.. balance=.. lifetime=..".
     /// Esc goes back to the map. Opened from the map's hub card with <see cref="Open"/>.
     /// </summary>
-    public sealed class BackstageScreen : GameScreen
+    public sealed partial class BackstageScreen : GameScreen
     {
         public const string PrefabResource = "Screens/Screen_Backstage";
         public const string ReadyLog = "WT_BACKSTAGE_READY";
@@ -72,7 +72,10 @@ namespace WorldTour.Game.Meta
 
         protected internal override void OnPushed()
         {
-            _model = new Backstage(Blob);
+            _compact = s_NextCompact; s_NextCompact = false;
+            _model = _compact ? new Backstage(Blob, Shop.Outfit) : new Backstage(Blob);
+            if (_compact && s_StartSelect != null) { _model.Select(s_StartSelect); s_StartSelect = null; }
+            if (_compact) _tab = TabOf(_model.Selected);
             Theme.Changed += OnTheme;
             Build();
             Debug.Log(ReadyLog + " balance=" + Blob.Fans.Balance + " lifetime=" + Blob.Fans.Lifetime + " sel=" + _model.Selected + " theme=" + Theme.Palette.Id);
@@ -96,6 +99,7 @@ namespace WorldTour.Game.Meta
         protected internal override void OnRemoved()
         {
             Theme.Changed -= OnTheme;
+            if (_compact) TryOnChanged?.Invoke(null);
         }
 
         void OnDestroy() { Theme.Changed -= OnTheme; }
@@ -119,6 +123,7 @@ namespace WorldTour.Game.Meta
 
         void Build()
         {
+            if (_compact) { BuildCompact(); return; }
             if (_racks != null) _rackScroll = _racks.verticalNormalizedPosition;
             if (_root != null) { _root.gameObject.SetActive(false); Destroy(_root.gameObject); }
             _items.Clear();
@@ -334,6 +339,7 @@ namespace WorldTour.Game.Meta
 
         void Thumb(ShopItem it, RectTransform thumb)
         {
+            if (it.Slot == Shop.Outfit || it.Slot == Shop.Hair || it.Slot == Shop.Lights) { WorldThumb(it, thumb); return; }
             if (it.Slot == Shop.Theme)
             {
                 // screens.css .swatch: 62 square, ink border, the theme's four colours in a 2x2 grid, rotate(-4deg)
@@ -408,8 +414,9 @@ namespace WorldTour.Game.Meta
                     Build();
                     Feedback.Pop(_stageLook);
                     // up in the head row, clear of the mirror's blurb ("yours!" sat on "changes the whole game" at the middle of the screen)
-                    MetaUi.Toast(this, _root, Backstage.BoughtToast(it), shout, new Vector2(0.62f, 0.9f));
-                    ConfettiLayer.Burst(_root, 40, new Vector2(0.62f, 0.88f), ConfettiLayer.WinSeconds);
+                    // (in the world's compact panel the word is smaller and sits low, where the panel is empty)
+                    MetaUi.Toast(this, _root, Backstage.BoughtToast(it), shout, _compact ? new Vector2(0.5f, 0.2f) : new Vector2(0.62f, 0.9f), _compact ? 60f : 80f);
+                    ConfettiLayer.Burst(_root, 40, _compact ? new Vector2(0.5f, 0.2f) : new Vector2(0.62f, 0.88f), ConfettiLayer.WinSeconds);
                     break;
                 case PressOutcome.Equipped:
                     MapScreen.Persist();
@@ -461,6 +468,7 @@ namespace WorldTour.Game.Meta
             if (_back != null) _hitList.Add(new KeyValuePair<string, RectTransform>("back", (RectTransform)_back.transform));
             if (_act != null) _hitList.Add(new KeyValuePair<string, RectTransform>("act", (RectTransform)_act.transform));
             foreach (var kv in _items) _hitList.Add(new KeyValuePair<string, RectTransform>(kv.Key, kv.Value));
+            AddTabHits(_hitList);
             MetaUi.LogHits("backstage", _hitList);
         }
 

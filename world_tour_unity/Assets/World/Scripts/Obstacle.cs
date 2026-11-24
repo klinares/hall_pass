@@ -32,6 +32,23 @@ namespace WorldTour.World
             return p;
         }
 
+        /// <summary>True when a ground point is inside an obstacle circle or a keep-out box, each grown by margin metres (what <see cref="PushOut"/> would move it out of).</summary>
+        public static bool IsBlocked(Vector3 p, float margin)
+        {
+            for (int i = 0; i < All.Count; i++)
+            {
+                Vector3 c = All[i].transform.position;
+                float dx = p.x - c.x, dz = p.z - c.z, min = All[i].radius + margin;
+                if (dx * dx + dz * dz < min * min) return true;
+            }
+            for (int i = 0; i < KeepOutZone.All.Count; i++)
+            {
+                Rect r = KeepOutZone.All[i].Area;
+                if (p.x > r.xMin - margin && p.x < r.xMax + margin && p.z > r.yMin - margin && p.z < r.yMax + margin) return true;
+            }
+            return false;
+        }
+
         /// <summary>
         /// Where to walk next on the way to <paramref name="goal"/>: the goal itself, or the corner of a keep-out box that goes round it
         /// when the straight line would cross one (the shorter way round, kept 0.6 m clear so the push-out never fights it).

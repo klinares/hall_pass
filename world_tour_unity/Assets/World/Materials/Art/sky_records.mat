@@ -26,11 +26,11 @@ Material:
     m_Ints: []
     m_Floats: []
     m_Colors:
-    - _Bottom: {r: 0.82, g: 0.86, b: 0.88, a: 1}
-    - _Horizon: {r: 0.88, g: 0.94, b: 0.97, a: 1}
-    - _Mid: {r: 0.52, g: 0.75, b: 0.96, a: 1}
-    - _SunColor: {r: 1, g: 0.93, b: 0.75, a: 1}
-    - _SunDir: {r: -0.43010882, g: 0.7431448, b: -0.5125838, a: 0}
-    - _Top: {r: 0.24, g: 0.46, b: 0.88, a: 1}
+    - _Bottom: {r: 0.9, g: 0.82, b: 0.74, a: 1}
+    - _Horizon: {r: 1, g: 0.9, b: 0.78, a: 1}
+    - _Mid: {r: 0.56, g: 0.75, b: 0.96, a: 1}
+    - _SunColor: {r: 1, g: 0.85, b: 0.6, a: 1}
+    - _SunDir: {r: -0.46238273, g: 0.6946584, b: -0.55104625, a: 0}
+    - _Top: {r: 0.26, g: 0.46, b: 0.88, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

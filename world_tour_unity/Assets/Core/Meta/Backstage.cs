@@ -86,11 +86,15 @@ namespace WorldTour.Core.Meta
         /// <summary>The item whose buy button has been tapped once, or null.</summary>
         public string Armed { get; private set; }
 
-        public Backstage(SaveBlob s)
+        public Backstage(SaveBlob s) : this(s, Shop.Dog) { }
+
+        /// <summary>Starts on what is worn in <paramref name="slot"/> (the 3D world's panel starts on her outfit); an unknown or empty slot falls back to riff's.</summary>
+        public Backstage(SaveBlob s, string slot)
         {
             _s = s;
-            Selected = MetaRules.EquippedId(s, Shop.Dog);
-            if (Shop.ById(Selected) == null) Selected = "dog:none";
+            if (slot == null || Shop.FreeIn(slot) == null) slot = Shop.Dog;
+            ShopItem start = MetaRules.Pick(s, slot);
+            Selected = start != null ? start.Id : "dog:none";
         }
 
         public ShopItem Item { get { return Shop.ById(Selected); } }

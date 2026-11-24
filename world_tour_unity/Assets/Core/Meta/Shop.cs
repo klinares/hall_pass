@@ -10,7 +10,7 @@ namespace WorldTour.Core.Meta
     {
         /// <summary>"slot:name", for example "guitar:mint".</summary>
         public readonly string Id;
-        /// <summary>theme | guitar | dog | sticker.</summary>
+        /// <summary>theme | guitar | dog | sticker, or (3D world only, phase 8.3) outfit | hair | lights.</summary>
         public readonly string Slot;
         public readonly string Name;
         /// <summary>Fans to spend; 0 = free and owned from the start.</summary>
@@ -50,6 +50,10 @@ namespace WorldTour.Core.Meta
         public const string Guitar = "guitar";
         public const string Dog = "dog";
         public const string StickerSlot = "sticker";
+        /// <summary>Phase 8.3, world only: the Star's outfit, her hair colour, the stage light colour. Not on the 2D backstage shelves.</summary>
+        public const string Outfit = "outfit";
+        public const string Hair = "hair";
+        public const string Lights = "lights";
 
         /// <summary>U+2019, the right single quote the JS copy uses. Built from its code so the source stays ASCII.</summary>
         internal static readonly string Q = ((char)0x2019).ToString();
@@ -89,6 +93,63 @@ namespace WorldTour.Core.Meta
             new ShopItem("sticker:pass", StickerSlot, "backstage pass", 12000, "all access.", sticker: "pass"),
         };
 
+        /// <summary>
+        /// Phase 8.3: the items you can see in the 3D world. They are not in <see cref="All"/> (the 2D backstage and the JS parity tests walk that list
+        /// and stay as they were); <see cref="ById"/>, <see cref="Every"/> and the free defaults know them. A save that owns one loads in the 2D game
+        /// untouched (an owned id and an equipped slot it has no shelf for are kept as they are).
+        /// Outfits carry three swatches (jacket, jacket shade, trousers); hair and stage lights carry their colour in <c>Color</c>.
+        /// </summary>
+        public static readonly IReadOnlyList<ShopItem> World = new[]
+        {
+            /* outfits for the star: a jacket and trousers colour set */
+            new ShopItem("outfit:tour", Outfit, "tour pink", 0, "the one from the poster.", swatch: Sw("#ffc4da", "#f58bb2", "#34409a")),
+            new ShopItem("outfit:peach-navy", Outfit, "peach + navy", 5000, "peach jacket, navy trousers. very tour poster.", swatch: Sw("#ffbb9a", "#f2926c", "#2c4190")),
+            new ShopItem("outfit:mint", Outfit, "mint + denim", 12000, "fresh and a bit sporty.", swatch: Sw("#8fe3c4", "#52b896", "#3a5da8")),
+            new ShopItem("outfit:sunshine", Outfit, "sunshine", 18000, "yellow, so no one misses you.", swatch: Sw("#ffd34e", "#e0a91e", "#4a5068")),
+            new ShopItem("outfit:cherry", Outfit, "cherry + black", 25000, "the rock-star one.", swatch: Sw("#e8364f", "#a81a30", "#1b1b26")),
+            new ShopItem("outfit:starlight", Outfit, "starlight", 35000, "lilac and gold, for the big nights.", swatch: Sw("#b3a2ff", "#7d6be0", "#2b2470")),
+
+            /* hair colours */
+            new ShopItem("hair:chestnut", Hair, "chestnut", 0, "the usual.", color: "#b5651d"),
+            new ShopItem("hair:black", Hair, "midnight black", 5000, "sleek, with a blue shine.", color: "#1d1a28"),
+            new ShopItem("hair:blonde", Hair, "honey blonde", 8000, "catches every light.", color: "#e8c066"),
+            new ShopItem("hair:cherry", Hair, "cherry red", 12000, "loud on purpose.", color: "#c8283c"),
+            new ShopItem("hair:lilac", Hair, "lilac", 15000, "soft purple, hard rock.", color: "#a58cf0"),
+
+            /* stage light colours (every spotlight in every place) */
+            new ShopItem("lights:tour", Lights, "tour mix", 0, "every place keeps its own lights.", color: "#ffffff"),
+            new ShopItem("lights:pink", Lights, "hot pink", 6000, "the whole stage glows pink.", color: "#ff5fa8"),
+            new ShopItem("lights:cyan", Lights, "ice blue", 10000, "cool and sharp.", color: "#4fd0ff"),
+            new ShopItem("lights:gold", Lights, "gold", 15000, "warm, like a sold-out show.", color: "#ffc533"),
+            new ShopItem("lights:violet", Lights, "violet", 20000, "deep purple haze.", color: "#9a5cff"),
+        };
+
+        /// <summary>The shelves of the 3D world's backstage panel, in order (phase 8.3): what she can see on her, on riff and on the stage.</summary>
+        public static readonly IReadOnlyList<ShopSlot> WorldSlots = new[]
+        {
+            new ShopSlot(Outfit, "outfits", "what you wear on tour"),
+            new ShopSlot(Hair, "hair colours", "shows on you everywhere"),
+            new ShopSlot(Guitar, "guitar skins", "the one you play on stage"),
+            new ShopSlot(Dog, "riff" + Q + "s outfits", "riff wears it everywhere"),
+            new ShopSlot(Lights, "stage lights", "every stage, every place"),
+        };
+
+        /// <summary>The slots a save may hold an equipped item in, in the order the world reads them (the 2D three plus the world three).</summary>
+        public static readonly IReadOnlyList<string> WorldWearable = new[] { Outfit, Hair, Guitar, Dog, Lights };
+
+        /// <summary>Every item, 2D catalog first, then the world's (what <see cref="ById"/> searches).</summary>
+        public static IEnumerable<ShopItem> Every
+        {
+            get { foreach (ShopItem i in All) yield return i; foreach (ShopItem i in World) yield return i; }
+        }
+
+        /// <summary>The free item of a slot (what a slot with nothing owned falls back to), or null for a slot with none.</summary>
+        public static ShopItem FreeIn(string slot)
+        {
+            foreach (ShopItem i in Every) if (i.Slot == slot && i.Price == 0) return i;
+            return null;
+        }
+
         /// <summary>shop.js:37 <c>SLOTS</c>, in shelf order.</summary>
         public static readonly IReadOnlyList<ShopSlot> Slots = new[]
         {
@@ -105,6 +166,7 @@ namespace WorldTour.Core.Meta
         public static ShopItem ById(string id)
         {
             foreach (ShopItem i in All) if (i.Id == id) return i;
+            foreach (ShopItem i in World) if (i.Id == id) return i;
             return null;
         }
     }

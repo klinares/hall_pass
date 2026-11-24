@@ -1,0 +1,17 @@
+{
+    "name": "WorldTour.World.Wardrobe",
+    "rootNamespace": "WorldTour.World.Wardrobe",
+    "references": [
+        "WorldTour.Core",
+        "WorldTour.World"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

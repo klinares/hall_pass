@@ -117,12 +117,12 @@ namespace WorldTour.Core.Meta
             };
         }
 
-        private static ShopItem Pick(SaveBlob s, string slot)
+        /// <summary>What is worn in a slot: the equipped item when it exists, is in that slot and is owned, else the slot's free item.</summary>
+        public static ShopItem Pick(SaveBlob s, string slot)
         {
             ShopItem it = Shop.ById(EquippedId(s, slot));
-            if (it != null && Owns(s, it.Id)) return it;
-            foreach (ShopItem i in Shop.All) if (i.Slot == slot && i.Price == 0) return i;
-            return null;
+            if (it != null && it.Slot == slot && Owns(s, it.Id)) return it;
+            return Shop.FreeIn(slot);
         }
 
         /* ---------- tour journal ---------- */

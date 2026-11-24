@@ -3,6 +3,10 @@
     "rootNamespace": "WorldTour.World.Tests",
     "references": [
         "WorldTour.World",
+        "WorldTour.World.Wardrobe",
+        "WorldTour.World.Gameplay",
+        "WorldTour.World.Audio",
+        "WorldTour.Core",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],

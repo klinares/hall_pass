@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2647eabde93c8254da5d998b7937b2fa, type: 3}
+  m_Name: WardrobeAssets
+  m_EditorClassIdentifier: WorldTour.World.Wardrobe::WorldTour.World.Wardrobe.WardrobeAssets
+  outfits:
+  - id: outfit:tour
+    top: {fileID: 2100000, guid: 80112164cccf4af48926fd92c2ea0126, type: 2}
+    legs: {fileID: 2100000, guid: 0f17920e8bcbce34189a41f98420c6fe, type: 2}
+  - id: outfit:peach-navy
+    top: {fileID: 2100000, guid: f82c83dbb235d824fa6df4bf1beb33c0, type: 2}
+    legs: {fileID: 2100000, guid: 9695aed2aeb0a27408b21b8a64061d4e, type: 2}
+  - id: outfit:mint
+    top: {fileID: 2100000, guid: bdcb73b05740c4546b23b018656e97c9, type: 2}
+    legs: {fileID: 2100000, guid: 1e68083bf960e0940b3716afb6135049, type: 2}
+  - id: outfit:sunshine
+    top: {fileID: 2100000, guid: 06920d71c0a36194f821049b2130821b, type: 2}
+    legs: {fileID: 2100000, guid: 63ebe43083a7a30478d2f032d27be0c1, type: 2}
+  - id: outfit:cherry
+    top: {fileID: 2100000, guid: c75c019a0f7897f4499eda211133a566, type: 2}
+    legs: {fileID: 2100000, guid: 2bd94cc65e821f544ab7390e71b2586e, type: 2}
+  - id: outfit:starlight
+    top: {fileID: 2100000, guid: 6a262a3a64cb7f04584b207a0898cfa8, type: 2}
+    legs: {fileID: 2100000, guid: ddd95e9566b7fb448ae5172863947da9, type: 2}
+  hair:
+  - id: hair:chestnut
+    head: {fileID: 2100000, guid: eab433532caca294ab6ba16a4b2d7535, type: 2}
+  - id: hair:black
+    head: {fileID: 2100000, guid: f4d2bd3992743294ab2c9cd8de2657ae, type: 2}
+  - id: hair:blonde
+    head: {fileID: 2100000, guid: 9e8a1d9474cfcd94ab63ea8e811a93fa, type: 2}
+  - id: hair:cherry
+    head: {fileID: 2100000, guid: dacb05219a9c47b4e8ae7a81024d6b6b, type: 2}
+  - id: hair:lilac
+    head: {fileID: 2100000, guid: f9e1b94d4c487e14080e67f504127561, type: 2}
+  anchors:
+  - bone: chest
+    name: WearFront
+    position: {x: 6.357583e-29, y: -0.2432172, z: 2.6976644e-16}
+    rotation: {x: -1.7763568e-15, y: 7.1054274e-15, z: -5.646419e-23, w: 1}
+  - bone: Bone.003
+    name: WearHead
+    position: {x: -0.000000002654756, y: 0.002880063, z: -0.000059504295}
+    rotation: {x: -0.00000035684243, y: -0.71437216, z: -0.69976616, w: 0.0000001802378}
+  - bone: Bone.002
+    name: WearNeck
+    position: {x: -0.000000002766022, y: 0.00594857, z: -0.000000007916243}
+    rotation: {x: 0.000000097419786, y: -1, z: -0.0000000574127, w: -0.00000026192404}
+  baseLit: {fileID: 2100000, guid: 781c2e8d34e11a64db72370535a14937, type: 2}
+  cube: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  sphere: {fileID: 10200, guid: 0000000000000000e000000000000000, type: 0}
+  cylinder: {fileID: 10203, guid: 0000000000000000e000000000000000, type: 0}

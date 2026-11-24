@@ -125,5 +125,37 @@ namespace WorldTour.Core.Tour
             int n = Min + (int)Math.Floor(Math.Sqrt(lifetimeFans / 1000.0) * 2.0);
             return Math.Min(Max, Math.Max(Min, n));
         }
+
+        /// <summary>Phase 8.3: the fewest figures any place's crowd starts with.</summary>
+        public const int VenueMin = 4;
+
+        /// <summary>
+        /// Phase 8.3: the full crowd for a place, scaled by the venue's crowd factor (venues.js <c>crowd</c>, 0.15 to 1): 15 at the coffee shop to 44 at the arena.
+        /// </summary>
+        public static int Capacity(string venueId)
+        {
+            return (int)Math.Round(10.0 + 34.0 * Venues.ById(venueId).Crowd);
+        }
+
+        /// <summary>The lifetime fans at which a place's crowd is full: the next stop's unlock number (the arena, the last one, fills at 1.2 million).</summary>
+        public static long FullAtFans(string venueId)
+        {
+            for (int i = 0; i < Venues.All.Count; i++)
+                if (Venues.All[i].Id == venueId) return i + 1 < Venues.All.Count ? Venues.All[i + 1].Fans : Venues.All[i].Fans * 4 / 3;
+            return Venues.All[1].Fans;
+        }
+
+        /// <summary>
+        /// Phase 8.3: how many figures stand in this place for these lifetime fans. A few (<see cref="VenueMin"/>) with no fans, growing with the square root of
+        /// her fans (so the first thousands count most) to the place's <see cref="Capacity"/> at <see cref="FullAtFans"/>. Never fewer as fans grow, never more than the capacity.
+        /// </summary>
+        public static int CountFor(long lifetimeFans, string venueId)
+        {
+            if (lifetimeFans < 0) lifetimeFans = 0;
+            int cap = Capacity(venueId);
+            double fill = Math.Sqrt(Math.Min(1.0, lifetimeFans / (double)FullAtFans(venueId)));
+            int n = (int)Math.Round(cap * fill);
+            return Math.Min(cap, Math.Max(VenueMin, n));
+        }
     }
 }

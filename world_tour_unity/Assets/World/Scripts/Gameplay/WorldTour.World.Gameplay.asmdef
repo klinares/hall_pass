@@ -3,6 +3,8 @@
     "rootNamespace": "WorldTour.World.Gameplay",
     "references": [
         "WorldTour.World",
+        "WorldTour.World.Audio",
+        "WorldTour.World.Wardrobe",
         "WorldTour.Game",
         "WorldTour.Core",
         "Unity.TextMeshPro",

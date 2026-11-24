@@ -8,6 +8,8 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 using WorldTour.Game.Flow;
+using WorldTour.Game.Prefs;
+using WorldTour.World.Audio;
 using WorldTour.Game.Show;
 using WorldTour.Game.Ui;
 
@@ -21,6 +23,8 @@ namespace WorldTour.World.Gameplay
         public Action OnClick;
         /// <summary>False keeps the card open after the click (the stage's "change set").</summary>
         public bool Closes = true;
+        /// <summary>Optional. When this is the last button, Escape closes the card and runs this instead of pressing the button (a talk card's Escape just ends the talk).</summary>
+        public Action OnEscape;
     }
 
     /// <summary>
@@ -298,8 +302,9 @@ namespace WorldTour.World.Gameplay
         /// A speech bubble with a line, an optional second line and buttons. With a screen point it hangs above that point
         /// (a crew member's head) with a tail; with none it is a card in the middle of the screen.
         /// </summary>
-        public void OpenDialog(string who, string line, string sub, IList<DialogButton> buttons, Vector2? screenPoint)
+        public void OpenDialog(string who, string line, string sub, IList<DialogButton> buttons, Vector2? screenPoint, bool quiet = false)
         {
+            if (!quiet && !DialogOpen) WorldAudio.Play(Cue.CardOpen);
             if (BubbleHost != null) BubbleHost.gameObject.SetActive(false);   // a card never sits on top of riff's bubble: his lines wait until it closes
             HidePins(); HideHint();
             _who.SetLower(who ?? "");
@@ -435,9 +440,10 @@ namespace WorldTour.World.Gameplay
             Keyboard k = Keyboard.current;
             bool justSelected = false;
             if (_selectPending) { _selectPending = false; SelectButton(_focus); justSelected = true; }
+            // the focus is ours alone: the UI module also moves the selection on W, A, S, D and the arrows (held as she walked onto the spot, they repeat), which put it on
+            // "stay here" or on the sound button in the corner, so Enter pressed the wrong thing. Put it back on the focused button (Tab and the arrows below change _focus).
+            else if (SelectedButton() != _focus && Time.frameCount > _openedFrame + 1) { SelectButton(_focus); justSelected = true; }
             if (k == null) return;
-            int sel = SelectedButton();
-            if (sel >= 0) _focus = sel;                 // a click or a ring move by another route: follow it
             _focus = Mathf.Clamp(_focus, 0, _buttons.Count - 1);
 
             int n = _buttons.Count;
@@ -450,7 +456,14 @@ namespace WorldTour.World.Gameplay
                 // with the focused button selected the StickerButton presses itself; press here only when it could not (just selected, or the selection was lost)
                 if (justSelected || SelectedButton() < 0) Press(_buttons[_focus]);
             }
-            else if (k.escapeKey.wasPressedThisFrame && n > 1) Press(_buttons[n - 1]);
+            else if (k.escapeKey.wasPressedThisFrame)
+            {
+                // Escape always closes a card: it presses the last button ("not now", "stay here", or the only "ok")
+                DialogButton last = _buttons[n - 1];
+                WorldAudio.Play(Cue.CardClose);
+                if (last.OnEscape != null) { CloseDialog(); last.OnEscape(); }
+                else Press(last);
+            }
         }
 
         // ---------- the panel ----------
@@ -523,6 +536,160 @@ namespace WorldTour.World.Gameplay
                 float y = Mathf.Clamp(local.y + 34f + lift, r.yMin + 80f, Mathf.Max(r.yMin + 80f, r.yMax - 16f - h));
                 rt.anchoredPosition = new Vector2(x, y);
             }
+        }
+
+        // ---------- the tour bus and the unlock confetti (phase 8.3) ----------
+
+        RectTransform _travel, _bus, _wheelA, _wheelB;
+        const float BusW = 360f, BusH = 130f, BusY = -210f;
+
+        /// <summary>
+        /// The travel moment: the card says where the bus is going, and a small tour bus drives across the screen under it (it parks in the middle under reduce motion).
+        /// <see cref="TravelProgress"/> moves it; <see cref="HideTravel"/> clears it.
+        /// </summary>
+        public void ShowTravel(string who, string line, string sub)
+        {
+            if (_travel == null) BuildTravel();
+            OpenDialog(who, line, sub, null, null, true);
+            _travel.gameObject.SetActive(true);
+            TravelProgress(0f);
+            _travel.SetAsLastSibling();
+            _dialog.SetAsLastSibling();   // above the fade, which dims the street behind
+        }
+
+        public void HideTravel()
+        {
+            if (_travel != null) _travel.gameObject.SetActive(false);
+        }
+
+        /// <summary>Puts the bus at 0 (off the left edge) to 1 (off the right edge); it keeps a little bounce on the road. Parked in the middle under reduce motion.</summary>
+        public void TravelProgress(float t)
+        {
+            if (_bus == null) return;
+            bool still = GameSettings.ReducedMotion;
+            float half = _canvasRt.rect.width / 2f + BusW * 0.7f;
+            float k = Mathf.Clamp01(t);
+            float x = still ? 0f : Mathf.Lerp(-half, half, Mathf.SmoothStep(0f, 1f, k) * 0.5f + k * 0.5f);
+            float bob = still ? 0f : Mathf.Sin(t * 60f) * 2.5f;
+            _bus.anchoredPosition = new Vector2(x, BusY + bob);
+            if (!still)
+            {
+                float spin = -t * 1600f;
+                _wheelA.localRotation = Quaternion.Euler(0, 0, spin);
+                _wheelB.localRotation = Quaternion.Euler(0, 0, spin);
+            }
+        }
+
+        void BuildTravel()
+        {
+            _travel = ShowUi.Rect("Travel", _canvasRt);
+            ShowUi.Stretch(_travel);
+            // the road: an ink strip with white dashes
+            RectTransform road = ShowUi.Rect("Road", _travel);
+            ShowUi.Place(road, new Vector2(.5f, .5f), new Vector2(4000f, 22f), new Vector2(0, BusY - BusH / 2f - 8f));
+            ShowUi.Panel(road, ColorRole.Ink).raycastTarget = false;
+            for (int i = -20; i <= 20; i++)
+            {
+                RectTransform dash = ShowUi.Rect("Dash", road);
+                ShowUi.Place(dash, new Vector2(.5f, .5f), new Vector2(46f, 5f), new Vector2(i * 120f, 0));
+                ShowUi.Panel(dash, ColorRole.OnInk).raycastTarget = false;
+            }
+            // the bus: ink outline, pink body, four windows, a blue stripe with its name, two wheels
+            _bus = ShowUi.Rect("Bus", _travel);
+            ShowUi.Place(_bus, new Vector2(.5f, .5f), new Vector2(BusW, BusH), new Vector2(0, BusY));
+            ShowUi.Panel(_bus, ColorRole.Ink).raycastTarget = false;
+            RectTransform body = ShowUi.Rect("Body", _bus);
+            ShowUi.Stretch(body, 4f);
+            ShowUi.Panel(body, ColorRole.PaperDeep).raycastTarget = false;
+            for (int i = 0; i < 4; i++)
+            {
+                RectTransform w = ShowUi.Rect("Window" + (i + 1), _bus);
+                ShowUi.Place(w, new Vector2(0f, 1f), new Vector2(64f, 42f), new Vector2(18f + i * 80f + 32f, -14f - 21f));
+                Box(w, 3f);
+            }
+            RectTransform stripe = ShowUi.Rect("Stripe", _bus);
+            stripe.anchorMin = new Vector2(0f, 0f); stripe.anchorMax = new Vector2(1f, 0f); stripe.pivot = new Vector2(.5f, 0f);
+            stripe.offsetMin = new Vector2(4f, 26f); stripe.offsetMax = new Vector2(-4f, 56f);
+            ShowUi.Panel(stripe, ColorRole.Accent2).raycastTarget = false;
+            TMP_Text name = ShowUi.Label(stripe, "Text", "world tour", 20f, FontRole.BodyBold, ColorRole.OnInk);
+            name.textWrappingMode = TextWrappingModes.NoWrap;
+            _wheelA = Wheel(-BusW / 2f + 78f);
+            _wheelB = Wheel(BusW / 2f - 78f);
+            _travel.gameObject.SetActive(false);
+        }
+
+        /// <summary>One wheel (an ink tire with a card hub); returns its spoke, which is what turns.</summary>
+        RectTransform Wheel(float x)
+        {
+            RectTransform tire = ShowUi.Rect("Wheel", _bus);
+            ShowUi.Place(tire, new Vector2(.5f, 0f), new Vector2(46f, 46f), new Vector2(x, 2f));
+            ShowUi.Panel(tire, ColorRole.Ink).raycastTarget = false;
+            RectTransform hub = ShowUi.Rect("Hub", tire);
+            ShowUi.Place(hub, new Vector2(.5f, .5f), new Vector2(20f, 20f), Vector2.zero);
+            ShowUi.Panel(hub, ColorRole.Card).raycastTarget = false;
+            RectTransform spoke = ShowUi.Rect("Spoke", hub);
+            ShowUi.Place(spoke, new Vector2(.5f, .5f), new Vector2(14f, 4f), Vector2.zero);
+            ShowUi.Panel(spoke, ColorRole.Ink).raycastTarget = false;
+            return spoke;
+        }
+
+        /// <summary>The unlock card gets a pop (a quick overshoot) and a shower of confetti. Under reduce motion: neither, the card just shows.</summary>
+        public void Celebrate()
+        {
+            if (GameSettings.ReducedMotion || !DialogOpen) return;
+            StartCoroutine(PopDialog());
+            StartCoroutine(Confetti());
+        }
+
+        IEnumerator PopDialog()
+        {
+            float t = 0f;
+            while (t < 0.35f)
+            {
+                t += Time.unscaledDeltaTime;
+                float e = Mathf.Clamp01(t / 0.35f);
+                float s = 0.82f + 0.18f * (1f + 2.2f * Mathf.Pow(e - 1f, 3f) + 1.2f * Mathf.Pow(e - 1f, 2f));
+                _dialog.localScale = new Vector3(s, s, 1f);
+                yield return null;
+            }
+            _dialog.localScale = Vector3.one;
+        }
+
+        IEnumerator Confetti()
+        {
+            ColorRole[] roles = { ColorRole.PaperDeep, ColorRole.Accent, ColorRole.Accent2, ColorRole.Card, ColorRole.Ink };
+            RectTransform layer = ShowUi.Rect("Confetti", _canvasRt);
+            ShowUi.Stretch(layer);
+            var bits = new List<RectTransform>();
+            var vel = new List<Vector3>();
+            Rect r = _canvasRt.rect;
+            var rng = new System.Random(77);
+            for (int i = 0; i < 46; i++)
+            {
+                RectTransform b = ShowUi.Rect("Bit", layer);
+                float w = 10f + (float)rng.NextDouble() * 10f;
+                ShowUi.Place(b, new Vector2(.5f, .5f), new Vector2(w, w * 0.55f), new Vector2(Mathf.Lerp(r.xMin + 60f, r.xMax - 60f, (float)rng.NextDouble()), r.yMax + 20f + (float)rng.NextDouble() * 120f));
+                ShowUi.Panel(b, roles[i % roles.Length]).raycastTarget = false;
+                b.localRotation = Quaternion.Euler(0, 0, (float)rng.NextDouble() * 360f);
+                bits.Add(b);
+                vel.Add(new Vector3((float)(rng.NextDouble() - 0.5) * 120f, -(380f + (float)rng.NextDouble() * 320f), (float)(rng.NextDouble() - 0.5) * 540f));
+            }
+            layer.SetAsLastSibling();
+            _dialog.SetAsLastSibling();
+            _fade.SetAsLastSibling();
+            float t = 0f;
+            while (t < 1.9f)
+            {
+                t += Time.unscaledDeltaTime;
+                for (int i = 0; i < bits.Count; i++)
+                {
+                    Vector3 v = vel[i];
+                    bits[i].anchoredPosition += new Vector2(v.x, v.y) * Time.unscaledDeltaTime;
+                    bits[i].Rotate(0, 0, v.z * Time.unscaledDeltaTime);
+                }
+                yield return null;
+            }
+            Destroy(layer.gameObject);
         }
 
         // ---------- the fade ----------

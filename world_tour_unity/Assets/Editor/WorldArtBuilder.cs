@@ -105,7 +105,7 @@ public static class WorldArtBuilder
     }
 
     /// <summary>A 256 x 256 copy of a 1024 palette texture with some of its 8 x 4 swatches repainted as top-to-bottom gradients.</summary>
-    static Texture2D Recolor(string srcAsset, string outName, params (int cell, string top, string bottom)[] edits)
+    public static Texture2D Recolor(string srcAsset, string outName, params (int cell, string top, string bottom)[] edits)
     {
         var src = LoadRaw(srcAsset);
         int sw = src.width, sh = src.height;
@@ -282,7 +282,7 @@ public static class WorldArtBuilder
         }
     }
 
-    static Material TexMat(string name, Texture2D tex) { return Lit(name, Color.white, 0.1f, tex); }
+    public static Material TexMat(string name, Texture2D tex) { return Lit(name, Color.white, 0.1f, tex); }
 
     static void SavePrefab(GameObject go, string path)
     {
@@ -317,7 +317,7 @@ public static class WorldArtBuilder
     }
 
     static string Hx(Color c) { return "#" + ColorUtility.ToHtmlStringRGB(c); }
-    static (int, string, string) Cell(int cell, string hex, float lighten = 0.32f, float darken = 0.2f)
+    public static (int, string, string) Cell(int cell, string hex, float lighten = 0.32f, float darken = 0.2f)
     {
         var c = C(hex);
         return (cell, Hx(Color.Lerp(c, Color.white, lighten)), Hx(Color.Lerp(c, Color.black, darken)));

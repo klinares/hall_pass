@@ -591,21 +591,22 @@ public static partial class PlaceKit
     {
         public static Look Coffee() { return new Look(); }
 
-        /// <summary>Records: late morning, bright and a little cool, thin haze, a high white-yellow sun.</summary>
+        /// <summary>Records: late morning, bright and sunny with a warm white-gold sun (8.3: warmed up, it read flat and cool next to the other places).</summary>
         public static Look Records()
         {
             return new Look
             {
                 ProfileName = "Records", SkyMaterial = "sky_records",
-                SunColor = new Color(1f, 0.93f, 0.8f), SunIntensity = 2.2f, SunEuler = new Vector3(48f, 40f, 0f),
-                SkyTop = new Color(0.24f, 0.46f, 0.88f), SkyMid = new Color(0.52f, 0.75f, 0.96f), SkyHorizon = new Color(0.88f, 0.94f, 0.97f), SkyBottom = new Color(0.82f, 0.86f, 0.88f),
-                SkyGlow = new Color(1f, 0.93f, 0.75f),
-                AmbSky = new Color(0.5f, 0.68f, 0.98f), AmbEquator = new Color(0.82f, 0.84f, 0.86f), AmbGround = new Color(0.42f, 0.4f, 0.42f), AmbIntensity = 0.95f,
-                Fog = new Color(0.82f, 0.88f, 0.92f), FogDensity = 0.0085f, ShadowTint = new Color(0.38f, 0.46f, 0.7f),
-                CameraBackground = new Color(0.7f, 0.84f, 0.95f),
-                BloomIntensity = 0.3f, BloomTint = new Color(1f, 0.96f, 0.9f), Contrast = 14f, Saturation = 8f,
-                ColorFilter = new Color(0.99f, 1f, 1f), WbTemperature = -3f, WbTint = 0f,
-                Shadows = new Vector4(0.84f, 0.92f, 1.15f, 0f), Highlights = new Vector4(1.04f, 1.02f, 0.94f, 0f),
+                SunColor = new Color(1f, 0.87f, 0.66f), SunIntensity = 2.5f, SunEuler = new Vector3(44f, 40f, 0f),
+                SkyTop = new Color(0.26f, 0.46f, 0.88f), SkyMid = new Color(0.56f, 0.75f, 0.96f), SkyHorizon = new Color(1f, 0.9f, 0.78f), SkyBottom = new Color(0.9f, 0.82f, 0.74f),
+                SkyGlow = new Color(1f, 0.85f, 0.6f),
+                AmbSky = new Color(0.58f, 0.7f, 0.96f), AmbEquator = new Color(0.95f, 0.86f, 0.78f), AmbGround = new Color(0.52f, 0.43f, 0.38f), AmbIntensity = 1.0f,
+                Fog = new Color(0.94f, 0.87f, 0.8f), FogDensity = 0.0085f, ShadowTint = new Color(0.5f, 0.42f, 0.64f),
+                CameraBackground = new Color(0.82f, 0.82f, 0.88f),
+                BloomIntensity = 0.42f, BloomTint = new Color(1f, 0.9f, 0.76f), Contrast = 18f, Saturation = 18f,
+                ColorFilter = new Color(1f, 0.97f, 0.93f), WbTemperature = 9f, WbTint = 2f,
+                Shadows = new Vector4(0.92f, 0.9f, 1.1f, 0f), Highlights = new Vector4(1.1f, 1.02f, 0.9f, 0f),
+                VignetteIntensity = 0.2f,
             };
         }
 

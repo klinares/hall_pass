@@ -23,6 +23,7 @@ using WorldTour.Game.Show;
 using WorldTour.Game.Ticket;
 using WorldTour.Game.Ui;
 using WorldTour.Game.Util;
+using WorldTour.World.Audio;
 
 namespace WorldTour.World.Gameplay
 {
@@ -73,6 +74,7 @@ namespace WorldTour.World.Gameplay
         CrowdField _crowd;
         StageLights _lights;
         PanelLensShift _lens;
+        WorldAudio _audio;
         DogFollower _dog;
         string _placeId = Venues.First;
 
@@ -126,6 +128,7 @@ namespace WorldTour.World.Gameplay
             SaveStore store = Boot.Store;
             if (store != null) GameSettings.Bind(store); else GameSettings.Apply();
             Sfx.Prepare();
+            _audio = WorldAudio.Attach(gameObject);
 
             _ui = WorldUi.Create(_assets);
             _ui.AddHud(store);
@@ -136,6 +139,8 @@ namespace WorldTour.World.Gameplay
             WorldInput.ClickIsOnUi = _ => _ui != null && _ui.PointerOverUi();
             WorldInput.ClickUsed = OnWorldClick;
             SceneManager.sceneLoaded += OnSceneLoaded;
+            _shop = gameObject.AddComponent<WorldShop>();   // phase 8.3: the wardrobe trunk and the backstage shop (see the wardrobe region below)
+            _shop.Init(this, _ui);
 
             Bind();
             SetMode(Mode.Free);
@@ -245,11 +250,38 @@ namespace WorldTour.World.Gameplay
             {
                 _crowd = gameObject.AddComponent<CrowdField>();
                 Vector3 face = _stage != null ? _stage.position : _crowdArea.position + Vector3.forward;
-                _crowd.Setup(_crowdArea, face, _assets, GigPlan.PlaceIndex(_placeId) * 31 + 7);
+                _crowd.Setup(_crowdArea, face, _assets, GigPlan.PlaceIndex(_placeId) * 31 + 7, _placeId);
                 _crowd.SetFans(Fans());
             }
             _stageArmed = _stage == null || FlatDist(_player.transform.position, _stage.position) > StageRadius + 0.6f;
             _exitArmed = _exit == null || FlatDist(_player.transform.position, _exit.position) > ExitRadius + 0.6f;
+            if (_audio != null) { _audio.Bind(_placeId, _player, _crowdArea); _audio.CrowdFill = _crowd != null ? _crowd.Fill : 0f; }
+            if (_shop != null) _shop.PlaceLoaded(_placeId);
+        }
+
+        // ---------- wardrobe (phase 8.3): the few things WorldShop asks of this class ----------
+
+        WorldShop _shop;
+        public bool IsFree { get { return _mode == Mode.Free && Time.frameCount > _modeFrame; } }
+        /// <summary>A stage show (or its ticket) is on: the Star plays her guitar.</summary>
+        public bool StageShowOn { get { return _mode == Mode.Panel && _run == Run.Show; } }
+        public Camera Cam { get { return _cam; } }
+        public FollowCamera Follow { get { return _follow; } }
+        public PlayerController Player { get { return _player; } }
+        public DogFollower Dog { get { return _dog; } }
+        public Transform Spawn { get { return _spawn; } }
+        public Vector3? StagePos { get { return _stage != null ? _stage.position : (Vector3?)null; } }
+        public Vector3? CrowdPos { get { return _crowdArea != null ? _crowdArea.position : (Vector3?)null; } }
+        public Vector3? ExitPos { get { return _exit != null ? _exit.position : (Vector3?)null; } }
+        public IEnumerable<Vector3> CrewPositions() { foreach (Crew c in _crew) yield return c.T.position; }
+
+        /// <summary>Opens a screen in the docked panel (the backstage shop); popping back to the root ends it as it ends a gig.</summary>
+        public void OpenHostedPanel(Action open)
+        {
+            _run = Run.None;
+            SetMode(Mode.Panel);
+            DockPanel();
+            open();
         }
 
         static Transform Find(string name)
@@ -297,10 +329,20 @@ namespace WorldTour.World.Gameplay
         {
             if (_mode == Mode.Boot || _player == null) return;
             UnlockSoundOnFirstPress();
+            SyncAudio();
             if (_mode == Mode.Free && Time.frameCount > _modeFrame) UpdateFree();
             else if (_mode == Mode.Dialog && _talking != null && _ui.DialogOpen && _cam != null) _ui.MoveDialogAnchor(HeadScreen(_talking.T));
             else if (_mode == Mode.Panel && _ui.PanelCompact && _cam != null) _ui.PlaceDogBubble(DogScreen(), _run == Run.Show ? 130f : 0f);
             if (TestMode && Time.unscaledTime >= _nextTargets) { _nextTargets = Time.unscaledTime + 0.4f; LogTargets(); }
+        }
+
+        /// <summary>Tells the world sound how full the crowd is and whether a panel or the show is up (the bed ducks, the murmur holds).</summary>
+        void SyncAudio()
+        {
+            if (_audio == null) return;
+            _audio.CrowdFill = _crowd != null ? _crowd.Fill : 0f;
+            _audio.PanelOpen = _mode == Mode.Panel;
+            _audio.ShowOn = _mode == Mode.Panel && _run == Run.Show;
         }
 
         void UnlockSoundOnFirstPress()
@@ -328,7 +370,12 @@ namespace WorldTour.World.Gameplay
             if (_pending != null)
             {
                 if (FlatDist(p, _pending.T.position) <= TalkRange - 0.2f) { StartTalk(_pending); return; }
-                if (!_player.HasTarget) _pending = null;
+                if (!_player.HasTarget)
+                {
+                    // she stopped a little short (the way round was long, or the spot was closed off): close enough still talks
+                    Crew c = _pending; _pending = null;
+                    if (FlatDist(p, c.T.position) <= TalkRange + 1.0f) { StartTalk(c); return; }
+                }
             }
 
             if (_stage != null)
@@ -438,12 +485,13 @@ namespace WorldTour.World.Gameplay
         bool OnWorldClick(Vector2 screen)
         {
             if (_mode != Mode.Free || _cam == null) return false;
-            Crew hit = null; float best = Screen.height * 0.1f;
+            // the crew member whose body (feet to head, on the screen) is nearest the click, within about 46 px
+            Crew hit = null; float best = Screen.height * 0.06f;
             foreach (Crew c in _crew)
             {
-                Vector3 sp = _cam.WorldToScreenPoint(c.T.position + Vector3.up * 1.0f);
-                if (sp.z <= 0) continue;
-                float d = Vector2.Distance(screen, sp);
+                Vector3 feet = _cam.WorldToScreenPoint(c.T.position), head = _cam.WorldToScreenPoint(c.T.position + Vector3.up * 2f);
+                if (feet.z <= 0 || head.z <= 0) continue;
+                float d = DistanceToSegment(screen, feet, head);
                 if (d < best) { best = d; hit = c; }
             }
             if (hit == null) return false;
@@ -455,6 +503,14 @@ namespace WorldTour.World.Gameplay
             _pending = hit;
             _player.WalkTo(stand);
             return true;
+        }
+
+        static float DistanceToSegment(Vector2 p, Vector2 a, Vector2 b)
+        {
+            Vector2 ab = b - a;
+            float len2 = ab.sqrMagnitude;
+            float t = len2 > 0.0001f ? Mathf.Clamp01(Vector2.Dot(p - a, ab) / len2) : 0f;
+            return Vector2.Distance(p, a + ab * t);
         }
 
         // ---------- talking and gigs ----------
@@ -496,7 +552,7 @@ namespace WorldTour.World.Gameplay
                         Label = "another gig", Ghost = true, Closes = false,
                         OnClick = () => { c.PoolIndex = (c.PoolIndex + 1) % c.Pool.Length; c.Mode = c.Pool[c.PoolIndex]; ShowTalkCard(c); }
                     });
-                buttons.Add(new DialogButton { Label = "not now", Ghost = true, OnClick = () => Decline(c) });
+                buttons.Add(new DialogButton { Label = "not now", Ghost = true, OnClick = () => Decline(c), OnEscape = EndTalk });   // Escape just closes the talk: no second card
             }
             else
             {
@@ -680,6 +736,7 @@ namespace WorldTour.World.Gameplay
                     // every right answer: Star cheers; at the stage the crowd hops and a burst goes up
                     AnimSafe.Trigger(_player.animator, "Cheer");
                     if (_talking != null) AnimSafe.Trigger(_talking.Anim, "Cheer");
+                    if (_run == Run.Show) WorldAudio.Play(Cue.Cheer);   // applause, as loud as the crowd is full
                     if (_run == Run.Show && _lights != null) _lights.Flare();
                     if (_run == Run.Show && _crowd != null) _crowd.Cheer(_player.transform.position + (_crowdArea != null ? (_crowdArea.position - _player.transform.position).normalized * 2f : Vector3.zero));
                     break;
@@ -698,6 +755,7 @@ namespace WorldTour.World.Gameplay
         {
             ShowSummary s = r.Summary;
             Debug.Log("WT_GIG_DONE fans=" + s.Fans + " n=" + s.N + " first=" + s.First);
+            WorldAudio.Play(Cue.GigDone);
             string fans = "+" + s.Fans.ToString("#,##0", CultureInfo.InvariantCulture) + " fans";
             string sub = s.First + " of " + s.N + " right on the first try";
             var ok = new List<DialogButton> { new DialogButton { Label = "keep exploring", OnClick = () => _ui.Stack.PopToRoot() } };
@@ -760,7 +818,9 @@ namespace WorldTour.World.Gameplay
             SetMode(Mode.Dialog);
             Debug.Log("WT_WORLD_UNLOCK venue=" + last.Id);
             var ok = new List<DialogButton> { new DialogButton { Label = "nice", OnClick = () => SetMode(Mode.Free) } };
-            _ui.OpenDialog("new stop unlocked", last.Name, "find it past the exit", ok, null);
+            _ui.OpenDialog("new stop unlocked!", last.Name, "your fans opened it. head to the exit.", ok, null, true);
+            WorldAudio.Play(Cue.Unlock);
+            _ui.Celebrate();
         }
 
         // ---------- travel ----------
@@ -808,7 +868,13 @@ namespace WorldTour.World.Gameplay
             _ui.OpenDialog("tour map", offer.Line, string.IsNullOrEmpty(offer.Detail) ? null : offer.Detail, buttons, null);
         }
 
-        /// <summary>The travel moment (fade, the name of the stop, under two seconds), then the scene of the stop; she arrives at its PlayerSpawn.</summary>
+        /// <summary>Longest the bus takes to cross, seconds (the whole moment, with the fade back in, is under 2 s plus a load that runs behind it).</summary>
+        const float BusSeconds = 1.4f;
+
+        /// <summary>
+        /// The travel moment: the street dims, a card says "next stop: ..." and a tour bus drives across under it (1.4 s, parked and still under reduce motion), while the
+        /// next place loads behind it; then the fade lifts and she is at its PlayerSpawn. About 1.7 s in all.
+        /// </summary>
         IEnumerator Travel(Venue dest, bool forward)
         {
             _exitArmed = false;
@@ -818,19 +884,28 @@ namespace WorldTour.World.Gameplay
             string line = forward ? Journey.NextStopLine(dest) : Journey.BackLine(dest);
             Debug.Log("WT_WORLD_TRAVEL next=" + dest.Id + " forward=" + forward + " built=" + Application.CanStreamedLevelBeLoaded(scene));
 
-            _ui.FadeTo(0.82f, 0.3f);
-            yield return new WaitForSecondsRealtime(0.3f);
-            _ui.OpenDialog("on the road", line, null, null, null);
-            yield return new WaitForSecondsRealtime(1.0f);
-            _ui.CloseDialog();
+            float seconds = GameSettings.ReducedMotion ? 1.0f : BusSeconds;
+            _ui.FadeTo(0.82f, 0.25f);
+            _ui.ShowTravel("on the road", line, dest.Name);
+            WorldAudio.Play(Cue.Whoosh);
             _world.Place = dest.Id; _world.HasPosition = false;
             if (Boot.Store != null) { WorldSave.Write(Boot.Store.Blob, _world); Boot.Store.Save(); }
             _travelLoading = true;
             AsyncOperation op = SceneManager.LoadSceneAsync(scene, LoadSceneMode.Single);
-            while (op != null && !op.isDone) yield return null;
+            if (op != null) op.allowSceneActivation = false;
+            float t = 0f;
+            while (t < seconds || (op != null && op.progress < 0.9f))
+            {
+                t += Time.unscaledDeltaTime;
+                _ui.TravelProgress(t / seconds);
+                yield return null;
+            }
+            if (op != null) { op.allowSceneActivation = true; while (!op.isDone) yield return null; }
             _travelLoading = false;
             Bind();
             Debug.Log("WT_WORLD_ARRIVED place=" + _placeId + " crew=" + string.Join(",", _crew.Select(c => c.Mode)) + " crowd=" + (_crowd != null ? _crowd.Count : 0));
+            _ui.CloseDialog();
+            _ui.HideTravel();
             _ui.FadeTo(0f, 0.3f);
             yield return new WaitForSecondsRealtime(0.3f);
             SetMode(Mode.Free);

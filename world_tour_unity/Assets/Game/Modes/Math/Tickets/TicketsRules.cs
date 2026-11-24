@@ -73,11 +73,11 @@ namespace WorldTour.Game.Modes
             return c == null ? (long?)null : (long)p.Answer.Value.Number - c["c"].Long;
         }
 
-        /// <summary>"yes, 1 more. now put it with the 7 you already have."</summary>
+        /// <summary>"one more step: put that 1 with the 7 you already have."</summary>
         public static string Welcome(Problem p)
         {
             JsonValue c = Part(p);
-            return c == null ? null : "yes, " + StepAnswer(p) + " more. now put it with the " + TicketsWork.F(c["c"].Long) + " you already have.";
+            return c == null ? null : "one more step: put that " + StepAnswer(p) + " with the " + TicketsWork.F(c["c"].Long) + " you already have.";
         }
 
         /// <summary>True when <paramref name="typed"/> is the step's answer and not the whole answer.</summary>

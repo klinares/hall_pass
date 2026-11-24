@@ -64,6 +64,42 @@ namespace WorldTour.Core.Tests
             Assert.AreEqual(3, GigPlan.Assign("nowhere", 3, null, Spell7).Length, "null list and unknown place do not throw");
         }
 
+        // ---------- offers: every mode is on offer somewhere, the current unit is always a first pitch ----------
+
+        [Test]
+        public void Offers_EveryEnabledMathModeAndSpellingModeIsOnOfferSomewhere_InEveryPlace()
+        {
+            foreach (Venue v in Venues.All)
+            {
+                string[][] offers = GigPlan.Offers(v.Id, 3, Math5, Spell7);
+                var all = offers.SelectMany(o => o).ToList();
+                foreach (string m in Math5.Concat(Spell7)) CollectionAssert.Contains(all, m, v.Id + " " + m);
+                Assert.AreEqual(all.Count, all.Distinct().Count(), "no mode is offered twice in a place");
+                CollectionAssert.AreEqual(offers.SelectMany(o => o), GigPlan.Offers(v.Id, 3, Math5, Spell7).SelectMany(o => o), "same every time");
+            }
+        }
+
+        [Test]
+        public void Offers_SnackTableIsAlwaysAFirstPitch_AndCoffeeStillStartsWithTicketSales()
+        {
+            foreach (Venue v in Venues.All)
+                CollectionAssert.Contains(GigPlan.Offers(v.Id, 3, Math5, Spell7).Select(o => o[0]).ToList(), "snack", v.Id);
+            CollectionAssert.AreEqual(new[] { "tickets", "slots", "snack" }, GigPlan.Offers("coffee", 3, Math5, Spell7).Select(o => o[0]).ToArray());
+            // switched off (the fm skill disabled): nothing is forced
+            string[] noSnack = { "tickets", "truck", "budget", "soundcheck" };
+            Assert.IsNull(GigPlan.UnitMode(noSnack));
+            CollectionAssert.AreEqual(GigPlan.Assign("coffee", 3, noSnack, Spell7), GigPlan.Offers("coffee", 3, noSnack, Spell7).Select(o => o[0]).ToArray());
+            Assert.AreEqual("snack", GigPlan.UnitMode(Math5));
+        }
+
+        [Test]
+        public void Offers_CopesWithNoCrewAndNoModes()
+        {
+            Assert.AreEqual(0, GigPlan.Offers("coffee", 0, Math5, Spell7).Length);
+            Assert.AreEqual(0, GigPlan.Offers("coffee", 2, new string[0], new string[0]).SelectMany(o => o).Count());
+            Assert.AreEqual(3, GigPlan.Offers("nowhere", 3, null, Spell7).Length);
+        }
+
         // ---------- gig length ----------
 
         [Test]

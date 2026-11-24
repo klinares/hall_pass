@@ -30,7 +30,10 @@ namespace WorldTour.World.Gameplay
     /// </summary>
     public sealed class WorldUi : MonoBehaviour
     {
-        const float BubbleWidth = 560f, Pad = 20f, ButtonH = 56f, ButtonGap = 12f;
+        const float BubbleWidth = 600f, Pad = 20f, ButtonH = 56f, ButtonGap = 12f;
+        // type sizes on the cards: the typewriter face reads small, so these are bigger than the 2D game's 16 px body (fix round 1: nothing under 18)
+        const float WhoSize = 20f, LineSize = 26f, SubSize = 22f, TagSize = 22f, PinSize = 22f, HintSize = 26f;
+        const float WhoH = 30f, LineH = 94f, SubH = 36f;
 
         public Canvas Canvas { get; private set; }
         public ScreenStack Stack { get; private set; }
@@ -55,6 +58,13 @@ namespace WorldTour.World.Gameplay
         int _openedFrame = -1;
         Vector2? _dialogAnchor;
         Coroutine _fadeRoutine;
+        readonly List<ShowButton> _buttonViews = new List<ShowButton>();
+        int _focus, _nextFocus;
+        bool _selectPending;
+        sealed class Pin { public RectTransform Rt; public TMP_Text Text; public float Phase; }
+        readonly Dictionary<string, Pin> _pins = new Dictionary<string, Pin>();
+        RectTransform _hint;
+        TMP_Text _hintText;
 
         public static WorldUi Create(WorldGameplayAssets assets)
         {
@@ -81,6 +91,7 @@ namespace WorldTour.World.Gameplay
             _assets = assets;
             _canvasRt = (RectTransform)canvas.transform;
             EnsureEventSystem();
+            FocusNavigator.Suppress = () => DialogOpen;   // Tab on a card moves between its own buttons (see Update)
 
             // dim behind the panel
             RectTransform dim = ShowUi.Rect("Dim", _canvasRt);
@@ -150,21 +161,100 @@ namespace WorldTour.World.Gameplay
         void BuildTag()
         {
             _tag = ShowUi.Rect("TalkTag", _canvasRt);
-            ShowUi.Place(_tag, new Vector2(.5f, .5f), new Vector2(150, 36), Vector2.zero);
+            ShowUi.Place(_tag, new Vector2(.5f, .5f), new Vector2(320, 46), Vector2.zero);
             Box(_tag, 3f);
-            _tagText = ShowUi.Label(_tag, "Text", "", Tokens.Fs1, FontRole.BodyBold, ColorRole.Ink);
+            _tagText = ShowUi.Label(_tag, "Text", "", TagSize, FontRole.BodyBold, ColorRole.Ink);
+            _tagText.textWrappingMode = TextWrappingModes.NoWrap;
             _tag.gameObject.SetActive(false);
         }
 
-        /// <summary>The small prompt above a crew member ("e  talk"). Pass the head's screen point in pixels.</summary>
+        /// <summary>
+        /// The prompt under a crew member's marker (their name, and "e  talk" once she is close enough). Pass the screen point of the spot just under the marker, in
+        /// pixels; the tag hangs below that point so it never covers the marker.
+        /// </summary>
         public void ShowTag(Vector2 screenPoint, string text)
         {
             _tagText.SetLower(text);
             _tag.gameObject.SetActive(true);
-            _tag.anchoredPosition = ToLocal(screenPoint, new Vector2(0, 26f), _tag.sizeDelta);
+            float w = Mathf.Clamp(_tagText.GetPreferredValues(_tagText.text, 1000, 0).x + 36f, 150f, 420f);
+            _tag.sizeDelta = new Vector2(w, 46f);
+            _tag.anchoredPosition = ToLocal(screenPoint, new Vector2(0, -_tag.sizeDelta.y * 0.5f - 2f), _tag.sizeDelta);
         }
 
         public void HideTag() { if (_tag != null && _tag.gameObject.activeSelf) _tag.gameObject.SetActive(false); }
+
+        // ---------- pins: "the stage", "next stop" ----------
+
+        /// <summary>
+        /// A label pinned over a spot in the world (a blue pill with a pointer, bobbing a little), drawn above the point given in screen pixels.
+        /// Distinct from the crew's white tag: these mark places, not people. <paramref name="visible"/> false hides it.
+        /// </summary>
+        public void SetPin(string key, string text, Vector2 screenPoint, bool visible)
+        {
+            Pin p;
+            if (!_pins.TryGetValue(key, out p))
+            {
+                if (!visible) return;
+                p = MakePin(key);
+                _pins[key] = p;
+            }
+            if (!visible) { if (p.Rt.gameObject.activeSelf) p.Rt.gameObject.SetActive(false); return; }
+            p.Text.SetLower(text);
+            if (!p.Rt.gameObject.activeSelf) p.Rt.gameObject.SetActive(true);
+            float w = Mathf.Clamp(p.Text.GetPreferredValues(p.Text.text, 1000, 0).x + 40f, 150f, 360f);
+            p.Rt.sizeDelta = new Vector2(w, 46f);
+            float bob = Mathf.Sin(Time.unscaledTime * 3f + p.Phase) * 5f;
+            Vector2 pos = ToLocal(screenPoint, new Vector2(0, 46f * 0.5f + 16f + bob), p.Rt.sizeDelta);
+            p.Rt.anchoredPosition = pos;
+        }
+
+        public void HidePins()
+        {
+            foreach (var kv in _pins) if (kv.Value.Rt.gameObject.activeSelf) kv.Value.Rt.gameObject.SetActive(false);
+        }
+
+        Pin MakePin(string key)
+        {
+            RectTransform rt = ShowUi.Rect("Pin_" + key, _canvasRt);
+            ShowUi.Place(rt, new Vector2(.5f, .5f), new Vector2(200, 46), Vector2.zero);
+            RectTransform tail = ShowUi.Rect("Tail", rt);
+            ShowUi.Place(tail, new Vector2(.5f, 0f), new Vector2(22, 22), new Vector2(0, -4));
+            tail.localRotation = Quaternion.Euler(0, 0, 45f);
+            ShowUi.Panel(tail, ColorRole.Ink).raycastTarget = false;
+            ShowUi.Panel(rt, ColorRole.Ink).raycastTarget = false;
+            RectTransform face = ShowUi.Rect("Face", rt);
+            ShowUi.Stretch(face, 3f);
+            ShowUi.Panel(face, ColorRole.Accent2).raycastTarget = false;
+            TMP_Text t = ShowUi.Label(face, "Text", "", PinSize, FontRole.BodyBold, ColorRole.OnInk);
+            t.textWrappingMode = TextWrappingModes.NoWrap;
+            rt.SetSiblingIndex(Mathf.Max(0, _canvasRt.childCount - 3));   // under the dialog and the fade
+            return new Pin { Rt = rt, Text = t, Phase = key.Length * 1.3f };
+        }
+
+        // ---------- the first-visit hint ----------
+
+        /// <summary>A strip at the bottom of the view with one line of help ("walk with the arrow keys or click the ground").</summary>
+        public void ShowHint(string text)
+        {
+            if (_hint == null)
+            {
+                _hint = ShowUi.Rect("Hint", _canvasRt);
+                _hint.anchorMin = _hint.anchorMax = new Vector2(.5f, 0f);
+                _hint.pivot = new Vector2(.5f, 0f);
+                _hint.sizeDelta = new Vector2(760, 60);
+                _hint.anchoredPosition = new Vector2(0, 84f);
+                Box(_hint, 3f);
+                _hintText = ShowUi.Label(_hint, "Text", "", HintSize, FontRole.BodyBold, ColorRole.Ink);
+                _hintText.textWrappingMode = TextWrappingModes.NoWrap;
+                _hint.SetSiblingIndex(Mathf.Max(0, _canvasRt.childCount - 3));
+            }
+            _hintText.SetLower(text);
+            _hint.gameObject.SetActive(true);
+        }
+
+        public void HideHint() { if (_hint != null && _hint.gameObject.activeSelf) _hint.gameObject.SetActive(false); }
+
+        public bool HintShown { get { return _hint != null && _hint.gameObject.activeSelf; } }
 
         // ---------- the bubble and cards ----------
 
@@ -184,19 +274,19 @@ namespace WorldTour.World.Gameplay
 
             RectTransform whoBox = ShowUi.Rect("Who", _dialog);
             whoBox.anchorMin = new Vector2(0, 1); whoBox.anchorMax = new Vector2(1, 1); whoBox.pivot = new Vector2(.5f, 1);
-            whoBox.offsetMin = new Vector2(Pad, -Pad - 24); whoBox.offsetMax = new Vector2(-Pad, -Pad);
-            _who = ShowUi.Label(whoBox, "Text", "", Tokens.Fs0, FontRole.BodyBold, ColorRole.Accent2, TextAlignmentOptions.Left);
+            whoBox.offsetMin = new Vector2(Pad, -Pad - WhoH); whoBox.offsetMax = new Vector2(-Pad, -Pad);
+            _who = ShowUi.Label(whoBox, "Text", "", WhoSize, FontRole.BodyBold, ColorRole.Accent2, TextAlignmentOptions.Left);
 
             RectTransform lineBox = ShowUi.Rect("Line", _dialog);
             lineBox.anchorMin = new Vector2(0, 1); lineBox.anchorMax = new Vector2(1, 1); lineBox.pivot = new Vector2(.5f, 1);
-            lineBox.offsetMin = new Vector2(Pad, -Pad - 24 - 68); lineBox.offsetMax = new Vector2(-Pad, -Pad - 24);
-            _line = ShowUi.Label(lineBox, "Text", "", Tokens.Fs2, FontRole.Body, ColorRole.Ink, TextAlignmentOptions.TopLeft);
+            lineBox.offsetMin = new Vector2(Pad, -Pad - WhoH - LineH); lineBox.offsetMax = new Vector2(-Pad, -Pad - WhoH);
+            _line = ShowUi.Label(lineBox, "Text", "", LineSize, FontRole.Body, ColorRole.Ink, TextAlignmentOptions.TopLeft);
             _line.textWrappingMode = TextWrappingModes.Normal;
 
             RectTransform subBox = ShowUi.Rect("Sub", _dialog);
             subBox.anchorMin = new Vector2(0, 1); subBox.anchorMax = new Vector2(1, 1); subBox.pivot = new Vector2(.5f, 1);
-            subBox.offsetMin = new Vector2(Pad, -Pad - 24 - 68 - 30); subBox.offsetMax = new Vector2(-Pad, -Pad - 24 - 68);
-            _sub = ShowUi.Label(subBox, "Text", "", Tokens.Fs1, FontRole.BodyBold, ColorRole.Muted, TextAlignmentOptions.Left);
+            subBox.offsetMin = new Vector2(Pad, -Pad - WhoH - LineH - SubH); subBox.offsetMax = new Vector2(-Pad, -Pad - WhoH - LineH);
+            _sub = ShowUi.Label(subBox, "Text", "", SubSize, FontRole.BodyBold, ColorRole.Muted, TextAlignmentOptions.Left);
 
             _buttonRow = ShowUi.Rect("Buttons", _dialog);
             _buttonRow.anchorMin = new Vector2(0, 0); _buttonRow.anchorMax = new Vector2(1, 0); _buttonRow.pivot = new Vector2(.5f, 0);
@@ -210,16 +300,24 @@ namespace WorldTour.World.Gameplay
         /// </summary>
         public void OpenDialog(string who, string line, string sub, IList<DialogButton> buttons, Vector2? screenPoint)
         {
+            if (BubbleHost != null) BubbleHost.gameObject.SetActive(false);   // a card never sits on top of riff's bubble: his lines wait until it closes
+            HidePins(); HideHint();
             _who.SetLower(who ?? "");
             _line.SetLower(line ?? "");
             _sub.SetLower(sub ?? "");
             bool hasSub = !string.IsNullOrEmpty(sub);
             _sub.gameObject.SetActive(hasSub);
-            _buttons.Clear();
+            _buttons.Clear(); _buttonViews.Clear();
             for (int i = _buttonRow.childCount - 1; i >= 0; i--) Destroy(_buttonRow.GetChild(i).gameObject);
             if (buttons != null) _buttons.AddRange(buttons);
 
-            float h = Pad + 24f + 68f + (hasSub ? 30f : 0f) + 12f + ButtonH + Pad;
+            // the line box is as tall as its text (1 to 3 lines), so a short card has no hole in it
+            float lh = Mathf.Clamp(Mathf.Ceil(_line.GetPreferredValues(_line.text, BubbleWidth - 2f * Pad, 0).y) + 8f, 40f, LineH);
+            var lineRt = (RectTransform)_line.transform.parent;
+            lineRt.offsetMin = new Vector2(Pad, -Pad - WhoH - lh); lineRt.offsetMax = new Vector2(-Pad, -Pad - WhoH);
+            var subBoxRt = (RectTransform)_sub.transform.parent;
+            subBoxRt.offsetMin = new Vector2(Pad, -Pad - WhoH - lh - SubH); subBoxRt.offsetMax = new Vector2(-Pad, -Pad - WhoH - lh);
+            float h = Pad + WhoH + lh + (hasSub ? SubH : 0f) + 12f + ButtonH + Pad;
             if (_buttons.Count == 0) h -= 12f + ButtonH;
             _dialog.sizeDelta = new Vector2(BubbleWidth, h);
             var subRt = (RectTransform)_sub.transform.parent;
@@ -239,6 +337,7 @@ namespace WorldTour.World.Gameplay
                     DialogButton captured = b;
                     ShowButton sb = ShowUi.Button(_assets != null ? _assets.buttonPrefab : null, box, "Offer" + (i + 1), b.Label, b.Ghost, () => Press(captured));
                     ShowUi.Stretch(sb.Rect);
+                    _buttonViews.Add(sb);
                 }
             }
 
@@ -249,6 +348,9 @@ namespace WorldTour.World.Gameplay
             if (_fade != null) _fade.SetAsLastSibling();
             _openedFrame = Time.frameCount;
             if (EventSystem.current != null) EventSystem.current.SetSelectedGameObject(null);
+            _focus = _nextFocus < _buttons.Count ? _nextFocus : 0;
+            _nextFocus = 0;
+            _selectPending = _buttons.Count > 0;   // selected one frame later, so the key that opened the card cannot also press its button
             PlaceDialog();
         }
 
@@ -282,28 +384,73 @@ namespace WorldTour.World.Gameplay
 
         public void CloseDialog()
         {
+            if (_dialog != null && _dialog.gameObject.activeSelf)
+            {
+                var es = EventSystem.current;
+                if (es != null && es.currentSelectedGameObject != null && es.currentSelectedGameObject.transform.IsChildOf(_dialog)) es.SetSelectedGameObject(null);
+            }
             if (_dialog != null) _dialog.gameObject.SetActive(false);
-            _buttons.Clear();
+            _buttons.Clear(); _buttonViews.Clear();
+            if (BubbleHost != null) BubbleHost.gameObject.SetActive(true);
         }
 
         void Press(DialogButton b)
         {
             if (b == null) return;
+            if (!b.Closes) _nextFocus = Mathf.Max(0, _buttons.IndexOf(b));   // "change set" and "another gig" keep the focus where it was
             if (b.Closes) CloseDialog();
             if (b.OnClick != null) b.OnClick();
         }
 
-        void OnDestroy() { if (DogHosts.BubbleHost == BubbleHost) DogHosts.BubbleHost = null; }
+        void OnDestroy()
+        {
+            if (DogHosts.BubbleHost == BubbleHost) DogHosts.BubbleHost = null;
+            FocusNavigator.Suppress = null;
+        }
 
+        /// <summary>Index of the dialog button that holds the EventSystem selection, or -1.</summary>
+        int SelectedButton()
+        {
+            var es = EventSystem.current;
+            if (es == null || es.currentSelectedGameObject == null) return -1;
+            for (int i = 0; i < _buttonViews.Count; i++) if (_buttonViews[i].Go == es.currentSelectedGameObject) return i;
+            return -1;
+        }
+
+        void SelectButton(int i)
+        {
+            if (EventSystem.current == null || i < 0 || i >= _buttonViews.Count) return;
+            _focus = i;
+            EventSystem.current.SetSelectedGameObject(_buttonViews[i].Go);
+        }
+
+        /// <summary>
+        /// Keyboard on a card: Tab and Shift+Tab (or the arrow keys) move the focus between its buttons, wrapping round, with the usual ring on the focused one;
+        /// Enter and Space press the focused button (the StickerButton does that itself while it is selected), E presses it too, Escape presses the last
+        /// of two or more ("not now"). The first button has the focus when the card opens.
+        /// </summary>
         void Update()
         {
             if (!DialogOpen || _buttons.Count == 0 || Time.frameCount <= _openedFrame) return;
             Keyboard k = Keyboard.current;
+            bool justSelected = false;
+            if (_selectPending) { _selectPending = false; SelectButton(_focus); justSelected = true; }
             if (k == null) return;
-            if (k.enterKey.wasPressedThisFrame || k.numpadEnterKey.wasPressedThisFrame || k.spaceKey.wasPressedThisFrame || k.eKey.wasPressedThisFrame)
-                Press(_buttons[0]);
-            else if (k.escapeKey.wasPressedThisFrame && _buttons.Count > 1)
-                Press(_buttons[_buttons.Count - 1]);
+            int sel = SelectedButton();
+            if (sel >= 0) _focus = sel;                 // a click or a ring move by another route: follow it
+            _focus = Mathf.Clamp(_focus, 0, _buttons.Count - 1);
+
+            int n = _buttons.Count;
+            if (k.tabKey.wasPressedThisFrame) SelectButton((_focus + (k.shiftKey.isPressed ? -1 : 1) + n) % n);
+            else if (k.leftArrowKey.wasPressedThisFrame || k.upArrowKey.wasPressedThisFrame) SelectButton((_focus - 1 + n) % n);
+            else if (k.rightArrowKey.wasPressedThisFrame || k.downArrowKey.wasPressedThisFrame) SelectButton((_focus + 1) % n);
+            else if (k.eKey.wasPressedThisFrame) Press(_buttons[_focus]);
+            else if (k.enterKey.wasPressedThisFrame || k.numpadEnterKey.wasPressedThisFrame || k.spaceKey.wasPressedThisFrame)
+            {
+                // with the focused button selected the StickerButton presses itself; press here only when it could not (just selected, or the selection was lost)
+                if (justSelected || SelectedButton() < 0) Press(_buttons[_focus]);
+            }
+            else if (k.escapeKey.wasPressedThisFrame && n > 1) Press(_buttons[n - 1]);
         }
 
         // ---------- the panel ----------

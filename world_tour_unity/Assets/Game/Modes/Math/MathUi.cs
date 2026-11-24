@@ -98,7 +98,7 @@ namespace WorldTour.Game.Modes
             RectTransform pr = ShowUi.Rect("Text", card);
             var t = pr.gameObject.AddComponent<TextMeshProUGUI>();
             Theme.ApplyFont(t, FontRole.Body);
-            t.fontSize = 18.4f;
+            t.fontSize = ShowLayout.Compact ? 21.2f : 18.4f;   // docked panel is drawn at 0.87: 21.2 lands near 18 px, never under 16 even when fitted
             t.color = Theme.Color(ColorRole.Ink);
             t.alignment = TextAlignmentOptions.TopLeft;
             t.textWrappingMode = TextWrappingModes.Normal;
@@ -107,7 +107,9 @@ namespace WorldTour.Game.Modes
             t.richText = true;
             t.text = MathText.ToTmp(text, MathText.PromptScale);
             if (maxTextHeight > 0f) t.margin = new Vector4(0f, 6f, 0f, 0f);   // keeps line one clear of the tilted label chip once the lines are tightened
-            pr.gameObject.AddComponent<PromptFit>().MaxHeight = maxTextHeight;
+            var fit = pr.gameObject.AddComponent<PromptFit>();
+            fit.MaxHeight = maxTextHeight;
+            if (ShowLayout.Compact) fit.MinFont = 18.4f;
             return card;
         }
 
@@ -120,15 +122,17 @@ namespace WorldTour.Game.Modes
             TextMeshProUGUI _t; LayoutElement _le;
             /// <summary>0 = never shrink. Otherwise a long prompt (stacked fractions make the lines tall) steps its font down until it is this tall or less, so the keypad under it keeps its room.</summary>
             public float MaxHeight;
+            /// <summary>The smallest font the fit may step down to (the docked panel is drawn at 0.87, so 18.4 lands at 16 px).</summary>
+            public float MinFont = 15.4f;
             void Awake() { _t = GetComponent<TextMeshProUGUI>(); _le = gameObject.AddComponent<LayoutElement>(); }
             void LateUpdate()
             {
                 if (_t == null || _t.textInfo == null || _t.textInfo.lineCount == 0) return;
                 float h = Mathf.Ceil(_t.textBounds.size.y) + 4f + _t.margin.y;
-                if (MaxHeight > 0f && h > MaxHeight && (_t.lineSpacing > 6f || _t.fontSize > 15.4f))
+                if (MaxHeight > 0f && h > MaxHeight && (_t.lineSpacing > 6f || _t.fontSize > MinFont))
                 {
                     if (_t.lineSpacing > 6f) _t.lineSpacing = Mathf.Max(6f, _t.lineSpacing - 4f);   // tighter lines first (never so tight that the label chip covers line one), then a smaller font
-                    else _t.fontSize = Mathf.Max(15.4f, _t.fontSize - .5f);
+                    else _t.fontSize = Mathf.Max(MinFont, _t.fontSize - .5f);
                     return;
                 }
                 if (Mathf.Abs(h - _le.minHeight) < 1f) return;

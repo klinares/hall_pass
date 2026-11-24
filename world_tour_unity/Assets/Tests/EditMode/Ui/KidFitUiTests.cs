@@ -61,6 +61,8 @@ namespace WorldTour.Game.EditTests
                     Assert.IsFalse(TicketsStep.IsStepAnswer(p, Ans(p).ToString()), "the whole answer is not the step");
                     Assert.IsFalse(TicketsStep.IsStepAnswer(p, ""));
                     StringAssert.Contains("you already have", TicketsStep.Welcome(p));
+                    StringAssert.StartsWith("one more step:", TicketsStep.Welcome(p), "a step line after a miss never starts like approval");
+                    Assert.IsFalse(Regex.IsMatch(TicketsStep.Welcome(p), "^(yes|nice|great|good|right|correct|perfect)\\b"), TicketsStep.Welcome(p));
 
                     // after a miss the second hint is the step (the dog says it), and the whole answer still wins
                     var f = new Fake();

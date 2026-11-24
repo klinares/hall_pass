@@ -639,38 +639,101 @@ public static class WorldArtBuilder
         return m;
     }
 
+    /// <summary>A puffy rounded speech bubble facing +z with a tail under its left third, flat shaded (fix round 1: the crew's marker, unlike the stage's gold stars).</summary>
+    public static Mesh BubbleMesh(float w, float h, float r, float puff)
+    {
+        float hw = w / 2f, hh = h / 2f;
+        var ring = new System.Collections.Generic.List<Vector3>();
+        void Arc(float cx, float cy, float a0, float a1)
+        {
+            const int steps = 6;
+            for (int i = 0; i <= steps; i++)
+            {
+                float a = Mathf.Deg2Rad * Mathf.Lerp(a0, a1, i / (float)steps);
+                ring.Add(new Vector3(cx + Mathf.Cos(a) * r, cy + Mathf.Sin(a) * r, 0f));
+            }
+        }
+        Arc(hw - r, -hh + r, -90f, 0f);     // counter-clockwise seen from +z, bottom right first
+        Arc(hw - r, hh - r, 0f, 90f);
+        Arc(-hw + r, hh - r, 90f, 180f);
+        Arc(-hw + r, -hh + r, 180f, 270f);
+        ring.Add(new Vector3(-0.38f * w, -hh, 0f));            // the tail: left base, tip, right base
+        ring.Add(new Vector3(-0.50f * w, -hh - 0.42f * h, 0f));
+        ring.Add(new Vector3(-0.12f * w, -hh, 0f));
+        var verts = new System.Collections.Generic.List<Vector3>();
+        var tris = new System.Collections.Generic.List<int>();
+        void Tri(Vector3 a, Vector3 b, Vector3 c) { int k = verts.Count; verts.Add(a); verts.Add(b); verts.Add(c); tris.Add(k); tris.Add(k + 1); tris.Add(k + 2); }
+        var front = new Vector3(0, 0, puff); var back = new Vector3(0, 0, -puff);
+        for (int i = 0; i < ring.Count; i++)
+        {
+            var a = ring[i]; var b = ring[(i + 1) % ring.Count];
+            Tri(front, a, b);
+            Tri(back, b, a);
+        }
+        var m = new Mesh { name = "MarkerBubble" };
+        m.SetVertices(verts);
+        m.SetTriangles(tris, 0);
+        m.RecalculateNormals();
+        m.RecalculateBounds();
+        return m;
+    }
+
     static void MakeMarker()
     {
-        var mesh = StarMesh(0.62f, 0.3f, 0.2f);
-        string meshPath = MeshDir + "/MarkerStar.asset";
+        // the stage banner stars are made from this mesh too, so it stays
+        var star = StarMesh(0.62f, 0.3f, 0.2f);
+        string starPath = MeshDir + "/MarkerStar.asset";
+        AssetDatabase.DeleteAsset(starPath);
+        AssetDatabase.CreateAsset(star, starPath);
+
+        // The crew marker is a speech bubble in mint-teal with three dots, outlined in ink blue: it reads as "talk to me" and cannot be mistaken
+        // for the gold stars on the stage backdrop.
+        var mesh = BubbleMesh(1.3f, 0.86f, 0.3f, 0.12f);
+        string meshPath = MeshDir + "/MarkerBubble.asset";
         AssetDatabase.DeleteAsset(meshPath);
         AssetDatabase.CreateAsset(mesh, meshPath);
 
-        var gold = Lit("marker_star", C("#ffd23a"), 0.35f, null, new Color(1.0f, 0.62f, 0.1f));
+        var teal = Lit("marker_bubble", C("#19d3c5"), 0.35f, null, new Color(0.05f, 0.55f, 0.5f));
         var ink = Lit("marker_outline", C("#2f2fc1"), 0.2f, null, new Color(0.05f, 0.05f, 0.5f));
+        var dotMat = Lit("marker_dot", C("#ffffff"), 0.3f, null, new Color(0.9f, 0.9f, 0.95f));
         var halo = HaloMaterial();
 
         var root = new GameObject("InteractionMarker");
         var holder = new GameObject("Holder").transform;
         holder.SetParent(root.transform, false);
+        holder.localPosition = Vector3.zero;
 
-        var star = new GameObject("Star");
-        star.transform.SetParent(holder, false);
-        star.AddComponent<MeshFilter>().sharedMesh = mesh;
-        var sr = star.AddComponent<MeshRenderer>();
-        sr.sharedMaterial = gold;
+        var body = new GameObject("Bubble");
+        body.transform.SetParent(holder, false);
+        body.AddComponent<MeshFilter>().sharedMesh = mesh;
+        var sr = body.AddComponent<MeshRenderer>();
+        sr.sharedMaterial = teal;
         sr.shadowCastingMode = ShadowCastingMode.Off;
         sr.receiveShadows = false;
 
         var outline = new GameObject("Outline");
         outline.transform.SetParent(holder, false);
-        outline.transform.localScale = new Vector3(1.28f, 1.28f, 0.6f);
-        outline.transform.localPosition = new Vector3(0, 0, -0.1f);
+        outline.transform.localScale = new Vector3(1.17f, 1.22f, 0.6f);
+        outline.transform.localPosition = new Vector3(0, -0.02f, -0.1f);
         outline.AddComponent<MeshFilter>().sharedMesh = mesh;
         var orr = outline.AddComponent<MeshRenderer>();
         orr.sharedMaterial = ink;
         orr.shadowCastingMode = ShadowCastingMode.Off;
         orr.receiveShadows = false;
+
+        for (int i = 0; i < 3; i++)
+        {
+            var dot = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            dot.name = "Dot" + (i + 1);
+            Object.DestroyImmediate(dot.GetComponent<Collider>());
+            dot.transform.SetParent(holder, false);
+            dot.transform.localPosition = new Vector3((i - 1) * 0.3f, 0.01f, 0.1f);
+            dot.transform.localScale = new Vector3(0.17f, 0.17f, 0.1f);
+            var dr = dot.GetComponent<MeshRenderer>();
+            dr.sharedMaterial = dotMat;
+            dr.shadowCastingMode = ShadowCastingMode.Off;
+            dr.receiveShadows = false;
+        }
 
         var glow = GameObject.CreatePrimitive(PrimitiveType.Quad);
         glow.name = "Halo";
@@ -678,7 +741,7 @@ public static class WorldArtBuilder
         glow.transform.SetParent(holder, false);
         glow.transform.localPosition = new Vector3(0, 0, -0.35f);
         glow.transform.localRotation = Quaternion.Euler(0, 180f, 0);
-        glow.transform.localScale = Vector3.one * 3.2f;
+        glow.transform.localScale = Vector3.one * 2.8f;
         var gr = glow.GetComponent<MeshRenderer>();
         gr.sharedMaterial = halo;
         gr.shadowCastingMode = ShadowCastingMode.Off;
@@ -686,6 +749,7 @@ public static class WorldArtBuilder
 
         var bob = root.AddComponent<MarkerBob>();
         bob.holder = holder;
+        bob.amplitude = 0.2f; bob.speed = 3.2f; bob.sway = 5f; bob.pulse = 0.05f;
         PrefabUtility.SaveAsPrefabAsset(root, MarkerPrefab);
         Object.DestroyImmediate(root);
     }
@@ -710,7 +774,7 @@ public static class WorldArtBuilder
         m.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
         m.renderQueue = (int)RenderQueue.Transparent + 5;
         m.SetTexture("_BaseMap", dot);
-        m.SetColor("_BaseColor", new Color(1.3f, 0.75f, 0.35f, 0.55f));
+        m.SetColor("_BaseColor", new Color(0.3f, 1.05f, 0.95f, 0.5f));
         EditorUtility.SetDirty(m);
         return m;
     }

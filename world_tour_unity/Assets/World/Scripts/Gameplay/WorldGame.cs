@@ -41,6 +41,9 @@ namespace WorldTour.World.Gameplay
     {
         public const string ReadyLog = "WT_WORLD_GAME_READY";
         public const float TalkRange = 2.5f, StageRadius = 1.4f, ExitRadius = 1.5f;
+        /// <summary>From this far a crew member's name shows under their marker, so she can see whom to walk to.</summary>
+        public const float TagRange = 4f;
+        const string WalkHint = "walk with the arrow keys or click the ground";
 
         enum Mode { Boot, Free, Dialog, Panel, Travel }
         enum Run { None, Gig, Show }
@@ -52,6 +55,9 @@ namespace WorldTour.World.Gameplay
             public Transform T;
             public Animator Anim;
             public string Mode = "";
+            /// <summary>Every gig this crew member can offer, in order; Mode is Pool[PoolIndex] ("another gig" steps through them).</summary>
+            public string[] Pool = new string[0];
+            public int PoolIndex;
         }
 
         public static WorldGame Instance { get; private set; }
@@ -82,6 +88,8 @@ namespace WorldTour.World.Gameplay
         List<ModeInfo> _stageModes = new List<ModeInfo>();
         int _stageModeIndex;
         bool _soundUnlocked;
+        bool _hintOn;
+        Vector3 _hintFrom;
         float _nextSave, _nextTargets;
         Vector3 _lastSavedPos = new Vector3(9999, 0, 9999);
         Coroutine _cameraRoutine;
@@ -187,10 +195,16 @@ namespace WorldTour.World.Gameplay
             Week week = CurrentWeek();
             List<string> math = MathModes();
             List<string> spelling = SpellingModes(week);
-            string[] plan = GigPlan.Assign(_placeId, _crew.Count, math, spelling);
-            for (int i = 0; i < _crew.Count; i++) _crew[i].Mode = plan[i];
+            string[][] offers = GigPlan.Offers(_placeId, _crew.Count, math, spelling);
+            for (int i = 0; i < _crew.Count; i++)
+            {
+                _crew[i].Pool = offers[i];
+                _crew[i].PoolIndex = 0;
+                _crew[i].Mode = offers[i].Length > 0 ? offers[i][0] : "";
+            }
             _stageModes = ModeList.All(Config()).Where(m => math.Contains(m.Id) || spelling.Contains(m.Id)).ToList();
-            string first = plan.Length > 0 ? plan[0] : "";
+            // tonight's set starts on the unit she is working on (snack table) when it is switched on, else on the first crew member's gig
+            string first = GigPlan.UnitMode(math) ?? (offers.Length > 0 && offers[0].Length > 0 ? offers[0][0] : "");
             _stageModeIndex = Mathf.Max(0, _stageModes.FindIndex(m => m.Id == first));
 
             // where she starts: the saved spot in this place, else PlayerSpawn
@@ -199,6 +213,10 @@ namespace WorldTour.World.Gameplay
             if (_world.Place == _placeId && _world.HasPosition) _player.Place(new Vector3(_world.X, 0, _world.Z));
             else if (_spawn != null) { _player.Place(_spawn.position); _player.transform.rotation = _spawn.rotation; }
             if (_follow != null) { _follow.frozen = false; _follow.transform.position = _follow.FollowPosition; _follow.ResetVelocity(); }
+            _hintOn = !(_world.Place == _placeId && _world.HasPosition);   // first visit: say how to walk until she has
+            _hintFrom = _player.transform.position;
+            // the crowd is somewhere she walks round, never into: the way to the stage stays clear of figures
+            if (_crowdArea != null && _crowdArea.GetComponent<KeepOutZone>() == null) _crowdArea.gameObject.AddComponent<KeepOutZone>();
 
             // the crowd
             if (_crowd != null) Destroy(_crowd);
@@ -250,6 +268,7 @@ namespace WorldTour.World.Gameplay
             _mode = m;
             _modeFrame = Time.frameCount;
             WorldInput.Paused = m != Mode.Free;
+            if (m != Mode.Free && _ui != null) { _ui.HideTag(); _ui.HidePins(); _ui.HideHint(); }
             if (TestMode) Debug.Log("WT_WORLD_MODE mode=" + m + " run=" + _run);
         }
 
@@ -280,7 +299,7 @@ namespace WorldTour.World.Gameplay
             Keyboard k = Keyboard.current;
 
             Crew near = Nearest(p, TalkRange);
-            if (near != null && _cam != null) _ui.ShowTag(HeadScreen(near.T), "e  talk"); else _ui.HideTag();
+            UpdateMarkers(p);
             bool talkKey = k != null && (k.eKey.wasPressedThisFrame || k.spaceKey.wasPressedThisFrame);
             if (talkKey && near != null) { StartTalk(near); return; }
 
@@ -310,6 +329,37 @@ namespace WorldTour.World.Gameplay
                 _nextSave = Time.unscaledTime + 6f;
                 if ((p - _lastSavedPos).sqrMagnitude > 0.16f) SaveWorld();
             }
+        }
+
+        /// <summary>The name tag under the nearest crew marker (from 4 m, with "e talk" inside talking range), the "the stage" and "next stop" pins, and the first-visit hint.</summary>
+        void UpdateMarkers(Vector3 p)
+        {
+            if (_cam == null) return;
+            Crew seen = Nearest(p, TagRange);
+            if (seen != null)
+            {
+                string name = CrewLines.Role(seen.Index);
+                bool close = FlatDist(p, seen.T.position) <= TalkRange;
+                _ui.ShowTag(_cam.WorldToScreenPoint(seen.T.position + Vector3.up * 2.6f), close ? name + " - e talk" : name);
+            }
+            else _ui.HideTag();
+
+            PinOver("stage", "the stage", _stage, new Vector3(0f, 3.0f, 0f), p);
+            PinOver("exit", "next stop", _exit, new Vector3(1.7f, 3.55f, 0.3f), p);
+
+            if (_hintOn)
+            {
+                if (FlatDist(p, _hintFrom) > 0.8f) { _hintOn = false; _ui.HideHint(); }
+                else _ui.ShowHint(WalkHint);
+            }
+        }
+
+        void PinOver(string key, string text, Transform spot, Vector3 lift, Vector3 player)
+        {
+            if (spot == null) { _ui.SetPin(key, text, Vector2.zero, false); return; }
+            Vector3 sp = _cam.WorldToScreenPoint(spot.position + lift);
+            bool onScreen = sp.z > 0f && sp.x > 60f && sp.x < Screen.width - 60f && sp.y > 60f && sp.y < Screen.height - 60f;
+            _ui.SetPin(key, text, sp, onScreen && FlatDist(player, spot.position) > 3.5f);
         }
 
         Crew Nearest(Vector3 p, float range)
@@ -402,9 +452,16 @@ namespace WorldTour.World.Gameplay
 
             string key = _placeId + "/" + c.Name;
             if (!_world.MetCrew.Contains(key)) { _world.MetCrew.Add(key); SaveWorld(); }
-            ModeInfo info = string.IsNullOrEmpty(c.Mode) ? null : ModeList.ById(c.Mode, Config());
+            c.PoolIndex = 0;
+            c.Mode = c.Pool.Length > 0 ? c.Pool[0] : "";
             Debug.Log("WT_WORLD_TALK crew=" + c.Name + " mode=" + c.Mode);
+            ShowTalkCard(c);
+        }
 
+        /// <summary>The crew member's offer: play it, hear another of their gigs, or not now (Tab moves between the buttons, Enter or Space presses the focused one).</summary>
+        void ShowTalkCard(Crew c)
+        {
+            ModeInfo info = string.IsNullOrEmpty(c.Mode) ? null : ModeList.ById(c.Mode, Config());
             var buttons = new List<DialogButton>();
             string line, sub = null;
             if (info != null)
@@ -412,6 +469,12 @@ namespace WorldTour.World.Gameplay
                 line = CrewLines.For(info.Id);
                 sub = "quick gig: " + info.Name;
                 buttons.Add(new DialogButton { Label = "play", OnClick = () => StartGig(c, info) });
+                if (c.Pool.Length > 1)
+                    buttons.Add(new DialogButton
+                    {
+                        Label = "another gig", Ghost = true, Closes = false,
+                        OnClick = () => { c.PoolIndex = (c.PoolIndex + 1) % c.Pool.Length; c.Mode = c.Pool[c.PoolIndex]; ShowTalkCard(c); }
+                    });
                 buttons.Add(new DialogButton { Label = "not now", Ghost = true, OnClick = () => Decline(c) });
             }
             else
@@ -751,6 +814,7 @@ namespace WorldTour.World.Gameplay
             Vector3 pp = _player.transform.position;
             sb.Append(" star=").Append(pp.x.ToString("0.00", CultureInfo.InvariantCulture)).Append(":").Append(pp.z.ToString("0.00", CultureInfo.InvariantCulture));
             sb.Append(" mode=").Append(_mode);
+            if (_follow != null) sb.Append(" hid=").Append(_follow.HiddenCount).Append(" lift=").Append(_follow.Lift.ToString("0.0", CultureInfo.InvariantCulture)).Append(" cam=").Append(_cam.transform.position.x.ToString("0.0", CultureInfo.InvariantCulture)).Append(":").Append(_cam.transform.position.z.ToString("0.0", CultureInfo.InvariantCulture));
             Debug.Log(sb.ToString());
         }
     }

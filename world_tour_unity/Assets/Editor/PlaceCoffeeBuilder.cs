@@ -163,7 +163,7 @@ public static partial class PlaceCoffeeBuilder
             crew.transform.localPosition = Vector3.zero;
             crew.transform.localRotation = Quaternion.Euler(0, 180f - 14f + i * 14f, 0);
             var mk = (GameObject)PrefabUtility.InstantiatePrefab(markerPrefab, root);
-            mk.transform.localPosition = V(0, 2.85f, 0);
+            mk.transform.localPosition = V(0, 3.65f, 0);   // above the name tag, which hangs under the bubble (fix round 1)
             Block(blocks, crewPos[i].x, crewPos[i].z, 0.45f);
         }
 
@@ -189,6 +189,8 @@ public static partial class PlaceCoffeeBuilder
         follow.target = player;
         follow.offset = V(0, 6.6f, -11.4f);
         follow.tiltUp = 9f;
+        follow.lead = 1.2f;
+        follow.clearRadius = 0.9f;
 
         var st = new GameObject("SpikeStatus").AddComponent<SpikeStatus>();
         st.player = player; st.dog = dogGo.transform;

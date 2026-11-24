@@ -32,7 +32,7 @@ public static class PlaceCoffeePreview
             Directory.CreateDirectory(outDir);
             var size = (Arg("-previewSize") ?? "1366x768").Split('x').Select(int.Parse).ToArray();
             var only = Arg("-previewShots");
-            var want = only == null ? null : only.Split(',');
+            var want = only == null ? (Arg("-previewWalk") != null ? new string[0] : null) : only.Split(',');
             oldAA = QualitySettings.antiAliasing; oldQ = QualitySettings.renderPipeline; oldG = GraphicsSettings.defaultRenderPipeline;
             var pipe = AssetDatabase.LoadAssetAtPath<RenderPipelineAsset>(WorldSpikeBuilder.PipelinePath);
             QualitySettings.renderPipeline = pipe;
@@ -54,7 +54,7 @@ public static class PlaceCoffeePreview
 
             void Shot(string name, Vector3 pos, Quaternion rot, float fov = 44f)
             {
-                if (want != null && !want.Contains(name)) return;
+                if (want != null && !want.Contains(name) && !name.StartsWith("walk_")) return;
                 cam.transform.SetPositionAndRotation(pos, rot);
                 cam.fieldOfView = fov;
                 foreach (var mb in UnityEngine.Object.FindObjectsByType<MarkerBob>(FindObjectsSortMode.None)) mb.transform.rotation = cam.transform.rotation * Quaternion.Euler(0, 180, 0);
@@ -98,6 +98,22 @@ public static class PlaceCoffeePreview
                 Shot("stagecam", camP, Quaternion.LookRotation((stageP + Vector3.up * 1.2f) - camP, Vector3.up));
                 plr.transform.position = keep; plr.transform.rotation = keepR;
                 if (st != null) st.transform.localPosition = Vector3.zero;
+            }
+            // fix round 1: where she stands, as the follow camera would see it (with the clear-view test run), -previewWalk x:z,x:z,...
+            string walkSpec = Arg("-previewWalk");
+            var walker = GameObject.Find("Player");
+            if (walkSpec != null && walker != null && follow != null)
+            {
+                foreach (string pair in walkSpec.Split(','))
+                {
+                    string[] xz = pair.Split(':');
+                    float wx = float.Parse(xz[0], System.Globalization.CultureInfo.InvariantCulture), wz = float.Parse(xz[1], System.Globalization.CultureInfo.InvariantCulture);
+                    walker.transform.position = new Vector3(wx, 0f, wz);
+                    follow.target = walker.transform;
+                    follow.SnapForPreview();
+                    Shot("walk_" + xz[0] + "_" + xz[1], follow.transform.position, follow.transform.rotation, cam.fieldOfView);
+                    Debug.Log("WT_WALK " + pair + " hidden=" + follow.HiddenCount);
+                }
             }
             // overview from high above the south edge
             Shot("overview", new Vector3(0, 30, -34), Quaternion.Euler(33, 0, 0), 40f);

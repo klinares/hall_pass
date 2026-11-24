@@ -17,6 +17,10 @@ namespace WorldTour.World
         public bool HasTarget { get { return hasTarget; } }
 
         bool hasTarget;
+        int lastPausedFrame = -10;
+        float blockedFor, sidestepUntil;
+        int sidesteps;
+        Vector3 sidestep;
         Vector3 target;
         static readonly Plane Ground = new Plane(Vector3.up, Vector3.zero);
 
@@ -28,8 +32,8 @@ namespace WorldTour.World
         /// <summary>Walks to a ground point as if it had been clicked (phase 8.1: click on a crew member, walk up to them).</summary>
         public void WalkTo(Vector3 point)
         {
-            target = Clamp(point);
-            hasTarget = true;
+            target = Obstacle.PushOut(Clamp(point), 0.35f);
+            hasTarget = true; sidesteps = 0; blockedFor = 0f;
         }
 
         public void StopWalking() { hasTarget = false; }
@@ -56,6 +60,7 @@ namespace WorldTour.World
                 hasTarget = false;
                 planarSpeed = 0f;
                 AnimSafe.Float(animator, "Speed", 0f);
+                lastPausedFrame = Time.frameCount;
                 if (marker != null) marker.gameObject.SetActive(false);
                 return;
             }
@@ -67,15 +72,17 @@ namespace WorldTour.World
             if (mouse != null && mouse.leftButton.wasPressedThisFrame && cam != null)
             {
                 Vector2 sp = mouse.position.ReadValue();
-                bool onUi = WorldInput.ClickIsOnUi != null && WorldInput.ClickIsOnUi(sp);
-                bool used = !onUi && WorldInput.ClickUsed != null && WorldInput.ClickUsed(sp);
-                if (!onUi && !used)
+                // the click that closed a card or a panel arrives in the first frame the world is hers again (a quick click is down and up in one frame): it must not also walk her
+                bool closedACard = Time.frameCount - lastPausedFrame <= 1;
+                bool onUi = !closedACard && WorldInput.ClickIsOnUi != null && WorldInput.ClickIsOnUi(sp);
+                bool used = !closedACard && !onUi && WorldInput.ClickUsed != null && WorldInput.ClickUsed(sp);
+                if (!onUi && !used && !closedACard)
                 {
                     Ray ray = cam.ScreenPointToRay(sp);
                     if (Ground.Raycast(ray, out float t))
                     {
-                        target = Clamp(ray.GetPoint(t));
-                        hasTarget = true;
+                        target = Obstacle.PushOut(Clamp(ray.GetPoint(t)), 0.35f);
+                        hasTarget = true; sidesteps = 0; blockedFor = 0f;
                     }
                 }
             }
@@ -89,7 +96,12 @@ namespace WorldTour.World
             {
                 Vector3 to = target - transform.position; to.y = 0;
                 if (to.magnitude < 0.12f) hasTarget = false;
-                else move = to.normalized;
+                else
+                {
+                    Vector3 aim = Obstacle.SteerAround(transform.position, target) - transform.position; aim.y = 0;
+                    move = aim.sqrMagnitude > 0.0001f ? aim.normalized : to.normalized;
+                    if (Time.time < sidestepUntil) move = sidestep;   // stepping out of a dead end (a deck side, a table) before trying the straight way again
+                }
             }
 
             Vector3 before = transform.position;
@@ -100,8 +112,25 @@ namespace WorldTour.World
 
             planarSpeed = (pos - before).magnitude / Mathf.Max(Time.deltaTime, 0.0001f);
             AnimSafe.Float(animator, "Speed", planarSpeed);
-            // Walking into a blocker on the way to a click target: give up on it.
-            if (hasTarget && move.sqrMagnitude > 0 && planarSpeed < speed * 0.15f) hasTarget = false;
+            // Walking into a blocker on the way to a click target: step out sideways (toward the freer side) a few times, then give up on it.
+            if (hasTarget && move.sqrMagnitude > 0 && planarSpeed < speed * 0.15f)
+            {
+                blockedFor += Time.deltaTime;
+                if (blockedFor > 0.25f)
+                {
+                    blockedFor = 0f;
+                    if (sidesteps >= 8) hasTarget = false;
+                    else
+                    {
+                        sidesteps++;
+                        Vector3 left = new Vector3(-move.z, 0f, move.x), right = -left;
+                        float l = (Obstacle.PushOut(Clamp(pos + left * 1.5f), 0.35f) - pos).magnitude, r = (Obstacle.PushOut(Clamp(pos + right * 1.5f), 0.35f) - pos).magnitude;
+                        sidestep = l >= r ? left : right;
+                        sidestepUntil = Time.time + 1.0f;
+                    }
+                }
+            }
+            else if (planarSpeed > speed * 0.5f) blockedFor = 0f;
 
             if (move.sqrMagnitude > 0.0001f)
             {

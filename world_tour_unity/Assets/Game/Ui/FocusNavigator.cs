@@ -28,8 +28,11 @@ namespace WorldTour.Game.Ui
         /// <summary>True after a key press, false after a mouse press (the :focus-visible rule).</summary>
         public static bool KeyboardMode { get { return s_Keyboard; } }
 
+        /// <summary>World hook (phase 8.1 fix): while this returns true Tab is left to whoever owns the focus (the world's talk card moves it between its own buttons). Null in the 2D game.</summary>
+        public static System.Func<bool> Suppress;
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        static void ResetStatics() { s_Keyboard = false; }
+        static void ResetStatics() { s_Keyboard = false; Suppress = null; }
 
         public void Init(ScreenStack stack, Hud hud)
         {
@@ -54,7 +57,7 @@ namespace WorldTour.Game.Ui
             Mouse m = Mouse.current;
             if (m != null && m.leftButton.wasPressedThisFrame) s_Keyboard = false;
             if (k != null && k.anyKey.wasPressedThisFrame) s_Keyboard = true;
-            if (k != null && k.tabKey.wasPressedThisFrame && _stack != null && EventSystem.current != null)
+            if (k != null && k.tabKey.wasPressedThisFrame && _stack != null && EventSystem.current != null && (Suppress == null || !Suppress()))
                 Move(k.shiftKey.isPressed ? -1 : 1);
         }
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using WorldTour.Core.Data;
 
 namespace WorldTour.Core.Tour
@@ -53,6 +54,53 @@ namespace WorldTour.Core.Tour
                 result[k] = pick;
             }
             return result;
+        }
+
+        /// <summary>
+        /// The math mode(s) for the unit she is working on now, best first (5th grade: fractions, "snack table"). It is always one crew
+        /// member's first offer and the stage show's default set while it is switched on. Edit this list when the unit changes.
+        /// </summary>
+        public static readonly string[] CurrentUnit = { "snack" };
+
+        /// <summary>The first <see cref="CurrentUnit"/> mode that is in the enabled math list, or null.</summary>
+        public static string UnitMode(IReadOnlyList<string> mathModes)
+        {
+            if (mathModes == null) return null;
+            foreach (string u in CurrentUnit) for (int i = 0; i < mathModes.Count; i++) if (mathModes[i] == u) return u;
+            return null;
+        }
+
+        /// <summary>
+        /// What each crew member can offer, in order: the first entry is the gig they pitch (<see cref="Assign"/>, with the current unit's mode
+        /// forced into the last math slot when it would otherwise be missing), the rest is every other enabled math mode and this week's spelling
+        /// mode, dealt round-robin from the first crew member, so every mode is on offer somewhere in the place and "another gig" walks the list.
+        /// Same result every visit.
+        /// </summary>
+        public static string[][] Offers(string placeId, int crewCount, IReadOnlyList<string> mathModes, IReadOnlyList<string> spellingModes)
+        {
+            string[] firsts = Assign(placeId, crewCount, mathModes, spellingModes);
+            var math = mathModes ?? new string[0];
+            var spell = spellingModes ?? new string[0];
+            string unit = UnitMode(math);
+            if (unit != null && !firsts.Contains(unit))
+            {
+                for (int k = firsts.Length - 1; k >= 0; k--)
+                    if (firsts[k] != "" && math.Contains(firsts[k])) { firsts[k] = unit; break; }
+            }
+            var pools = new List<string>[firsts.Length];
+            for (int k = 0; k < pools.Length; k++) pools[k] = new List<string>();
+            for (int k = 0; k < firsts.Length; k++) if (firsts[k] != "") pools[k].Add(firsts[k]);
+            if (pools.Length > 0)
+            {
+                int deal = 0;
+                foreach (string m in math.Concat(spell))
+                {
+                    if (firsts.Contains(m)) continue;
+                    pools[deal % pools.Length].Add(m);
+                    deal++;
+                }
+            }
+            return pools.Select(p => p.ToArray()).ToArray();
         }
 
         /// <summary>The number of questions in one gig, 3 to 5, from a [0, 1) random source.</summary>

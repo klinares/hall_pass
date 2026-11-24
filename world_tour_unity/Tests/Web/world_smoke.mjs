@@ -102,7 +102,7 @@ async function gameplay() {
       if (doneRe.test(hit.text)) return songs;
       const raw = /answer=(\S+)/.exec(hit.text);
       if (!raw) { gfail(`${label}: no answer in "${hit.text}"`); return songs; }
-      const ans = raw[1].replace(/[^0-9.\-]/g, '');
+      const ans = raw[1].replace(/[^0-9.\/\-]/g, '');   // keeps the slash: the show's default set is now snack table (fractions)
       await sleep(900);                                  // let the mode finish drawing and the keypad listen
       await page.keyboard.type(ans, { delay: 70 });
       await page.keyboard.press('Enter');

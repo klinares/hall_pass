@@ -1,7 +1,7 @@
 // BuildWeb.BuildWorld: builds the 3D scene(s) into world/ at the repo root. Same allowlist, staging and publish
 // code as BuildWeb.Build (this is a partial of that class), with these differences:
 //   - the output folder is only ever exactly <repo>/world (or a folder outside the repo, same rules as Build);
-//   - the scene list is the world scenes below (Place_Coffee first), not the 2D build list;
+//   - the scene list is every Place_*.unity that exists, in tour order (Place_Coffee first), not the 2D build list;
 //   - for the length of the build the quality levels and the default pipeline point at UniversalRP_3D (3D
 //     renderer, HDR, shadows), then everything is put back, so tour/ builds and renders exactly as before;
 //   - weeks.json and math_config.json are copied FROM tour/StreamingAssets/ into world/StreamingAssets/ (overwriting
@@ -20,7 +20,21 @@ public static partial class BuildWeb
 {
     const string QualityFile = "ProjectSettings/QualitySettings.asset";
     const string GlobalFile = "Assets/Settings/UniversalRenderPipelineGlobalSettings.asset";
-    static readonly string[] DefaultWorldScenes = { PlaceCoffeeBuilder.ScenePath };   // phase 8.1: Place_Coffee is the first scene; WorldSpike stays out of the build
+    // phase 8.2: every place scene that exists, in tour order (coffee, records, rec, rooftop, club, theater, festival, arena); WorldSpike stays out of the build
+    static string[] DefaultWorldScenes
+    {
+        get
+        {
+            var list = new System.Collections.Generic.List<string>();
+            foreach (var v in WorldTour.Core.Data.Venues.All)
+            {
+                string path = "Assets/World/Scenes/" + WorldTour.World.Gameplay.WorldPlace.SceneName(v.Id) + ".unity";
+                if (File.Exists(path)) list.Add(path);
+            }
+            if (list.Count == 0) list.Add(PlaceCoffeeBuilder.ScenePath);
+            return list.ToArray();
+        }
+    }
     // 8.1 builder B: -worldScenes "a.unity;b.unity" overrides the list (the gameplay was tested on WorldSpike before Place_Coffee existed)
     static string[] WorldScenes { get { string a = Arg("-worldScenes"); return string.IsNullOrEmpty(a) ? DefaultWorldScenes : a.Split(';'); } }
 

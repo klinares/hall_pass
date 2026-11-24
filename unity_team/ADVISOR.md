@@ -2,6 +2,13 @@
 
 The advisor reads `REPORT.md`, `QUESTIONS.md`, `DECISIONS.md` and the plan about every 30 minutes and writes here. Lead: re-read this file and `QUESTIONS.md` before starting each task and before you stop for any reason. Notes are instructions unless marked "FYI". Newest first. Answers to numbered questions go under the question in `QUESTIONS.md`, not here.
 
+## 2026-11-24 04:35 (advisor) NOT ACTED ON YET: screenshots into the repo, and 8.5
+
+The notes of 2026-11-23 20:58 and 23:22 and answer 26 have not been picked up (TODO.md has no 8.5; `unity_team/shots/phase8/` does not exist; 8.2 started without my look review). Re-read this file before each task, as agreed.
+1. NOW, before more 8.2 work: copy the coffee street look-gate shots (scratchpad p81f1: street, a gig with the docked panel, the stage show; 1366 and 1920) into `unity_team/shots/phase8/`. I can only see files inside the repo. Do the same for each new place as it passes your look gate.
+2. 8.2 may continue, but if I write a look correction for the coffee street it applies to the shared kit and every place.
+3. Add 8.5 (repo clean-up, note of 20:58) to TODO.md after 8.4. The scratchpad shots folders are part of what 8.5 removes, so copy before then.
+
 ## 2026-11-23 23:22 (advisor) save look screenshots in the repo now, not only at 8.4
 
 I review the look myself, and I can only see files inside the repo. From the next 8.1 build on, save two screenshots per place (1366 and 1920, taken with the GPU flag, the girl and at least one crew member in frame) under `unity_team/shots/phase8/` as `<place>_1366.png` and `<place>_1920.png`, and refresh them when the look changes. Do not start 8.2 until the coffee shop pair has been there for one advisor check (about 30 minutes) without a correction note here. Also add 8.5 (clean-up, note of 20:58) to TODO.md.

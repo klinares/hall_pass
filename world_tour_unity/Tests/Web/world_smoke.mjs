@@ -9,6 +9,7 @@
 // measures frames per second over --seconds with the character moving (Unity's own per-second frame count; the rAF count is
 // recorded too but reads 2x because Unity registers two callbacks per frame), saves a screenshot, and records the WebGL renderer string Chrome used.
 // Fails on console errors, no ready line, no movement, or fps under 30 (the advisor's headless floor).
+//   --places records,rec,...  which places the tour visits (default records,rec,rooftop,club); --no-places / --places-only / --no-travel / --no-tour
 // --gpu: swiftshader = software GL (what run.mjs uses); d3d11 = ANGLE on the machine's GPU in the headless shell;
 //        chrome = installed Chrome (new headless) on its default GPU path; auto = swiftshader.
 import fs from 'node:fs';
@@ -16,6 +17,7 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { startServer } from './server.mjs';
+import { placeTests } from './world_places.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const project = path.resolve(here, '..', '..');
@@ -233,7 +235,7 @@ try {
   browser = await chromium.launch(launchOptions());
   results.browserVersion = browser.version();
 
-  for (const [vw, vh] of sizes) {
+  for (const [vw, vh] of (argv.includes('--places-only') ? [] : sizes)) {
     const key = `${vw}x${vh}`;
     const r = results.sizes[key] = { errors: [], warnings: [], positions: [] };
     const ctx = await browser.newContext({ viewport: { width: vw, height: vh } });
@@ -318,7 +320,9 @@ try {
     console.log(`${key}: ready ${r.readyMs} ms, ${r.fps} fps (unity ${r.unityFps}), renderer "${r.renderer}", ${(r.bytes / 1e6).toFixed(1)} MB over the wire`);
     await ctx.close();
   }
-  if (!argv.includes('--no-gameplay')) await gameplay();
+  if (!argv.includes('--no-gameplay') && !argv.includes('--places-only')) await gameplay();
+  // phase 8.2: the places and the travel between them (world_places.mjs); --no-places skips it, --places-only runs only it
+  if (!argv.includes('--no-places')) await placeTests({ browser, server, sizes, results, fail, shotsDir, opt, argv, READY_TIMEOUT_MS });
 } catch (e) {
   results.failures.push('runner: ' + (e && e.stack || e));
   console.error(e);

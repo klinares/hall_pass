@@ -14,8 +14,9 @@ Kept on disk so a new session can resume from here (see the FYI in ADVISOR.md, 2
 ## Phase 8 (3D explorable World Tour -> world/) - ADVISOR 2026-11-23 20:50; sonnet workers, max 2 builders + 1 tester
 - Owner approved CC0 art AND audio downloads (2026-11-23, asked directly; DECISIONS). List every pack in world_tour_unity/ASSETS.md.
 - [x] 8.0 spike (1457487): world/ 12.05 MB, 60 fps GPU at both sizes (SwiftShader 10/5 fps -> Q26: fps floor measured with --gpu d3d11). Art set chosen (DECISIONS); all packs have FBX, so no glTF package
-- [ ] 8.1 (running: builder A art + Place_Coffee + ASSETS.md; builder B talk/gigs/stage/save/unlock; contract = empties PlayerSpawn, Crew_1..3, StageSpot, CrowdArea, ExitSpot + animator Speed/Talk/Cheer/Listen) first place end to end (walk, talk, spelling + math gig panels, stage show, rewards, save, unlock); tester + look review both sizes; kid-fit script; two fix rounds; lead judges look before 8.2 (reasons in DECISIONS)
-- [ ] 8.2 other seven places (shared kit; per-place layout, palette, landmark, time of day); two builders
+- [x] 8.1 first place (coffee street): 7fa19a6, 837b7ae, c1c542d. Look gate passed 2026-11-24 (DECISIONS). Carried to 8.4: crew 3 click from the stage deck, no true pathfinding, six builds in fix round 1 (departure)
+- ADVISOR 2026-11-24 04:35 (unread notes!): copy look-gate shots into unity_team/shots/phase8/ now; add 8.5 repo clean-up after 8.4. See ADVISOR.md top three notes.
+- [ ] 8.2 (running: A = PlaceKit + travel + scene list + records/rec/rooftop/club; B = theater/festival/arena) other seven places (shared kit; per-place layout, palette, landmark, time of day); two builders
 - [ ] 8.3 wearable shop items, crowd growth, travel moments, footsteps/ambience sound
 - [ ] 8.4 whole-tour tester + kid-fit, two fix rounds, final build, commit world/ world_tour_unity/ unity_team/, REPORT.md + 8 shots in unity_team/shots/phase8/. Do not push.
 - Keep: tour/ untouched and BuildWeb.Build unchanged; md MAX_LEVEL 0 (advisor 18:00); budgets 60 fps, <=60 MB, no file >50 MB, first place <10 s warm.

@@ -355,5 +355,37 @@ namespace WorldTour.Core.Tests
             ProgressRules.AddFans(s, 20000);
             Assert.IsTrue(ProgressRules.Unlocked(s, "records"));
         }
+
+        [Test]
+        public void Journey_EarlierStopsAreTheUnlockedBuiltOnesBeforeThisPlace()
+        {
+            Func<string, bool> all = id => true;
+            Assert.AreEqual(0, Journey.Earlier("coffee", all, all).Count);
+            CollectionAssert.AreEqual(new[] { "records", "coffee" }, Journey.Earlier("rec", all, all).Select(v => v.Id).ToArray(), "nearest first");
+            CollectionAssert.AreEqual(new[] { "coffee" }, Journey.Earlier("rec", id => id == "coffee", all).Select(v => v.Id).ToArray(), "locked stops are left out");
+            CollectionAssert.AreEqual(new[] { "coffee" }, Journey.Earlier("rec", all, id => id != "records").Select(v => v.Id).ToArray(), "stops with no scene are left out");
+            Assert.AreEqual("back to: coffee shop", Journey.BackLine(Venues.ById("coffee")));
+        }
+
+        [Test]
+        public void Journey_OfferHasAGoButtonOnlyWhenTheNextStopIsOpenAndBuilt()
+        {
+            Func<string, bool> all = id => true;
+            ExitOffer locked = Journey.Offer("coffee", 1000, id => id == "coffee", all);
+            Assert.IsFalse(locked.NextOpen);
+            Assert.AreEqual("next stop: record store", locked.Line);
+            Assert.AreEqual("19,000 more fans to open it", locked.Detail);
+            ExitOffer open = Journey.Offer("coffee", 20000, all, all);
+            Assert.IsTrue(open.NextOpen);
+            Assert.AreEqual("", open.Detail);
+            ExitOffer notBuilt = Journey.Offer("coffee", 20000, all, id => id == "coffee");
+            Assert.IsFalse(notBuilt.NextOpen);
+            Assert.AreEqual("coming soon", notBuilt.Detail);
+            ExitOffer last = Journey.Offer("arena", 900000, all, all);
+            Assert.IsNull(last.Next);
+            Assert.IsFalse(last.NextOpen);
+            Assert.AreEqual(7, last.Earlier.Count);
+            Assert.AreEqual("festival", last.Earlier[0].Id);
+        }
     }
 }

@@ -32,7 +32,7 @@ namespace WorldTour.World.Gameplay
     /// StageSpot, CrowdArea and ExitSpot. Then:
     /// talk (E, Space or a click on a crew member, within 2.5 m) gives one line and a gig offer; a gig opens the 2D mode screen as a
     /// panel over the world, 3 to 5 questions; the stage spot offers the full ten-song show over a stage camera, with a crowd that grows
-    /// with her fans, then the ticket; the exit spot is the travel moment to the next place.
+    /// with her fans, then the ticket; the exit spot opens the tour map card: go to the next place when it is unlocked, or back to an earlier one.
     /// Nothing here can lose fans or progress, and nothing runs on a timer that costs her anything.
     /// Log lines for the browser test (the ones marked test only print when the page URL has wt_test): WT_WORLD_GAME_READY, WT_WORLD_TALK,
     /// WT_GIG_START, WT_GIG_DONE, WT_WORLD_STAGE_OFFER, WT_WORLD_SHOW_START, WT_WORLD_TRAVEL, WT_WORLD_TARGETS (test only).
@@ -141,6 +141,26 @@ namespace WorldTour.World.Gameplay
             SetMode(Mode.Free);
             Debug.Log(ReadyLog + " place=" + _placeId + " crew=" + string.Join(",", _crew.Select(c => c.Mode))
                 + " fans=" + Fans() + " crowd=" + (_crowd != null ? _crowd.Count : 0));
+            // test hook (only with ?wt_test): ?wt_goto=<venue id> travels straight to that place once the game is ready, so the browser tests can visit every place
+            string go = TestMode ? QueryParam("wt_goto") : null;
+            if (!string.IsNullOrEmpty(go) && Venues.Exists(go) && go != _placeId && Application.CanStreamedLevelBeLoaded(WorldPlace.SceneName(go)))
+            {
+                Debug.Log("WT_WORLD_GOTO place=" + go);
+                StartCoroutine(Travel(Venues.ById(go), true));
+            }
+        }
+
+        static string QueryParam(string name)
+        {
+            string url = Application.absoluteURL ?? "";
+            int q = url.IndexOf('?');
+            if (q < 0) return null;
+            foreach (string part in url.Substring(q + 1).Split('&'))
+            {
+                int eq = part.IndexOf('=');
+                if (eq > 0 && string.Equals(part.Substring(0, eq), name, StringComparison.OrdinalIgnoreCase)) return Uri.UnescapeDataString(part.Substring(eq + 1));
+            }
+            return null;
         }
 
         void OnDestroy()
@@ -190,6 +210,7 @@ namespace WorldTour.World.Gameplay
                 _crew.Add(new Crew { Name = "Crew_" + i, Index = i - 1, T = t, Anim = t.GetComponentInChildren<Animator>() });
             }
             _placeId = WorldPlace.Resolve(SceneManager.GetActiveScene().name);
+            PropMotion.Reduced = GameSettings.ReducedMotion;
 
             // which mode each crew member offers
             Week week = CurrentWeek();
@@ -319,7 +340,7 @@ namespace WorldTour.World.Gameplay
             if (_exit != null)
             {
                 float d = FlatDist(p, _exit.position);
-                if (_exitArmed && d < ExitRadius) { StartCoroutine(Travel()); return; }
+                if (_exitArmed && d < ExitRadius) { OfferExit(); return; }
                 if (!_exitArmed && d > ExitRadius + 1.3f) _exitArmed = true;
             }
 
@@ -745,36 +766,71 @@ namespace WorldTour.World.Gameplay
         // ---------- travel ----------
 
         bool _travelLoading;
+        int _backIndex;
 
-        IEnumerator Travel()
+        /// <summary>
+        /// The tour map card at the exit: "next stop: record store" with a go button when it is open (the fans needed when it is not), a button
+        /// back to an earlier unlocked stop ("other stop" steps through them), or stay. Tab and Enter work as on every card.
+        /// </summary>
+        void OfferExit()
+        {
+            _exitArmed = false;
+            SetMode(Mode.Dialog);
+            _talking = null;
+            _player.StopWalking();
+            _ui.HideTag();
+            SaveBlob blob = Boot.Store != null ? Boot.Store.Blob : SaveBlob.Defaults(LocalClock.TodayIso());
+            ExitOffer offer = Journey.Offer(_placeId, blob.Fans.Lifetime, id => ProgressRules.Unlocked(blob, id),
+                id => Application.CanStreamedLevelBeLoaded(WorldPlace.SceneName(id)));
+            _backIndex = 0;
+            Debug.Log("WT_WORLD_MAP place=" + _placeId + " next=" + (offer.Next != null ? offer.Next.Id : "none") + " open=" + offer.NextOpen
+                + " back=" + string.Join(",", offer.Earlier.Select(v => v.Id)) + " detail=" + offer.Detail);
+            ShowExitCard(offer);
+        }
+
+        void ShowExitCard(ExitOffer offer)
+        {
+            var buttons = new List<DialogButton>();
+            if (offer.NextOpen)
+                buttons.Add(new DialogButton { Label = "go: " + offer.Next.Short, OnClick = () => StartCoroutine(Travel(offer.Next, true)) });
+            if (offer.Earlier.Count > 0)
+            {
+                Venue back = offer.Earlier[_backIndex % offer.Earlier.Count];
+                buttons.Add(new DialogButton { Label = Journey.BackLine(back), Ghost = offer.NextOpen, OnClick = () => StartCoroutine(Travel(back, false)) });
+                if (offer.Earlier.Count > 1)
+                    buttons.Add(new DialogButton
+                    {
+                        Label = "other stop", Ghost = true, Closes = false,
+                        OnClick = () => { _backIndex = (_backIndex + 1) % offer.Earlier.Count; ShowExitCard(offer); }
+                    });
+            }
+            buttons.Add(new DialogButton { Label = "stay here", Ghost = buttons.Count > 0, OnClick = () => SetMode(Mode.Free) });
+            _ui.OpenDialog("tour map", offer.Line, string.IsNullOrEmpty(offer.Detail) ? null : offer.Detail, buttons, null);
+        }
+
+        /// <summary>The travel moment (fade, the name of the stop, under two seconds), then the scene of the stop; she arrives at its PlayerSpawn.</summary>
+        IEnumerator Travel(Venue dest, bool forward)
         {
             _exitArmed = false;
             SetMode(Mode.Travel);
             _ui.HideTag();
-            Venue next = Journey.Next(_placeId);
-            SaveBlob blob = Boot.Store != null ? Boot.Store.Blob : SaveBlob.Defaults(LocalClock.TodayIso());
-            bool unlocked = next != null && ProgressRules.Unlocked(blob, next.Id);
-            string scene = next != null ? WorldPlace.SceneName(next.Id) : null;
-            bool built = unlocked && scene != null && Application.CanStreamedLevelBeLoaded(scene);
-            string line = Journey.NextStopLine(next);
-            string detail = Journey.DetailLine(next, blob.Fans.Lifetime, unlocked, built);
-            Debug.Log("WT_WORLD_TRAVEL next=" + (next != null ? next.Id : "none") + " unlocked=" + unlocked + " built=" + built + " detail=" + detail);
+            string scene = WorldPlace.SceneName(dest.Id);
+            string line = forward ? Journey.NextStopLine(dest) : Journey.BackLine(dest);
+            Debug.Log("WT_WORLD_TRAVEL next=" + dest.Id + " forward=" + forward + " built=" + Application.CanStreamedLevelBeLoaded(scene));
 
             _ui.FadeTo(0.82f, 0.3f);
             yield return new WaitForSecondsRealtime(0.3f);
-            _ui.OpenDialog("on the road", line, string.IsNullOrEmpty(detail) ? null : detail, null, null);
-            yield return new WaitForSecondsRealtime(1.1f);
+            _ui.OpenDialog("on the road", line, null, null, null);
+            yield return new WaitForSecondsRealtime(1.0f);
             _ui.CloseDialog();
-            if (built)
-            {
-                _world.Place = next.Id; _world.HasPosition = false;
-                if (Boot.Store != null) { WorldSave.Write(Boot.Store.Blob, _world); Boot.Store.Save(); }
-                _travelLoading = true;
-                AsyncOperation op = SceneManager.LoadSceneAsync(scene, LoadSceneMode.Single);
-                while (op != null && !op.isDone) yield return null;
-                _travelLoading = false;
-                Bind();
-            }
+            _world.Place = dest.Id; _world.HasPosition = false;
+            if (Boot.Store != null) { WorldSave.Write(Boot.Store.Blob, _world); Boot.Store.Save(); }
+            _travelLoading = true;
+            AsyncOperation op = SceneManager.LoadSceneAsync(scene, LoadSceneMode.Single);
+            while (op != null && !op.isDone) yield return null;
+            _travelLoading = false;
+            Bind();
+            Debug.Log("WT_WORLD_ARRIVED place=" + _placeId + " crew=" + string.Join(",", _crew.Select(c => c.Mode)) + " crowd=" + (_crowd != null ? _crowd.Count : 0));
             _ui.FadeTo(0f, 0.3f);
             yield return new WaitForSecondsRealtime(0.3f);
             SetMode(Mode.Free);

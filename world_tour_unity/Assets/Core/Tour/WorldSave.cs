@@ -67,6 +67,17 @@ namespace WorldTour.Core.Tour
         static bool IsNum(JsonValue v) { return v != null && v.Kind == JsonKind.Number; }
     }
 
+    /// <summary>What an exit's tour map card shows (see <see cref="Journey.Offer"/>).</summary>
+    public sealed class ExitOffer
+    {
+        public Venue Next;
+        /// <summary>True when the next stop is unlocked and has a scene: the card then has a "go" button.</summary>
+        public bool NextOpen;
+        public string Line, Detail;
+        /// <summary>Stops she can go back to, nearest first.</summary>
+        public List<Venue> Earlier = new List<Venue>();
+    }
+
     /// <summary>The tour route as the world sees it: the next place, and whether fans have unlocked it (the venue thresholds).</summary>
     public static class Journey
     {
@@ -81,6 +92,46 @@ namespace WorldTour.Core.Tour
         public static string NextStopLine(Venue next)
         {
             return next == null ? "that was the last stop. you made it." : "next stop: " + next.Short;
+        }
+
+        /// <summary>"back to: coffee shop".</summary>
+        public static string BackLine(Venue earlier)
+        {
+            return earlier == null ? "" : "back to: " + earlier.Short;
+        }
+
+        /// <summary>
+        /// The earlier stops she can go back to from <paramref name="placeId"/>, nearest first: every venue before this one that she has
+        /// unlocked and that has a scene in the build. Nothing she has earned is taken away, so an unlocked stop is always open.
+        /// </summary>
+        public static List<Venue> Earlier(string placeId, Func<string, bool> unlocked, Func<string, bool> built)
+        {
+            var list = new List<Venue>();
+            for (int i = GigPlan.PlaceIndex(placeId) - 1; i >= 0; i--)
+            {
+                Venue v = Venues.All[i];
+                if ((unlocked == null || unlocked(v.Id)) && (built == null || built(v.Id))) list.Add(v);
+            }
+            return list;
+        }
+
+        /// <summary>
+        /// What the tour map card at an exit offers: the next stop (open only when unlocked and built, with the reason when not),
+        /// the earlier stops she can go back to, and that she can stay.
+        /// </summary>
+        public static ExitOffer Offer(string placeId, long lifetimeFans, Func<string, bool> unlocked, Func<string, bool> built)
+        {
+            Venue next = Next(placeId);
+            bool isUnlocked = next != null && (unlocked == null || unlocked(next.Id));
+            bool isBuilt = next != null && (built == null || built(next.Id));
+            return new ExitOffer
+            {
+                Next = next,
+                NextOpen = next != null && isUnlocked && isBuilt,
+                Line = NextStopLine(next),
+                Detail = DetailLine(next, lifetimeFans, isUnlocked, isBuilt),
+                Earlier = Earlier(placeId, unlocked, built),
+            };
         }
 
         /// <summary>A second line for the card: fans still needed while it is locked, "coming soon" when it is open but not built.</summary>

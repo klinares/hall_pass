@@ -1,0 +1,17 @@
+{
+    "name": "WorldTour.World.Places",
+    "rootNamespace": "WorldTour.World.Places",
+    "references": [
+        "WorldTour.World",
+        "WorldTour.Game"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

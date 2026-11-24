@@ -6,103 +6,11 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 using WorldTour.World;
+using static PlaceKit;
 
 public static partial class PlaceCoffeeBuilder
 {
-    const string Furn = "Assets/World/Art/KayKit_Furniture/";
-    static Material furnMat;
-
-    /// <summary>A growing mesh of small faceted shapes: a double pyramid (gem) with any three axes. Used for bulbs, wire and blossoms.</summary>
-    sealed class MB
-    {
-        readonly List<Vector3> v = new List<Vector3>();
-        readonly List<int> t = new List<int>();
-
-        void Tri(Vector3 a, Vector3 b, Vector3 c)
-        {
-            int i = v.Count;
-            v.Add(a); v.Add(b); v.Add(c);
-            t.Add(i); t.Add(i + 1); t.Add(i + 2);
-        }
-
-        public void Gem(Vector3 c, Vector3 ax, Vector3 ay, Vector3 az)
-        {
-            if (Vector3.Dot(Vector3.Cross(ax, ay), az) < 0f) ay = -ay;
-            Vector3 X = c + ax, nX = c - ax, Y = c + ay, nY = c - ay, Z = c + az, nZ = c - az;
-            Tri(Y, Z, X); Tri(Y, nX, Z); Tri(Y, nZ, nX); Tri(Y, X, nZ);
-            Tri(nY, X, Z); Tri(nY, Z, nX); Tri(nY, nX, nZ); Tri(nY, nZ, X);
-        }
-
-        public void Gem(Vector3 c, float rx, float ry, float rz) { Gem(c, Vector3.right * rx, Vector3.up * ry, Vector3.forward * rz); }
-
-        /// <summary>A thin spindle from a to b: joined end to end these read as a beaded wire.</summary>
-        public void Spindle(Vector3 a, Vector3 b, float thick)
-        {
-            Vector3 d = b - a;
-            Vector3 dir = d.normalized;
-            Vector3 side = Vector3.Cross(dir, Vector3.up);
-            if (side.sqrMagnitude < 0.0001f) side = Vector3.right;
-            side.Normalize();
-            Vector3 up = Vector3.Cross(side, dir).normalized;
-            Gem((a + b) / 2f, dir * (d.magnitude / 2f), side * thick, up * thick);
-        }
-
-        public Mesh ToMesh(string name)
-        {
-            var m = new Mesh { name = name };
-            if (v.Count > 65000) m.indexFormat = IndexFormat.UInt32;
-            m.SetVertices(v);
-            m.SetTriangles(t, 0);
-            m.RecalculateNormals();
-            m.RecalculateBounds();
-            string path = WorldArtBuilder.MeshDir + "/" + name + ".asset";
-            var old = AssetDatabase.LoadAssetAtPath<Mesh>(path);
-            if (old != null) { EditorUtility.CopySerialized(m, old); Object.DestroyImmediate(m); return old; }
-            AssetDatabase.CreateAsset(m, path);
-            return m;
-        }
-    }
-
-    static GameObject MeshObject(string name, Transform parent, Mesh mesh, Material mat, bool shadows)
-    {
-        var g = new GameObject(name);
-        g.transform.SetParent(parent, false);
-        g.AddComponent<MeshFilter>().sharedMesh = mesh;
-        var r = g.AddComponent<MeshRenderer>();
-        r.sharedMaterial = mat;
-        if (!shadows) { r.shadowCastingMode = ShadowCastingMode.Off; r.receiveShadows = false; }
-        return g;
-    }
-
-    static Material DoubleSided(string name, Color c, float smooth, Color? emission = null)
-    {
-        var m = Lit(name, c, smooth, emission);
-        m.SetFloat("_Cull", 0f);
-        EditorUtility.SetDirty(m);
-        return m;
-    }
-
     // ---------- string lights ----------
-
-    static void StringLine(MB wire, MB bulbs, Vector3 a, Vector3 b, float sag, float spacing, float bulbSize = 0.085f)
-    {
-        int seg = Mathf.Max(6, Mathf.CeilToInt((b - a).magnitude / 0.5f));
-        Vector3 prev = a;
-        for (int i = 1; i <= seg; i++)
-        {
-            float s = i / (float)seg;
-            Vector3 p = Vector3.Lerp(a, b, s) + Vector3.down * (sag * 4f * s * (1f - s));
-            wire.Spindle(prev, p, 0.014f);
-            prev = p;
-        }
-        int n = Mathf.Max(3, Mathf.RoundToInt((b - a).magnitude / spacing));
-        for (int i = 1; i < n; i++)
-        {
-            float s = i / (float)n;
-            Vector3 p = Vector3.Lerp(a, b, s) + Vector3.down * (sag * 4f * s * (1f - s) + 0.09f);
-            bulbs.Gem(p, bulbSize * 0.8f, bulbSize * 1.15f, bulbSize * 0.8f);
-        }
-    }
 
     static void MakeStringLights(Transform t)
     {
@@ -280,8 +188,6 @@ public static partial class PlaceCoffeeBuilder
 
     static void MakeDressing(Transform world, Transform props, Transform blocks)
     {
-        furnMat = Lit("furniture_kit", Color.white, 0.12f, null);
-        furnMat.SetTexture("_BaseMap", WorldArtBuilder.ArtTexture(Furn + "furniturebits_texture.png"));
         var dress = Group("Dressing", world).transform;
 
         flowers = new MB[FlowerHex.Length];

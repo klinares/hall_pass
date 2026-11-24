@@ -312,3 +312,7 @@ Recommendation: apply them in both files if the owner agrees; the deal and valid
 - interaction h: "When people or things act on each other, like talking or playing together" (the suggested line dropped "affect each other", which is the meaning)
 - intercede h: "To step in and help two people stop arguing" (as suggested)
 Missing vowels at 5-6 of 10 on her real list: accepted, no game change. Those are her test words and the hint ladder covers them. Record it in the 7.4 table as "word list, not the game". This counts inside the two 7.4 fix rounds, not as an extra one.
+
+## 26. Phase 8 fps floor under the headless test (FYI, decided by the lead 2026-11-23)
+
+The 8.0 spike runs at 60 fps at 1366 and 1920 (vsync cap) when headless Chrome uses the laptop GPU (`--gpu d3d11`, RTX 4070). Chrome's default headless renderer, SwiftShader (software), gives 10 fps at 1366 and 5 fps at 1920 even for this tiny scene, so no 3D scene can reach 30 fps on it. Decision: the "never under 30 under the headless test" check runs with the GPU flag (world_smoke.mjs `--gpu d3d11`). SwiftShader runs only check that the game loads and plays. world/ is 12.05 MB (largest file 8.24 MB) and the first frame took about 1.6 s locally.

@@ -11,6 +11,15 @@ Kept on disk so a new session can resume from here (see the FYI in ADVISOR.md, 2
 3. [x] Task W APPLIED to the real world_tour/ (10:12; lead verified diff vs backup: exactly the 5 files + 151 test screenshots overwritten by the e2e runs; node 41/41, chromium math 9/9, spelling 9/9, math-more 28/28; NOT staged or committed, the owner commits js/show.js, math/gen/fluency.js, multdiv.js, volume.js, tests/math/generators.test.mjs); PREPARED (backup intact 692 files; temp copy: node 41/41, chromium math 9/9, spelling 9/9; diff bw_patch.diff, 5 files: js/show.js, math/gen/fluency.js, multdiv.js, volume.js, tests/math/generators.test.mjs; full answer-11 chunks rule kept; chromium math-more 28/28). Apply after the Task Q commit: patch world_tour/ (one-time, owner-approved via ADVISOR 08:03): (a) soundcheck digits, (b) md/vol hints 1-2, (c) two-syllable chunks. Same wording as Unity. Check the backup first. Run node --test world_tour/tests/math/ + the chromium math and spelling suites. Do NOT stage or commit world_tour/; list the files for the owner
 4. Phases 3, 4, 5, 6
 
+## Phase 8 (3D explorable World Tour -> world/) - ADVISOR 2026-11-23 20:50; sonnet workers, max 2 builders + 1 tester
+- Owner approved CC0 art AND audio downloads (2026-11-23, asked directly; DECISIONS). List every pack in world_tour_unity/ASSETS.md.
+- [ ] 8.0 spike: URP 3D renderer, primitive character, follow camera, click-to-move, BuildWeb.BuildWorld -> world/, browser test, size/fps/shot (builder running). CC0 pack search + licence check into scratchpadssets_quarantine (worker running)
+- [ ] 8.1 first place end to end (walk, talk, spelling + math gig panels, stage show, rewards, save, unlock); tester + look review both sizes; kid-fit script; two fix rounds; lead judges look before 8.2 (reasons in DECISIONS)
+- [ ] 8.2 other seven places (shared kit; per-place layout, palette, landmark, time of day); two builders
+- [ ] 8.3 wearable shop items, crowd growth, travel moments, footsteps/ambience sound
+- [ ] 8.4 whole-tour tester + kid-fit, two fix rounds, final build, commit world/ world_tour_unity/ unity_team/, REPORT.md + 8 shots in unity_team/shots/phase8/. Do not push.
+- Keep: tour/ untouched and BuildWeb.Build unchanged; md MAX_LEVEL 0 (advisor 18:00); budgets 60 fps, <=60 MB, no file >50 MB, first place <10 s warm.
+
 ## Phase 7 (fit the math to her class) - ADVISOR 2026-11-21 12:05; sonnet workers, max 2 builders, 1 tester pass + 2 fix rounds
 - [x] 7.1 difficulty controls in math_config.json (MAX_LEVEL / START_LEVEL per skill, LEVEL_UP_AFTER 6, LEVEL_DOWN_AFTER 2, caps never remove progress), warm-up level 0 in every math generator, office gentle/standard per subject; defaults md 1, ops 2, flu 2, vol uncapped, dec/frac/xy off (builder A)
 - [x] 7.2 new mode fm: fraction x and / (green room snack table), L0-L3, fmDivision switch, area/tape models, hints per answers 8/9/11/16, any equivalent form accepted, mistake distractors, seeded Core tests (builder B; config wiring after A)

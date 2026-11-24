@@ -2,6 +2,43 @@
 
 The advisor reads `REPORT.md`, `QUESTIONS.md`, `DECISIONS.md` and the plan about every 30 minutes and writes here. Lead: re-read this file and `QUESTIONS.md` before starting each task and before you stop for any reason. Notes are instructions unless marked "FYI". Newest first. Answers to numbered questions go under the question in `QUESTIONS.md`, not here.
 
+## 2026-11-23 20:58 (advisor) add task 8.5: repo clean-up (owner's request)
+
+The owner: "make sure the repo gets cleaned up once we complete the task so we do not have files we no longer need". Add 8.5 as the LAST task of phase 8, after the 8.4 commit, as its own commit so it can be undone.
+1. Remove what the team made and no longer needs: staging folders (b22_stage, b26_stage and the like), harness copies, scratch scripts, old test output and screenshots except `unity_team/shots/phase8/`, imported art that no scene or prefab uses, unused packages, the kept "previous" build under `tour/Build` and `world/Build` if BuildWeb can recreate it. Use `git rm` for tracked files; check .gitignore covers Library, Temp, Logs, obj, UserSettings and node_modules.
+2. Shrink the team's paperwork: keep BRIEF.md, ADVISOR.md, QUESTIONS.md, DECISIONS.md and the final REPORT.md; move finished phases out of TODO.md into one `unity_team/HISTORY.md`; drop KICKOFF.md if nothing reads it.
+3. Do NOT remove, only list in REPORT.md under "could be removed, the advisor decides" with size and what depends on each: `spelling_4_U/`, `world_tour/`, `tour/` and the 2D-only code and art (all live or playable today), `D:\repos\_backups\world_tour_2026-11-20\`, `publish.bat`, anything the team did not create.
+4. After the clean-up: all suites green, both builds still build, then report the repo size before and after. Do not push.
+
+## 2026-11-23 20:50 (advisor) PHASE 8: World Tour becomes a 3D explorable game
+
+The owner's words: "more of an interactive game almost rpg style with rendered beautiful graphics since both of our laptops have dedicated GPUs". He chose: 3D stylized look, played from a browser link, the whole tour (all eight venues) before his daughter sees it. All decisions stay with the advisor; no questions to the owner. Billing rule of 15:55 Nov 21 stands (plan allowance only, no headless/API, no overage, nothing paid). Lead on its own model, workers on Sonnet, max 2 builders + 1 tester.
+
+**What stays.** Core (generators, levels, hints, show engine, save, math_config.json, weeks.json) is not rewritten. Every learning rule in QUESTIONS answers 7-25 still holds. `tour/` (the current game) is not touched and stays live. The new game builds to a NEW folder `world/` at the repo root (address .../hall_pass/world/), with its own StreamingAssets copies of weeks.json and math_config.json synced FROM `tour/StreamingAssets/` at build time (tour/ stays the one master). Same localStorage save, so her fans, stickers and levels carry over; new fields are added keys, old game must still load the save.
+
+**The game.**
+- She walks a pop-star character around a small 3D place for each of the eight venues (a street or plaza plus the venue itself). Third person, fixed friendly camera that follows; no camera controls to learn. Move with WASD/arrows AND click-to-move; E, Space or click to talk. Riff the dog follows her.
+- Crew characters stand around each place with a marker over their head. Talking to one starts a gig: one existing mode (spelling or math) opened as a panel over the world, reusing the current mode screens and hint ladder. Short gigs: 3 to 5 questions. Each place offers the enabled math modes and that week's spelling modes spread across its characters, so the world is how she picks what to play.
+- Each place ends at the stage: the existing 10-song show, now on a lit 3D stage with a crowd that grows with her fans and reacts to right answers (lights, confetti, cheering). Fans unlock the next place as now, with a short travel moment.
+- Backstage shop items become things she can see: outfits, hair and guitar colours on her character, stage light colours, a collar for Riff. Peach and navy outfit set available early.
+- No combat, no timers that cost anything, no fail state, nothing earned is ever lost, no reading walls: a character line is at most 12 words, 5th-grade reading level.
+- No real artists, songs, lyrics or logos. No ads, analytics or accounts.
+
+**The look.** "Beautiful" is the owner's main ask, so it is a definition-of-done item, judged from screenshots.
+- Art: CC0 packs only (Kenney, Quaternius, KayKit; check each pack's licence file says CC0). Import only the models used. List every pack with its source address and licence in `world_tour_unity/ASSETS.md`. Nothing bought, nothing with an attribution or non-commercial clause, nothing AI-generated that copies a known character.
+- One consistent style across all eight places (do not mix a blocky pack with a smooth one). Each place gets its own palette, time of day and landmark so they feel different: small coffee shop street at morning up to the arena at night.
+- URP 3D renderer added beside the 2D one: one directional light with soft shadows, baked or probe ambient, bloom, colour grading, light fog, a few particle effects (stage lights, fireflies, confetti). Idle life: characters breathe and look at her, signs sway.
+- Budget: WebGL2, 60 fps at 1366x768 and 1920x1080 on a laptop GPU, never under 30 under the headless test; download of `world/` 60 MB or less compressed, no file over 50 MB; first place playable within 10 s on a warm cache. A quality drop-down is not needed: pick settings that meet the budget.
+
+**Order of work.**
+- 8.0 spike (one builder, half a session): 3D renderer, one CC0 character walking on a small lit ground with follow camera and click-to-move, built to `world/`, browser test loads it; report size, fps, one screenshot. If the budget cannot be met in a browser, say so in QUESTIONS.md before going on.
+- 8.1 first place complete, end to end: walk, talk, one spelling gig and one math gig as panels, the stage show, rewards, save, unlock moment. Tester pass WITH a look review from screenshots at both sizes (composition, lighting, readable markers, nothing floating or clipping), then the 7.4 kid-fit script again on this place. Two fix rounds. Do not start 8.2 until this place looks good in the lead's own judgement of the screenshots; write the reasons in DECISIONS.md.
+- 8.2 the other seven places from the same kit (shared prefabs for characters, markers, gig panels, stage; per-place layout, palette, landmark, time of day). Two builders in parallel, one build per placed batch.
+- 8.3 wearable shop items, crowd growth, travel moments, sound for footsteps/ambience using the existing synth approach or CC0 clips listed in ASSETS.md.
+- 8.4 tester pass on the whole tour + kid-fit, two fix rounds, final build, commit by path (`world/`, `world_tour_unity/`, `unity_team/`), REPORT.md with eight screenshots saved under `unity_team/shots/phase8/`, size, fps, what the owner does next. Do not push. Then stop.
+
+Keep the old 2D screens compiling: `BuildWeb.Build` still produces `tour/` unchanged; add `BuildWeb.BuildWorld` for `world/`. Edit-mode, play-mode and browser suites must stay green for both.
+
 ## 2026-11-21 18:00 (advisor) phase 7 accepted; two data edits made by the advisor
 
 Phase 7 report read and accepted. No further work is assigned; stay stopped.

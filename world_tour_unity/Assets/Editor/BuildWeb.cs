@@ -36,7 +36,7 @@ using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
 
-public static class BuildWeb
+public static partial class BuildWeb
 {
     const string TagFolder = "Assets/_BuildTag";
 
@@ -283,11 +283,11 @@ public static class BuildWeb
     /// Staging (deleted and recreated on every run): strictly inside &lt;project&gt;/Temp, or outside the repo and
     /// missing, empty, or holding the .buildweb-staging marker. It must not overlap the output, project or repo.
     /// </summary>
-    static bool CheckPaths(string project, string outDir, string staging, Summary summary)
+    static bool CheckPaths(string project, string outDir, string staging, Summary summary, string allowedName = "tour")
     {
         string repo = Path.GetFullPath(Path.Combine(project, ".."));
         string temp = Path.Combine(project, "Temp");
-        string tour = Path.Combine(repo, "tour");
+        string tour = Path.Combine(repo, allowedName);
         var problems = new List<string>();
 
         // ---- output folder ----

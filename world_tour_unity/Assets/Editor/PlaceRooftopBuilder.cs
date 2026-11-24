@@ -153,14 +153,14 @@ public static class PlaceRooftopBuilder
         var wood = M("wood", "#9c6a46", 0.3f);
         var teal = M("teal", "#1f8f8a", 0.25f);
         var steel = M("steel", "#c9ccdf", 0.6f);
-        // the bar: a counter with a coloured front, bottles, a row of cups, a cooler, two stools
-        var bar = Group("Bar", t).transform; bar.position = V(-9.4f, 0f, -2.0f); bar.rotation = Quaternion.Euler(0, 90f, 0);
+        // the juice stand: a counter with a coloured front, soda cans, a row of cups, a cooler, two stools
+        var bar = Group("JuiceStand", t).transform; bar.position = V(-9.4f, 0f, -2.0f); bar.rotation = Quaternion.Euler(0, 90f, 0);
         Prim(PrimitiveType.Cube, "Counter", bar, V(0, 0.55f, 0), V(3.6f, 1.1f, 0.8f), teal);
         Prim(PrimitiveType.Cube, "CounterTop", bar, V(0, 1.14f, 0), V(3.8f, 0.08f, 1.0f), wood);
         string[] bottle = { "#ff7aa8", "#ffd27a", "#8fd0ff", "#c9a0ff", "#9aeaa0" };
         for (int i = 0; i < 8; i++)
         {
-            Prim(PrimitiveType.Cylinder, "Bottle", bar, V(-1.5f + i * 0.42f, 1.42f, 0.1f), V(0.12f, 0.2f, 0.12f), M("bottle" + (i % 5), bottle[i % 5], 0.7f));
+            Prim(PrimitiveType.Cylinder, "SodaCan", bar, V(-1.5f + i * 0.42f, 1.3f, 0.1f), V(0.17f, 0.1f, 0.17f), M("can" + (i % 5), bottle[i % 5], 0.7f));
             if (i % 2 == 0) Prim(PrimitiveType.Cylinder, "Cup", bar, V(-1.3f + i * 0.4f, 1.24f, -0.25f), V(0.16f, 0.08f, 0.16f), M("cup", "#ff7aa8", 0.4f), null, false);
         }
         Prim(PrimitiveType.Cube, "Cooler", bar, V(1.2f, 0.3f, 0.9f), V(0.9f, 0.6f, 0.55f), M("cooler", "#e8503a", 0.3f));
@@ -170,7 +170,7 @@ public static class PlaceRooftopBuilder
             Prim(PrimitiveType.Cylinder, "StoolLeg", bar, V(sx, 0.36f, -0.9f), V(0.06f, 0.36f, 0.06f), steel);
             Prim(PrimitiveType.Cylinder, "Stool", bar, V(sx, 0.74f, -0.9f), V(0.42f, 0.05f, 0.42f), M("stool", "#ffd27a", 0.3f));
         }
-        // a string of mini pendants over the bar
+        // a string of mini pendants over the juice stand
         Prim(PrimitiveType.Cube, "BarCanopy", bar, V(0, 2.9f, 0), V(3.8f, 0.08f, 1.3f), M("canopy", "#fff1dc", 0.2f));
         foreach (float px in new[] { -1.8f, 1.8f }) foreach (float pz in new[] { -0.6f, 0.6f }) Prim(PrimitiveType.Cylinder, "CanopyPost", bar, V(px, 1.45f, pz), V(0.07f, 1.45f, 0.07f), wood);
         BlockLine(blocks, new Vector2(-9.4f, -3.8f), new Vector2(-9.4f, -0.2f), 0.9f, 1.1f);

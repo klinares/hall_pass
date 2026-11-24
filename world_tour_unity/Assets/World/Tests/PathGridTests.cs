@@ -161,7 +161,6 @@ namespace WorldTour.World.Tests
             foreach (var v in WorldTour.Core.Data.Venues.All)
             {
                 Surface s = AudioPlan.SurfaceFor(v.Id);
-                Assert.Greater(AudioPlan.StepPitch(s), 0.5f);
                 Assert.Greater(AudioPlan.StepVolume(s), 0.1f);
                 Assert.Less(AudioPlan.StepVolume(s), 0.7f, "gentle");
                 Assert.Less(AudioPlan.BedVolume(AudioPlan.BedFor(v.Id)), 0.35f, "the bed stays quiet");
@@ -174,18 +173,32 @@ namespace WorldTour.World.Tests
         }
 
         [Test]
-        public void EveryClipTheWorldSoundLoads_IsInTheProject_AndShort()
+        public void EveryCueClip_IsInTheProject_OutsideResources_AndShort()
         {
-            string[] names = { "step_1", "step_2", "step_3", "step_4", "amb_birds", "amb_murmur", "cheer_applause", "ui_open", "ui_close", "ui_whoosh", "jingle_done", "jingle_unlock" };
+            string[] names = { "ui_open", "ui_close", "ui_whoosh", "jingle_done", "jingle_unlock" };
             foreach (string n in names)
             {
-                var clip = Resources.Load<AudioClip>("WorldAudio/" + n);
+                var clip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>(WorldAudio.ClipDir + n + ".ogg");
                 Assert.IsNotNull(clip, n);
                 Assert.AreEqual(1, clip.channels, n + " is mono");
-                Assert.Less(clip.length, 25f, n);
-                if (n.StartsWith("step_") || n.StartsWith("ui_")) Assert.Less(clip.length, 0.5f, n + " is a short click");
-                if (n.StartsWith("jingle_")) Assert.Less(clip.length, 2f, n + " is a short jingle");
+                if (n.StartsWith("ui_")) Assert.Less(clip.length, 0.5f, n + " is a short click");
+                else Assert.Less(clip.length, 2f, n + " is a short jingle");
+                Assert.IsFalse(UnityEditor.AssetDatabase.GetAssetPath(clip).Contains("/Resources/"), n + " must stay out of Resources (the 2D build includes every Resources folder)");
             }
+            Assert.IsNull(Resources.Load<AudioClip>("WorldAudio/ui_open"), "nothing under Resources/WorldAudio any more");
+        }
+
+        [Test]
+        public void TheBankScene_HoldsAllFiveCueClips()
+        {
+            var scene = UnityEditor.SceneManagement.EditorSceneManager.OpenScene("Assets/World/Scenes/WorldAudioBank.unity", UnityEditor.SceneManagement.OpenSceneMode.Additive);
+            try
+            {
+                var bank = UnityEngine.Object.FindFirstObjectByType<WorldAudioClips>();
+                Assert.IsNotNull(bank);
+                Assert.IsNotNull(bank.open); Assert.IsNotNull(bank.close); Assert.IsNotNull(bank.whoosh); Assert.IsNotNull(bank.done); Assert.IsNotNull(bank.unlock);
+            }
+            finally { UnityEditor.SceneManagement.EditorSceneManager.CloseScene(scene, true); }
         }
 
         [Test]

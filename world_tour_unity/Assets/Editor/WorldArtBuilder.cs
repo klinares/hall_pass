@@ -262,6 +262,8 @@ public static class WorldArtBuilder
         {
             if (!BodyParts.Any(p => r.name.Contains(p))) Object.DestroyImmediate(r.gameObject);
         }
+        foreach (var smr in go.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+            if (smr.name.Contains("_Head")) smr.sharedMesh = FriendlyHead(smr.sharedMesh, Path.GetFileNameWithoutExtension(fbx));
         go.transform.localScale = Vector3.one * CharacterScale;
         var anim = go.GetComponent<Animator>();
         anim.runtimeAnimatorController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(CharacterController);
@@ -280,6 +282,73 @@ public static class WorldArtBuilder
             r.shadowCastingMode = ShadowCastingMode.On;
             r.receiveShadows = true;
         }
+    }
+
+
+    // ---------- friendly faces (phase 8.3 look fix) ----------
+    // KayKit's face is geometry, not a texture: two dark eye blocks (palette cell 26) set with the inner end lower than the outer, which reads as a frown on
+    // a small figure. A "friendly head" is a copy of the head mesh with each eye turned about its own centre until the inner end is a little higher
+    // (neutral to sweet), and a thin smile (a curved strip in the same dark swatch) added on the front of the face, skinned to the head bone.
+
+    const int EyeCell = 26, SkinCell = 24;
+    const float EyeTurnDegrees = 24f, SmileHalfWidth = 0.085f, SmileDepth = 0.032f, SmileThick = 0.011f, SmileY = 0.19f;
+
+    static int PaletteCell(Vector2 uv) { return (int)(uv.x * 8f) + 8 * (int)(uv.y * 4f); }
+
+    public static Mesh FriendlyHead(Mesh src, string model)
+    {
+        var m = new Mesh();
+        m.name = "Face_" + model;
+        var v = new System.Collections.Generic.List<Vector3>(src.vertices);
+        var uv = new System.Collections.Generic.List<Vector2>(src.uv);
+        var n = new System.Collections.Generic.List<Vector3>(src.normals);
+        var w = new System.Collections.Generic.List<BoneWeight>(src.boneWeights);
+        int orig = v.Count;
+        // eyes: the vertices of the eye swatch on each side of the face, turned about their own centre
+        foreach (int side in new[] { -1, 1 })
+        {
+            var idx = new System.Collections.Generic.List<int>();
+            for (int i = 0; i < orig; i++) if (PaletteCell(uv[i]) == EyeCell && Mathf.Sign(v[i].x) == side) idx.Add(i);
+            if (idx.Count == 0) continue;
+            Vector3 c = Vector3.zero; foreach (int i in idx) c += v[i]; c /= idx.Count;
+            var q = Quaternion.Euler(0f, 0f, side < 0 ? EyeTurnDegrees : -EyeTurnDegrees);   // the outer end goes down, the inner end up
+            foreach (int i in idx) { v[i] = c + q * (v[i] - c); n[i] = q * n[i]; }
+        }
+        // the smile: z from the skin around where the mouth sits
+        float z = float.MinValue;
+        for (int i = 0; i < orig; i++)
+            if (PaletteCell(uv[i]) == SkinCell && Mathf.Abs(v[i].x) < 0.1f && Mathf.Abs(v[i].y - SmileY) < 0.08f) z = Mathf.Max(z, v[i].z);
+        if (z == float.MinValue) z = 0.5f;
+        z += 0.004f;
+        int head = 0; for (int i = 0; i < orig; i++) if (PaletteCell(uv[i]) == EyeCell) { head = i; break; }
+        BoneWeight bw = w[head];
+        const int seg = 10;
+        int first = v.Count;
+        for (int s = 0; s <= seg; s++)
+        {
+            float t = s / (float)seg * 2f - 1f;
+            float x = SmileHalfWidth * t, y = SmileY + SmileDepth * t * t;
+            float taper = 1f - 0.45f * t * t;
+            foreach (float dy in new[] { SmileThick * taper, -SmileThick * taper })
+            {
+                v.Add(new Vector3(x, y + dy, z)); n.Add(Vector3.forward); uv.Add(new Vector2(0.31f, 0.93f)); w.Add(bw);
+            }
+        }
+        var tris = new System.Collections.Generic.List<int>(src.triangles);
+        for (int s = 0; s < seg; s++)
+        {
+            int a = first + s * 2, b = a + 1, c2 = a + 2, d = a + 3;
+            tris.AddRange(new[] { a, b, c2, c2, b, d });     // both windings: the strip shows whichever way the model faces
+            tris.AddRange(new[] { a, c2, b, c2, d, b });
+        }
+        m.SetVertices(v); m.SetNormals(n); m.SetUVs(0, uv); m.boneWeights = w.ToArray(); m.bindposes = src.bindposes;
+        m.SetTriangles(tris, 0);
+        m.RecalculateBounds();
+        string path = MeshDir + "/Face_" + model + ".asset";
+        var old = AssetDatabase.LoadAssetAtPath<Mesh>(path);
+        if (old != null) { EditorUtility.CopySerialized(m, old); Object.DestroyImmediate(m); return old; }
+        AssetDatabase.CreateAsset(m, path);
+        return m;
     }
 
     public static Material TexMat(string name, Texture2D tex) { return Lit(name, Color.white, 0.1f, tex); }

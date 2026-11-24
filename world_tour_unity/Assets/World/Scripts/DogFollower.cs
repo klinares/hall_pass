@@ -8,9 +8,14 @@ namespace WorldTour.World
         public Transform target;
         public Transform rig, tail, legFL, legFR, legBL, legBR;
         public float followDistance = 1.7f, speed = 5.6f;
+        [Tooltip("The prefab's nose points along its own -z, so the root turns this many degrees past the way he travels (phase 8.3: he trotted tail first).")]
+        public float noseYaw = 180f;
         [Tooltip("Optional. Found on the figure when empty. Gets the float parameter \"Speed\" (phase 8.1 contract).")]
         public Animator animator;
         float phase, trot;
+
+        /// <summary>The root rotation that points his nose along <paramref name="dir"/> (flat): the root's +z turned by <paramref name="noseYaw"/>.</summary>
+        public static Quaternion Facing(Vector3 dir, float noseYaw) { return Quaternion.LookRotation(dir, Vector3.up) * Quaternion.Euler(0f, noseYaw, 0f); }
 
         void Awake() { if (animator == null) animator = GetComponentInChildren<Animator>(); }
 
@@ -30,7 +35,7 @@ namespace WorldTour.World
             }
             if (d > 0.2f)
             {
-                Quaternion want = Quaternion.LookRotation(to / d, Vector3.up);
+                Quaternion want = Facing(to / d, noseYaw);
                 transform.rotation = Quaternion.Slerp(transform.rotation, want, 1f - Mathf.Exp(-9f * Time.deltaTime));
             }
             AnimSafe.Float(animator, "Speed", moved);

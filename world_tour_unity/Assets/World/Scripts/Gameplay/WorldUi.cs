@@ -69,6 +69,7 @@ namespace WorldTour.World.Gameplay
         readonly Dictionary<string, Pin> _pins = new Dictionary<string, Pin>();
         RectTransform _hint;
         TMP_Text _hintText;
+        CanvasGroup _hintGroup;
 
         public static WorldUi Create(WorldGameplayAssets assets)
         {
@@ -113,13 +114,17 @@ namespace WorldTour.World.Gameplay
             // the panel that holds the 2D screens
             PanelRoot = ShowUi.Rect("Panel", _canvasRt);
             ShowUi.Stretch(PanelRoot, 20f);
-            var bg = PanelRoot.gameObject.AddComponent<Image>();
+            // the card behind the screens is its own child, so the docked panel can end where its content ends (PanelCardFit) while the 2D-style panel stays full size
+            RectTransform card = ShowUi.Rect("Card", PanelRoot);
+            ShowUi.Stretch(card);
+            var bg = card.gameObject.AddComponent<Image>();
             bg.raycastTarget = true;
             bg.type = Image.Type.Sliced;
             Sprite paper = Theme.Sprite(SpriteRole.RoundedRect);
             if (paper != null) bg.sprite = paper;
-            ThemeColor.Add(PanelRoot.gameObject, ColorRole.Paper);
+            ThemeColor.Add(card.gameObject, ColorRole.Paper);
             RectTransform screens = ShowUi.Rect("Screens", PanelRoot);
+            PanelRoot.gameObject.AddComponent<PanelCardFit>().Init(this, card, screens);
             ShowUi.Stretch(screens);
             Stack = screens.gameObject.AddComponent<ScreenStack>();
             var template = new GameObject("Root", typeof(RectTransform), typeof(CanvasGroup));
@@ -238,7 +243,7 @@ namespace WorldTour.World.Gameplay
         // ---------- the first-visit hint ----------
 
         /// <summary>A strip at the bottom of the view with one line of help ("walk with the arrow keys or click the ground").</summary>
-        public void ShowHint(string text)
+        public void ShowHint(string text, float alpha = 1f)
         {
             if (_hint == null)
             {
@@ -250,9 +255,12 @@ namespace WorldTour.World.Gameplay
                 Box(_hint, 3f);
                 _hintText = ShowUi.Label(_hint, "Text", "", HintSize, FontRole.BodyBold, ColorRole.Ink);
                 _hintText.textWrappingMode = TextWrappingModes.NoWrap;
+                _hintGroup = _hint.gameObject.AddComponent<CanvasGroup>();
+                _hintGroup.blocksRaycasts = false; _hintGroup.interactable = false;
                 _hint.SetSiblingIndex(Mathf.Max(0, _canvasRt.childCount - 3));
             }
             _hintText.SetLower(text);
+            _hintGroup.alpha = alpha;
             _hint.gameObject.SetActive(true);
         }
 
@@ -745,6 +753,78 @@ namespace WorldTour.World.Gameplay
         {
             if (PanelOpen || DialogOpen) return true;
             return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+        }
+    }
+
+    /// <summary>
+    /// Phase 8.3 look fix: in the docked panel the card ends where its content ends (the old card ran to the bottom of the screen with an empty pink slab
+    /// under the keypad), so more of the world shows. It measures the lowest visible graphic of the open screen and eases the card's height to it. Anywhere
+    /// else (the full-size panel, the shop whose content fills the panel) the card is the whole panel, as before.
+    /// </summary>
+    sealed class PanelCardFit : MonoBehaviour
+    {
+        const float Pad = 22f, MinHeight = 340f, FullBleed = 0.9f, Rate = 12f;
+        WorldUi _ui;
+        RectTransform _card, _screens, _root;
+        readonly List<Graphic> _graphics = new List<Graphic>();
+        readonly Vector3[] _corners = new Vector3[4];
+        float _height;
+        int _frames;
+        bool _full = true;
+
+        public void Init(WorldUi ui, RectTransform card, RectTransform screens)
+        {
+            _ui = ui; _card = card; _screens = screens; _root = (RectTransform)transform;
+        }
+
+        void OnEnable() { _frames = 0; _height = -1f; }
+
+        void LateUpdate()
+        {
+            if (_ui == null) return;
+            if (!_ui.PanelCompact)
+            {
+                if (!_full) { ShowUi.Stretch(_card); _full = true; }
+                return;
+            }
+            float full = _root.rect.height;
+            float target = Measure(full);
+            _frames++;
+            if (_height < 0f || _frames < 3) _height = target;
+            else _height = Mathf.Lerp(_height, target, 1f - Mathf.Exp(-Rate * Time.unscaledDeltaTime));
+            _full = false;
+            _card.anchorMin = new Vector2(0f, 1f); _card.anchorMax = new Vector2(1f, 1f);
+            _card.pivot = new Vector2(.5f, 1f);
+            _card.sizeDelta = new Vector2(0f, Mathf.Min(full, _height));
+            _card.anchoredPosition = Vector2.zero;
+        }
+
+        /// <summary>The card height that holds everything visible in the screens, plus padding; the whole panel when something reaches its foot.</summary>
+        float Measure(float full)
+        {
+            float low = float.MaxValue;
+            _screens.GetComponentsInChildren(false, _graphics);
+            for (int i = 0; i < _graphics.Count; i++)
+            {
+                Graphic g = _graphics[i];
+                if (g == null || !g.isActiveAndEnabled || g.color.a < 0.02f || g.canvasRenderer.cull || g.canvasRenderer.GetInheritedAlpha() < 0.02f) continue;
+                var tmp = g as TMP_Text;
+                if (tmp != null && string.IsNullOrEmpty(tmp.text)) continue;
+                g.rectTransform.GetWorldCorners(_corners);
+                float y0 = float.MaxValue, y1 = float.MinValue;
+                for (int c = 0; c < 4; c++)
+                {
+                    float y = _root.InverseTransformPoint(_corners[c]).y;
+                    if (y < y0) y0 = y;
+                    if (y > y1) y1 = y;
+                }
+                if (y1 - y0 > full * FullBleed) continue;   // a full-bleed backdrop is not content
+                if (y0 < low) low = y0;
+            }
+            if (low == float.MaxValue) return full;
+            float top = _root.rect.yMax;
+            float h = top - low + Pad;
+            return h > full - 30f ? full : Mathf.Max(MinHeight, h);
         }
     }
 }

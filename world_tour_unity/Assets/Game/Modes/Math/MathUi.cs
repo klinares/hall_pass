@@ -97,8 +97,8 @@ namespace WorldTour.Game.Modes
             // .mathq p: 1.15rem, line-height 1.6; the problem keeps its own case (.clue p text-transform none)
             RectTransform pr = ShowUi.Rect("Text", card);
             var t = pr.gameObject.AddComponent<TextMeshProUGUI>();
-            Theme.ApplyFont(t, FontRole.Body);
-            t.fontSize = ShowLayout.Compact ? 21.2f : 18.4f;   // docked panel is drawn at 0.87: 21.2 lands near 18 px, never under 16 even when fitted
+            Theme.ApplyFont(t, ShowLayout.Compact ? FontRole.BodyBold : FontRole.Body);   // docked panel: the question is the point of the screen, so it is bold, ink-dark and larger than riff's bubble
+            t.fontSize = ShowLayout.Compact ? 25f : 18.4f;   // docked panel is drawn at 0.87: 25 lands at 21.8 px, over riff's 18 px bubble; a long prompt steps down to 20 (17.4 px) before CompactFit shrinks the song
             t.color = Theme.Color(ColorRole.Ink);
             t.alignment = TextAlignmentOptions.TopLeft;
             t.textWrappingMode = TextWrappingModes.Normal;
@@ -109,7 +109,7 @@ namespace WorldTour.Game.Modes
             if (maxTextHeight > 0f) t.margin = new Vector4(0f, 6f, 0f, 0f);   // keeps line one clear of the tilted label chip once the lines are tightened
             var fit = pr.gameObject.AddComponent<PromptFit>();
             fit.MaxHeight = maxTextHeight;
-            if (ShowLayout.Compact) fit.MinFont = 18.4f;
+            if (ShowLayout.Compact) fit.MinFont = 20f;
             return card;
         }
 

@@ -57,7 +57,7 @@ public static class PlaceArenaBuilder
 
     // ---------- the scene ----------
 
-    static void MakeScene()
+    public static void MakeScene()
     {
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         Reported.Clear();
@@ -392,10 +392,69 @@ public static class PlaceArenaBuilder
         var up = new MB();
         for (int i = 0; i < 8; i++) { up.Gem(V(-7.2f, 0.12f, 2.6f + i * 0.9f), 0.14f, 0.1f, 0.14f); up.Gem(V(7.2f, 0.12f, 2.6f + i * 0.9f), 0.14f, 0.1f, 0.14f); }
         MeshObject("Uplights", t, up.ToMesh("ar_uplights"), lilacGlow, false);
+        MakeFloorDressing(t, blocks);
         // way out: a lit doorway frame behind the exit ring
         Prim(PrimitiveType.Cube, "ExitLintel", t, V(11.5f, 3.4f, -12.9f), V(3.2f, 0.25f, 0.4f), cyanGlow, null, false);
         foreach (float sx in new[] { 9.9f, 13.1f }) { Prim(PrimitiveType.Cube, "ExitPost", t, V(sx, 1.7f, -12.9f), V(0.25f, 3.4f, 0.4f), cyanGlow, null, false); Block(blocks, sx, -12.9f, 0.4f); }
     }
+
+    // ---------- the near floor: cables, spike marks, a camera dolly (phase 8.3 look: the foreground was an empty grid) ----------
+
+    static void MakeFloorDressing(Transform t, Transform blocks)
+    {
+        var rubber = Lit(P + "cable", C("#0e0f24"), 0.35f);
+        var tape = Lit(P + "tape", C("#d9c24a"), 0.3f);
+        // two cable runs wandering from the flight cases toward the sound desk and the tunnel, with yellow cable ramps across them
+        var cab = new MB(); var ramp = new MB();
+        Vector3[][] runs =
+        {
+            new[] { V(-11.4f, 0.05f, -8.6f), V(-9.6f, 0.05f, -7.6f), V(-7.6f, 0.05f, -7.9f), V(-5.6f, 0.05f, -9.4f), V(-4.7f, 0.05f, -11.4f), V(-4.9f, 0.05f, -13.0f) },
+            new[] { V(-11.4f, 0.05f, -8.2f), V(-9.5f, 0.05f, -7.2f), V(-7.5f, 0.05f, -7.5f), V(-5.2f, 0.05f, -9.0f), V(-4.2f, 0.05f, -11.0f), V(-4.3f, 0.05f, -13.0f) },
+            new[] { V(11.6f, 0.05f, -7.0f), V(9.4f, 0.05f, -8.6f), V(7.4f, 0.05f, -10.2f), V(5.6f, 0.05f, -10.4f), V(4.4f, 0.05f, -12.0f), V(4.6f, 0.05f, -13.0f) },
+        };
+        foreach (var run in runs)
+            for (int i = 0; i + 1 < run.Length; i++)
+            {
+                Vector3 a = run[i], b = run[i + 1], d = b - a;
+                float yaw = Mathf.Atan2(d.x, d.z) * Mathf.Rad2Deg;
+                cab.Box((a + b) * 0.5f, V(0.05f, 0.05f, d.magnitude * 0.5f + 0.04f), yaw);
+            }
+        MeshObject("Cables", t, cab.ToMesh("ar_cables"), rubber, true);
+        foreach (var at in new[] { V(-5.6f, 0.06f, -9.4f), V(-8.0f, 0.06f, -7.8f), V(5.7f, 0.06f, -10.4f) })
+            ramp.Box(at, V(0.55f, 0.06f, 0.28f), at.x < 0f ? 35f : -20f);
+        MeshObject("CableRamps", t, ramp.ToMesh("ar_cable_ramps"), tape, false);
+        // spike marks: taped crosses where the band stands (flat, cyan and pink)
+        var cross = new MB(); var crossB = new MB();
+        foreach (var at in new[] { V(-7.2f, 0.04f, -11f), V(-11.6f, 0.04f, -4.0f), V(4.6f, 0.04f, -7.6f), V(9.4f, 0.04f, -12.2f), V(-6.2f, 0.04f, -4.4f) })
+        {
+            var m = at.x < -8f || at.z > -6f ? crossB : cross;
+            m.Box(at, V(0.4f, 0.015f, 0.05f), 45f); m.Box(at, V(0.4f, 0.015f, 0.05f), -45f);
+        }
+        MeshObject("SpikeMarks", t, cross.ToMesh("ar_spike_a"), cyanGlow, false);
+        MeshObject("SpikeMarksPink", t, crossB.ToMesh("ar_spike_b"), pinkGlow, false);
+        // painted rings on the floor
+        foreach (var at in new[] { V(9.8f, 0.03f, -2.4f), V(-9.8f, 0.03f, -4.2f) })
+        {
+            Prim(PrimitiveType.Cylinder, "FloorRingEdge", t, at, V(3.0f, 0.005f, 3.0f), lilacGlow, null, false);
+            Prim(PrimitiveType.Cylinder, "FloorRing", t, at + V(0, 0.004f, 0), V(2.84f, 0.005f, 2.84f), Lit(P + "ring_dark", C("#14163a"), 0.5f), null, false);
+        }
+        // a camera dolly on two rails: a low cart with a camera on a post, a rail light
+        var g = Group("CameraDolly", t).transform; g.position = V(-8.3f, 0, -10.0f); g.rotation = Quaternion.Euler(0, 10f, 0);
+        foreach (float rx in new[] { -0.45f, 0.45f })
+        {
+            Prim(PrimitiveType.Cube, "Rail", g, V(rx, 0.05f, 0), V(0.06f, 0.07f, 5.2f), steel, null, false);
+            for (int i = 0; i < 9; i++) Prim(PrimitiveType.Cube, "Sleeper", g, V(0, 0.025f, -2.4f + i * 0.6f), V(1.1f, 0.05f, 0.1f), black, null, false);
+        }
+        Prim(PrimitiveType.Cube, "Cart", g, V(0, 0.28f, 0.4f), V(1.0f, 0.18f, 1.1f), steel);
+        foreach (float wx in new[] { -0.45f, 0.45f }) foreach (float wz in new[] { -0.05f, 0.85f })
+            Prim(PrimitiveType.Cylinder, "Wheel", g, V(wx, 0.14f, wz), V(0.22f, 0.04f, 0.22f), black, V(0, 0, 90f));
+        Prim(PrimitiveType.Cylinder, "Post", g, V(0, 0.95f, 0.4f), V(0.07f, 0.65f, 0.07f), steel);
+        Prim(PrimitiveType.Cube, "CameraBody", g, V(0, 1.68f, 0.4f), V(0.38f, 0.32f, 0.62f), black);
+        Prim(PrimitiveType.Cylinder, "Lens", g, V(0, 1.68f, 0.86f), V(0.22f, 0.12f, 0.22f), dark, V(90f, 0, 0));
+        Prim(PrimitiveType.Sphere, "RecordLight", g, V(0.1f, 1.88f, 0.28f), V(0.06f, 0.06f, 0.06f), pinkGlow, null, false);
+        Block(blocks, -8.1f, -9.6f, 0.75f);
+    }
+
 
     // ---------- stars, sparks, haze ----------
 

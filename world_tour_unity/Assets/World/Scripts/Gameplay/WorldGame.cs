@@ -44,6 +44,7 @@ namespace WorldTour.World.Gameplay
         public const float TalkRange = 2.5f, StageRadius = 1.4f, ExitRadius = 1.5f;
         /// <summary>From this far a crew member's name shows under their marker, so she can see whom to walk to.</summary>
         public const float TagRange = 4f;
+        const float HintSeconds = 6f, HintFade = 0.6f;   // the walking hint goes at her first step, or after six seconds (it sits over the path she walks down)
         const string WalkHint = "walk with the arrow keys or click the ground";
 
         enum Mode { Boot, Free, Dialog, Panel, Travel }
@@ -92,6 +93,7 @@ namespace WorldTour.World.Gameplay
         bool _soundUnlocked;
         bool _hintOn;
         Vector3 _hintFrom;
+        float _hintUntil;
         float _nextSave, _nextTargets;
         Vector3 _lastSavedPos = new Vector3(9999, 0, 9999);
         Coroutine _cameraRoutine;
@@ -241,6 +243,7 @@ namespace WorldTour.World.Gameplay
             if (_follow != null) { _follow.frozen = false; _follow.transform.position = _follow.FollowPosition; _follow.ResetVelocity(); }
             _hintOn = !(_world.Place == _placeId && _world.HasPosition);   // first visit: say how to walk until she has
             _hintFrom = _player.transform.position;
+            _hintUntil = Time.time + HintSeconds;
             // the crowd is somewhere she walks round, never into: the way to the stage stays clear of figures
             if (_crowdArea != null && _crowdArea.GetComponent<KeepOutZone>() == null) _crowdArea.gameObject.AddComponent<KeepOutZone>();
 
@@ -417,8 +420,8 @@ namespace WorldTour.World.Gameplay
 
             if (_hintOn)
             {
-                if (FlatDist(p, _hintFrom) > 0.8f) { _hintOn = false; _ui.HideHint(); }
-                else _ui.ShowHint(WalkHint);
+                if (FlatDist(p, _hintFrom) > 0.8f || Time.time >= _hintUntil) { _hintOn = false; _ui.HideHint(); }
+                else _ui.ShowHint(WalkHint, Mathf.Clamp01((_hintUntil - Time.time) / HintFade));
             }
         }
 

@@ -1,5 +1,8 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using WorldTour.Game.Audio;
 
 namespace WorldTour.World.Audio
@@ -10,17 +13,25 @@ namespace WorldTour.World.Audio
     /// <summary>
     /// Phase 8.3: the sound of the world. Footsteps that follow her stride and suit the ground, a bed under each place (birds, a city hum, a hall murmur),
     /// the crowd murmur near the stage, applause on right answers in a show, a pop and a click as cards open and close, a short jingle for a gig done and a new stop.
-    /// The clips are the CC0 ones in Resources/WorldAudio (see ASSETS.md); the city hum is synthesised here, like the 2D game sounds.
+    /// The cue clips (pop, click, whoosh, two jingles) are the CC0 Kenney ones, kept out of Resources in Assets/World/Audio/Clips and reached through the WorldAudioBank scene
+    /// that only the 3D build contains, so the 2D tour build never carries them (see ASSETS.md). Everything else (birds, footsteps, applause, crowd murmur, city hum) is
+    /// synthesised in code by <see cref="WorldSynth"/> and <see cref="MakeCityHum"/>, like the 2D game sounds.
     /// Nothing plays until the first click or key (<see cref="Sfx.Unlocked"/>), and everything obeys the remembered sound toggle (<see cref="Sfx.Enabled"/>).
     /// The beds stay quiet and drop while a gig or show panel is open, so the teaching sounds (<see cref="Sfx"/>) are always on top.
     /// </summary>
     public sealed class WorldAudio : MonoBehaviour
     {
         public static WorldAudio Instance { get; private set; }
-        const string Dir = "WorldAudio/";
+        /// <summary>The scene (3D build only) that holds the cue clips; loaded once, additively, then unloaded.</summary>
+        public const string BankScene = "WorldAudioBank";
+        public const string ClipDir = "Assets/World/Audio/Clips/";
+        /// <summary>The log line each sound writes ("WT_AUDIO event source"), so a run shows what fired. Footsteps log once per ground.</summary>
+        public const string LogTag = "WT_AUDIO ";
 
         AudioSource _step, _bed, _crowd, _cheer, _ui;
+        readonly Dictionary<Surface, AudioClip[]> _stepSets = new Dictionary<Surface, AudioClip[]>();
         AudioClip[] _steps;
+        Surface _loggedSurface = (Surface)(-1);
         AudioClip _birds, _murmur, _city, _applause, _open, _close, _whoosh, _done, _unlock;
         string _placeId = "";
         Surface _surface = Surface.Stone;
@@ -66,18 +77,44 @@ namespace WorldTour.World.Audio
             _crowd = Source("Crowd", true);
             _cheer = Source("Cheer", false);
             _ui = Source("Ui", false);
-            _steps = new AudioClip[4];
-            for (int i = 0; i < 4; i++) _steps[i] = Resources.Load<AudioClip>(Dir + "step_" + (i + 1));
-            _birds = Resources.Load<AudioClip>(Dir + "amb_birds");
-            _murmur = Resources.Load<AudioClip>(Dir + "amb_murmur");
-            _applause = Resources.Load<AudioClip>(Dir + "cheer_applause");
-            _open = Resources.Load<AudioClip>(Dir + "ui_open");
-            _close = Resources.Load<AudioClip>(Dir + "ui_close");
-            _whoosh = Resources.Load<AudioClip>(Dir + "ui_whoosh");
-            _done = Resources.Load<AudioClip>(Dir + "jingle_done");
-            _unlock = Resources.Load<AudioClip>(Dir + "jingle_unlock");
+            _murmur = Clip("wt_murmur", WorldSynth.Murmur());
+            _applause = Clip("wt_applause", WorldSynth.Applause());
             _crowd.clip = _murmur;
             _cheer.clip = _applause;
+            StartCoroutine(LoadCueClips());
+        }
+
+        static AudioClip Clip(string name, float[] data)
+        {
+            AudioClip clip = AudioClip.Create(name, data.Length, 1, WorldSynth.SampleRate, false);
+            clip.SetData(data, 0);
+            return clip;
+        }
+
+        /// <summary>The five cue clips. In the Editor straight from the project; in the 3D build from the WorldAudioBank scene (no Resources folder, so the 2D build has none of it).</summary>
+        IEnumerator LoadCueClips()
+        {
+#if UNITY_EDITOR
+            _open = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>(ClipDir + "ui_open.ogg");
+            _close = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>(ClipDir + "ui_close.ogg");
+            _whoosh = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>(ClipDir + "ui_whoosh.ogg");
+            _done = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>(ClipDir + "jingle_done.ogg");
+            _unlock = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>(ClipDir + "jingle_unlock.ogg");
+            yield break;
+#else
+            if (!Application.CanStreamedLevelBeLoaded(BankScene)) yield break;
+            AsyncOperation load = SceneManager.LoadSceneAsync(BankScene, LoadSceneMode.Additive);
+            if (load == null) yield break;
+            yield return load;
+            WorldAudioClips bank = WorldAudioClips.Instance;
+            if (bank != null)
+            {
+                _open = bank.open; _close = bank.close; _whoosh = bank.whoosh; _done = bank.done; _unlock = bank.unlock;
+            }
+            Scene s = SceneManager.GetSceneByName(BankScene);
+            if (s.isLoaded) SceneManager.UnloadSceneAsync(s);
+            Debug.Log(LogTag + "cue-clips loaded from scene " + BankScene + (bank != null ? "" : " (no bank found)"));
+#endif
         }
 
         void OnDestroy() { if (Instance == this) Instance = null; }
@@ -103,6 +140,12 @@ namespace WorldTour.World.Audio
             _surface = AudioPlan.SurfaceFor(placeId);
             _bedKind = AudioPlan.BedFor(placeId);
             _stride = AudioPlan.Stride * 0.5f;
+            if (!_stepSets.TryGetValue(_surface, out _steps))
+            {
+                _steps = new AudioClip[4];
+                for (int i = 0; i < 4; i++) _steps[i] = Clip("wt_step_" + _surface + i, WorldSynth.Step(_surface, i));
+                _stepSets[_surface] = _steps;
+            }
             _bed.Stop();
             _bed.clip = ClipFor(_bedKind);
             _crowd.Stop();
@@ -113,7 +156,7 @@ namespace WorldTour.World.Audio
         {
             switch (b)
             {
-                case Bed.Birds: return _birds;
+                case Bed.Birds: if (_birds == null) _birds = Clip("wt_birds", WorldSynth.Birds()); return _birds;
                 case Bed.City: if (_city == null) _city = MakeCityHum(); return _city;
                 default: return _murmur;
             }
@@ -121,10 +164,11 @@ namespace WorldTour.World.Audio
 
         void StartLoops()
         {
-            if (_bed.clip != null && !_bed.isPlaying) _bed.Play();
+            if (_bed.clip != null && !_bed.isPlaying) { _bed.Play(); Debug.Log(LogTag + "bed " + _bedKind + " source=" + (_bedKind == Bed.City ? "synth:city-hum" : _bedKind == Bed.Birds ? "synth:birds" : "synth:murmur") + " place=" + _placeId); }
             if (_crowd.clip != null && !_crowd.isPlaying)
             {
                 _crowd.Play();
+                Debug.Log(LogTag + "crowd source=synth:murmur place=" + _placeId);
                 _crowd.time = Mathf.Min(_crowd.clip.length * 0.37f, Mathf.Max(0f, _crowd.clip.length - 0.1f));   // not in step with the hall bed, which is the same clip
             }
         }
@@ -164,13 +208,15 @@ namespace WorldTour.World.Audio
             _lastStep = pick;
             AudioClip c = _steps[pick];
             if (c == null) return;
-            _step.pitch = AudioPlan.StepPitch(_surface) * UnityEngine.Random.Range(0.94f, 1.06f);
+            _step.pitch = UnityEngine.Random.Range(0.94f, 1.06f);   // the ground is in the synthesised step itself (WorldSynth.SpecFor)
+            if (_loggedSurface != _surface) { _loggedSurface = _surface; Debug.Log(LogTag + "step synth:" + _surface + " place=" + _placeId); }
             _step.PlayOneShot(c, AudioPlan.StepVolume(_surface) * UnityEngine.Random.Range(0.85f, 1f));
         }
 
         void PlayCue(Cue cue)
         {
             if (!Sfx.Unlocked || !Sfx.Enabled) return;
+            Debug.Log(LogTag + "cue " + cue + " source=" + (cue == Cue.Cheer ? "synth:applause" : "clip:" + CueName(cue) + (CueClip(cue) == null ? " (MISSING)" : "")));
             switch (cue)
             {
                 case Cue.CardOpen: One(_open, 0.5f); break;
@@ -179,6 +225,31 @@ namespace WorldTour.World.Audio
                 case Cue.GigDone: One(_done, 0.5f); break;
                 case Cue.Unlock: One(_unlock, 0.55f); break;
                 case Cue.Cheer: StartCheer(); break;
+            }
+        }
+
+        AudioClip CueClip(Cue cue)
+        {
+            switch (cue)
+            {
+                case Cue.CardOpen: return _open;
+                case Cue.CardClose: return _close;
+                case Cue.Whoosh: return _whoosh;
+                case Cue.GigDone: return _done;
+                case Cue.Unlock: return _unlock;
+                default: return null;
+            }
+        }
+
+        static string CueName(Cue cue)
+        {
+            switch (cue)
+            {
+                case Cue.CardOpen: return "ui_open";
+                case Cue.CardClose: return "ui_close";
+                case Cue.Whoosh: return "ui_whoosh";
+                case Cue.GigDone: return "jingle_done";
+                default: return "jingle_unlock";
             }
         }
 

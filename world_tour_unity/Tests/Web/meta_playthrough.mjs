@@ -251,19 +251,29 @@ try {
     step('save after reload: v=' + saved.v + ' theme=' + saved.inventory.equipped.theme + ' fans=' + JSON.stringify(saved.fans) + ' seen=' + saved.journal.seen.join(','));
   }
   await shot('map_peach_reloaded');
-  // a math screen in peach + navy: tonight (focused) -> the venue card -> merch table
+  // a math screen in peach + navy: tonight (focused) -> the venue card -> the first math mode the served math_config.json has switched on
+  // (phase 7 switched merch off, so the mode is read from the config the build is serving, not assumed). Skill keys and mode ids as ModeCatalog.cs, in its order.
+  const MATH_MODES = [['merch', 'dec'], ['beat', 'frac'], ['tickets', 'md'], ['stage', 'xy'], ['truck', 'vol'], ['budget', 'ops'], ['soundcheck', 'flu'], ['snack', 'fm']];
+  const cfg = await page.evaluate(async () => { try { return await (await fetch('StreamingAssets/math_config.json', { cache: 'no-store' })).json(); } catch (e) { return null; } });
+  const switches = cfg && cfg.ENABLED_SKILLS;
+  const enabled = MATH_MODES.filter(([, skill]) => !switches || switches[skill] !== false);   // a missing switch means on, as MathConfig does
+  step('math modes on in the served config: ' + (enabled.map(e => e[0]).join(',') || 'none'));
+  if (!enabled.length) fail('the served math_config.json has every math mode off');
   m0 = mark();
   await page.evaluate(() => document.getElementById('unity-canvas').focus());
   await key('Enter');
   await wait(/^WT_VENUE_OPEN/, 5000, m0);
   await page.waitForTimeout(700);
   await shot('venue_peach');
-  if (await tabTo('Mode_merch')) {
-    const m1 = mark();
-    await key('Enter');
-    await wait(/^WT_SHOW_REQUEST .* mode=merch/, 5000, m1);
-    await page.waitForTimeout(2500);
-    await shot('math_merch_peach');
+  if (enabled.length) {
+    const modeId = enabled[0][0];
+    if (await tabTo('Mode_' + modeId)) {
+      const m1 = mark();
+      await key('Enter');
+      await wait(new RegExp('^WT_SHOW_REQUEST .* mode=' + modeId), 5000, m1);
+      await page.waitForTimeout(2500);
+      await shot('math_' + modeId + '_peach');
+    }
   }
 
   out.pass = out.failures.length === 0 && out.errors.length === 0;

@@ -154,6 +154,7 @@ MonoBehaviour:
   legBR: {fileID: 8344499795235043818}
   followDistance: 1.7
   speed: 5.6
+  noseYaw: 180
   animator: {fileID: 2654166386141932783}
 --- !u!1 &1145020920586887211
 GameObject:
@@ -1047,7 +1048,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 965573931985369840}
-  - component: {fileID: 6647746908340346372}
+  - component: {fileID: 4568424929982379297}
   m_Layer: 0
   m_Name: Lift
   m_TagString: Untagged
@@ -1071,7 +1072,7 @@ Transform:
   - {fileID: 8344827631720059628}
   m_Father: {fileID: 8601183962879063615}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6647746908340346372
+--- !u!114 &4568424929982379297
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

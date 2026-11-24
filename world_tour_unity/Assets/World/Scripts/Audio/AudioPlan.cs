@@ -6,8 +6,8 @@ namespace WorldTour.World.Audio
     public enum Bed { Birds, City, Hall }
 
     /// <summary>
-    /// Phase 8.3: what each place sounds like, as plain data. The footstep clips are one small set (four steps), played with a pitch and a volume that
-    /// suit the ground: stone and pavement bright, wood a little higher and light, carpet low and soft, grass lowest and softest, the arena floor hard and high.
+    /// Phase 8.3: what each place sounds like, as plain data. The footsteps are synthesised per ground (<see cref="WorldSynth.SpecFor"/>: pavement and the hard floors bright, wood a light knock, carpet dull and soft,
+    /// grass a brushing rustle) and played at the volume here.
     /// The bed under the place is birds (outdoors in the morning), a city hum (the streets and the rooftop) or a hall murmur (rooms with people in them).
     /// </summary>
     public static class AudioPlan
@@ -41,18 +41,6 @@ namespace WorldTour.World.Audio
                 case "theater": return Bed.Hall;
                 case "arena": return Bed.Hall;
                 default: return Bed.Birds;
-            }
-        }
-
-        public static float StepPitch(Surface s)
-        {
-            switch (s)
-            {
-                case Surface.Wood: return 1.22f;
-                case Surface.Carpet: return 0.82f;
-                case Surface.Grass: return 0.7f;
-                case Surface.Hard: return 1.12f;
-                default: return 1f;
             }
         }
 

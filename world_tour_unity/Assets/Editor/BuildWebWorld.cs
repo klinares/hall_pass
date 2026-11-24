@@ -36,7 +36,17 @@ public static partial class BuildWeb
         }
     }
     // 8.1 builder B: -worldScenes "a.unity;b.unity" overrides the list (the gameplay was tested on WorldSpike before Place_Coffee existed)
-    static string[] WorldScenes { get { string a = Arg("-worldScenes"); return string.IsNullOrEmpty(a) ? DefaultWorldScenes : a.Split(';'); } }
+    // 8.3: the WorldAudioBank scene (the cue clips, kept out of Resources) is always last in the world build and is never in the 2D build list
+    static string[] WorldScenes
+    {
+        get
+        {
+            string a = Arg("-worldScenes");
+            var list = new System.Collections.Generic.List<string>(string.IsNullOrEmpty(a) ? DefaultWorldScenes : a.Split(';'));
+            if (File.Exists(WorldAudioBankBuilder.ScenePath) && !list.Contains(WorldAudioBankBuilder.ScenePath)) list.Add(WorldAudioBankBuilder.ScenePath);
+            return list.ToArray();
+        }
+    }
 
     public static void BuildWorld()
     {

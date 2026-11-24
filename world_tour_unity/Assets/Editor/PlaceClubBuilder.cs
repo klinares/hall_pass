@@ -111,7 +111,7 @@ public static class PlaceClubBuilder
         {
             (cx: -11.8f, word: "PIZZA", neon: "#ff6a3a", glow: new Color(1f, 0.42f, 0.23f), window: "#ffd29a"),
             (cx: -7.0f, word: "OPEN", neon: "#38e8ff", glow: new Color(0.22f, 0.91f, 1f), window: "#a8f0ff"),
-            (cx: -2.2f, word: "BAR", neon: "#ff4adf", glow: new Color(1f, 0.29f, 0.87f), window: "#ffb0f0"),
+            (cx: -2.2f, word: "ARCADE", neon: "#ff4adf", glow: new Color(1f, 0.29f, 0.87f), window: "#ffb0f0"),
         };
         float z0 = 3.6f;
         foreach (var s in shopDefs)
@@ -132,7 +132,7 @@ public static class PlaceClubBuilder
             NeonBar(g, V(s.cx - w / 2f, 2.72f, z0 - 1.42f), V(s.cx + w / 2f, 2.72f, z0 - 1.42f), 0.08f, neon);
             // the sign over it: a dark board with the word in neon
             Prim(PrimitiveType.Cube, "SignBoard", g, V(s.cx, 4.1f, z0 - 0.1f), V(3.6f, 1.0f, 0.16f), M("board", "#150f28", 0.3f));
-            var txt = PixelText(g, s.word, V(s.cx, 4.1f, z0 - 0.22f), 0.1f, neon, "cb_text_" + s.word.ToLower(), 0.5f);
+            var txt = PixelText(g, s.word, V(s.cx, 4.1f, z0 - 0.22f), s.word.Length > 5 ? 0.085f : 0.1f, neon, "cb_text_" + s.word.ToLower(), 0.5f);
             MakeGlow(txt, s.glow * 2.6f, s.word == "OPEN" ? 3.5f : 0f, 0.8f, 1.15f);
             GlowDecal(g, V(s.cx, 4.1f, z0 - 0.4f), new Vector2(5.4f, 2.4f), "cb_halo_" + s.word.ToLower(), new Color(s.glow.r, s.glow.g, s.glow.b, 0.5f) * 1.2f, false);
             BlockLine(blocks, new Vector2(s.cx - w / 2f, z0 + 0.5f), new Vector2(s.cx + w / 2f, z0 + 0.5f), 0.7f, 1.4f);

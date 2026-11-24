@@ -509,7 +509,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: -7466175063336164215, guid: 94ddb813b187ea64285c5ab7a9db95ae, type: 3}
+  m_Mesh: {fileID: 4300000, guid: 6f611961340fee94a9af860e87b7cfc8, type: 2}
   m_Bones:
   - {fileID: 8996220222019198388}
   - {fileID: 533298243252104420}
@@ -568,7 +568,7 @@ GameObject:
   m_Component:
   - component: {fileID: 351627389792775807}
   - component: {fileID: 6939144831165555139}
-  - component: {fileID: 6847641832052550292}
+  - component: {fileID: 7725442472815020973}
   m_Layer: 0
   m_Name: Star
   m_TagString: Untagged
@@ -620,7 +620,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &6847641832052550292
+--- !u!114 &7725442472815020973
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

@@ -942,7 +942,7 @@ public static partial class PlaceKit
     public static void MakeExit(Transform exit, int routeIndex, float arrowYaw)
     {
         var ring = Lit("exit_ring", C("#a8a9fc"), 0.1f, new Color(0.9f, 0.9f, 2.2f));
-        Prim(PrimitiveType.Cylinder, "Ring", exit, V(0, 0.03f, 0), V(2.4f, 0.015f, 2.4f), ring, null, false);
+        Prim(PrimitiveType.Cylinder, "Ring", exit, V(0, 0.02f, 0), V(2.4f, 0.015f, 2.4f), ring, null, false);
         Prim(PrimitiveType.Cylinder, "RingHole", exit, V(0, 0.04f, 0), V(1.8f, 0.015f, 1.8f), Lit("exit_hole", C("#fdb1cb"), 0.1f), null, false);
         // an arrow on the ground
         var arrowRoot = Group("Arrow", exit).transform;

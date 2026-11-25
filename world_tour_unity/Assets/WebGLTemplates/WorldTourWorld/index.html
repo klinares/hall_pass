@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{{ PRODUCT_NAME }}}</title>
+  <link rel="icon" href="data:,">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #fdb1cb;
+    }
+    #unity-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: #fdb1cb;
+      outline: none;
+    }
+    #loading {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      width: 220px;
+      height: 10px;
+      margin: -5px 0 0 -110px;
+      border: 2px solid #000;
+      border-radius: 6px;
+      background: #fff;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    #loading-fill {
+      width: 0;
+      height: 100%;
+      background: #2f2fc1;
+    }
+    #message {
+      display: none;
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      width: 440px;
+      max-width: calc(100% - 32px);
+      transform: translate(-50%, -50%);
+      font-family: "Courier New", Courier, monospace;
+      font-size: 18px;
+      line-height: 1.4;
+      color: #000;
+      text-align: center;
+      text-transform: none;
+    }
+    #reload {
+      display: none;
+      margin: 20px auto 0;
+      padding: 14px 44px;
+      font-family: "Courier New", Courier, monospace;
+      font-size: 28px;
+      font-weight: bold;
+      text-transform: lowercase;
+      color: #000;
+      background: #fff;
+      border: 3px solid #000;
+      border-radius: 14px;
+      box-shadow: 4px 4px 0 #000;
+      cursor: pointer;
+    }
+    #message small {
+      display: block;
+      margin-top: 12px;
+      font-size: 12px;
+      color: #2f2fc1;
+      text-transform: none;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="unity-canvas" width="{{{ WIDTH }}}" height="{{{ HEIGHT }}}" tabindex="-1"></canvas>
+  <div id="loading"><div id="loading-fill"></div></div>
+  <div id="message"></div>
+  <script>
+    var canvas = document.getElementById("unity-canvas");
+    var loading = document.getElementById("loading");
+    var fill = document.getElementById("loading-fill");
+    var message = document.getElementById("message");
+
+    var NO_3D = "this browser can't draw 3D right now. close the browser, open it again, and come back.";
+    var LOST = "the picture stopped. press reload and your tour comes right back.";
+    var unityInstance = null;
+    var contextLost = false;
+    var reloadButton = document.createElement("button");
+    reloadButton.id = "reload";
+    reloadButton.type = "button";
+    reloadButton.textContent = "reload";
+    reloadButton.onclick = function () { location.reload(); };
+    document.body.appendChild(reloadButton);
+
+    function say(text, withReload) {
+      loading.style.display = "none";
+      message.textContent = text;
+      message.style.display = "block";
+      if (withReload) {
+        message.appendChild(reloadButton);
+        reloadButton.style.display = "block";
+        try { reloadButton.focus(); } catch (e) {}
+      }
+    }
+
+    // Unity's own wording never reaches the child: anything about WebGL becomes the plain line.
+    function showFailure(detail) {
+      if (contextLost) return;
+      if (detail) console.error(detail);
+      if (/webgl|context/i.test(String(detail))) { say(NO_3D, false); return; }
+      say("the show couldn't start. try reloading the page, or open it in chrome or edge.", false);
+      if (detail) {
+        // One short line for a grown-up to read out; the full error stays in the console.
+        var line = String(detail).split(String.fromCharCode(10))[0];
+        if (line.length > 120) line = line.slice(0, 117) + "...";
+        var small = document.createElement("small");
+        small.textContent = line;
+        message.appendChild(small);
+      }
+    }
+
+    // The browser can take the GPU away at any time (a second tab, a driver reset, low video memory).
+    // Stop it from retrying silently, flush the save, and offer one big reload button.
+    canvas.addEventListener("webglcontextlost", function (e) {
+      e.preventDefault();
+      contextLost = true;
+      console.warn("WT_CONTEXT_LOST");
+      try { if (unityInstance) unityInstance.SendMessage("WorldGame", "FlushSaveFromJs"); } catch (err) {}
+      say(LOST, true);
+    }, false);
+    canvas.addEventListener("webglcontextrestored", function () {
+      // Unity's GPU objects are gone after a loss, so the page is not resumed in place: reload is the way back.
+      console.warn("WT_CONTEXT_RESTORED");
+      contextLost = true;
+      say(LOST, true);
+    }, false);
+
+    var config = {
+      dataUrl: "Build/{{{ DATA_FILENAME }}}",
+      frameworkUrl: "Build/{{{ FRAMEWORK_FILENAME }}}",
+#if USE_THREADS
+      workerUrl: "Build/{{{ WORKER_FILENAME }}}",
+#endif
+#if USE_WASM
+      codeUrl: "Build/{{{ CODE_FILENAME }}}",
+#endif
+#if MEMORY_FILENAME
+      memoryUrl: "Build/{{{ MEMORY_FILENAME }}}",
+#endif
+#if SYMBOLS_FILENAME
+      symbolsUrl: "Build/{{{ SYMBOLS_FILENAME }}}",
+#endif
+      streamingAssetsUrl: "StreamingAssets",
+      // two-GPU laptops: ask for the dedicated card. Unity/emscripten read this as a number (0 default, 1 low-power, 2 high-performance);
+      // the string "high-performance" would be looked up in that list and fall back to default.
+      webglContextAttributes: { preserveDrawingBuffer: false, powerPreference: 2 },
+      companyName: {{{ JSON.stringify(COMPANY_NAME) }}},
+      productName: {{{ JSON.stringify(PRODUCT_NAME) }}},
+      productVersion: {{{ JSON.stringify(PRODUCT_VERSION) }}},
+      // Build files are named by content hash, so a cached copy can never be stale.
+      // Anything else (index.html, StreamingAssets) is always fetched fresh.
+      cacheControl: function (url) {
+        // The loader passes the config URLs as written ("Build/<hash>.wasm.unityweb"),
+        // so match "Build/" at the start of the URL as well as after a slash.
+        return /(^|\/)Build\/[^\/]+$/.test(url) ? "immutable" : "no-store";
+      },
+      showBanner: function (msg, type) {
+        if (type === "error" || /webgl/i.test(String(msg))) showFailure(msg);
+        else console.warn(msg);
+      },
+    };
+
+    var script = document.createElement("script");
+    script.src = "Build/{{{ LOADER_FILENAME }}}";
+    script.onload = function () {
+      createUnityInstance(canvas, config, function (progress) {
+        fill.style.width = Math.round(100 * progress) + "%";
+      }).then(function (instance) {
+        unityInstance = instance;
+        window.__wtInstance = instance;
+        if (contextLost) return;
+        loading.style.display = "none";
+        canvas.focus();
+      }).catch(function (err) {
+        showFailure(err);
+      });
+    };
+    script.onerror = function () {
+      showFailure("the game files didn't load.");
+    };
+    document.body.appendChild(script);
+  </script>
+</body>
+</html>

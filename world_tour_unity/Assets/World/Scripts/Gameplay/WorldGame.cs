@@ -350,6 +350,7 @@ namespace WorldTour.World.Gameplay
             else if (_mode == Mode.Dialog && _talking != null && _ui.DialogOpen && _cam != null) _ui.MoveDialogAnchor(HeadScreen(_talking.T));
             else if (_mode == Mode.Panel && _ui.PanelCompact && _cam != null) _ui.PlaceDogBubble(DogScreen(), _cam.WorldToScreenPoint(_player.transform.position), _cam.WorldToScreenPoint(_player.transform.position + Vector3.up * 1.9f), _run == Run.Show ? 130f : 0f);
             if (TestMode && Time.unscaledTime >= _nextTargets) { _nextTargets = Time.unscaledTime + 0.4f; LogTargets(); }
+            if (TestMode && _mode == Mode.Free && Time.unscaledTime >= _nextRoutes) { _nextRoutes = Time.unscaledTime + 1f; LogRoutes(); }
         }
 
         /// <summary>Tells the world sound how full the crowd is and whether a panel or the show is up (the bed ducks, the murmur holds).</summary>
@@ -777,6 +778,7 @@ namespace WorldTour.World.Gameplay
         {
             ShowSummary s = r.Summary;
             Debug.Log("WT_GIG_DONE fans=" + s.Fans + " n=" + s.N + " first=" + s.First);
+            SaveWorld();   // 8.4: flush at the end of every gig, not only on the timer
             WorldAudio.Play(Cue.GigDone);
             string fans = "+" + s.Fans.ToString("#,##0", CultureInfo.InvariantCulture) + " fans";
             string sub = s.First + " of " + s.N + " right on the first try";
@@ -786,6 +788,7 @@ namespace WorldTour.World.Gameplay
 
         void FinishShow(ShowResult r)
         {
+            SaveWorld();   // 8.4: flush at the end of every show, before the ticket
             var mode = ModeList.ById(r.Request.ModeId, null);
             FullPanel(0.96f);   // the ticket stays a full screen
             TicketScreen t = TicketScreen.Open(_ui.Stack, new TicketData
@@ -923,6 +926,10 @@ namespace WorldTour.World.Gameplay
                 yield return null;
             }
             if (op != null) { op.allowSceneActivation = true; while (!op.isDone) yield return null; }
+            // 8.4: the place she left unloads fully (meshes, textures, materials, clips) before the next one is drawn, so GPU memory
+            // does not climb place over place on a laptop with little video memory
+            yield return Resources.UnloadUnusedAssets();
+            GC.Collect();
             _travelLoading = false;
             Bind();
             Debug.Log("WT_WORLD_ARRIVED place=" + _placeId + " crew=" + string.Join(",", _crew.Select(c => c.Mode)) + " crowd=" + (_crowd != null ? _crowd.Count : 0));
@@ -947,10 +954,71 @@ namespace WorldTour.World.Gameplay
             Boot.Store.Save();
         }
 
+        /// <summary>Test hook (only with ?wt_test): the browser memory test travels place to place in one session by SendMessage("WorldGame","TestTravel","<venue id>").</summary>
+        public void TestTravel(string id)
+        {
+            if (!TestMode || _mode != Mode.Free || !Venues.Exists(id) || !Application.CanStreamedLevelBeLoaded(WorldPlace.SceneName(id))) return;
+            StartCoroutine(Travel(Venues.ById(id), true));
+        }
+
+        /// <summary>Called from the page (SendMessage) the moment the WebGL context is lost: write the save before she reloads.</summary>
+        public void FlushSaveFromJs()
+        {
+            Debug.Log("WT_SAVE_FLUSH_JS");
+            if (_player != null) SaveWorld();
+            else if (Boot.Store != null) Boot.Store.Save();
+        }
+
         void OnApplicationFocus(bool focused) { if (!focused && _mode == Mode.Free) SaveWorld(); }
         void OnApplicationPause(bool paused) { if (paused && _mode == Mode.Free) SaveWorld(); }
 
         // ---------- the browser test ----------
+
+        float _nextRoutes;
+
+        /// <summary>Test only: the way (the path finder's waypoints, last one the goal) from where she stands to each crew member's talking spot, the stage spot and the exit, in world metres, so the keyboard test can walk it with the keys.</summary>
+        void LogRoutes()
+        {
+            if (_player == null) return;
+            var sb = new System.Text.StringBuilder("WT_WORLD_ROUTE");
+            Vector3 from = _player.transform.position;
+            void Route(string key, Vector3 goal)
+            {
+                goal.y = 0f;
+                goal = Obstacle.PushOut(goal, PlayerController.PlanMargin + 0.05f);
+                bool reached;
+                List<Vector3> path = PathGrid.Find(from, goal, _player.bounds, p => Obstacle.IsBlocked(p, PlayerController.PlanMargin), out reached);
+                sb.Append(" ").Append(key).Append("=").Append(reached ? "ok" : "short").Append(";");
+                for (int i = 0; i < path.Count; i++)
+                    sb.Append(i > 0 ? "," : "").Append(path[i].x.ToString("0.0", CultureInfo.InvariantCulture)).Append(":").Append(path[i].z.ToString("0.0", CultureInfo.InvariantCulture));
+                // where the mouse test clicks to walk that way: a point on the path about 7 m ahead that is on the screen (nearer when it is not)
+                if (_cam == null || path.Count == 0) return;
+                float want = 7f;
+                Vector3 click = path[path.Count - 1], sp = Vector3.zero;
+                for (int attempt = 0; attempt < 6; attempt++)
+                {
+                    float left = want; Vector3 at = from; click = path[path.Count - 1];
+                    for (int i = 0; i < path.Count; i++)
+                    {
+                        float seg = Vector3.Distance(at, path[i]);
+                        if (seg >= left) { click = at + (path[i] - at).normalized * left; break; }
+                        left -= seg; at = path[i];
+                    }
+                    sp = _cam.WorldToScreenPoint(click);
+                    if (sp.z > 0f && sp.x > 80f && sp.x < Screen.width - 80f && sp.y > 130f && sp.y < Screen.height - 90f) break;
+                    want *= 0.6f;
+                }
+                sb.Append(" click_").Append(key).Append("=").Append(Mathf.RoundToInt(sp.x).ToString(CultureInfo.InvariantCulture)).Append(":").Append(Mathf.RoundToInt(Screen.height - sp.y).ToString(CultureInfo.InvariantCulture));
+            }
+            foreach (Crew c in _crew)
+            {
+                Vector3 to = from - c.T.position; to.y = 0;
+                Route(c.Name.ToLowerInvariant().Replace("_", ""), c.T.position + (to.sqrMagnitude > 0.01f ? to.normalized : Vector3.back) * 1.7f);
+            }
+            if (_stage != null) Route("stage", _stage.position);
+            if (_exit != null) Route("exit", _exit.position);
+            Debug.Log(sb.ToString());
+        }
 
         void LogTargets()
         {
@@ -964,9 +1032,18 @@ namespace WorldTour.World.Gameplay
             foreach (Crew c in _crew) sb.Append(" ").Append(c.Name.ToLowerInvariant().Replace("_", "")).Append("=").Append(P(c.T.position + Vector3.up)).Append(";").Append(c.Mode);
             if (_stage != null) sb.Append(" stage=").Append(P(_stage.position));
             if (_exit != null) sb.Append(" exit=").Append(P(_exit.position));
+            if (_dog != null) sb.Append(" riff=").Append(P(_dog.transform.position + Vector3.up * 0.5f));
+            if (_mode == Mode.Panel)
+            {
+                GameObject quit = GameObject.Find("QuitButton");
+                if (quit != null && quit.activeInHierarchy) sb.Append(" quit=").Append(MathUi.Centre((RectTransform)quit.transform));
+            }
             Vector3 pp = _player.transform.position;
             sb.Append(" star=").Append(pp.x.ToString("0.00", CultureInfo.InvariantCulture)).Append(":").Append(pp.z.ToString("0.00", CultureInfo.InvariantCulture));
             sb.Append(" mode=").Append(_mode);
+            string buttons = _ui != null ? _ui.ButtonCentres() : null;
+            if (buttons != null) Debug.Log("WT_WORLD_BUTTONS " + buttons);
+            if (_follow != null && _follow.HiddenCount > 0) sb.Append(" hidn=").Append(_follow.HiddenNames());
             if (_follow != null) sb.Append(" hid=").Append(_follow.HiddenCount).Append(" lift=").Append(_follow.Lift.ToString("0.0", CultureInfo.InvariantCulture)).Append(" cam=").Append(_cam.transform.position.x.ToString("0.0", CultureInfo.InvariantCulture)).Append(":").Append(_cam.transform.position.z.ToString("0.0", CultureInfo.InvariantCulture));
             Debug.Log(sb.ToString());
         }

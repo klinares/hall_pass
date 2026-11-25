@@ -154,7 +154,7 @@ namespace WorldTour.World.Gameplay
         static readonly Dictionary<string, Vector3> ChosenSpots = new Dictionary<string, Vector3>
         {
             { "rec", new Vector3(-3.6f, 0f, -8.4f) },      // west of the spawn, on open paving at the court's edge
-            { "theater", new Vector3(4.5f, 0f, -12.0f) },  // east of the spawn on the kerb side of the foyer (the only open bricks: the rope lane and the planters take the rest)
+            { "theater", new Vector3(-5.0f, 0f, -12.0f) }, // west of the spawn on the kerb side of the foyer (WalkableAreaTests: the old east spot at 4.5 closed the way to the exit)
         };
         public static bool TryChosenSpot(string placeId, out Vector3 spot) { return ChosenSpots.TryGetValue(placeId, out spot); }
 

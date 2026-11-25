@@ -120,7 +120,7 @@ public static class PlaceRooftopBuilder
         {
             var g = Group("LoungeSet", t).transform; g.position = c; g.rotation = Quaternion.Euler(0, yaw, 0);
             TexBox(g, "Rug", V(0, 0.015f, 0), V(4.6f, 0.02f, 3.4f), M("rug_" + rugHex.TrimStart('#'), rugHex, 0.05f), 1f, null, false);
-            Prim(PrimitiveType.Cube, "RugBorder", g, V(0, 0.026f, 0), V(4.0f, 0.01f, 2.8f), M("rug_border", "#fff1dc", 0.05f), null, false);
+            Prim(PrimitiveType.Cube, "RugBorder", g, V(0, 0.04f, 0), V(4.0f, 0.01f, 2.8f), M("rug_border", "#fff1dc", 0.05f), null, false);
             Fbx(Furn + "couch.fbx", g, V(0, 0.02f, 1.3f), 180f, 1.35f, furnMat, "Couch");
             Fbx(Furn + "armchair.fbx", g, V(-1.9f, 0.02f, -0.2f), 90f, 1.2f, furnMat, "Armchair");
             Fbx(Furn + "armchair.fbx", g, V(1.9f, 0.02f, -0.2f), -90f, 1.2f, furnMat, "Armchair");
@@ -134,7 +134,7 @@ public static class PlaceRooftopBuilder
         foreach (var p in new[] { (-4.6f, -9.4f), (5.2f, -3.4f), (-5.8f, 1.2f) }) { Block(blocks, p.Item1, p.Item2 + 0.9f, 1.3f); Block(blocks, p.Item1 - 1.5f, p.Item2, 0.7f); Block(blocks, p.Item1 + 1.5f, p.Item2, 0.7f); }
         // the central rug where she starts, a runner toward the stage
         TexBox(t, "Runner", V(0f, 0.015f, -4.2f), V(2.4f, 0.02f, 10f), M("runner", "#ffd27a", 0.05f), 1f, null, false);
-        Prim(PrimitiveType.Cube, "RunnerStripe", t, V(0f, 0.026f, -4.2f), V(0.3f, 0.01f, 10f), M("runner_stripe", "#e8503a", 0.05f), null, false);
+        Prim(PrimitiveType.Cube, "RunnerStripe", t, V(0f, 0.04f, -4.2f), V(0.3f, 0.01f, 10f), M("runner_stripe", "#e8503a", 0.05f), null, false);
         // standing lamps
         foreach (var p in new[] { (-8.2f, -8.0f), (8.2f, -9.4f), (-8.4f, 3.6f) })
         {

@@ -140,7 +140,7 @@ public static class PlaceArenaBuilder
         // the big star ring under the stage front: a bright circle and a star, both flat
         var starMesh = AssetDatabase.LoadAssetAtPath<Mesh>(WorldArtBuilder.MeshDir + "/MarkerStar.asset");
         var ring = Prim(PrimitiveType.Cylinder, "StageRing", t, V(0, 0.03f, 4.8f), V(10.5f, 0.01f, 10.5f), Lit(P + "ring_dark", C("#14163a"), 0.5f), null, false);
-        Prim(PrimitiveType.Cylinder, "StageRingEdge", t, V(0, 0.025f, 4.8f), V(11f, 0.01f, 11f), lilacGlow, null, false);
+        Prim(PrimitiveType.Cylinder, "StageRingEdge", t, V(0, 0.012f, 4.8f), V(11f, 0.01f, 11f), lilacGlow, null, false);
         var star = new GameObject("FloorStar");
         star.transform.SetParent(t, false);
         star.transform.localPosition = V(0, 0.06f, 4.8f);
@@ -436,7 +436,7 @@ public static class PlaceArenaBuilder
         foreach (var at in new[] { V(9.8f, 0.03f, -2.4f), V(-9.8f, 0.03f, -4.2f) })
         {
             Prim(PrimitiveType.Cylinder, "FloorRingEdge", t, at, V(3.0f, 0.005f, 3.0f), lilacGlow, null, false);
-            Prim(PrimitiveType.Cylinder, "FloorRing", t, at + V(0, 0.004f, 0), V(2.84f, 0.005f, 2.84f), Lit(P + "ring_dark", C("#14163a"), 0.5f), null, false);
+            Prim(PrimitiveType.Cylinder, "FloorRing", t, at + V(0, 0.02f, 0), V(2.84f, 0.005f, 2.84f), Lit(P + "ring_dark", C("#14163a"), 0.5f), null, false);
         }
         // a camera dolly on two rails: a low cart with a camera on a post, a rail light
         var g = Group("CameraDolly", t).transform; g.position = V(-8.3f, 0, -10.0f); g.rotation = Quaternion.Euler(0, 10f, 0);

@@ -220,7 +220,7 @@ public static class PlaceBKit
         UnityEngine.Object.DestroyImmediate(t);
         AssetDatabase.ImportAsset(path);
         var imp = (TextureImporter)AssetImporter.GetAtPath(path);
-        imp.wrapMode = wrap; imp.mipmapEnabled = mips; imp.filterMode = filter; imp.maxTextureSize = 512; imp.anisoLevel = mips ? 8 : 1;
+        imp.wrapMode = wrap; imp.mipmapEnabled = mips; imp.filterMode = mips ? FilterMode.Trilinear : filter; imp.maxTextureSize = 512; imp.anisoLevel = mips ? 8 : 1;
         imp.alphaIsTransparency = false;
         imp.SaveAndReimport();
         return AssetDatabase.LoadAssetAtPath<Texture2D>(path);
@@ -331,7 +331,7 @@ public static class PlaceBKit
     public static void MakeExit(Transform exit, string prefix, Spec s)
     {
         var ring = Lit(prefix + "exit_ring", s.ExitRingBase, 0.1f, s.ExitRing);
-        Prim(PrimitiveType.Cylinder, "Ring", exit, V(0, 0.03f, 0), V(2.4f, 0.015f, 2.4f), ring, null, false);
+        Prim(PrimitiveType.Cylinder, "Ring", exit, V(0, 0.02f, 0), V(2.4f, 0.015f, 2.4f), ring, null, false);
         Prim(PrimitiveType.Cylinder, "RingHole", exit, V(0, 0.04f, 0), V(1.8f, 0.015f, 1.8f), Lit(prefix + "exit_hole", s.ExitHole, 0.1f), null, false);
         var arrow = Lit(prefix + "exit_arrow", C("#ffffff"), 0.1f, new Color(1.2f, 1.2f, 1.4f));
         var a = Group("Arrow", exit).transform;

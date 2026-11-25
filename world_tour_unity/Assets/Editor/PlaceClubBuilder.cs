@@ -97,7 +97,7 @@ public static class PlaceClubBuilder
         var checker = PatternTexture("cb_checker", "checker", "#1c1830", "#2c2448", "#3a2f5c", 14);
         TexBox(t, "ClubFloor", V(7.6f, 0.02f, 8.9f), V(13.6f, 0.04f, 10.6f), PatternMat(P + "checker_mat", checker, null, 0.6f), 1f, null, false);
         // a red carpet from the pavement into the club
-        Prim(PrimitiveType.Cube, "Carpet", t, V(2.2f, 0.03f, 1.8f), V(1.8f, 0.02f, 5.4f), M("carpet", "#b8223a", 0.15f), null, false);
+        Prim(PrimitiveType.Cube, "Carpet", t, V(2.2f, 0.052f, 1.8f), V(1.8f, 0.02f, 5.4f), M("carpet", "#b8223a", 0.15f), null, false);
     }
 
     // ---------- the shops on the west ----------

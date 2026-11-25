@@ -22,7 +22,7 @@ export async function placeTests(env) {
 }
 
 // ---------------------------------------------------------------------------------------------------------------
-function makePage(browser, server, size, label, results, fail, shotsDir, shotPrefix) {
+export function makePage(browser, server, size, label, results, fail, shotsDir, shotPrefix) {
   const [vw, vh] = size;
   const info = results.places = results.places || {};
   const g = info[label] = { size: `${vw}x${vh}`, steps: [], errors: [], numbers: {} };
@@ -89,7 +89,7 @@ function makePage(browser, server, size, label, results, fail, shotsDir, shotPre
   })();
 }
 
-async function loadReady(h, server, query, READY_TIMEOUT_MS) {
+export async function loadReady(h, server, query, READY_TIMEOUT_MS) {
   await h.page.goto(server.url + query, { waitUntil: 'load' });
   const r = await h.waitLine(/^WT_WORLD_GAME_READY/, READY_TIMEOUT_MS);
   if (!r) h.gfail('no WT_WORLD_GAME_READY');
@@ -97,7 +97,7 @@ async function loadReady(h, server, query, READY_TIMEOUT_MS) {
 }
 
 // Walks with the arrow keys toward a ground point (x, z), reading her position from the logged WT_WORLD_TARGETS star=x:z, until she is within `tol` metres or `ms` pass.
-async function walkKeys(h, tx, tz, tol = 1.0, ms = 14000) {
+export async function walkKeys(h, tx, tz, tol = 1.0, ms = 14000) {
   const end = Date.now() + ms;
   const down = new Set();
   const set = async (code, on) => { if (on && !down.has(code)) { down.add(code); await h.page.keyboard.down(code); } else if (!on && down.has(code)) { down.delete(code); await h.page.keyboard.up(code); } };

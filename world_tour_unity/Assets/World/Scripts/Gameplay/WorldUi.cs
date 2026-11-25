@@ -367,6 +367,20 @@ namespace WorldTour.World.Gameplay
             PlaceDialog();
         }
 
+        /// <summary>Test only: where each button of the open card is, "label:x:y|label:x:y" in page pixels, or null when no card is open (WorldGame logs it as WT_WORLD_BUTTONS).</summary>
+        public string ButtonCentres()
+        {
+            if (!DialogOpen || _buttonViews.Count == 0) return null;
+            Canvas.ForceUpdateCanvases();
+            var sb = new System.Text.StringBuilder();
+            for (int i = 0; i < _buttonViews.Count && i < _buttons.Count; i++)
+            {
+                if (i > 0) sb.Append('|');
+                sb.Append(_buttons[i].Label.Replace(' ', '_')).Append(':').Append(WorldTour.Game.Modes.MathUi.Centre(_buttonViews[i].Rect));
+            }
+            return sb.ToString();
+        }
+
         void PlaceDialog()
         {
             Vector2 size = _dialog.sizeDelta;

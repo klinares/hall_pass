@@ -211,7 +211,7 @@ public static partial class PlaceKit
             Object.DestroyImmediate(t);
             AssetDatabase.ImportAsset(p);
             var imp = (TextureImporter)AssetImporter.GetAtPath(p);
-            imp.wrapMode = TextureWrapMode.Repeat; imp.mipmapEnabled = true; imp.filterMode = FilterMode.Bilinear; imp.maxTextureSize = 256;
+            imp.wrapMode = TextureWrapMode.Repeat; imp.mipmapEnabled = true; imp.filterMode = FilterMode.Trilinear; imp.anisoLevel = 4; imp.maxTextureSize = 256;
             imp.SaveAndReimport();
         }
         Save(a, pa); Save(e, pe);

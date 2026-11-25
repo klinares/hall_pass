@@ -163,7 +163,7 @@ public static class PlaceFestivalBuilder
         var mud = LitTex(P + "mud_mat", Color.white, MudTexture(), 0.05f);
         mud.SetTextureScale("_BaseMap", new Vector2(3f, 2f));
         Prim(PrimitiveType.Cylinder, "Mud", t, V(-8.6f, 0.006f, 4.6f), V(13.5f, 0.01f, 9.5f), mud, null, false);
-        Prim(PrimitiveType.Cylinder, "MudB", t, V(-5.0f, 0.005f, 2.2f), V(5f, 0.01f, 3.2f), mud, null, false);
+        Prim(PrimitiveType.Cylinder, "MudB", t, V(-5.0f, 0.02f, 2.2f), V(5f, 0.01f, 3.2f), mud, null, false);
         var dirt = LitTex(P + "dirt_mat", Color.white, MudTexture(), 0.05f);
         dirt.SetTextureScale("_BaseMap", new Vector2(4f, 2f));
         Prim(PrimitiveType.Cylinder, "Trodden", t, V(8f, 0.004f, -4.3f), V(14f, 0.01f, 5f), dirt, null, false);

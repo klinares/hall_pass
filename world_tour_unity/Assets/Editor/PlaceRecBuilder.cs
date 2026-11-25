@@ -68,14 +68,14 @@ public static class PlaceRecBuilder
         var yardTex = PavingTexture("rc_yard", "#d9d2c1", "#cfc7b4", "#aaa28f", "#c9b79a", "#d8c8ae", 41, false);
         // the yard in front of the gym: paving over the whole width, then the lawn patch on the east
         PavedPlane("YardPaving", t, P + "yard_mat", yardTex, V(-4f, 0.005f, -4.4f), new Vector2(20f, 14.6f));
-        PavedPlane("YardPath", t, P + "yard_mat", yardTex, V(7.5f, 0.005f, 1.4f), new Vector2(7f, 2.6f));
+        PavedPlane("YardPath", t, P + "yard_mat", yardTex, V(7.5f, 0.02f, 1.4f), new Vector2(7f, 2.6f));
         // the half court, painted on the west of the yard
         var court = Prim(PrimitiveType.Cube, "Court", t, V(-7.8f, 0.02f, -6.6f), V(8.2f, 0.03f, 9.4f), M("court", "#3f64a8", 0.2f), null, false);
         var line = M("court_line", "#fffaf0", 0.2f);
-        void L(float x, float z, float w, float d) { Prim(PrimitiveType.Cube, "CourtLine", t, V(x, 0.04f, z), V(w, 0.01f, d), line, null, false); }
+        void L(float x, float z, float w, float d, float y = 0.04f) { Prim(PrimitiveType.Cube, "CourtLine", t, V(x, y, z), V(w, 0.01f, d), line, null, false); }
         L(-7.8f, -11.2f, 7.8f, 0.1f); L(-7.8f, -2.0f, 7.8f, 0.1f); L(-11.8f, -6.6f, 0.1f, 9.3f); L(-3.8f, -6.6f, 0.1f, 9.3f);
-        Prim(PrimitiveType.Cube, "Key", t, V(-7.8f, 0.035f, -3.7f), V(2.8f, 0.01f, 3.4f), M("key", "#e8803a", 0.2f), null, false);
-        L(-9.2f, -3.7f, 0.1f, 3.4f); L(-6.4f, -3.7f, 0.1f, 3.4f); L(-7.8f, -5.4f, 2.9f, 0.1f);
+        Prim(PrimitiveType.Cube, "Key", t, V(-7.8f, 0.047f, -3.7f), V(2.8f, 0.01f, 3.4f), M("key", "#e8803a", 0.2f), null, false);
+        L(-9.2f, -3.7f, 0.1f, 3.4f, 0.06f); L(-6.4f, -3.7f, 0.1f, 3.4f, 0.06f); L(-7.8f, -5.4f, 2.9f, 0.1f, 0.06f);
         // the arc over the key: a ring of short bars
         for (int i = 0; i < 18; i++)
         {

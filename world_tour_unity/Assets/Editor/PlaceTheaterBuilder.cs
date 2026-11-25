@@ -174,7 +174,7 @@ public static class PlaceTheaterBuilder
         Prim(PrimitiveType.Plane, "Cobbles", t, V(0, 0, -11f), V(3.2f, 1, 0.9f), cob, null, false);
         var carpet = LitTex(P + "carpet_mat", Color.white, CarpetTexture(), 0.1f);
         carpet.SetTextureScale("_BaseMap", new Vector2(9.5f, 7.6f));
-        Prim(PrimitiveType.Plane, "HallCarpet", t, V(0, 0.01f, 4.3f), V(2.9f, 1, 2.26f), carpet, null, false);
+        Prim(PrimitiveType.Plane, "HallCarpet", t, V(0, 0.025f, 4.3f), V(2.9f, 1, 2.26f), carpet, null, false);
         // the red runner out front
         var runner = Lit(P + "runner", C("#b8183f"), 0.2f);
         Prim(PrimitiveType.Cube, "Runner", t, V(0, 0.025f, -10.4f), V(3.4f, 0.03f, 7.4f), runner, null, false);

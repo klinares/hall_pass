@@ -33,23 +33,38 @@ namespace WorldTour.World
         PlayerController _pc;
         float _lift, _liftVel, _liftHold;
 
-        struct Item
+        /// <summary>One renderer the camera keeps clear of her. Kept between rescans (a class, found again by renderer), so a rescan never resets a fade or a hold.</summary>
+        sealed class Item
         {
             public Renderer R;
             public Bounds B;
-            public ShadowCastingMode Orig;
+            public OccluderFade Fade;
             public bool Hidden;      // the line to her is blocked by this one
-            public bool Applied;     // drawn shadows-only (or off) now: Hidden, or a flat decoration on something that is
-            public float Since;
+            public float Since = -999f;   // when Hidden last changed
             public int[] Attached;   // indices of the thin pieces (windows, posters, stripes) fixed to this one; null until first needed
         }
         bool[] _mark = new bool[0];
         readonly List<Item> _items = new List<Item>();
+        readonly Dictionary<Renderer, Item> _byRenderer = new Dictionary<Renderer, Item>();
+        FadeBank _bank;
         float _nextScan = -1f;
         int _hiddenCount;
+        /// <summary>Seconds between looks at the scene for new or moved props. A scan walks every renderer, so it is not done often; the fades never depend on it.</summary>
+        const float RescanSeconds = 3f;
+        /// <summary>A prop that has just hidden (or come back) stays that way at least this long, so nothing at the edge of the test can flicker.</summary>
+        const float HoldSeconds = 0.6f;
 
         /// <summary>How many things are drawn shadows-only right now (tests and the status line).</summary>
         public int HiddenCount { get { return _hiddenCount; } }
+        /// <summary>Test only: the names of up to four things that are hidden now (so a browser test can say which one toggled).</summary>
+        public string HiddenNames()
+        {
+            var sb = new System.Text.StringBuilder();
+            int n = 0;
+            for (int i = 0; i < _items.Count && n < 4; i++)
+                if (_items[i].Hidden && _items[i].R != null) { if (n++ > 0) sb.Append(','); sb.Append(_items[i].R.name).Append('@').Append(_items[i].R.transform.root.name); }
+            return sb.ToString();
+        }
         /// <summary>The extra height the lens has now.</summary>
         public float Lift { get { return _lift; } }
 
@@ -70,7 +85,9 @@ namespace WorldTour.World
 
         void LateUpdate()
         {
-            if (target == null || frozen) return;
+            if (target == null) return;
+            StepFades();
+            if (frozen) return;
             if (_pc == null) _pc = target.GetComponent<PlayerController>();
             Vector3 want = Vector3.zero;
             if (_pc != null && _pc.planarSpeed > 0.3f)
@@ -83,8 +100,13 @@ namespace WorldTour.World
             transform.position = Vector3.SmoothDamp(transform.position, target.position + leadNow + off, ref vel, smoothTime);
             transform.rotation = RotationFor(off);
 
-            if (Time.unscaledTime >= _nextScan) { Rescan(); _nextScan = Time.unscaledTime + 1.5f; }
+            bool first = _nextScan < 0f;   // the first look at a new place: what already stands in her way is simply not drawn, nothing fades in front of her on arrival
+            if (Time.unscaledTime >= _nextScan) { Rescan(); _nextScan = Time.unscaledTime + RescanSeconds; }
             UpdateClear(transform.position, target.position);
+            if (first)
+                for (int i = 0; i < _items.Count; i++)
+                    if (_items[i].Fade != null) _items[i].Fade.Snap(!(_items[i].Hidden || _mark[i]));
+            if (first) WarmTwins();
         }
 
         /// <summary>Forget the glide speed (after the camera was moved by hand) and bring every hidden prop back.</summary>
@@ -93,30 +115,88 @@ namespace WorldTour.World
             vel = Vector3.zero; leadVel = Vector3.zero; leadNow = Vector3.zero;
         }
 
-        /// <summary>The stage camera took over: put every prop back so the stage view shows the whole street.</summary>
-        public void ShowAllOccluders()
+        /// <summary>The stage camera took over: every prop fades back in so the stage view shows the whole street (at once with <paramref name="instant"/>: a reset, a preview).</summary>
+        public void ShowAllOccluders(bool instant = false)
         {
             for (int i = 0; i < Occluder.All.Count; i++) Occluder.All[i].Show();
             for (int i = 0; i < _items.Count; i++)
             {
                 Item it = _items[i];
-                if (it.Applied) SetHidden(it, false);
-                it.Hidden = false; it.Applied = false;
-                _items[i] = it;
+                it.Hidden = false;
+                it.Since = Time.unscaledTime;
+                if (it.Fade != null) { if (instant) it.Fade.Snap(true); else it.Fade.Set(true); }
             }
             _hiddenCount = 0;
             _lift = 0f; _liftVel = 0f; _liftHold = 0f;
+        }
+
+        /// <summary>
+        /// The web player builds a shader program the first time something is drawn with it, which can stall a frame. The first fade in a place would pay for that, in front of her,
+        /// so one tiny quad per kind of twin material is drawn for a moment right at the start (the arrival still hides the street). Nothing is seen: they are a centimetre wide and almost clear.
+        /// </summary>
+        void WarmTwins()
+        {
+            if (_bank == null || _bank.twins.Length == 0) return;
+            var seen = new HashSet<string>();
+            var warm = new List<Material>();
+            var sb = new System.Text.StringBuilder();
+            for (int i = 0; i < _items.Count; i++)
+            {
+                if (_items[i].R == null) continue;
+                foreach (Material m in _items[i].R.sharedMaterials)
+                {
+                    Material twin = _bank.TwinOf(m);
+                    if (twin == null) continue;
+                    sb.Clear();
+                    sb.Append(twin.shader.name);
+                    foreach (LocalKeyword k in twin.enabledKeywords) sb.Append(' ').Append(k.name);
+                    if (seen.Add(sb.ToString())) warm.Add(twin);
+                }
+            }
+            if (warm.Count == 0) return;
+            var mesh = new Mesh { name = "fade_warm_quad" };
+            mesh.vertices = new[] { new Vector3(-.5f, -.5f, 0f), new Vector3(.5f, -.5f, 0f), new Vector3(.5f, .5f, 0f), new Vector3(-.5f, .5f, 0f) };
+            mesh.uv = new[] { Vector2.zero, Vector2.right, Vector2.one, Vector2.up };
+            mesh.triangles = new[] { 0, 2, 1, 0, 3, 2 };
+            mesh.RecalculateNormals();
+            mesh.RecalculateBounds();
+            var root = new GameObject("FadeWarm");
+            var block = new MaterialPropertyBlock();
+            for (int i = 0; i < warm.Count; i++)
+            {
+                var q = new GameObject("w" + i);
+                q.transform.SetParent(root.transform, false);
+                q.transform.position = transform.position + transform.forward * 3f + transform.right * (i % 9 - 4) * 0.03f + transform.up * (i / 9) * 0.03f;
+                q.transform.rotation = transform.rotation;
+                q.transform.localScale = Vector3.one * 0.01f;
+                q.AddComponent<MeshFilter>().sharedMesh = mesh;
+                var r = q.AddComponent<MeshRenderer>();
+                r.sharedMaterial = warm[i];
+                r.shadowCastingMode = ShadowCastingMode.Off;
+                block.Clear();
+                block.SetColor("_BaseColor", new Color(1f, 1f, 1f, 0.003f));
+                r.SetPropertyBlock(block);
+            }
+            Destroy(root, 0.3f);
+            Destroy(mesh, 0.4f);
+        }
+
+        void StepFades()
+        {
+            float dt = Time.unscaledDeltaTime;
+            for (int i = 0; i < _items.Count; i++) { OccluderFade f = _items[i].Fade; if (f != null && f.Busy) f.Step(dt); }
         }
 
         /// <summary>Editor previews and tests: put the lens where it would follow now (no glide, no lead), rescan and run the clear-view test once, with no lift.</summary>
         public void SnapForPreview()
         {
             if (target == null) return;
-            ShowAllOccluders();
+            ShowAllOccluders(true);
             transform.rotation = FollowRotation;
             transform.position = target.position + offset;
             Rescan();
             UpdateClear(transform.position, target.position);
+            for (int i = 0; i < _items.Count; i++) if (_items[i].Fade != null) _items[i].Fade.Snap(!(_items[i].Hidden || _mark[i]));
             _lift = 0f;
         }
 
@@ -152,34 +232,44 @@ namespace WorldTour.World
             return b.max.y >= 1.0f && b.size.x < 80f && b.size.z < 80f;
         }
 
-        /// <summary>Hides a renderer: shadows-only when it normally casts shadows, else switched off (the markers cast none).</summary>
-        static void SetHidden(Item it, bool hide)
-        {
-            if (it.R == null) return;
-            if (it.Orig == ShadowCastingMode.Off) it.R.enabled = !hide;
-            else it.R.shadowCastingMode = hide ? ShadowCastingMode.ShadowsOnly : it.Orig;
-        }
-
         void Rescan()
         {
-            // put back whatever was hidden, scan, and let this frame's test hide again (all before the frame is drawn)
-            for (int i = 0; i < _items.Count; i++)
-                if (_items[i].Applied) SetHidden(_items[i], false);
-            var hiddenBefore = new HashSet<Renderer>();
-            for (int i = 0; i < _items.Count; i++) if (_items[i].Applied && _items[i].R != null) hiddenBefore.Add(_items[i].R);
-            _items.Clear();
-            _hiddenCount = 0;
+            // Nothing is put back and re-hidden: the fade state stays with each renderer, and the scan only updates bounds and finds new and gone ones.
+            if (_bank == null) _bank = FadeBank.Load();
+            var seen = new HashSet<Renderer>();
+            var fresh = new List<Item>(_items.Count + 16);
             foreach (MeshRenderer r in FindObjectsByType<MeshRenderer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
             {
-                if (!r.enabled || r.shadowCastingMode == ShadowCastingMode.ShadowsOnly) continue;
+                Item it;
+                bool tracked = _byRenderer.TryGetValue(r, out it);
+                if (!tracked && (!r.enabled || r.shadowCastingMode == ShadowCastingMode.ShadowsOnly)) continue;
                 Bounds b = r.bounds;
                 if (!IsCandidate(b)) continue;
                 string root = r.transform.root.name;
                 if (root == "Player" || root == "Riff" || r.name.StartsWith("String")) continue;   // the string lights are one thin mesh spanning the street: never worth hiding
-                var item = new Item { R = r, B = b, Orig = r.shadowCastingMode };   // crew and their markers too: nothing may stand in front of her
-                if (hiddenBefore.Contains(r)) { item.Hidden = true; item.Applied = true; item.Since = Time.unscaledTime; SetHidden(item, true); }   // put back above, so hide it again at once
-                _items.Add(item);
+                if (!tracked)
+                {
+                    it = new Item { R = r };   // (its fade is made the first time it has to hide) crew and their markers too: nothing may stand in front of her
+                    _byRenderer[r] = it;
+                }
+                // a thing that sways or bobs (a marker, a crowd figure) keeps the room it has swung through, so its bounds do not creep back and forth across the edge of the test
+                if (tracked && (b.center - it.B.center).sqrMagnitude < 0.75f * 0.75f) { Bounds u = it.B; u.Encapsulate(b); it.B = u; }
+                else it.B = b;
+                it.Attached = null;
+                seen.Add(r);
+                fresh.Add(it);
             }
+            // gone or no longer a candidate: put it back as it was and forget it
+            var drop = new List<Renderer>();
+            foreach (var kv in _byRenderer) if (!seen.Contains(kv.Key)) drop.Add(kv.Key);
+            for (int i = 0; i < drop.Count; i++)
+            {
+                Item it = _byRenderer[drop[i]];
+                if (it.Fade != null && drop[i] != null) it.Fade.Release();
+                _byRenderer.Remove(drop[i]);
+            }
+            _items.Clear();
+            _items.AddRange(fresh);
         }
 
         static readonly int[] None = new int[0];
@@ -209,7 +299,6 @@ namespace WorldTour.World
                 }
             }
             host.Attached = found.Count > 0 ? found.ToArray() : None;
-            _items[index] = host;
             return host.Attached;
         }
 
@@ -217,23 +306,23 @@ namespace WorldTour.World
         {
             Vector3 chest = who + Vector3.up * 1.0f, head = who + Vector3.up * 1.7f;
             float now = Time.unscaledTime;
+            // where the lens would be with no lift: the lift is decided from this (never from where it is now), so raising the lens cannot change the answer and start a bob
+            Vector3 flat = cam - (CurrentOffset - offset);
             bool lensInside = false;
-            int hidden = 0;
             for (int i = 0; i < _items.Count; i++)
             {
                 Item it = _items[i];
                 if (it.R == null) continue;
-                // hysteresis: a thing already hidden needs a wider clear gap (and 0.3 s) before it comes back
+                // hysteresis: a thing already hidden needs a wider clear gap, and every change holds for HoldSeconds
                 float radius = it.Hidden ? clearRadius + 0.35f : clearRadius;
                 bool block = Blocks(it.B, cam, chest, radius, 1.2f) || Blocks(it.B, cam, head, radius, 1.2f);
-                if (!block && it.Hidden && now - it.Since < 0.3f) block = true;
-                if (block != it.Hidden)
+                if (block != it.Hidden && now - it.Since < HoldSeconds) block = it.Hidden;
+                if (block != it.Hidden) { it.Hidden = block; it.Since = now; }
+                if (it.B.size.y > 2.5f)
                 {
-                    it.Hidden = block;
-                    it.Since = now;
-                    _items[i] = it;
+                    Bounds e = it.B; e.Expand(1.6f);
+                    if (e.Contains(flat) && (Blocks(it.B, flat, chest, clearRadius, 1.2f) || Blocks(it.B, flat, head, clearRadius, 1.2f))) lensInside = true;
                 }
-                if (it.Hidden && it.B.size.y > 2.5f) { Bounds e = it.B; e.Expand(1.6f); if (e.Contains(cam)) lensInside = true; }
             }
             // a hidden wall takes its windows, posters and stripes with it (thin pieces fixed to it), so none is left floating
             if (_mark.Length < _items.Count) _mark = new bool[_items.Count];
@@ -244,13 +333,15 @@ namespace WorldTour.World
                 int[] att = AttachedTo(i);
                 for (int a = 0; a < att.Length; a++) _mark[att[a]] = true;
             }
+            int hidden = 0;
             for (int i = 0; i < _items.Count; i++)
             {
                 Item it = _items[i];
                 if (it.R == null) continue;
-                bool want = it.Hidden || _mark[i];
-                if (want != it.Applied) { it.Applied = want; _items[i] = it; SetHidden(it, want); }
-                if (want) hidden++;
+                bool gone = it.Hidden || _mark[i];
+                if (gone && it.Fade == null) it.Fade = new OccluderFade(it.R, _bank);
+                if (it.Fade != null) it.Fade.Set(!gone);
+                if (gone) hidden++;
             }
             _hiddenCount = hidden;
             // the lens is inside or hard against something tall (a wall, a tree): rise and back off a little until it has been clear for a moment

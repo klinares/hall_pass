@@ -15,10 +15,17 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public static partial class BuildWeb
 {
     const string QualityFile = "ProjectSettings/QualitySettings.asset";
+    const string ProjectSettingsFile = "ProjectSettings/ProjectSettings.asset";
+    // 8.4 P0a: world/ uses its own page template (WebGL context-loss handling); the shared WorldTour template belongs to tour/
+    const string WorldTemplate = "PROJECT:WorldTourWorld";
+    // 8.4 P0a: GPU memory caps for world/ only (the 3D pipeline asset is used by no 2D build)
+    const float MaxRenderScale = 1.0f;
+    const int MaxMsaa = 2, MaxShadowMap = 2048;
     const string GlobalFile = "Assets/Settings/UniversalRenderPipelineGlobalSettings.asset";
     // phase 8.2: every place scene that exists, in tour order (coffee, records, rec, rooftop, club, theater, festival, arena); WorldSpike stays out of the build
     static string[] DefaultWorldScenes
@@ -60,6 +67,10 @@ public static partial class BuildWeb
         int savedGlobalAA = 0;
         RenderPipelineAsset savedDefault = null;
         bool swapped = false;
+        string savedTemplate = null;
+        byte[] projectBytes = null;
+        UniversalRenderPipelineAsset capPipe = null;
+        float savedScale = 0; int savedMsaa = 0, savedMain = 0, savedAdd = 0;
         try
         {
             string project = Directory.GetCurrentDirectory();
@@ -111,6 +122,27 @@ public static partial class BuildWeb
             for (int i = 0; i < levels.arraySize; i++)
                 levels.GetArrayElementAtIndex(i).FindPropertyRelative("customRenderPipeline").objectReferenceValue = pipe;
             qualitySO.ApplyModifiedPropertiesWithoutUndo();
+
+            // GPU memory caps (render scale 1.0, MSAA 2x, shadow maps 2048) on the 3D pipeline asset; put back in finally
+            capPipe = pipe as UniversalRenderPipelineAsset;
+            if (capPipe != null)
+            {
+                savedScale = capPipe.renderScale; savedMsaa = capPipe.msaaSampleCount;
+                savedMain = capPipe.mainLightShadowmapResolution; savedAdd = capPipe.additionalLightsShadowmapResolution;
+                capPipe.renderScale = Mathf.Min(capPipe.renderScale, MaxRenderScale);
+                capPipe.msaaSampleCount = Mathf.Min(capPipe.msaaSampleCount, MaxMsaa);
+                capPipe.mainLightShadowmapResolution = Mathf.Min(capPipe.mainLightShadowmapResolution, MaxShadowMap);
+                capPipe.additionalLightsShadowmapResolution = Mathf.Min(capPipe.additionalLightsShadowmapResolution, MaxShadowMap);
+                Debug.Log("BuildWorld: caps renderScale=" + capPipe.renderScale + " msaa=" + capPipe.msaaSampleCount
+                    + " mainShadow=" + capPipe.mainLightShadowmapResolution + " addShadow=" + capPipe.additionalLightsShadowmapResolution);
+                S("renderScale", capPipe.renderScale); S("msaa", capPipe.msaaSampleCount);
+                S("mainLightShadowmapResolution", capPipe.mainLightShadowmapResolution);
+            }
+            // own page template for world/ only
+            projectBytes = File.ReadAllBytes(ProjectSettingsFile);
+            savedTemplate = PlayerSettings.WebGL.template;
+            PlayerSettings.WebGL.template = WorldTemplate;
+            S("template", PlayerSettings.WebGL.template);
 
             string player = PrepareStaging(project, staging);
             var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
@@ -164,6 +196,20 @@ public static partial class BuildWeb
         }
         finally
         {
+            try
+            {
+                if (savedTemplate != null) PlayerSettings.WebGL.template = savedTemplate;
+                if (capPipe != null)
+                {
+                    capPipe.renderScale = savedScale; capPipe.msaaSampleCount = savedMsaa;
+                    capPipe.mainLightShadowmapResolution = savedMain; capPipe.additionalLightsShadowmapResolution = savedAdd;
+                }
+            }
+            catch (Exception e)
+            {
+                summary.errors.Add("could not restore the template or pipeline caps: " + e.Message);
+                ok = false;
+            }
             if (swapped)
             {
                 try
@@ -185,6 +231,11 @@ public static partial class BuildWeb
                         summary.warnings.Add("QualitySettings.asset on disk differed after the restore; the original bytes were written back");
                     }
                     // Unity renumbers a managed-reference id in the URP global settings on load; harmless, put the file back.
+                    if (projectBytes != null && !File.ReadAllBytes(ProjectSettingsFile).AsSpan().SequenceEqual(projectBytes))
+                    {
+                        File.WriteAllBytes(ProjectSettingsFile, projectBytes);
+                        summary.warnings.Add("ProjectSettings.asset differed after the restore (template); the original bytes were written back");
+                    }
                     if (globalBytes != null && !File.ReadAllBytes(GlobalFile).AsSpan().SequenceEqual(globalBytes))
                         File.WriteAllBytes(GlobalFile, globalBytes);
                 }

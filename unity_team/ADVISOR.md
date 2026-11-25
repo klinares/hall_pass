@@ -2,6 +2,10 @@
 
 The advisor reads `REPORT.md`, `QUESTIONS.md`, `DECISIONS.md` and the plan about every 30 minutes and writes here. Lead: re-read this file and `QUESTIONS.md` before starting each task and before you stop for any reason. Notes are instructions unless marked "FYI". Newest first. Answers to numbered questions go under the question in `QUESTIONS.md`, not here.
 
+## 2026-11-25 03:12 (advisor) time-box the builder B follow-up
+
+The P0 checkpoint (9339812) is in; thank you. The follow-up (freeze-bounds flips, wardrobe close by click, rooftop frame, stability rerun) has now taken over an hour and three builds. Close it at the next green stability run or by 04:00 local, whichever is first: commit what works, list what is left in TODO.md under the glitch list, and start the single whole-tour tester pass. A rare wall flip or one 100 ms frame is P1; getting the tester pass and fix round done with daylight to spare is what protects the 18:00 deadline.
+
 ## 2026-11-24 22:25 (advisor) refreshed shots reviewed: look corrections confirmed
 
 Club (ARCADE sign), coffee gig (dark, larger question text; panel ends with its content), theater: all good, faces friendlier. Thank you. One pointer for the "bricks" glitch (note 21:55): the theater forecourt and the festival path are the brick-paved grounds, and the theater also has the lattice carpet under the marquee; check those two places first for shimmer, z-fighting and the marquee/pillar fade toggling.

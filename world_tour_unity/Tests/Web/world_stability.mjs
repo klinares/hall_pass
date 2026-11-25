@@ -102,6 +102,8 @@ async function visit(browser, server, id, size, mode) {
       while (Date.now() < end) {
         if (done()) return true;
         // a card she walked into on the way (the stage or the exit offer) is closed like a child would, then the walk goes on
+        // E next to the wardrobe trunk opens the shop: leave it with Escape (the mouse run clicks its back button instead)
+        if (name.startsWith('crew') && modeNow() === 'Panel') { await releaseAll(); await key('Escape', 900); continue; }
         if (name.startsWith('crew') && modeNow() === 'Dialog') { await releaseAll(); await closeCards('on the way to ' + name); continue; }
         const sp = star(), r = route(name);
         if (!sp || !r || !r.pts.length) { await releaseAll(); await sleep(150); continue; }
@@ -132,8 +134,8 @@ async function visit(browser, server, id, size, mode) {
     let lastClick = 0, lastPos = null, lastMove = Date.now();
     while (Date.now() < end) {
       if (done()) return true;
-      // a click on the wardrobe trunk on the way opens the backstage panel: close it (Escape; the panel's own back button works too, world_wardrobe.mjs covers that)
-      if (modeNow() === 'Panel') { await key('Escape', 900); continue; }
+      // a click on the wardrobe trunk on the way opens the backstage panel: close it by clicking its "back to the street" button
+      if (modeNow() === 'Panel') { await closeWardrobe('on the way to ' + name); continue; }
       const sp = star(), r = route(name);
       if (sp && r && r.pts.length) {
         if (!lastPos || Math.hypot(sp.x - lastPos.x, sp.z - lastPos.z) > 0.15) { lastPos = sp; lastMove = Date.now(); }
@@ -152,6 +154,44 @@ async function visit(browser, server, id, size, mode) {
       await sleep(120);
     }
     return done();
+  }
+
+  // the open backstage panel: click its "back to the street" button (positions from the WT_HITS line the screen logs, as fractions of the page)
+  async function closeWardrobe(where) {
+    const m = mark();
+    for (let n = 0; n < 40; n++) {
+      const l = lastLine(/^WT_HITS screen=backstage /);
+      const mm = l && / back=([\d.]+),([\d.]+)/.exec(l.text);
+      if (mm) {
+        await click(Math.round(+mm[1] * vw), Math.round(+mm[2] * vh));
+        if (await waitLine(/^WT_WARDROBE_CLOSE|^WT_WORLD_MODE mode=Free/, 2500, m)) return true;
+      } else await sleep(150);
+    }
+    gfail(`the wardrobe panel could not be closed with the mouse ${where}`);
+    await shot('wardrobe_stuck');
+    return false;
+  }
+  // mouse only: walk up to the trunk by clicking it, open the shop, and close it again with its button
+  async function wardrobeByMouse() {
+    await evMark('wardrobe');
+    const m0 = mark();
+    const end = Date.now() + 60000;
+    let lastClick = 0;
+    while (Date.now() < end && !h.lines.slice(m0).some(l => /^WT_WARDROBE_OPEN/.test(l.text))) {
+      if (Date.now() - lastClick > 5000) {
+        const l = lastLine(/^WT_SHOP_TARGET trunk=/), t = l && /trunk=(-?\d+):(-?\d+)/.exec(l.text);
+        if (t) { const [x, y] = aim({ x: +t[1], y: +t[2] }); lastClick = Date.now(); await click(x, y); }
+      }
+      await sleep(200);
+    }
+    if (!h.lines.slice(m0).some(l => /^WT_WARDROBE_OPEN/.test(l.text))) { gfail('clicking the wardrobe trunk never opened the shop'); await shot('wardrobe_missing'); return false; }
+    await sleep(1200);
+    await shot('wardrobe');
+    if (!await closeWardrobe('after opening it')) return false;
+    await sleep(800);
+    if (modeNow() !== 'Free') { gfail('after the wardrobe closed the world is not hers: mode ' + modeNow()); return false; }
+    step('opened the wardrobe by clicking the trunk and closed it by clicking back');
+    return true;
   }
 
   // finds the newest line of a kind after `from` and returns its text
@@ -225,7 +265,7 @@ async function visit(browser, server, id, size, mode) {
     const liftVals = seq.map(x => +x.lift);
     let reversed = false, dir = 0;
     for (let i = 1; i < liftVals.length; i++) { const d = Math.sign(liftVals[i] - liftVals[i - 1]); if (d !== 0) { if (dir !== 0 && d !== dir) reversed = true; dir = d; } }
-    if (changes(seq.map(x => x.hid)) > 1 || reversed) gfail(`standing still at ${where} (${seq[0]?.pos}) things changed: hid ${[...hs].join('/')} lift ${[...ls].join('/')} (${[...new Set(seq.map(s => s.names))].join(' | ')})`);
+    if (changes(seq.map(x => x.hid)) > 1 || reversed) gfail(`standing still at ${where} (${seq[0]?.pos}) things changed: hid ${[...hs].join('/')} lift ${[...ls].join('/')} (${[...new Set(seq.map(s => s.names))].join(' | ')}) sequence ${seq.map(x => x.hid + '/' + x.lift).join(' ')}`);
   }
 
   let crewModes = [];
@@ -249,6 +289,7 @@ async function visit(browser, server, id, size, mode) {
     await shot('spawn');
     if (!await waitLine(/^WT_WORLD_ROUTE/, 5000, m0) && keyboard) { gfail('the game logs no WT_WORLD_ROUTE (needs the test build)'); return; }
     await stillCheck('spawn', 5, 3);
+    if (!keyboard && !await wardrobeByMouse()) return;
 
     // ---- walk to each crew member and talk ----
     let gigDone = false, firstTyped = crewModes.findIndex(m => TYPED.includes(m)) + 1;
@@ -455,8 +496,8 @@ async function visit(browser, server, id, size, mode) {
     // from the last corner she can still be walked out with the opposite keys
     const c0 = star();
     await hold('KeyW', true); await hold('KeyD', true); await sleep(1500); await hold('KeyW', false); await hold('KeyD', false);
-    await hold('KeyS', true); await hold('KeyA', true); await sleep(1500); await hold('KeyS', false); await hold('KeyA', false);
-    const c1 = star();
+    let c1 = star();
+    if (c0 && c1 && Math.hypot(c0.x - c1.x, c0.z - c1.z) < 0.3) { await hold('KeyS', true); await hold('KeyA', true); await sleep(1500); await hold('KeyS', false); await hold('KeyA', false); c1 = star(); }   // first away, else the other way
     if (c0 && c1 && Math.hypot(c0.x - c1.x, c0.z - c1.z) < 0.3) { gfail(`she is stuck in a corner at ${JSON.stringify(c0)}: the keys do not move her (mode ${modeNow()})`); await shot('stuck_corner'); }
     step('walked into every edge and corner');
     // a gig with Riff in the way: walk to the crew member who offers a typed gig, put a click on Riff, press E: the talk must still open

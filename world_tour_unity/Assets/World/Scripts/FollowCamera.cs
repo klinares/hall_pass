@@ -41,12 +41,18 @@ namespace WorldTour.World
             public OccluderFade Fade;
             public bool Hidden;      // the line to her is blocked by this one
             public float Since = -999f;   // when Hidden last changed
+            public int Order;        // when it was first seen: the list keeps this order between rescans, so the attached indices stay valid
             public int[] Attached;   // indices of the thin pieces (windows, posters, stripes) fixed to this one; null until first needed
         }
         bool[] _mark = new bool[0];
         readonly List<Item> _items = new List<Item>();
         readonly Dictionary<Renderer, Item> _byRenderer = new Dictionary<Renderer, Item>();
         FadeBank _bank;
+        int _nextOrder;
+        // reused by every rescan, so a scan allocates only what Unity's own FindObjects hands back (less to collect, fewer stalls)
+        readonly HashSet<Renderer> _seen = new HashSet<Renderer>();
+        readonly List<Item> _fresh = new List<Item>();
+        readonly List<Renderer> _drop = new List<Renderer>();
         float _nextScan = -1f;
         int _hiddenCount;
         /// <summary>Seconds between looks at the scene for new or moved props. A scan walks every renderer, so it is not done often; the fades never depend on it.</summary>
@@ -236,31 +242,33 @@ namespace WorldTour.World
         {
             // Nothing is put back and re-hidden: the fade state stays with each renderer, and the scan only updates bounds and finds new and gone ones.
             if (_bank == null) _bank = FadeBank.Load();
-            var seen = new HashSet<Renderer>();
-            var fresh = new List<Item>(_items.Count + 16);
+            bool added = false;
+            var seen = _seen; seen.Clear();
+            var fresh = _fresh; fresh.Clear();
             foreach (MeshRenderer r in FindObjectsByType<MeshRenderer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
             {
                 Item it;
                 bool tracked = _byRenderer.TryGetValue(r, out it);
                 if (!tracked && (!r.enabled || r.shadowCastingMode == ShadowCastingMode.ShadowsOnly)) continue;
                 Bounds b = r.bounds;
+                // a tracked prop that has not moved stays exactly as it was (its size drifting across the candidate limit must not drop it and bring it back)
+                if (tracked && (b.center - it.B.center).sqrMagnitude < 0.75f * 0.75f) { seen.Add(r); fresh.Add(it); continue; }
                 if (!IsCandidate(b)) continue;
                 string root = r.transform.root.name;
                 if (root == "Player" || root == "Riff" || r.name.StartsWith("String")) continue;   // the string lights are one thin mesh spanning the street: never worth hiding
                 if (!tracked)
                 {
-                    it = new Item { R = r };   // (its fade is made the first time it has to hide) crew and their markers too: nothing may stand in front of her
+                    it = new Item { R = r, Order = _nextOrder++ }; added = true;   // (its fade is made the first time it has to hide) crew and their markers too: nothing may stand in front of her
                     _byRenderer[r] = it;
                 }
                 // a thing that sways or bobs (a marker, a crowd figure) keeps the room it has swung through, so its bounds do not creep back and forth across the edge of the test
-                if (tracked && (b.center - it.B.center).sqrMagnitude < 0.75f * 0.75f) { Bounds u = it.B; u.Encapsulate(b); it.B = u; }
-                else it.B = b;
-                it.Attached = null;
+                // (kept exactly as first seen: the test result and the attached pieces then never change while nothing really moved; a prop that moved over 0.75 m gets its new bounds)
+                it.B = b; it.Attached = null;
                 seen.Add(r);
                 fresh.Add(it);
             }
             // gone or no longer a candidate: put it back as it was and forget it
-            var drop = new List<Renderer>();
+            var drop = _drop; drop.Clear();
             foreach (var kv in _byRenderer) if (!seen.Contains(kv.Key)) drop.Add(kv.Key);
             for (int i = 0; i < drop.Count; i++)
             {
@@ -268,6 +276,8 @@ namespace WorldTour.World
                 if (it.Fade != null && drop[i] != null) it.Fade.Release();
                 _byRenderer.Remove(drop[i]);
             }
+            fresh.Sort((a, b) => a.Order.CompareTo(b.Order));
+            if (added || drop.Count > 0) foreach (Item it in fresh) it.Attached = null;   // the indices moved
             _items.Clear();
             _items.AddRange(fresh);
         }
@@ -314,8 +324,9 @@ namespace WorldTour.World
                 Item it = _items[i];
                 if (it.R == null) continue;
                 // hysteresis: a thing already hidden needs a wider clear gap, and every change holds for HoldSeconds
-                float radius = it.Hidden ? clearRadius + 0.35f : clearRadius;
-                bool block = Blocks(it.B, cam, chest, radius, 1.2f) || Blocks(it.B, cam, head, radius, 1.2f);
+                // (a grown box can swallow her and so stop blocking, which a small one does not: so a hidden prop stays hidden while EITHER size blocks. Testing only the grown one made it come back, then hide, then come back, every 1.2 s)
+                bool block = Blocks(it.B, cam, chest, clearRadius, 1.2f) || Blocks(it.B, cam, head, clearRadius, 1.2f);
+                if (!block && it.Hidden) block = Blocks(it.B, cam, chest, clearRadius + 0.35f, 1.2f) || Blocks(it.B, cam, head, clearRadius + 0.35f, 1.2f);
                 if (block != it.Hidden && now - it.Since < HoldSeconds) block = it.Hidden;
                 if (block != it.Hidden) { it.Hidden = block; it.Since = now; }
                 if (it.B.size.y > 2.5f)

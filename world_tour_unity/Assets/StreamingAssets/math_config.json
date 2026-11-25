@@ -21,7 +21,7 @@
   "LEVEL_DOWN_AFTER": 2,
   "LEVELS": {
     "md": {
-      "MAX_LEVEL": 1,
+      "MAX_LEVEL": 0,
       "START_LEVEL": 0
     },
     "ops": {

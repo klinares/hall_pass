@@ -27,24 +27,7 @@
         ]
     },
     "previous": {
-        "builtAt": "2026-11-21T17:32:25-05:00",
-        "files": [
-            {
-                "path": "Build/09a842285f0308ee5bb0ca18701dbeda.wasm.unityweb",
-                "size": 7899355
-            },
-            {
-                "path": "Build/4dd924d041c4e63e979d273dc04f8e47.data.unityweb",
-                "size": 5236929
-            },
-            {
-                "path": "Build/922288089774ffa3c8439d4242498b95.framework.js.unityweb",
-                "size": 90804
-            },
-            {
-                "path": "Build/cd96bb2ac4863f6febf96dd1b4bd9f25.loader.js",
-                "size": 47867
-            }
-        ]
+        "builtAt": "",
+        "files": []
     }
 }

@@ -8,12 +8,11 @@
 
 ## Phase and status
 
-Phase 8 is **done** and committed locally. Nothing is pushed. 8.5 (repo clean-up) follows as its own commit.
+Phase 8 and the 8.5 clean-up are **done**, committed locally as separate commits. Nothing is pushed.
 
 ## What now works
 
-- Eight 3D places in tour order. In each she walks by keys or clicks, talks to the crew, plays gigs and the show, and travels.
-- Wearables in a wardrobe trunk, crowds that grow with fans, stage lights, synthesized ambience plus five CC0 clips.
+- Eight 3D places: walk, talk to the crew, play gigs and the show, travel.
 - One save with `tour/`, carried both ways; a reload resumes where she was.
 - Shots: `unity_team/shots/phase8/` (8 places at 1366 and 1920, coffee gig and show).
 
@@ -31,7 +30,7 @@ Phase 8 is **done** and committed locally. Nothing is pushed. 8.5 (repo clean-up
 | clipped club sign, exit buttons, ticket page | **fixed**; "THE" still touches a lamp |
 | snack "n in all" bar blank | **fixed in `world/`**; `tour/` still has it |
 
-Every place can be finished by keyboard alone and by mouse alone, including edge walks, click spam and leaving mid-show.
+Every place can be finished by keyboard alone or mouse alone.
 
 ## Test results
 
@@ -39,18 +38,23 @@ Edit-mode 1881/1882 (1 explicit skip), play-mode 29/29, `tour/` browser 18/18, a
 
 ## What the tester looked at
 
-One whole-tour pass on a real GPU (8 places, both sizes, glitch hunt, kid-fit on two places), one fix round, then a final-build check.
+One whole-tour GPU pass (8 places, both sizes, kid-fit on two), one fix round, a final-build check.
+
+## Clean-up (8.5)
+
+Removed previous builds (shipped builds unchanged), 74 unused art pieces, 11 unused packages, probe scripts, a duplicate agents folder; finished phases moved to `HISTORY.md`. Tracked files: 200 to 180 MB (history unchanged). Both builds build; suites green.
+
+Could be removed, the advisor decides: `spelling_4_U/` (0.07 MB, nothing uses it); `world_tour/` (0.4 MB; test tools and Playwright depend on it); `tour/` and 2D-only scenes and art (25 MB and 3 MB; the live 2D game); the backup `D:\repos\_backups\world_tour_2026-11-20\` (121 MB, unused); `publish.bat` (the owner's). `KICKOFF.md` stays: BRIEF reads it.
 
 ## Not done or not verified
 
 - Kid-fit used a scripted first ten (8/10), not a first five minutes by eye.
 - Reload resume checked at three places, not all eight.
 - Level-up at 6 in a row (phase 7) reaches mixed numbers in about three gigs.
-- Harmless shader log lines remain.
 
 ## Departures from the brief
 
-Workers on Sonnet; no paid or headless use. Over the build cap in 8.1, 8.3 and 8.4. A final-build check ran after the one tester pass.
+Workers on Sonnet; no paid or headless use. Over the build cap in 8.1, 8.3 and 8.4.
 
 ## Open questions
 

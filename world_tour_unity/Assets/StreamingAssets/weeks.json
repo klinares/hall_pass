@@ -7,7 +7,7 @@
         {
           "w": "irrational",
           "s": "ir-ra-tion-al",
-          "h": "Not based on reason or clear thinking, like a fear that makes no sense",
+          "h": "Not sensible, like being afraid of something harmless",
           "x": "i know the tiny spider can't hurt me, so being this scared of it is totally ___.",
           "prefix": {
             "p": "ir",
@@ -90,7 +90,7 @@
         {
           "w": "interaction",
           "s": "in-ter-ac-tion",
-          "h": "When two or more people or things talk, work, or act together and affect each other",
+          "h": "When people or things act on each other, like talking or playing together",
           "x": "her favorite part of the night is the ___ with fans after the show.",
           "prefix": {
             "p": "inter",
@@ -123,7 +123,7 @@
         {
           "w": "intercede",
           "s": "in-ter-cede",
-          "h": "To step in and speak up for someone else, often to help settle a problem",
+          "h": "To step in and help two people stop arguing",
           "x": "when the twins started arguing, their big sister had to ___."
         }
       ]

@@ -46,7 +46,7 @@ const SEED = JSON.stringify({
 let server, browser;
 try {
   server = await startServer(site);
-  browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+  browser = await chromium.launch({ args: (process.env.WT_GPU === 'd3d11' ? ['--use-gl=angle', '--use-angle=d3d11', '--ignore-gpu-blocklist', '--enable-gpu-rasterization', '--enable-webgl'] : ['--use-angle=swiftshader', '--enable-unsafe-swiftshader']) });
   const ctx = await browser.newContext({ viewport: { width: vw, height: vh } });
   let page = await ctx.newPage();
   let lines = [];

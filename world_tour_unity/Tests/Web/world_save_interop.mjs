@@ -12,7 +12,7 @@ const argv = process.argv.slice(2);
 const state = fs.readFileSync(argv[argv.indexOf('--state') + 1], 'utf8');
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const world = await startServer(path.join(repo, 'world')), tour = await startServer(path.join(repo, 'tour'));
-const browser = await chromium.launch({ headless: true, args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+const browser = await chromium.launch({ headless: true, args: (process.env.WT_GPU === 'd3d11' ? ['--use-gl=angle', '--use-angle=d3d11', '--ignore-gpu-blocklist', '--enable-gpu-rasterization', '--enable-webgl'] : ['--use-angle=swiftshader', '--enable-unsafe-swiftshader']) });
 const out = {};
 async function open(srv, q, init, blocked) {
   const ctx = await browser.newContext({ viewport: { width: 1366, height: 768 } });

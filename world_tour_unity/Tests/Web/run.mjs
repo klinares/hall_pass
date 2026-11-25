@@ -221,7 +221,7 @@ try {
   if (!fs.existsSync(path.join(site, 'index.html'))) throw new Error(`no index.html in ${site}; build first`);
   const server = await startServer(site);
   servers.push(server);
-  browser = await chromium.launch({ headless: true, args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+  browser = await chromium.launch({ headless: true, args: (process.env.WT_GPU === 'd3d11' ? ['--use-gl=angle', '--use-angle=d3d11', '--ignore-gpu-blocklist', '--enable-gpu-rasterization', '--enable-webgl'] : ['--use-angle=swiftshader', '--enable-unsafe-swiftshader']) });
 
   // 1. Cold loads (2. cached reload reuses the 1366x768 context).
   let ctx1366 = null, cold1366 = null;

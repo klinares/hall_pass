@@ -136,6 +136,8 @@ async function visit(browser, server, id, size, mode) {
       if (done()) return true;
       // a click on the wardrobe trunk on the way opens the backstage panel: close it by clicking its "back to the street" button
       if (modeNow() === 'Panel') { await closeWardrobe('on the way to ' + name); continue; }
+      // tester fix 8.4: a stray click on a crew member on the way to the exit opens a normal talk; a child closes it with its "not now" button (or ok) and walks on
+      if (name === 'exit' && modeNow() === 'Dialog' && !done()) { const mc = mark(); await pressFirst(mc, 'not'); await sleep(500); if (modeNow() === 'Dialog') await pressFirst(mark(), 'ok'); await sleep(500); continue; }
       const sp = star(), r = route(name);
       if (sp && r && r.pts.length) {
         if (!lastPos || Math.hypot(sp.x - lastPos.x, sp.z - lastPos.z) > 0.15) { lastPos = sp; lastMove = Date.now(); }
@@ -311,6 +313,7 @@ async function visit(browser, server, id, size, mode) {
       } else {
         ok = await mouseWalk(name, talked, 70000);
       }
+      if (!ok && process.env.WT_TOLERATE_CREW3 && c === 3 && gigDone) { step('crew 3 could not be talked to (E picked the nearer crew member); tolerated by WT_TOLERATE_CREW3, still reported as a failure below'); gfail('crew 3 unreachable by E (nearest crew member wins; crew 2 stands about 1 m away)'); await releaseAll(); await key('Escape', 600); await key('Escape', 600); await closeCards('after tolerated crew 3'); continue; }
       if (!ok) { gfail(`${keyboard ? 'walking and pressing E' : 'clicking'} crew ${c} never started a talk (mode ${modeNow()}, route age ${Date.now() - (lastLine(/^WT_WORLD_ROUTE/)?.t || 0)} ms, star ${JSON.stringify(star())}, ${lastLine(/^WT_WORLD_ROUTE/)?.text.slice(0, 260)})`); await shot('talk_missing_' + c); return; }
       await sleep(700);
       if (c === 1) await shot('talk');
@@ -437,6 +440,8 @@ async function visit(browser, server, id, size, mode) {
     await evMark('arrived next');
     if (!await waitLine(/^WT_WORLD_MODE mode=Free/, 10000, there.i)) { gfail('she did not get control back after the travel'); return; }
     await sleep(1800);
+    // tester fix 8.4: with --abuse the spammed E / Enter keys can land after the arrival, next to the first crew member, and open a normal talk: that is not a stuck world as long as Escape closes it
+    if (modeNow() === 'Dialog' && wantAbuse) { step('a spammed key opened a talk on arrival; closing it with Escape'); await closeCards('after the travel'); }
     if (modeNow() !== 'Free') gfail('after the travel the world is not hers: mode ' + modeNow());
     await shot('next_place');
     step(`traveled to ${next} in ${travelEnd - tStart} ms`);
@@ -501,6 +506,9 @@ async function visit(browser, server, id, size, mode) {
     if (c0 && c1 && Math.hypot(c0.x - c1.x, c0.z - c1.z) < 0.3) { gfail(`she is stuck in a corner at ${JSON.stringify(c0)}: the keys do not move her (mode ${modeNow()})`); await shot('stuck_corner'); }
     step('walked into every edge and corner');
     // a gig with Riff in the way: walk to the crew member who offers a typed gig, put a click on Riff, press E: the talk must still open
+    // tester fix 8.4: the logged route is empty ("short;") while she stands in a corner cell after the edge walks; click-to-walk still works there, so click her out toward the middle before the keys walk to the crew
+    await click(vw / 2, vh * 0.5); await sleep(2500);
+    if (modeNow() !== "Free") await closeCards("after the corner click");
     const ci = Math.max(0, crewModes.findIndex(m => TYPED.includes(m))) + 1;
     const m1 = mark();
     const talked = () => h.lines.slice(m1).some(l => new RegExp('^WT_WORLD_TALK crew=Crew_' + ci).test(l.text));
@@ -510,7 +518,11 @@ async function visit(browser, server, id, size, mode) {
       await click(dg.x, dg.y); await sleep(200);   // a click on Riff is a click on the ground under him: it walks her there; so walk back to the crew member
       await keyWalk('crew' + ci, () => { const r = route('crew' + ci), sp = star(); return !!(r && sp && r.pts.length && Math.hypot(r.pts[r.pts.length - 1].x - sp.x, r.pts[r.pts.length - 1].z - sp.z) < 0.7); });
     }
-    for (let n = 0; n < 4 && !talked(); n++) { await key('KeyE', 100); await sleep(500); }
+    // tester fix 8.4: like the main loop, a child who gets no talk steps up again (the crew member wanders, the logged goal is only within 0.7 m); three tries
+    for (let attempt = 0; attempt < 3 && !talked(); attempt++) {
+      if (attempt > 0) await keyWalk('crew' + ci, () => { const r = route('crew' + ci), sp = star(); return !!(r && sp && r.pts.length && Math.hypot(r.pts[r.pts.length - 1].x - sp.x, r.pts[r.pts.length - 1].z - sp.z) < 0.4); }, 15000);
+      for (let n = 0; n < 4 && !talked(); n++) { await key('KeyE', 100); await sleep(500); }
+    }
     if (!talked()) { gfail(`with Riff in the way crew ${ci} did not talk`); return; }
     await sleep(500);
     const m2 = mark();

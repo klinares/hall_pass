@@ -6,6 +6,7 @@ Small tools that make life with a school-age kid a little easier. Built for Fall
 
 | Project | What it does | Try it |
 |------------------------|------------------------|------------------------|
+| [`chippy/`](chippy/) | **Operation: Where Is Chippy?**, a 3–5 minute spy-briefing game for a 1st-grade family-traditions presentation: find Chippy the elf hidden around the house, then learn his true identity. Works on a smartboard, laptop or iPad. | [Play it](https://klinares.github.io/hall_pass/chippy/) |
 | [`lunchline/`](lunchline/) | Scrapes the school cafeteria menu into a `.ics` file you can import into Google Calendar, so "what's for lunch, can I pack instead?" is answered before Monday morning. | R + Quarto, [read more](lunchline/README.md) |
 | [`spelling_4_U/`](spelling_4_U/) | **Pop Quiz, Pop Star**, a pink pop-concert spelling game that gets a 5th grader ready for the weekly test. Works on a laptop or iPad, no install. | [Play it](https://klinares.github.io/hall_pass/spelling_4_U/) |
 | [`tour/`](tour/) | **World Tour**, the spelling and 5th-grade math game as a Unity web build. This is the version to play. | [Play it](https://klinares.github.io/hall_pass/tour/) |
@@ -16,6 +17,7 @@ Small tools that make life with a school-age kid a little easier. Built for Fall
 
 ```
 hall_pass/
+├── chippy/            static HTML "find Chippy" family-traditions game
 ├── lunchline/         R + Quarto pipeline for cafeteria menus
 ├── spelling_4_U/      static HTML spelling game
 ├── tour/              World Tour, Unity web build served by GitHub Pages

@@ -120,16 +120,29 @@ async function walkWorld(wx, wz, tol = 1.2, ms = 25000) {
 }
 
 // Walk toward a named target until doneRe shows: click it when it is on screen (path finding), and hold the arrow keys toward it by its screen offset otherwise.
-async function approach(name, doneRe, label, tries = 90) {
+async function approach(name, doneRe, label, tries = 150) {   // 8.4: 90 tries (about 40 s) ran out on a loaded machine; the walk itself is unchanged
   const down = new Set();
   const set = async (code, on) => { if (on && !down.has(code)) { down.add(code); await page.keyboard.down(code); } else if (!on && down.has(code)) { down.delete(code); await page.keyboard.up(code); } };
-  let lastClick = 0, lastPos = null, lastMove = Date.now(), escapeUntil = 0, escapeDir = [0, 0];
+  let lastDismiss = 0, lastLook = null, lastClick = 0, lastPos = null, lastMove = Date.now(), escapeUntil = 0, escapeDir = [0, 0];
   await focus();
   try {
     for (let n = 0; n < tries; n++) {
       const m0 = mark();
       const t = target(name);
+      if (process.env.WT_DEBUG && n % 5 === 0) log(`    [approach ${name}] n=${n} t=${t ? t.x + ':' + t.y : 'none'} star=${JSON.stringify(starNow())} mode=${modeNow()} last=${lines.slice(-40).map(l => l.text).filter(x => /^WT_/.test(x)).slice(-3).join(' | ').slice(0, 300)}`);
       if (!t) { await sleep(300); continue; }
+      // 8.4: walking past a crew member opens their talk card; a walk to somewhere else must close it ("not now") or it waits there for ever
+      if (modeNow() === 'Dialog' && name.startsWith('crew')) {
+        const tl = lastLine(/^WT_WORLD_TALK /);   // the card of the crew member we wanted: done (it may have opened between two checks)
+        if (tl && doneRe.test(tl)) return { i: lines.length - 1, text: tl };
+      }
+      if (modeNow() === 'Dialog' && Date.now() - lastDismiss > 1500) {
+        lastDismiss = Date.now();
+        for (const c of [...down]) await set(c, false);
+        await key('Escape', 400);
+        if (modeNow() === 'Dialog') { lastLook = null; }
+        continue;
+      }
       const w = WORLD[curPlace] && WORLD[curPlace][name], sp = starNow();
       const far = w && sp ? Math.hypot(w[0] - sp.x, w[1] - sp.z) : 0;
       const sane = !(w && sp) || Math.abs(w[1] - sp.z) < 3 || ((t.y - vh * 0.58) * -(w[1] - sp.z) > 0);   // a target behind the camera comes out mirrored
@@ -336,14 +349,15 @@ async function visit(id) {
 }
 
 async function go() {
-  const q = '?wt_test=1' + (saved ? '' : `&wt_fans=${fans}`);   // round 8.4: a reload resumes in the saved place on its own (WT_WORLD_RESUME), so later legs no longer need the wt_goto hook
+  const gotoPlace = opt('--goto', null);   // start the leg in this place directly (the wt_goto test hook), for a single-place repro
+  const q = '?wt_test=1' + (saved ? '' : `&wt_fans=${fans}`) + (gotoPlace ? `&wt_goto=${gotoPlace}` : '');   // round 8.4: a reload resumes in the saved place on its own (WT_WORLD_RESUME), so later legs no longer need the wt_goto hook
   const t0 = Date.now();
   await page.goto(server.url + q, { waitUntil: 'load' });
   const ready = await waitLine(/^WT_WORLD_GAME_READY/, 90000);
   res.loadMs = Date.now() - t0; res.bytes = server.bytesServed;
   if (!ready) { fail('no ready'); return; }
   let ready2 = null;
-  if (saved && from !== 'coffee') { ready2 = await waitLine(new RegExp('^WT_WORLD_ARRIVED place=' + from), 40000); if (!ready2) { fail('the reload never resumed in ' + from); return; } }
+  if ((saved || gotoPlace) && from !== 'coffee') { ready2 = await waitLine(new RegExp('^WT_WORLD_ARRIVED place=' + from), 40000); if (!ready2) { fail('the reload never resumed in ' + from); return; } }
   await focus(); await sleep(1500);
   const here0 = (/place=(\w+)/.exec((ready2 || ready).text) || [])[1];
   log(`ready ${res.loadMs} ms in ${here0}: ${ready.text}`);

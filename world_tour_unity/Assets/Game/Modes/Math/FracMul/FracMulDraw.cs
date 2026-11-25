@@ -130,6 +130,9 @@ namespace WorldTour.Game.Modes
                 int parts = cut ? t.Parts : 1;
                 Rect(paper, "Ring", x0 - 2, y - 2, w + 4, h + 4, Ink);
                 Rect(paper, "Bar", x0, y, w, h, Card);
+                // world-hosted only: the uncut "n in all" bar shows its n single cells, so it is not an empty box (never the answer: the cells are the whole, not the groups)
+                if (!cut && ShowLayout.Compact && t.Total.Length > 0 && int.TryParse(t.Total, out int units) && units >= 2 && units <= 48)
+                    for (int u = 1; u < units; u += 2) Rect(paper, "Unit cell", x0 + u * (w / units), y, w / units, h, MathUi.Mix(ColorRole.Ink, .14f, ColorRole.Card));   // every other cell greyed: thin lines vanish when the panel is scaled down
                 float pw = w / parts;
                 for (int k = 0; k < parts; k++)
                 {

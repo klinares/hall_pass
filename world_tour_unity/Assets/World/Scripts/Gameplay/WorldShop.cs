@@ -143,6 +143,7 @@ namespace WorldTour.World.Gameplay
                     // the trunk, the ends of its rail and the walking room in front of it
                     if (blocked(c, 1.0f * k) || blocked(c + new Vector3(-1.1f, 0f, 0.72f), 0.6f * k) || blocked(c + new Vector3(1.1f, 0f, 0.72f), 0.6f * k) || blocked(c + new Vector3(0f, 0f, -1.9f), 0.5f * k)) continue;
                     if (Near(c, crew, 3.4f) || Near(c, stage, 5f) || Near(c, exit, 3.4f) || Flat(c, spawn) < 2.2f) continue;
+                    if (pass < 2 && !SeenWell(c, spawn, crew)) continue;
                     spot = c;
                     return true;
                 }
@@ -151,10 +152,57 @@ namespace WorldTour.World.Gameplay
             return false;
         }
 
+        // ---------- what the player sees from the spawn camera (8.4 fix round 2) ----------
+
+        /// <summary>
+        /// From the camera she starts with (FollowCamera's offset and tilt, 44 degree lens, 16:9), the trunk, its rack, its ring and its "wardrobe" label must not hide any crew member
+        /// (the label is a flat overlay, so it hides them whatever the depth; the rack and trunk only when they are nearer the lens), and the ring must stay inside the frame (not at the very edge).
+        /// A pure function of the numbers, so a test can ask it of any scene.
+        /// </summary>
+        public static bool SeenWell(Vector3 spot, Vector3 spawn, IEnumerable<Vector3> crew)
+        {
+            Vector3 camPos = spawn + new Vector3(0f, 6.6f, -11.4f);
+            Quaternion rot = Quaternion.LookRotation(-new Vector3(0f, 6.6f, -11.4f), Vector3.up) * Quaternion.Euler(-7f, 0f, 0f);
+            Matrix4x4 view = Matrix4x4.TRS(camPos, rot, Vector3.one).inverse;
+            float th = Mathf.Tan(22f * Mathf.Deg2Rad), aspect = 16f / 9f;
+            Vector3 P(Vector3 w) { Vector3 v = view.MultiplyPoint3x4(w); return new Vector3(v.x / (v.z * th * aspect), v.y / (v.z * th), v.z); }
+            Vector3 g = new Vector3(spot.x, 0f, spot.z);
+            // the ring on the ground: about 2.1 m round the trunk, well inside the frame at the sides and above the foot of the screen
+            for (int i = 0; i < 16; i++)
+            {
+                float a = i / 16f * Mathf.PI * 2f;
+                Vector3 r = P(g + new Vector3(Mathf.Sin(a), 0f, Mathf.Cos(a)) * 2.1f);
+                if (r.z <= 0.5f || Mathf.Abs(r.x) > 0.9f || r.y < -0.9f) return false;
+            }
+            Vector3 centre = P(g);
+            float minX = 9f, maxX = -9f, minY = 9f, maxY = -9f;
+            foreach (float x in new[] { -1.2f, 1.2f }) foreach (float y in new[] { 0f, 2.3f }) foreach (float z in new[] { -0.7f, 0.7f })
+            {
+                Vector3 q = P(g + new Vector3(x, y, z));
+                minX = Mathf.Min(minX, q.x); maxX = Mathf.Max(maxX, q.x); minY = Mathf.Min(minY, q.y); maxY = Mathf.Max(maxY, q.y);
+            }
+            Vector3 pin = P(g + new Vector3(0f, 2.65f, 0.3f));
+            float lx0 = pin.x - 0.115f, lx1 = pin.x + 0.115f, ly0 = pin.y, ly1 = pin.y + 0.13f;
+            foreach (Vector3 cw in crew)
+            {
+                Vector3 feet = P(new Vector3(cw.x, 0f, cw.z)), head = P(new Vector3(cw.x, 2.3f, cw.z));
+                if (feet.z <= 0.5f) continue;
+                float hw = 0.4f / (feet.z * th * aspect);
+                float cx0 = feet.x - hw, cx1 = feet.x + hw, cy0 = feet.y, cy1 = head.y;
+                if (cx1 > lx0 && cx0 < lx1 && cy1 > ly0 && cy0 < ly1) return false;
+                if (centre.z < feet.z + 0.3f && cx1 > minX && cx0 < maxX && cy1 > minY && cy0 < maxY) return false;
+            }
+            return true;
+        }
+
         static readonly Dictionary<string, Vector3> ChosenSpots = new Dictionary<string, Vector3>
         {
-            { "rec", new Vector3(-3.6f, 0f, -8.4f) },      // west of the spawn, on open paving at the court's edge
-            { "theater", new Vector3(-5.0f, 0f, -12.0f) }, // west of the spawn on the kerb side of the foyer (WalkableAreaTests: the old east spot at 4.5 closed the way to the exit)
+            // round 8.4 fix round 2: west of the spawn in each of these, where the rack and its label hide no crew member from the spawn camera and the ring is wholly in frame (WorldShop.SeenWell, pinned by WardrobePlacesTests)
+            { "records", new Vector3(-5.5f, 0f, -7.5f) },
+            { "rec", new Vector3(-6.0f, 0f, -8.0f) },      // west of the spawn, on open paving at the court's edge
+            { "theater", new Vector3(-5.5f, 0f, -12.0f) }, // west of the spawn on the kerb side of the foyer (WalkableAreaTests: the old east spot at 4.5 closed the way to the exit)
+            { "festival", new Vector3(3.0f, 0f, -11.0f) }, // beside the boardwalk, in front of the crew on the east
+            { "arena", new Vector3(-5.5f, 0f, -10.5f) },   // west of the spawn, off the far-right stage table the crew stand behind
         };
         public static bool TryChosenSpot(string placeId, out Vector3 spot) { return ChosenSpots.TryGetValue(placeId, out spot); }
 

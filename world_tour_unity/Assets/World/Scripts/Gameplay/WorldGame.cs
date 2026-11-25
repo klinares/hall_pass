@@ -335,6 +335,7 @@ namespace WorldTour.World.Gameplay
         void SetMode(Mode m)
         {
             _mode = m;
+            if (m == Mode.Free) RestoreOfferView(true);
             _modeFrame = Time.frameCount;
             WorldInput.Paused = m != Mode.Free;
             if (m != Mode.Free && _ui != null) { _ui.HideTag(); _ui.HidePins(); _ui.HideHint(); }
@@ -622,7 +623,24 @@ namespace WorldTour.World.Gameplay
             _player.StopWalking();
             _ui.HideTag();
             Debug.Log("WT_WORLD_STAGE_OFFER mode=" + _stageModes[_stageModeIndex].Id);
+            // round 8.4: the arena's deck is 13 m from the follow camera, so while the offer is open the lens comes nearer and she is drawn 1.3x, as on the show's stage
+            if (_placeId == "arena" && _follow != null && !_offerView)
+            {
+                _offerView = true; _offerOffset = _follow.offset;
+                _follow.offset = new Vector3(0f, 6.0f, -8.4f);
+                _player.transform.localScale = Vector3.one * StageStarScale;
+            }
             ShowStageOffer();
+        }
+
+        bool _offerView;
+        Vector3 _offerOffset;
+        void RestoreOfferView(bool scaleToo)
+        {
+            if (!_offerView) return;
+            _offerView = false;
+            if (_follow != null) _follow.offset = _offerOffset;
+            if (scaleToo && _player != null) _player.transform.localScale = Vector3.one;
         }
 
         void ShowStageOffer()
@@ -655,6 +673,7 @@ namespace WorldTour.World.Gameplay
         {
             if (_crowd != null) _crowd.SetFans(Fans());
             ComputeStageCamera();
+            RestoreOfferView(false);
             SetLens(_ui.OpenLensShift);   // the view slides left with the camera move, so the stage lands in the part the panel leaves open
             if (_follow != null) { _follow.frozen = true; _follow.ShowAllOccluders(); }
             Vector3 camFrom = _cam.transform.position; Quaternion rotFrom = _cam.transform.rotation;
@@ -694,6 +713,7 @@ namespace WorldTour.World.Gameplay
         const float StageBack = 6f, StageUp = 5.4f, StageAimUp = 2.8f, StageAimToward = 2.5f, StageFov = 47f;
         /// <summary>Round 8.4: she is drawn this much bigger on the stage (the view is also closer), so the Star reads from the back of the crowd.</summary>
         const float StageStarScale = 1.3f;
+        const float ArenaStageBack = 1.0f, ArenaStageUp = 7.0f;
         float _fovBefore = 44f;
 
         void ComputeStageCamera()
@@ -702,7 +722,9 @@ namespace WorldTour.World.Gameplay
             Vector3 crowd = _crowdArea != null ? _crowdArea.position : stage + Vector3.back * 6f;
             Vector3 dir = crowd - stage; dir.y = 0;
             dir = dir.sqrMagnitude > 0.01f ? dir.normalized : Vector3.back;
-            _stagePos = crowd + dir * StageBack + Vector3.up * StageUp;
+            float back = StageBack, up = StageUp;
+            if (_placeId == "arena") { back = ArenaStageBack; up = ArenaStageUp; }   // round 8.4: the arena's crowd stands far from the deck; from behind it she was a speck, so the lens sits nearer and higher
+            _stagePos = crowd + dir * back + Vector3.up * up;
             _stageRot = Quaternion.LookRotation((stage + Vector3.up * StageAimUp + dir * StageAimToward) - _stagePos, Vector3.up);
         }
 
@@ -798,7 +820,8 @@ namespace WorldTour.World.Gameplay
                 WeekLabel = r.Week != null ? r.Week.label : null,
                 ModeName = mode != null ? mode.Name : null,
                 NewStickers = r.Stickers,
-                Unlocks = r.Unlocks
+                Unlocks = r.Unlocks,
+                OnePage = true
             });
             t.StartEncore += () => { DockPanel(); OpenShow(() => ShowScreen.OpenEncore(_ui.Stack, r, replaceTop: true)); };
             t.PlayAgain += () => { DockPanel(); OpenShow(() => ShowScreen.OpenAgain(_ui.Stack, r, replaceTop: true)); };

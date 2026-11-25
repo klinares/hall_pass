@@ -16,7 +16,6 @@ namespace WorldTour.World.Tests
         const string Scenes = "Assets/World/Scenes";
         const int BigPatchCells = 40;   // about 6 m2
 
-        static readonly Dictionary<string, Vector2> TrunkSpots = new Dictionary<string, Vector2> { { "Place_Theater", new Vector2(-5f, -12f) }, { "Place_Rec", new Vector2(-3.6f, -8.4f) } };
 
         static Transform Find(string name) { var g = GameObject.Find(name); return g != null ? g.transform : null; }
 
@@ -50,10 +49,12 @@ namespace WorldTour.World.Tests
                 var circles = new List<Vector3>();
                 foreach (var o in Object.FindObjectsByType<Obstacle>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
                     circles.Add(new Vector3(o.transform.position.x, o.transform.position.z, o.radius));
-                // the wardrobe trunk (WorldShop puts it at these hand-picked spots in rec and theater): the trunk and the two ends of its rail, as WardrobeTrunk builds them
+                // the wardrobe trunk (WorldShop puts it at the hand-picked spot of the place): the trunk and the two ends of its rail, as WardrobeTrunk builds them
                 Vector2 trunk = default;
                 if (trunkOverride.HasValue) trunk = trunkOverride.Value;
-                if (trunkOverride.HasValue || TrunkSpots.TryGetValue(place, out trunk))
+                Vector3 chosen;
+                if (!trunkOverride.HasValue && Gameplay.WorldShop.TryChosenSpot(place.Substring("Place_".Length).ToLowerInvariant(), out chosen)) trunk = new Vector2(chosen.x, chosen.z);
+                if (trunkOverride.HasValue || (trunk != default))
                 {
                     const float k = 1.3f;
                     circles.Add(new Vector3(trunk.x, trunk.y, 0.75f * k)); circles.Add(new Vector3(trunk.x - 0.85f * k, trunk.y + 0.55f * k, 0.3f * k)); circles.Add(new Vector3(trunk.x + 0.85f * k, trunk.y + 0.55f * k, 0.3f * k));

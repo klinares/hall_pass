@@ -27,6 +27,8 @@ namespace WorldTour.Game.Ticket
         public IReadOnlyList<Venue> Unlocks;
         /// <summary>The local date "yyyy-mm-dd" (ticket.js:22 localISO()). Null = LocalClock.TodayIso() when the screen opens.</summary>
         public string Date;
+        /// <summary>World-hosted only: lay the page out in two columns scaled to fit the panel, so it never scrolls. The 2D game leaves this false.</summary>
+        public bool OnePage;
     }
 
     /// <summary>Which button sits beside "back to the map" (ticket.js:75).</summary>

@@ -63,7 +63,7 @@ namespace WorldTour.World.Tests
                     Vector3 spot;
                     bool ok = WorldShop.PickSpot(spawn, BlockedFunc(scene), crew, Find(scene, "StageSpot"), Find(scene, "ExitSpot"), out spot, v.Id);
                     Vector3 want;
-                    if (WorldShop.TryChosenSpot(v.Id, out want)) Assert.Less(Vector3.Distance(spot, want), 0.01f, v.Id + ": the hand-picked trunk spot is free, so it is the one used");
+                    if (WorldShop.TryChosenSpot(v.Id, out want) && WorldShop.SeenWell(want, spawn, crew)) Assert.Less(Vector3.Distance(spot, want), 0.01f, v.Id + ": the hand-picked trunk spot is free, so it is the one used");
                     if (!ok)
                     {
                         var near = new List<string>();
@@ -77,6 +77,7 @@ namespace WorldTour.World.Tests
                     Assert.IsTrue(ok, v.Id + ": no free spot beside the spawn");
                     Assert.Less(Vector3.Distance(new Vector3(spot.x, 0, spot.z), new Vector3(spawn.x, 0, spawn.z)), 11f, v.Id + ": near the spawn");
                     foreach (Vector3 c in crew) Assert.Greater(Vector3.Distance(new Vector3(spot.x, 0, spot.z), new Vector3(c.x, 0, c.z)), 3.3f, v.Id + ": clear of the crew");
+                    Assert.IsTrue(WorldShop.SeenWell(spot, spawn, crew), v.Id + ": from the spawn camera the trunk, rack, label or ring hides a crew member or runs off the edge");
                     Debug.Log("WT_TRUNK_SPOT " + v.Id + " " + spot.x.ToString("0.0") + " " + spot.z.ToString("0.0"));
                     found++;
                 }

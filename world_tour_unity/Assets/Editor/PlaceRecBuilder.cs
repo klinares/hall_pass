@@ -50,7 +50,7 @@ public static class PlaceRecBuilder
             StageSpot = V(0f, 0f, 10.4f),
             CrowdCenter = V(0f, 0f, 5.8f), CrowdSize = new Vector2(8.2f, 3.2f),
             Exit = V(11.2f, 0f, -9.6f), ExitArrowYaw = 0f,
-            Crew = new[] { V(-5.4f, 0f, -3.4f), V(5.2f, 0f, -0.4f), V(6.0f, 0f, 3.9f) },
+            Crew = new[] { V(-5.4f, 0f, -3.4f), V(5.6f, 0f, -3.8f), V(6.0f, 0f, 3.9f) },
             Dog = V(-1.8f, 0f, -10.2f),
         };
         Populate(contract, look, profile, blocks);

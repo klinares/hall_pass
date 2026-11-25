@@ -102,8 +102,9 @@ public static class PlaceAPreview
             {
                 Vector3 stageP = stageSpot.position, crowdP = crowdArea.position;
                 Vector3 dir = crowdP - stageP; dir.y = 0; dir.Normalize();
-                Vector3 camP = crowdP + dir * 7f + Vector3.up * 6.5f;
-                Quaternion camR = Quaternion.LookRotation((stageP + Vector3.up * 3.0f + dir * 2.5f) - camP, Vector3.up);
+                float pb = Arg("-previewBack") != null ? F(Arg("-previewBack")) : 6f, pu = Arg("-previewUp") != null ? F(Arg("-previewUp")) : 5.4f;
+                Vector3 camP = crowdP + dir * pb + Vector3.up * pu;
+                Quaternion camR = Quaternion.LookRotation((stageP + Vector3.up * 2.8f + dir * 2.5f) - camP, Vector3.up);
                 float h = 0f;
                 foreach (var z in UnityEngine.Object.FindObjectsByType<HeightZone>(FindObjectsSortMode.None)) h = Mathf.Max(h, z.height);
                 if (player != null)
@@ -114,8 +115,8 @@ public static class PlaceAPreview
                     if (st != null) st.transform.localPosition = new Vector3(0, h, 0);
                 }
                 foreach (var lights in UnityEngine.Object.FindObjectsByType<MarkerBob>(FindObjectsSortMode.None)) lights.gameObject.SetActive(false);
-                if (want.Contains("stage")) Shot("stage", camP, camR, 57f, 0.246f);
-                if (want.Contains("stage_wide")) Shot("stage_wide", camP, camR, 57f, 0f);
+                if (want.Contains("stage")) Shot("stage", camP, camR, 47f, 0.246f);
+                if (want.Contains("stage_wide")) Shot("stage_wide", camP, camR, 47f, 0f);
                 foreach (var m in UnityEngine.Object.FindObjectsByType<MarkerBob>(FindObjectsSortMode.None)) m.gameObject.SetActive(true);
                 if (player != null) player.position = spawn;
             }

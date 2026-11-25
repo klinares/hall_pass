@@ -224,6 +224,7 @@ public static class PlaceTheaterBuilder
             Vector3 prev = Vector3.zero; bool have = false;
             for (int i = 0; i < 5; i++)
             {
+                if (i == 1) { have = false; continue; }   // round 8.4: no post here, so there is a 3 m way through the ropes beside the spawn toward the exit
                 float z = -13.2f + i * 1.45f;
                 float x = side * 2.2f;
                 Prim(PrimitiveType.Cylinder, "Post", t, V(x, 0.45f, z), V(0.09f, 0.45f, 0.09f), gold);
@@ -389,12 +390,12 @@ public static class PlaceTheaterBuilder
         ms.transform.localScale = V(1.7f, 1.7f, 0.06f);
         ms.AddComponent<MeshFilter>().sharedMesh = starMesh;
         var msr = ms.AddComponent<MeshRenderer>(); msr.sharedMaterial = Lit(P + "marquee_star", C("#f98bb0"), 0.3f, new Color(2.0f, 0.6f, 1.0f)); msr.shadowCastingMode = ShadowCastingMode.Off;
-        // blank text bars either side of the star: the name area, left empty
-        foreach (float s in new[] { -1f, 1f })
-        {
-            Prim(PrimitiveType.Cube, "NameBar", t, V(s * 2.9f, 6.15f, z - 0.99f), V(2.8f, 0.2f, 0.03f), Lit(P + "name_bar", C("#e9d9b6"), 0.3f, new Color(0.5f, 0.42f, 0.28f)), null, false);
-            Prim(PrimitiveType.Cube, "NameBar", t, V(s * 3.2f, 5.65f, z - 0.99f), V(2.2f, 0.14f, 0.03f), Lit(P + "name_bar", C("#e9d9b6"), 0.3f, new Color(0.5f, 0.42f, 0.28f)), null, false);
-        }
+        // the show title, in the dark red of the walls, either side of the star: "moonlight revue", tonight, one night only (a made-up show)
+        var titleMat = Lit(P + "marquee_title", C("#7d1230"), 0.3f);
+        PlaceKit.PixelText(t, "MOONLIGHT", V(-2.75f, 6.2f, z - 1.0f), 0.062f, titleMat, "th_title_a", 0.5f);
+        PlaceKit.PixelText(t, "REVUE", V(2.75f, 6.2f, z - 1.0f), 0.098f, titleMat, "th_title_b", 0.5f);
+        PlaceKit.PixelText(t, "TONIGHT", V(-2.75f, 5.55f, z - 1.0f), 0.046f, titleMat, "th_title_c", 0.5f);
+        PlaceKit.PixelText(t, "ONE NIGHT ONLY", V(2.75f, 5.45f, z - 1.0f), 0.042f, titleMat, "th_title_d", 0.5f);
         // canopy
         Prim(PrimitiveType.Cube, "Canopy", t, V(0, 4.55f, z - 1.55f), V(10.4f, 0.28f, 3.1f), red, null, false);
         Prim(PrimitiveType.Cube, "CanopyTrim", t, V(0, 4.38f, z - 3.1f), V(10.5f, 0.3f, 0.12f), gold, null, false);

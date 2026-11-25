@@ -70,6 +70,9 @@ namespace WorldTour.Game.Ticket
 
         RectTransform _content, _viewport, _ticketWrap, _stamp;
         ScrollRect _scroll;
+        Vector2 _pageSize;
+        bool _pageFitted;
+        const float ColumnGap = 24f;
         readonly List<RectTransform> _stickerArts = new List<RectTransform>();
         Button _journalLink;
         bool _left;
@@ -199,6 +202,7 @@ namespace WorldTour.Game.Ticket
 
         void Update()
         {
+            if (Data != null && Data.OnePage && !_pageFitted) FitPage();
             // keep the keyboard-focused button in view (the page scrolls; uGUI doesn't follow focus by itself)
             EventSystem es = EventSystem.current;
             GameObject sel = es != null ? es.currentSelectedGameObject : null;
@@ -285,8 +289,9 @@ namespace WorldTour.Game.Ticket
             // ticket.js:58-62 new venue unlocked
             if (m.Unlock != null) y = BuildUnlock(y) + 22f;
 
-            // ticket.js:64-72 tonight's setlist
-            y = BuildSetlist(y) + 22f;
+            // ticket.js:64-72 tonight's setlist (world-hosted one-page layout: it goes in a second column, below)
+            float leftEnd = y;
+            if (!Data.OnePage) y = BuildSetlist(y) + 22f;
 
             // ticket.js:74-77 buttons (.row gap 12, .btn flex 1 1 220px). 7.4 (kid-fit): pinned in a bar at the bottom so
             // "play again" and "back to the map" are in view without scrolling (the page is ~2000 px tall at 1366x768)
@@ -313,6 +318,25 @@ namespace WorldTour.Game.Ticket
             PrimaryButton = Button(row, "PrimaryButton", m.PrimaryLabel, false, OnPrimary, 0f, 0f, bw);
             BackButton = Button(row, "BackButton", TicketText.BackToMap, true, OnBack, bw + Tokens.RowGap, 0f, bw);
 
+            if (Data.OnePage)
+            {
+                // world-hosted only: two columns (the ticket and the news on the left, the setlist and riff's line on the right),
+                // the whole page scaled to fit the panel so it never needs scrolling at 1366x768
+                RectTransform left = _content;
+                RectTransform right = NewRect("Right", left);
+                Place(right, Width + ColumnGap, 0f, Width, 10f);
+                _content = right;
+                float ry = BuildSetlist(18f) + 22f;
+                ry = BuildCoach(ry) + 10f + Tokens.Gutter;
+                _content = left;
+                y = Mathf.Max(leftEnd, ry);
+                _content.sizeDelta = new Vector2(Width * 2f + ColumnGap, y);
+                _pageSize = _content.sizeDelta;
+                FitPage();
+                _content.anchoredPosition = Vector2.zero;
+                return;
+            }
+
             // ticket.js:79-82 riff and his line (.coach margin-top 22, gap 10, aligned to the bottom)
             y += 22f;
             y = BuildCoach(y);
@@ -320,6 +344,17 @@ namespace WorldTour.Game.Ticket
             y += 10f + Tokens.Gutter; // .screen padding-bottom, plus room under the bubble's shadow
             _content.sizeDelta = new Vector2(Width, y);
             _content.anchoredPosition = Vector2.zero; // ticket.js:87 window.scrollTo(0, 0)
+        }
+
+        /// <summary>One-page layout: shrinks the page (never grows it) until it fits the viewport; re-run once the layout has a size.</summary>
+        void FitPage()
+        {
+            if (!Data.OnePage || _viewport == null) return;
+            Rect v = _viewport.rect;
+            if (v.width < 10f || v.height < 10f) return;
+            float k = Mathf.Min(1f, v.width / _pageSize.x, v.height / _pageSize.y);
+            _content.localScale = new Vector3(k, k, 1f);
+            _pageFitted = true;
         }
 
         void BuildTicket(float y)

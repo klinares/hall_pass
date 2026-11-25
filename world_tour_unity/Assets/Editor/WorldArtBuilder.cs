@@ -291,6 +291,7 @@ public static class WorldArtBuilder
     // (neutral to sweet), and a thin smile (a curved strip in the same dark swatch) added on the front of the face, skinned to the head bone.
 
     const int EyeCell = 26, SkinCell = 24;
+    const float BrowTargetDegrees = 14f, BrowLift = 0.02f, BrowThin = 0.7f;   // the inner end ends this many degrees above the outer one; the brow is thinned and lifted off the eye
     const float EyeTurnDegrees = 24f, SmileHalfWidth = 0.085f, SmileDepth = 0.032f, SmileThick = 0.011f, SmileY = 0.19f;
 
     static int PaletteCell(Vector2 uv) { return (int)(uv.x * 8f) + 8 * (int)(uv.y * 4f); }
@@ -313,6 +314,46 @@ public static class WorldArtBuilder
             Vector3 c = Vector3.zero; foreach (int i in idx) c += v[i]; c /= idx.Count;
             var q = Quaternion.Euler(0f, 0f, side < 0 ? EyeTurnDegrees : -EyeTurnDegrees);   // the outer end goes down, the inner end up
             foreach (int i in idx) { v[i] = c + q * (v[i] - c); n[i] = q * n[i]; }
+        }
+        // brows: separate little islands of the hair swatch (cell 25) high on the front of the face; the inner end is lower than the outer, which is the stern look
+        {
+            var parent = new int[orig];
+            for (int i = 0; i < orig; i++) parent[i] = i;
+            int Find(int a) { while (parent[a] != a) { parent[a] = parent[parent[a]]; a = parent[a]; } return a; }
+            var weld = new System.Collections.Generic.Dictionary<string, int>();
+            for (int i = 0; i < orig; i++)
+            {
+                string key = v[i].x.ToString("F3") + "," + v[i].y.ToString("F3") + "," + v[i].z.ToString("F3");
+                int other;
+                if (weld.TryGetValue(key, out other)) parent[Find(i)] = Find(other); else weld[key] = i;
+            }
+            var t0 = src.triangles;
+            for (int k = 0; k < t0.Length; k += 3) { parent[Find(t0[k + 1])] = Find(t0[k]); parent[Find(t0[k + 2])] = Find(t0[k]); }
+            var comps = new System.Collections.Generic.Dictionary<int, System.Collections.Generic.List<int>>();
+            for (int i = 0; i < orig; i++)
+            {
+                int r = Find(i);
+                if (!comps.ContainsKey(r)) comps[r] = new System.Collections.Generic.List<int>();
+                comps[r].Add(i);
+            }
+            foreach (var comp in comps.Values)
+            {
+                bool allHair = true;
+                var bb = new Bounds(v[comp[0]], Vector3.zero);
+                foreach (int i in comp) { if (PaletteCell(uv[i]) != 25) { allHair = false; break; } bb.Encapsulate(v[i]); }
+                if (!allHair || bb.size.x > 0.3f || bb.size.y > 0.2f || bb.center.z < 0.28f || bb.center.y < 0.42f || bb.center.y > 0.62f || Mathf.Abs(bb.center.x) < 0.08f) continue;
+                int side = bb.center.x < 0f ? -1 : 1;
+                // measure how far the brow slants now (outer end above the inner = stern), then turn it to the friendly slant
+                var byInner = comp.OrderBy(i => Mathf.Abs(v[i].x)).ToList();
+                int third = Mathf.Max(1, byInner.Count / 3);
+                float inX = 0f, inY = 0f, outX = 0f, outY = 0f;
+                for (int k = 0; k < third; k++) { inX += Mathf.Abs(v[byInner[k]].x); inY += v[byInner[k]].y; var o = byInner[byInner.Count - 1 - k]; outX += Mathf.Abs(v[o].x); outY += v[o].y; }
+                float slant = Mathf.Atan2((outY - inY) / third, (outX - inX) / third) * Mathf.Rad2Deg;   // positive: the outer end is higher
+                float turn = slant + BrowTargetDegrees;
+                var q = Quaternion.Euler(0f, 0f, side < 0 ? turn : -turn);
+                Vector3 c = bb.center;
+                foreach (int i in comp) { Vector3 d = v[i] - c; d.y *= BrowThin; v[i] = c + q * d + Vector3.up * BrowLift; n[i] = q * n[i]; }
+            }
         }
         // the smile: z from the skin around where the mouth sits
         float z = float.MinValue;

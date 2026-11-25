@@ -266,12 +266,12 @@ public static class PlaceClubBuilder
         }
         // a blade neon sign standing at the west corner of the club: LIVE, vertical bolts
         var live = NeonMat(P + "neon_live", "#ffe040", 2.8f);
-        var pole = Group("LiveSign", d).transform; pole.position = V(-0.6f, 0, 2.2f);
+        var pole = Group("LiveSign", d).transform; pole.position = V(0.3f, 0, 2.2f);   // east of the ARCADE sign, so the board no longer hides its last letters
         Prim(PrimitiveType.Cylinder, "Pole", pole, V(0, 2.0f, 0), V(0.1f, 2.0f, 0.1f), trim);
         var board = Prim(PrimitiveType.Cube, "Board", pole, V(0, 4.2f, 0), V(1.7f, 1.0f, 0.14f), M("board", "#150f28", 0.3f));
         var lt = PixelText(pole, "LIVE", V(0, 4.2f, -0.12f), 0.07f, live, "cb_text_live", 0.5f);
         MakeGlow(lt, new Color(1f, 0.88f, 0.25f) * 2.8f, 4.5f);
-        Block(blocks, -0.6f, 2.2f, 0.3f);
+        Block(blocks, 0.3f, 2.2f, 0.3f);
         // parked cars in the road, a taxi, bins, a dumpster, a hydrant
         Fbx(City + "car_taxi.fbx", d, V(9.4f, 0, -6.2f), 90f, CityScale, cityMat, "Taxi");
         Block(blocks, 7.9f, -6.2f, 0.9f); Block(blocks, 9.4f, -6.2f, 0.9f); Block(blocks, 10.9f, -6.2f, 0.9f);

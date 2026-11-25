@@ -106,11 +106,11 @@ namespace WorldTour.World.Gameplay
         /// <summary>Where each place's trunk stands: beside the spawn on the open ground, clear of every blocker, crew member, the stage and the exit. First free spot of the list wins.</summary>
         bool PickSpot(string placeId, Vector3 spawn, out Vector3 spot)
         {
-            return PickSpot(spawn, Obstacle.IsBlocked, _game.CrewPositions(), _game.StagePos, _game.ExitPos, out spot);
+            return PickSpot(spawn, Obstacle.IsBlocked, _game.CrewPositions(), _game.StagePos, _game.ExitPos, out spot, placeId);
         }
 
         /// <summary>The trunk's spot, from the blockers (a test for "is this ground point blocked, grown by this margin"), the crew, the stage and the exit. False when nothing near the spawn is free.</summary>
-        public static bool PickSpot(Vector3 spawn, Func<Vector3, float, bool> blocked, IEnumerable<Vector3> crew, Vector3? stage, Vector3? exit, out Vector3 spot)
+        public static bool PickSpot(Vector3 spawn, Func<Vector3, float, bool> blocked, IEnumerable<Vector3> crew, Vector3? stage, Vector3? exit, out Vector3 spot, string placeId = null)
         {
             float[] dxs = { 4.2f, 5.6f, 3.2f, 7.0f, 2.4f, 8.4f };
             float[] dzs = { -0.8f, 0.4f, -1.6f, 1.4f, -2.4f, 2.4f, 3.4f };
@@ -121,6 +121,9 @@ namespace WorldTour.World.Gameplay
                     cands.Add(new Vector3(spawn.x + dx, 0f, spawn.z + dz));
                     cands.Add(new Vector3(spawn.x - dx, 0f, spawn.z + dz));
                 }
+            // round 8.4: a hand-picked spot first where the search put the trunk behind a foreground tree (rec) or inside the rope lane of the foyer (theater)
+            Vector3 chosen;
+            if (placeId != null && ChosenSpots.TryGetValue(placeId, out chosen)) cands.Insert(0, chosen);
             // first the tidy list beside the spawn; then (a crowded place such as the theater foyer) the nearest free ground on a half-metre grid, first with the same room, then with less
             for (int pass = 0; pass < 3; pass++)
             {
@@ -147,6 +150,13 @@ namespace WorldTour.World.Gameplay
             spot = Vector3.zero;
             return false;
         }
+
+        static readonly Dictionary<string, Vector3> ChosenSpots = new Dictionary<string, Vector3>
+        {
+            { "rec", new Vector3(-3.6f, 0f, -8.4f) },      // west of the spawn, on open paving at the court's edge
+            { "theater", new Vector3(4.5f, 0f, -12.0f) },  // east of the spawn on the kerb side of the foyer (the only open bricks: the rope lane and the planters take the rest)
+        };
+        public static bool TryChosenSpot(string placeId, out Vector3 spot) { return ChosenSpots.TryGetValue(placeId, out spot); }
 
         static bool Near(Vector3 c, IEnumerable<Vector3> list, float r) { foreach (Vector3 p in list) if (Flat(c, p) < r) return true; return false; }
         static bool Near(Vector3 c, Vector3? p, float r) { return p.HasValue && Flat(c, p.Value) < r; }

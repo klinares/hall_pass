@@ -2,6 +2,39 @@
 
 The advisor reads `REPORT.md`, `QUESTIONS.md`, `DECISIONS.md` and the plan about every 30 minutes and writes here. Lead: re-read this file and `QUESTIONS.md` before starting each task and before you stop for any reason. Notes are instructions unless marked "FYI". Newest first. Answers to numbered questions go under the question in `QUESTIONS.md`, not here.
 
+## 2026-11-24 22:25 (advisor) refreshed shots reviewed: look corrections confirmed
+
+Club (ARCADE sign), coffee gig (dark, larger question text; panel ends with its content), theater: all good, faces friendlier. Thank you. One pointer for the "bricks" glitch (note 21:55): the theater forecourt and the festival path are the brick-paved grounds, and the theater also has the lattice carpet under the marquee; check those two places first for shimmer, z-fighting and the marquee/pillar fade toggling.
+
+## 2026-11-24 22:00 (advisor) DEADLINE: a finished, publishable game by Wednesday 2026-11-25, 18:00 local
+
+The owner: "I need you to try and complete the game by tomorrow." His daughter already loves it; what is missing is that it works every time. From now on, stability beats features. Order of work, stop adding anything not on this list:
+1. P0, must ship: (a) the WebGL failure (note of 21:45: context-lost handler with reload, memory per place, high-performance GPU); (b) "bricks kept reloading or looked stuck" (note of 21:55); (c) the tester's 8.4 failures that block play: reload lands in coffee instead of where she was, click-walk stage to exit failing at rec and theater, theater spawn inside the trunk ring, rec trunk hidden; (d) no way to get stuck anywhere: every place must be completable by keyboard alone and by mouse alone.
+2. P1, ship if done by 14:00: bubbles covering her, snack labels under 12 px, star too small at the arena, rooftop orbs, the kid-fit pass on two places (coffee and one late place), not all eight.
+3. Cut or defer to "polish later" without asking: optional arena floor dressing, any new props, any refactor, per-place extras, a second kid-fit round.
+4. Process for speed: two builders in parallel on separate files; ONE combined tester pass at about 12:00 on a real-GPU browser run of all eight places end to end (walk, one gig, the show, travel), then one fix round only. No fix-round cap for P0 items.
+5. By 16:00: final build, all suites green for both `tour/` and `world/`, commit, REPORT.md with the glitch list (fixed / not fixed), eight refreshed shots. Do not push; the owner publishes.
+6. 8.5 clean-up runs AFTER the final commit and may finish after the deadline. It must not delay the game or touch anything the build needs.
+If the plan limit stops you, write the time and the exact next step at the top of TODO.md before you stop, so the restart loses nothing. If something on the P0 list cannot be fixed in time, say so in QUESTIONS.md at once with the smallest safe fallback (for example: disable that place's click-walk shortcut, or ship seven places).
+
+## 2026-11-24 21:55 (advisor) glitch report from the daughter's play: "the bricks kept reloading or looked stuck"
+
+The owner's words: "the bricks in the video kept reloading or looked stuck." He has not said which place yet. Add to the 8.4 glitch hunt and reproduce on a real GPU at 1366 and 1920. Likely candidates, check each:
+1. The occluder fade: brick walls, piers and the thin pieces fixed to them popping out and back on the 1.5 s rescan as she walks or stands near them (the hidden-props rescan was already buggy once in 8.1). Fading must be smooth (0.25 s or more), must not toggle while she stands still, and needs hysteresis so a wall at the edge of the test does not flicker.
+2. Z-fighting or texture shimmer on brick and tile ground (coplanar ground pieces, the festival brick path, the club pavement): no two surfaces at the same height, anisotropic filtering on ground textures, mipmaps on.
+3. Streaming or late-loading of a place's pieces after travel (walls appearing a moment late, or again after each gig panel closes), and anything that reloads a scene when a panel or show ends.
+4. A stall: frame hitches when a gig or show opens or closes, which would read as "stuck". Record the longest frame time across a full place in the browser test; nothing over 100 ms after the first second.
+Report what it was in REPORT.md under the glitch list.
+
+## 2026-11-24 21:45 (advisor) first play on the daughter's laptop: she loves it; WebGL failure to fix in 8.4
+
+The owner pushed the 8.3 build and his daughter played `world/` on her own laptop (dedicated GPU). Verdict from her: the 3D game is her favourite. But "there are several glitches", and she hit the failure screen: "the show couldn't start. try reloading the page, or open it in chrome or edge." followed by "Your browser does not support WebGL." She had been playing, so this is most likely a lost WebGL context (GPU memory, a scene change, the laptop switching GPUs or sleeping), after which the tab cannot get a new context. Treat as a correctness defect, top of 8.4, not subject to the fix-round cap:
+1. Handle `webglcontextlost` / `webglcontextrestored` on the canvas in the `world/` template: prevent default, and on loss show one short lowercase line with a single big "reload" button that reloads the page. Never show Unity's raw "Your browser does not support WebGL" text; replace it with "this browser can't draw 3D right now. close the browser, open it again, and come back." Save before the reload path (the save must already be flushed on every gig and show end; check).
+2. Cut GPU memory, since eight places now load in one session: confirm each place unloads fully on travel (Resources.UnloadUnusedAssets after the scene swap, no place assets in a shared always-loaded bundle), compress textures, cap render scale at 1.0 and MSAA at 2x, shadow map 2048 max, and record WebGL memory before and after travelling through all eight places in a browser test (it must not grow place over place).
+3. Request `powerPreference: "high-performance"` in the WebGL context attributes so a two-GPU laptop picks the dedicated card.
+4. Add a browser test: force context loss with the WEBGL_lose_context extension mid-walk and mid-show; the page must show the reload line and the save must survive.
+5. In the 8.4 tester pass, hunt the "several glitches": play all eight places end to end as a child would (walk into every edge, spam clicks during travel, open a gig while Riff is in the way, leave mid-show) and list every one in REPORT.md with fixed / not fixed.
+
 ## 2026-11-24 07:40 (advisor) look review of the phase 8 shots: approved, with five corrections
 
 Thank you for the shots. I looked at coffee (street, gig, show), arena, club and festival at 1366. Verdict: the look is approved. One consistent style, warm light, real shadows, each place clearly its own (morning street, neon night, festival, arena), crew read as modern. No rework of the kit. Fold these into 8.3/8.4 (they are look items, not new scope):

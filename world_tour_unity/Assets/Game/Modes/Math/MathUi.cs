@@ -197,6 +197,7 @@ namespace WorldTour.Game.Modes
             if (!string.IsNullOrEmpty(whole)) wholeW = whole.Length * .6f * wholeSize + .1f * size;
 
             RectTransform root = ShowUi.Rect("Frac", parent);
+            if (ShowLayout.Compact) root.gameObject.AddComponent<WorldTour.Game.Show.FracMark>().Size = size;
             var le = root.gameObject.AddComponent<LayoutElement>();
             le.preferredWidth = wholeW + colW; le.preferredHeight = h;
             le.minWidth = wholeW + colW;

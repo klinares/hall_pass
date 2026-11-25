@@ -82,6 +82,58 @@ namespace WorldTour.World.Tests
             Assert.IsEmpty(report, string.Join("\n", report));
         }
 
+        /// <summary>
+        /// Round 8.4: not only from the spawn. Every point a player stands at (spawn, stage spot, exit, a talking spot at each crew member) must reach every other,
+        /// the way a click-walk from the stage to the exit does.
+        /// </summary>
+        [Test]
+        public void EveryPlace_EveryKeyPointReachesEveryOther()
+        {
+            var report = new List<string>();
+            foreach (string file in Directory.GetFiles(Scenes, "Place_*.unity"))
+            {
+                EditorSceneManager.OpenScene(file, OpenSceneMode.Single);
+                string place = Path.GetFileNameWithoutExtension(file);
+                var circles = new List<Vector3>();
+                foreach (var o in Object.FindObjectsByType<Obstacle>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+                    circles.Add(new Vector3(o.transform.position.x, o.transform.position.z, o.radius));
+                var boxes = new List<Rect>();
+                Transform crowd = Find("CrowdArea");
+                if (crowd != null) { Vector3 c = crowd.position, s = crowd.lossyScale; boxes.Add(new Rect(c.x - Mathf.Abs(s.x) / 2f, c.z - Mathf.Abs(s.z) / 2f, Mathf.Abs(s.x), Mathf.Abs(s.z))); }
+                foreach (var z in Object.FindObjectsByType<KeepOutZone>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) boxes.Add(z.Area);
+                System.Func<Vector3, bool> blocked = p =>
+                {
+                    foreach (Vector3 c in circles) { float dx = p.x - c.x, dz = p.z - c.y, m = c.z + PlayerController.PlanMargin; if (dx * dx + dz * dz < m * m) return true; }
+                    foreach (Rect r in boxes) if (p.x > r.xMin - PlayerController.PlanMargin && p.x < r.xMax + PlayerController.PlanMargin && p.z > r.yMin - PlayerController.PlanMargin && p.z < r.yMax + PlayerController.PlanMargin) return true;
+                    return false;
+                };
+                var player = Object.FindFirstObjectByType<PlayerController>();
+                float bounds = player != null ? player.bounds : 13.5f;
+                Vector3 spawn = Find("PlayerSpawn").position; spawn.y = 0;
+                var pts = new List<(string, Vector3)> { ("spawn", spawn) };
+                if (Find("StageSpot") != null) pts.Add(("stage", Find("StageSpot").position));
+                if (Find("ExitSpot") != null) pts.Add(("exit", Find("ExitSpot").position));
+                for (int i = 1; i <= 3; i++)
+                {
+                    Transform c = Find("Crew_" + i);
+                    if (c == null) continue;
+                    Vector3 to = spawn - c.position; to.y = 0;
+                    pts.Add(("crew " + i, c.position + (to.sqrMagnitude > 0.01f ? to.normalized : Vector3.back) * 1.7f));
+                }
+                for (int i = 0; i < pts.Count; i++)
+                    pts[i] = (pts[i].Item1, PushOutOfBlockers(new Vector3(pts[i].Item2.x, 0, pts[i].Item2.z), circles, boxes, PlayerController.PlanMargin + 0.05f));
+                foreach (var (la, a) in pts)
+                    foreach (var (lb, b) in pts)
+                    {
+                        if (la == lb) continue;
+                        var legs = PathGrid.Find(a, b, bounds, blocked, out bool reached);
+                        if (la == "stage" && lb == "exit") Debug.Log("WT_ROUTE " + place + " " + string.Join(" ", legs.ConvertAll(w => w.x.ToString("0.0") + "," + w.z.ToString("0.0"))));
+                        if (!reached) report.Add(place + ": " + la + " cannot reach " + lb);
+                    }
+            }
+            Assert.IsEmpty(report, string.Join("\n", report));
+        }
+
         static Vector3 PushOutOfBlockers(Vector3 p, List<Vector3> circles, List<Rect> boxes, float margin)
         {
             for (int pass = 0; pass < 3; pass++)

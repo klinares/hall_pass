@@ -310,14 +310,6 @@ public static class PlaceRooftopBuilder
         var pole = M("pole", "#6e4428", 0.2f);
         foreach (var p in new[] { (-12.4f, -3.6f), (12.4f, -3.6f), (-12.4f, 2.6f), (-12.4f, -11.6f), (12.4f, -11.6f) })
             Prim(PrimitiveType.Cylinder, "LightPole", t, V(p.Item1, 1.95f, p.Item2), V(0.14f, 1.95f, 0.14f), pole).AddComponent<Occluder>();
-        // paper lanterns hanging on the long span
-        var lantern = M("paper_lantern", "#ff9a6a", 0.2f, new Color(2.4f, 1.0f, 0.5f));
-        var lantern2 = M("paper_lantern2", "#ff7aa8", 0.2f, new Color(2.4f, 0.6f, 1.0f));
-        for (int i = 0; i < 6; i++)
-        {
-            float x = -9.6f + i * 3.8f;
-            float sag = 1.5f * 4f * ((x + 12.4f) / 24.8f) * (1f - (x + 12.4f) / 24.8f);
-            Prim(PrimitiveType.Sphere, "PaperLantern", t, V(x, 3.9f - sag - 0.35f, -3.6f), V(0.45f, 0.55f, 0.45f), i % 2 == 0 ? lantern : lantern2, null, false);
-        }
+        // round 8.4: the paper lanterns that hung on the long span are gone: from the follow camera they floated as white balls over the crew's heads
     }
 }

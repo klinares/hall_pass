@@ -532,16 +532,55 @@ namespace WorldTour.World.Gameplay
         /// <summary>Hangs riff's bubble (if one is up) over a point on the screen, kept inside the open part beside the panel.</summary>
         public void PlaceDogBubble(Vector2 screenPoint, float lift = 0f)
         {
+            PlaceDogBubble(screenPoint, null, null, lift);
+        }
+
+        /// <summary>
+        /// Round 8.4: the bubble hangs beside riff, level with his head, on the side that keeps clear of her (feet and head screen points) so it never covers her body, and
+        /// low enough that it stays off the venue sign above the stage. With no player points it hangs over riff as before.
+        /// </summary>
+        public void PlaceDogBubble(Vector2 screenPoint, Vector2? playerFeet, Vector2? playerHead, float lift = 0f)
+        {
             if (BubbleHost == null) return;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(_canvasRt, screenPoint, null, out Vector2 local);
             Rect r = _canvasRt.rect;
+            Rect? her = null;
+            if (playerFeet.HasValue && playerHead.HasValue)
+            {
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(_canvasRt, playerFeet.Value, null, out Vector2 f);
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(_canvasRt, playerHead.Value, null, out Vector2 hd);
+                her = Rect.MinMaxRect(Mathf.Min(f.x, hd.x) - 70f, Mathf.Min(f.y, hd.y) - 10f, Mathf.Max(f.x, hd.x) + 70f, Mathf.Max(f.y, hd.y) + 40f);
+            }
             for (int i = 0; i < BubbleHost.childCount; i++)
             {
                 var rt = BubbleHost.GetChild(i) as RectTransform;
                 if (rt == null || !rt.gameObject.activeSelf) continue;
                 float w = rt.rect.width, h = rt.rect.height;
-                float x = Mathf.Clamp(local.x, r.xMin + 16f + w / 2f, Mathf.Max(r.xMin + 16f + w / 2f, OpenRightLocal() - w / 2f));
-                float y = Mathf.Clamp(local.y + 34f + lift, r.yMin + 80f, Mathf.Max(r.yMin + 80f, r.yMax - 16f - h));
+                float minX = r.xMin + 16f + w / 2f, maxX = Mathf.Max(minX, OpenRightLocal() - w / 2f);
+                float y = Mathf.Clamp(local.y + 34f, r.yMin + 80f, Mathf.Max(r.yMin + 80f, r.yMax - 16f - h));
+                float x = Mathf.Clamp(local.x, minX, maxX);
+                if (her.HasValue)
+                {
+                    // candidates: beside riff on the left, beside him on the right, then over him; the first that does not touch her wins
+                    float gap = 50f;
+                    float[] xs = { local.x - gap - w / 2f, local.x + gap + w / 2f, local.x, local.x };
+                    float belowY = Mathf.Min(her.Value.yMin, local.y - 10f) - h - 8f;   // under her feet and riff: the ground in front of them
+                    float bestScore = float.MaxValue;
+                    for (int c = 0; c < xs.Length; c++)
+                    {
+                        float lo = c == 3 ? Mathf.Max(minX, r.xMin + 110f + w / 2f) : minX;   // the mute button sits in the bottom-left corner
+                        float cx = Mathf.Clamp(xs[c], lo, Mathf.Max(lo, maxX));
+                        float cy = c < 2 ? Mathf.Clamp(local.y + 34f, r.yMin + 80f, Mathf.Max(r.yMin + 80f, r.yMax - 16f - h))
+                                 : c == 2 ? Mathf.Clamp(local.y + 34f + lift, r.yMin + 80f, Mathf.Max(r.yMin + 80f, r.yMax - 16f - h))
+                                 : Mathf.Max(r.yMin + 16f, belowY);
+                        Rect box = new Rect(cx - w / 2f, cy, w, h);
+                        float ox = Mathf.Max(0f, Mathf.Min(box.xMax, her.Value.xMax) - Mathf.Max(box.xMin, her.Value.xMin));
+                        float oy = Mathf.Max(0f, Mathf.Min(box.yMax, her.Value.yMax) - Mathf.Max(box.yMin, her.Value.yMin));
+                        float score = ox * oy + c * 1f;   // overlap area, with the earlier candidate winning a tie
+                        if (score < bestScore) { bestScore = score; x = cx; y = cy; }
+                    }
+                }
+                else y = Mathf.Clamp(local.y + 34f + lift, r.yMin + 80f, Mathf.Max(r.yMin + 80f, r.yMax - 16f - h));
                 rt.anchoredPosition = new Vector2(x, y);
             }
         }

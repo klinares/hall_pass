@@ -81,6 +81,8 @@ namespace WorldTour.Game.Modes
         {
             bool picture = FracMulLines.HasPicture(p);
             _desk = MathUi.Desk(left, FracMulLines.DeskTag);
+            var deskFit = _desk.GetComponent<WorldTour.Game.Show.DeskFit>();
+            if (deskFit != null) deskFit.KeepReadable = true;   // the world's docked panel: the picture's words stay at least 14 px however far the desk shrinks
             if (!FracMulLines.PictureIsTheQuestion(p))
                 MathUi.RichRow(_desk, "Expression", p.Label, 31f, FontRole.BodyBold, ColorRole.OnInk, 64f);
             if (picture)

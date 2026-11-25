@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -31,6 +32,41 @@ namespace WorldTour.Game.Show
         {
             if (_group == null) _group = GetComponent<VerticalLayoutGroup>();
             if (_rt == null) _rt = (RectTransform)transform;
+        }
+
+        /// <summary>
+        /// Round 8.4: the desk's words and stacked fractions never draw smaller than <see cref="MinPx"/> on the screen, however far the desk has shrunk (the snack table).
+        /// Text is set larger and its layout row grows with it; a fraction is drawn bigger as a whole. Only ever grows, so it settles.
+        /// </summary>
+        public bool KeepReadable;
+        public const float MinPx = 14.4f;
+        float _nextReadable;
+
+        void LateUpdate()
+        {
+            if (!KeepReadable || Time.unscaledTime < _nextReadable) return;
+            _nextReadable = Time.unscaledTime + 0.15f;
+            foreach (TMP_Text t in GetComponentsInChildren<TMP_Text>(false))
+            {
+                if (string.IsNullOrEmpty(t.text) || t.GetComponentInParent<FracMark>() != null) continue;
+                float px = t.fontSize * t.transform.lossyScale.x;
+                if (px <= 0f || px >= MinPx - 0.05f) continue;
+                t.fontSize = MinPx / t.transform.lossyScale.x;
+                var le = t.GetComponent<LayoutElement>();
+                if (le != null)
+                {
+                    le.preferredHeight = Mathf.Max(le.preferredHeight, t.fontSize * 1.25f);
+                    le.preferredWidth = Mathf.Max(le.preferredWidth, t.GetPreferredValues(t.text, 2000, 0).x + 2f);
+                }
+                LayoutRebuilder.MarkLayoutForRebuild(_rt != null ? _rt : (RectTransform)transform);
+            }
+            foreach (FracMark f in GetComponentsInChildren<FracMark>(false))
+            {
+                var fr = (RectTransform)f.transform;
+                float px = f.Size * fr.lossyScale.x / Mathf.Max(0.01f, fr.localScale.x);   // the digits' px at scale 1 of this fraction
+                float want = Mathf.Max(1f, MinPx / Mathf.Max(0.01f, px));
+                if (want > fr.localScale.x + 0.01f) fr.localScale = new Vector3(want, want, 1f);
+            }
         }
 
         public void SetScale(float s)
@@ -69,4 +105,7 @@ namespace WorldTour.Game.Show
             if (_natural > 0f && Mathf.Abs(_rt.rect.height - _natural) > 0.1f) _rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, _natural);
         }
     }
+
+    /// <summary>Marks a stacked fraction (MathUi.Frac) with its digit font size, so <see cref="DeskFit"/> can draw it bigger as a whole.</summary>
+    public sealed class FracMark : MonoBehaviour { public float Size; }
 }

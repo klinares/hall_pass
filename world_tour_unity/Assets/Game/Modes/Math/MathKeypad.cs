@@ -195,7 +195,7 @@ namespace WorldTour.Game.Modes
             if (look == KeyLook.Fn || look == KeyLook.Wide) key.Face.color = MathUi.Mix(ColorRole.Accent, .4f, ColorRole.Card);
             key.Rest = key.Face.color;
             if (k == "back") BackIcon(face);
-            else if (k == "/") { RectTransform f = MathUi.Frac(face, null, "", "", 17f, ColorRole.Ink, true); Centre(f); }
+            else if (k == "/") { RectTransform f = MathUi.Frac(face, null, "", "", ShowLayout.Compact ? 25f : 17f, ColorRole.Ink, true); Centre(f); }
             else if (look == KeyLook.Go) ShowUi.Label(face, "Label", label ?? MathLines.LockItIn, 27.2f, FontRole.Display, ColorRole.OnInk);
             else if (look == KeyLook.Wide) ShowUi.Label(face, "Label", MathLines.And, 24f, FontRole.Display, ColorRole.Ink);
             else ShowUi.Label(face, "Label", k == "." ? MathLines.DotFace : k, 25.6f, FontRole.BodyBold, ColorRole.Ink);

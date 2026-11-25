@@ -155,6 +155,17 @@ namespace WorldTour.World.Gameplay
                 Debug.Log("WT_WORLD_GOTO place=" + go);
                 StartCoroutine(Travel(Venues.ById(go), true));
             }
+            else if (!string.IsNullOrEmpty(go) && go == _placeId)
+            {
+                _world.Place = _placeId; _world.HasPosition = false;   // the hook asked for the place the game opens in: nothing to travel to
+            }
+            else if (string.IsNullOrEmpty(go) && _world.Place != null && _world.Place != _placeId && Venues.Exists(_world.Place)
+                     && Application.CanStreamedLevelBeLoaded(WorldPlace.SceneName(_world.Place)))
+            {
+                // a reload: the game always opens in the coffee shop, so go back to where the save says she was (and where she stood) before anything is saved
+                Debug.Log("WT_WORLD_RESUME place=" + _world.Place + " pos=" + _world.HasPosition);
+                StartCoroutine(Travel(Venues.ById(_world.Place), true, true));
+            }
         }
 
         static string QueryParam(string name)
@@ -238,10 +249,12 @@ namespace WorldTour.World.Gameplay
             // where she starts: the saved spot in this place, else PlayerSpawn
             SaveStore store = Boot.Store;
             _world = store != null ? WorldSave.Read(store.Blob) : new WorldState();
-            if (_world.Place == _placeId && _world.HasPosition) _player.Place(new Vector3(_world.X, 0, _world.Z));
+            // (a saved spot that is now inside a prop is not used: she starts at the spawn instead)
+            bool savedSpot = _world.Place == _placeId && _world.HasPosition && !Obstacle.IsBlocked(new Vector3(_world.X, 0, _world.Z), 0.2f);
+            if (savedSpot) _player.Place(new Vector3(_world.X, 0, _world.Z));
             else if (_spawn != null) { _player.Place(_spawn.position); _player.transform.rotation = _spawn.rotation; }
             if (_follow != null) { _follow.frozen = false; _follow.transform.position = _follow.FollowPosition; _follow.ResetVelocity(); }
-            _hintOn = !(_world.Place == _placeId && _world.HasPosition);   // first visit: say how to walk until she has
+            _hintOn = !savedSpot;   // first visit: say how to walk until she has
             _hintFrom = _player.transform.position;
             _hintUntil = Time.time + HintSeconds;
             // the crowd is somewhere she walks round, never into: the way to the stage stays clear of figures
@@ -335,7 +348,7 @@ namespace WorldTour.World.Gameplay
             SyncAudio();
             if (_mode == Mode.Free && Time.frameCount > _modeFrame) UpdateFree();
             else if (_mode == Mode.Dialog && _talking != null && _ui.DialogOpen && _cam != null) _ui.MoveDialogAnchor(HeadScreen(_talking.T));
-            else if (_mode == Mode.Panel && _ui.PanelCompact && _cam != null) _ui.PlaceDogBubble(DogScreen(), _run == Run.Show ? 130f : 0f);
+            else if (_mode == Mode.Panel && _ui.PanelCompact && _cam != null) _ui.PlaceDogBubble(DogScreen(), _cam.WorldToScreenPoint(_player.transform.position), _cam.WorldToScreenPoint(_player.transform.position + Vector3.up * 1.9f), _run == Run.Show ? 130f : 0f);
             if (TestMode && Time.unscaledTime >= _nextTargets) { _nextTargets = Time.unscaledTime + 0.4f; LogTargets(); }
         }
 
@@ -655,11 +668,13 @@ namespace WorldTour.World.Gameplay
                 _cam.transform.position = Vector3.Lerp(camFrom, _stagePos, e);
                 _cam.transform.rotation = Quaternion.Slerp(rotFrom, _stageRot, e);
                 _cam.fieldOfView = Mathf.Lerp(_fovBefore, StageFov, e);
+                _player.transform.localScale = Vector3.one * Mathf.Lerp(1f, StageStarScale, e);
                 _player.transform.position = Vector3.Lerp(starFrom, spot, e);
                 FaceCrowd();
                 yield return null;
             }
             _cam.transform.position = _stagePos; _cam.transform.rotation = _stageRot; _cam.fieldOfView = StageFov;
+            _player.transform.localScale = Vector3.one * StageStarScale;
             _player.Place(spot);
             FaceCrowd();
             _ui.CloseDialog();
@@ -675,7 +690,9 @@ namespace WorldTour.World.Gameplay
 
         /// <summary>A fixed camera behind the crowd, looking at the Star from a little above and behind the front rows. The panel docks to the right, so the lens shift (PanelLensShift)
         /// puts this view in the open left half: the whole lit stage, the Star on the deck and the front of the crowd. Chosen from renders at 1366x768 (the 1920x1080 canvas is the same 16:9 picture), phase 8.1 stage show.</summary>
-        const float StageBack = 7f, StageUp = 6.5f, StageAimUp = 3.0f, StageAimToward = 2.5f, StageFov = 57f;
+        const float StageBack = 6f, StageUp = 5.4f, StageAimUp = 2.8f, StageAimToward = 2.5f, StageFov = 47f;
+        /// <summary>Round 8.4: she is drawn this much bigger on the stage (the view is also closer), so the Star reads from the back of the crowd.</summary>
+        const float StageStarScale = 1.3f;
         float _fovBefore = 44f;
 
         void ComputeStageCamera()
@@ -690,7 +707,7 @@ namespace WorldTour.World.Gameplay
 
         IEnumerator ReturnCamera()
         {
-            if (_follow == null || _cam == null) yield break;
+            if (_follow == null || _cam == null) { if (_player != null) _player.transform.localScale = Vector3.one; yield break; }
             Vector3 from = _cam.transform.position; Quaternion rotFrom = _cam.transform.rotation;
             Vector3 to = _follow.FollowPosition; Quaternion rotTo = _follow.FollowRotation;
             float dur = GameSettings.ReducedMotion ? 0.01f : 0.7f, t = 0f;
@@ -701,10 +718,12 @@ namespace WorldTour.World.Gameplay
                 _cam.transform.position = Vector3.Lerp(from, _follow.FollowPosition, e);
                 _cam.transform.rotation = Quaternion.Slerp(rotFrom, rotTo, e);
                 _cam.fieldOfView = Mathf.Lerp(StageFov, _fovBefore, e);
+                _player.transform.localScale = Vector3.one * Mathf.Lerp(StageStarScale, 1f, e);
                 yield return null;
             }
             _cam.transform.rotation = rotTo;
             _cam.fieldOfView = _fovBefore;
+            _player.transform.localScale = Vector3.one;
             _follow.ResetVelocity();
             _follow.frozen = false;
             _cameraRoutine = null;
@@ -878,7 +897,7 @@ namespace WorldTour.World.Gameplay
         /// The travel moment: the street dims, a card says "next stop: ..." and a tour bus drives across under it (1.4 s, parked and still under reduce motion), while the
         /// next place loads behind it; then the fade lifts and she is at its PlayerSpawn. About 1.7 s in all.
         /// </summary>
-        IEnumerator Travel(Venue dest, bool forward)
+        IEnumerator Travel(Venue dest, bool forward, bool resume = false)
         {
             _exitArmed = false;
             SetMode(Mode.Travel);
@@ -891,7 +910,7 @@ namespace WorldTour.World.Gameplay
             _ui.FadeTo(0.82f, 0.25f);
             _ui.ShowTravel("on the road", line, dest.Name);
             WorldAudio.Play(Cue.Whoosh);
-            _world.Place = dest.Id; _world.HasPosition = false;
+            _world.Place = dest.Id; if (!resume) _world.HasPosition = false;   // a resume keeps the saved spot; Bind reads it on arrival
             if (Boot.Store != null) { WorldSave.Write(Boot.Store.Blob, _world); Boot.Store.Save(); }
             _travelLoading = true;
             AsyncOperation op = SceneManager.LoadSceneAsync(scene, LoadSceneMode.Single);

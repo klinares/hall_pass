@@ -254,7 +254,7 @@ async function placeTour(env, only) {
         await patchSave(FANS[id], ORDER.slice(0, idx + 1));
         let m0 = mark();
         await page.goto(server.url + '?wt_test=1&wt_goto=' + id, { waitUntil: 'load' });
-        const arrived = await waitLine(new RegExp('^WT_WORLD_ARRIVED place=' + id), READY_TIMEOUT_MS, m0);
+        const arrived = await waitLine(new RegExp('^WT_WORLD_(ARRIVED|GAME_READY) place=' + id), READY_TIMEOUT_MS, m0);   // coffee is where the game opens: no travel, so the ready line is its arrival
         if (!arrived) { gfail('never arrived'); await shot('arrive_missing'); continue; }
         step(arrived.text);
         await focus();

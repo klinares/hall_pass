@@ -61,7 +61,9 @@ namespace WorldTour.World.Tests
                     var crew = new List<Vector3>();
                     for (int i = 1; i <= 3; i++) { Vector3? c = Find(scene, "Crew_" + i); if (c.HasValue) crew.Add(c.Value); }
                     Vector3 spot;
-                    bool ok = WorldShop.PickSpot(spawn, BlockedFunc(scene), crew, Find(scene, "StageSpot"), Find(scene, "ExitSpot"), out spot);
+                    bool ok = WorldShop.PickSpot(spawn, BlockedFunc(scene), crew, Find(scene, "StageSpot"), Find(scene, "ExitSpot"), out spot, v.Id);
+                    Vector3 want;
+                    if (WorldShop.TryChosenSpot(v.Id, out want)) Assert.Less(Vector3.Distance(spot, want), 0.01f, v.Id + ": the hand-picked trunk spot is free, so it is the one used");
                     if (!ok)
                     {
                         var near = new List<string>();

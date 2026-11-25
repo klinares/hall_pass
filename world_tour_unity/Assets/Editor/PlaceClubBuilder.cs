@@ -55,6 +55,9 @@ public static class PlaceClubBuilder
             Dog = V(-1.8f, 0f, -10.2f),
         };
         Populate(contract, look, profile, blocks);
+        // the sign sits low on the back wall under the truss, so the "the stage" pin hangs lower here (WorldGame reads PinAnchor)
+        var spot = GameObject.Find("StageSpot");
+        if (spot != null) Group("PinAnchor", spot.transform).transform.localPosition = V(0f, 0.6f, 0f);
         FinishLook(look);
         // haze in the club (so the beams read) and sparkle drifting up in the street
         Motes("Haze", V(7.6f, 2.2f, 8.6f), V(13f, 3.4f, 9f), new Color(0.9f, 0.6f, 1.2f, 0.16f), Color.white, 26, 3f, new Vector2(1.6f, 3.0f), new Vector2(7f, 11f), 0.5f, 0.1f, "cb_haze_particle");
@@ -157,12 +160,12 @@ public static class PlaceClubBuilder
         // THE FUZZ across the back wall, in neon pink, with a blue halo and little neon bolts
         var pink = NeonMat(P + "neon_fuzz", "#ff4adf", 3.0f);
         var blue = NeonMat(P + "neon_the", "#38e8ff", 2.6f);
-        Prim(PrimitiveType.Cube, "SignPlate", t, V(10.2f, 5.5f, z1 - 0.1f), V(6.4f, 3.2f, 0.12f), M("sign_plate", "#120d22", 0.3f));
-        var fuzz = PixelText(t, "FUZZ", V(10.6f, 4.85f, z1 - 0.24f), 0.2f, pink, "cb_text_fuzz", 0.5f);
+        Prim(PrimitiveType.Cube, "SignPlate", t, V(10.6f, 4.25f, z1 - 0.1f), V(5.0f, 2.7f, 0.12f), M("sign_plate", "#120d22", 0.3f));
+        var fuzz = PixelText(t, "FUZZ", V(10.6f, 3.65f, z1 - 0.24f), 0.17f, pink, "cb_text_fuzz", 0.5f);
         MakeGlow(fuzz, new Color(1f, 0.29f, 0.87f) * 3.0f, 6f, 0.85f, 1.1f);
-        var the = PixelText(t, "THE", V(10.6f, 6.15f, z1 - 0.24f), 0.14f, blue, "cb_text_the", 0.5f);
+        var the = PixelText(t, "THE", V(10.6f, 4.9f, z1 - 0.24f), 0.1f, blue, "cb_text_the", 0.5f);
         MakeGlow(the, new Color(0.22f, 0.91f, 1f) * 2.6f);
-        GlowDecal(t, V(10.4f, 5.6f, z1 - 0.5f), new Vector2(9f, 5f), "cb_halo_fuzz", new Color(1.5f, 0.4f, 1.4f, 0.55f), false);
+        GlowDecal(t, V(10.6f, 4.3f, z1 - 0.5f), new Vector2(7.5f, 4f), "cb_halo_fuzz", new Color(1.5f, 0.4f, 1.4f, 0.55f), false);
         // wall lights: a row of small neon bars along the back wall base and the east wall
         var strip = NeonMat(P + "neon_strip", "#ff4adf", 2.0f);
         NeonBar(t, V(1.2f, 0.9f, z1 - 0.12f), V(14.1f, 0.9f, z1 - 0.12f), 0.07f, strip);

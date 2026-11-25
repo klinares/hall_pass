@@ -190,8 +190,21 @@ namespace WorldTour.World
         void StepFades()
         {
             float dt = Time.unscaledDeltaTime;
-            for (int i = 0; i < _items.Count; i++) { OccluderFade f = _items[i].Fade; if (f != null && f.Busy) f.Step(dt); }
+            int busy = 0; float lo = 1f, hi = 0f;
+            for (int i = 0; i < _items.Count; i++)
+            {
+                OccluderFade f = _items[i].Fade;
+                if (f == null || !f.Busy) continue;
+                f.Step(dt);
+                if (LogFades) { busy++; lo = Mathf.Min(lo, f.Alpha); hi = Mathf.Max(hi, f.Alpha); }
+            }
+            if (busy > 0) Debug.Log("WT_OCC_FADE frame=" + Time.frameCount + " t=" + Time.unscaledTime.ToString("0.000") + " busy=" + busy + " min=" + lo.ToString("0.000") + " max=" + hi.ToString("0.000"));
         }
+
+        /// <summary>Test only (the page has ?wt_test): log the fade's alpha every frame it moves, so the browser test can count the steps.</summary>
+        public static bool LogFades;
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetLogFades() { LogFades = false; }
 
         /// <summary>Editor previews and tests: put the lens where it would follow now (no glide, no lead), rescan and run the clear-view test once, with no lift.</summary>
         public void SnapForPreview()

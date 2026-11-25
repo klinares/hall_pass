@@ -2,23 +2,23 @@
     "writer": "WorldTour.BuildWeb",
     "note": "written by BuildWeb.cs; Build/ keeps the current and the previous build only",
     "current": {
-        "builtAt": "2026-11-25T08:18:36-05:00",
+        "builtAt": "2026-11-25T10:59:49-05:00",
         "files": [
             {
-                "path": "Build/0335b2a0e1041de857e8a3685ce11e2e.wasm.unityweb",
-                "size": 8376273
+                "path": "Build/0f85383398abf3f0fd4e08ba9878da6f.loader.js",
+                "size": 47867
             },
             {
-                "path": "Build/70dc8620bb33671bffe944c1e7cffe9c.data.unityweb",
-                "size": 8334049
+                "path": "Build/3b8a15db42cc05f9754b3cc2200764b9.data.unityweb",
+                "size": 8336447
+            },
+            {
+                "path": "Build/7dd4f6d82e56c67969299c0f8e04e8a4.wasm.unityweb",
+                "size": 8374755
             },
             {
                 "path": "Build/9d62772f178d106de0b650736e2ac85f.framework.js.unityweb",
                 "size": 90870
-            },
-            {
-                "path": "Build/a57d460281ac8d229a2f6db18fc71ff8.loader.js",
-                "size": 47867
             },
             {
                 "path": "index.html",
@@ -27,23 +27,23 @@
         ]
     },
     "previous": {
-        "builtAt": "2026-11-25T07:25:38-05:00",
+        "builtAt": "2026-11-25T10:44:22-05:00",
         "files": [
             {
-                "path": "Build/40fed2e800546379bfff0b92000705bd.loader.js",
-                "size": 47867
+                "path": "Build/714a760e12b6b96e4225244004a6556d.wasm.unityweb",
+                "size": 8375517
+            },
+            {
+                "path": "Build/958c6bf1158d02abcdcb4bf2ede331fe.data.unityweb",
+                "size": 8336424
             },
             {
                 "path": "Build/9d62772f178d106de0b650736e2ac85f.framework.js.unityweb",
                 "size": 90870
             },
             {
-                "path": "Build/a02fa669f38a06f41a5104a325aabc87.data.unityweb",
-                "size": 8333381
-            },
-            {
-                "path": "Build/f5281417e2db2a0dadd6a278245b9edc.wasm.unityweb",
-                "size": 8374768
+                "path": "Build/d710f4bd574f78a11be636cc2d8427e7.loader.js",
+                "size": 47867
             }
         ]
     }

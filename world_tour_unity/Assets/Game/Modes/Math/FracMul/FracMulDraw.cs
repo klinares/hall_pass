@@ -118,6 +118,8 @@ namespace WorldTour.Game.Modes
             float x0 = Mathf.Round((PaperWidth - w) / 2f), y = 14f;
             // bars as tall as the paper allows for this many wholes (4 trays still fit above the caption)
             float h = Mathf.Min(60f, 168f / t.Wholes - gap);
+            // world-hosted only: one or two bars grow to fill the sheet, so the paper has no empty white under the bar (the caption still fits below)
+            if (ShowLayout.Compact) h = Mathf.Max(h, Mathf.Min(150f, (t.Caption.Length > 0 ? 150f : 196f) / t.Wholes - gap));
             if (t.Total.Length > 0)
             {
                 Label(paper, t.Total + " in all", x0, y - 4, w, 24, 17f, TextAlignmentOptions.Midline);

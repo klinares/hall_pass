@@ -332,7 +332,9 @@ namespace WorldTour.World.Gameplay
             subBoxRt.offsetMin = new Vector2(Pad, -Pad - WhoH - lh - SubH); subBoxRt.offsetMax = new Vector2(-Pad, -Pad - WhoH - lh);
             float h = Pad + WhoH + lh + (hasSub ? SubH : 0f) + 12f + ButtonH + Pad;
             if (_buttons.Count == 0) h -= 12f + ButtonH;
-            _dialog.sizeDelta = new Vector2(BubbleWidth, h);
+            // a card with three or more buttons is wider, and each button takes room by its label ("back to: the club" was clipped at 1366)
+            float bw = !screenPoint.HasValue && _buttons.Count >= 3 ? 700f : BubbleWidth;
+            _dialog.sizeDelta = new Vector2(bw, h);
             var subRt = (RectTransform)_sub.transform.parent;
             subRt.gameObject.SetActive(hasSub);
 
@@ -340,13 +342,16 @@ namespace WorldTour.World.Gameplay
             int n = _buttons.Count;
             if (n > 0)
             {
-                float w = (BubbleWidth - 2 * Pad - (n - 1) * ButtonGap) / n;
+                float room = bw - 2 * Pad - (n - 1) * ButtonGap, total = 0f, x = 0f;
+                for (int i = 0; i < n; i++) total += Mathf.Max(9, _buttons[i].Label.Length);
                 for (int i = 0; i < n; i++)
                 {
                     DialogButton b = _buttons[i];
+                    float w = room * Mathf.Max(9, b.Label.Length) / total;
                     RectTransform box = ShowUi.Rect("Button " + (i + 1), _buttonRow);
                     box.anchorMin = new Vector2(0, 0); box.anchorMax = new Vector2(0, 1); box.pivot = new Vector2(0, .5f);
-                    box.offsetMin = new Vector2(i * (w + ButtonGap), 0); box.offsetMax = new Vector2(i * (w + ButtonGap) + w, 0);
+                    box.offsetMin = new Vector2(x, 0); box.offsetMax = new Vector2(x + w, 0);
+                    x += w + ButtonGap;
                     DialogButton captured = b;
                     ShowButton sb = ShowUi.Button(_assets != null ? _assets.buttonPrefab : null, box, "Offer" + (i + 1), b.Label, b.Ghost, () => Press(captured));
                     ShowUi.Stretch(sb.Rect);

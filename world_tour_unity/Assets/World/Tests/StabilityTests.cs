@@ -129,5 +129,23 @@ namespace WorldTour.World.Tests
             }
             Assert.IsEmpty(report, string.Join("\n", report));
         }
+
+        [Test]
+        public void FadeBankAsset_AndStarRiffPrefabs_HaveNoMissingScripts()
+        {
+            // a class that shares its file with another binds to nothing (the asset or component is saved as a missing script), so the fade and the height lift would be inert
+            var bank = AssetDatabase.LoadAssetAtPath<FadeBank>("Assets/World/Gameplay/Resources/FadeBank.asset");
+            Assert.IsNotNull(bank, "FadeBank.asset loads as a FadeBank");
+            Assert.Greater(bank.sources.Length, 0, "the bank has materials");
+            foreach (string path in new[] { "Assets/World/Prefabs/Star.prefab", "Assets/World/Prefabs/Riff.prefab" })
+            {
+                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                Assert.IsNotNull(prefab, path);
+                int missing = 0;
+                foreach (var t in prefab.GetComponentsInChildren<Transform>(true)) missing += GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(t.gameObject);
+                Assert.AreEqual(0, missing, path + " has missing scripts");
+                Assert.IsNotNull(prefab.GetComponentInChildren<StandOnHeight>(true), path + " carries a StandOnHeight");
+            }
+        }
     }
 }

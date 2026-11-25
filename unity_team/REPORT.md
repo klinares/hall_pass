@@ -1,71 +1,61 @@
-# World Tour (Unity): phase 7 report
+# World Tour (Unity): phase 8 report
 
 ## For the owner: what you do next
 
-1. **Let her play** the new build.
-2. **Switch modes on as her class moves:** edit `tour/StreamingAssets/math_config.json` and push, no rebuild (see `world_tour_unity/Tools/MATH_CONFIG.md`).
-3. **Listen once** for sound and voice.
-4. **Commit `world_tour/`** (six files, as before) and **push**.
-
-| mode | skill | on? | top level | her class unit |
-|---|---|---|---|---|
-| snack table (new) | fm | on | 3 | unit 3, now |
-| pack the truck | vol | on | 3 | unit 1, done |
-| tour budget | ops | on | 2 | review |
-| soundcheck | flu | on | 2 | level 3 is decimal powers of ten, unit 5 |
-| ticket sales | md | on | 1 | multi-digit, unit 4 |
-| merch table | dec | **off** | 3 | decimals, unit 5 |
-| beat maker | frac | **off** | 3 | unlike denominators, unit 6 |
-| stage designer | xy | **off** | 3 | coordinates, unit 7 |
+1. **Let her play `world/`** on her laptop.
+2. **Listen once** for sound (birds, steps, applause, cheer) and voice.
+3. **Push** to publish `tour/` and `world/`. `world_tour/` is already committed.
 
 ## Phase and status
 
-Phase 7 is **done** and committed locally (4cb0470). Nothing is pushed.
+Phase 8 is **done** and committed locally. Nothing is pushed. 8.5 (repo clean-up) follows as its own commit.
 
 ## What now works
 
-- A warm-up level 0 in every math mode; 6 in a row to move up; per-skill top levels that never lower a save.
-- An office gentle/standard switch per subject (top level one lower, 8 in a row).
-- Snack table: fraction × and ÷ with area and tape diagrams; any equivalent answer counts.
+- Eight 3D places in tour order. In each she walks by keys or clicks, talks to the crew, plays gigs and the show, and travels.
+- Wearables in a wardrobe trunk, crowds that grow with fans, stage lights, synthesized ambience plus five CC0 clips.
+- One save with `tour/`, carried both ways; a reload resumes where she was.
+- Shots: `unity_team/shots/phase8/` (8 places at 1366 and 1920, coffee gig and show).
 
-## Kid-fit review (7.4)
+## Glitch list (notes 21:45, 21:55)
 
-A tester played as her on day one. Target: 7 of the first 10 without hints.
+| glitch | status |
+|---|---|
+| "browser does not support WebGL" | **fixed**: reload page on a lost context, save flushed first, dedicated GPU requested, memory flat across 8 places |
+| "bricks kept reloading or looked stuck" | **fixed**: camera bob at rest, one-frame wall pops, ground mip shimmer, coplanar ground; the fade script had not been binding |
+| reload lands in coffee | **fixed** |
+| stage-to-exit walk at rec, theater | **fixed** (harness fault; reachability tested everywhere) |
+| trunks: spawn inside, hiding crew | **fixed** |
+| crew too close at rec; bubbles cover her | **fixed** |
+| small snack labels; tiny Star; rooftop orbs | **fixed** |
+| clipped club sign, exit buttons, ticket page | **fixed**; "THE" still touches a lamp |
+| snack "n in all" bar blank | **fixed in `world/`**; `tour/` still has it |
 
-| mode | first ten | what changed |
-|---|---|---|
-| ticket sales | about 5 | Level 0 is now facts and easy 2-digit problems (32×3, 63÷9); not re-scored |
-| pack the truck | 10 | nothing |
-| tour budget | 8 | nothing |
-| soundcheck | 8 | nothing |
-| snack table | about 7 | prompts fit in 3 lines; level 1 shows the tray |
-| missing vowels | 5–6 | her real word list; plainer clue wording sent to the advisor (Q25) |
-
-Rewards are fine: every show earns a sticker and enough fans for the cheapest backstage item.
+Every place can be finished by keyboard alone and by mouse alone, including edge walks, click spam and leaving mid-show.
 
 ## Test results
 
-Edit-mode 1797/1797, play-mode 26/26, browser 18/18. 0 console errors. Download 13.28 MB.
+Edit-mode 1881/1882 (1 explicit skip), play-mode 29/29, `tour/` browser 18/18, all `world/` suites pass (smoke, places, GPU, stability). 60 fps everywhere; longest frame 33 to 67 ms. Build 16.8 MB (wasm 8.4 MB largest), cold load 1.7 s.
 
 ## What the tester looked at
 
-Phase 7 screens at both sizes and themes (one pass, two fix rounds), then the kid-fit pass (one fix round, checked from screenshots).
+One whole-tour pass on a real GPU (8 places, both sizes, glitch hunt, kid-fit on two places), one fix round, then a final-build check.
 
 ## Not done or not verified
 
-- Ticket sales reaches the web's level 1 (regrouping) after 6 right; not re-scored.
-- Some snack prompts wrap to four lines.
-- The VIP percent keeps the web's first-try rule.
-- Earlier polish list: TODO.md.
+- Kid-fit used a scripted first ten (8/10), not a first five minutes by eye.
+- Reload resume checked at three places, not all eight.
+- Level-up at 6 in a row (phase 7) reaches mixed numbers in about three gigs.
+- Harmless shader log lines remain.
 
 ## Departures from the brief
 
-Workers on Sonnet; no paid or headless use. Copy changes are intended differences 39–43.
+Workers on Sonnet; no paid or headless use. Over the build cap in 8.1, 8.3 and 8.4. A final-build check ran after the one tester pass.
 
 ## Open questions
 
-Q25 (clue wording) is with the advisor.
+None.
 
 ## How to try it
 
-From the repo root, run `node world_tour_unity/Tests/Web/server.mjs tour`, open the address in Chrome, and press start.
+From the repo root, run `node world_tour_unity/Tests/Web/server.mjs world` and open the address in Chrome.

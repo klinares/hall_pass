@@ -121,6 +121,7 @@ namespace WorldTour.World.Gameplay
             Instance = this;
             string url = Application.absoluteURL ?? "";
             TestMode = url.IndexOf("wt_test", StringComparison.OrdinalIgnoreCase) >= 0;
+            FollowCamera.LogFades = TestMode;
         }
 
         IEnumerator Start()
@@ -430,7 +431,10 @@ namespace WorldTour.World.Gameplay
             }
             else _ui.HideTag();
 
-            PinOver("stage", "the stage", _stage, new Vector3(0f, 3.0f, 0f), p);
+            // a place can hang the pin lower with a PinAnchor child on StageSpot (the club's sign sits where the usual pin would)
+            Transform anchor = _stage != null ? _stage.Find("PinAnchor") : null;
+            if (anchor != null) PinOver("stage", "the stage", anchor, Vector3.zero, p);
+            else PinOver("stage", "the stage", _stage, new Vector3(0f, 3.0f, 0f), p);
             PinOver("exit", "next stop", _exit, new Vector3(1.7f, 3.55f, 0.3f), p);
 
             if (_hintOn)

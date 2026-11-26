@@ -12,9 +12,9 @@ You do not fix game code. You may add and edit tests, test helpers and test tool
 What you check, as far as the task covers:
 
 1. Compile: zero errors, zero new warnings.
-2. Edit-mode tests: run the whole suite. For every math generator, run each level a few thousand times with fixed seeds and assert the answer is correct, appears exactly once among the choices, and stays within the grade-level bounds in the brief. Compare a sample of outputs against the JavaScript generators in `world_tour/math/gen/` given the same inputs where that is practical.
+2. Edit-mode tests: run the whole suite. For every math generator, run each level a few thousand times with fixed seeds and assert the answer is correct, appears exactly once among the choices, and stays within the grade-level bounds in the brief. The stored vector files in `Assets/Tests/EditMode/` (generated once from the original JavaScript, now frozen) must keep passing.
 3. Play-mode tests: one test per mode that plays a full show to the ticket screen, including a deliberate miss, a hint, and the encore.
-4. Web build: build it, serve the output from a plain static server with no special headers (the way GitHub Pages will), and drive it with Playwright (already installed under `world_tour/tests/e2e`; write new scripts under `world_tour_unity/Tests/Web/`, do not edit the old ones). Fail on any console error. Record the load time and the total download size.
+4. Web build: build it, serve the output from a plain static server with no special headers (the way GitHub Pages will), and drive it with Playwright (pinned in `world_tour_unity/Tests/Web/package.json`; run `npm ci` there once; write new scripts under `world_tour_unity/Tests/Web/`, do not edit the old ones). Fail on any console error. Record the load time and the total download size.
 5. Screens: capture each screen at 1366x768 and 1920x1080. Look at every screenshot yourself. Report anything cramped, clipped, overlapping, misaligned, hard to read, or plain-looking.
 6. Content: read every piece of text the player can see in the mode under test. Report typos, odd grammar, prices or numbers that make no sense, and any sentence that fits more than one word.
 7. Saving: progress survives a page reload, and the game still plays when browser storage is blocked.

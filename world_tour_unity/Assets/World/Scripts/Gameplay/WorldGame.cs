@@ -20,6 +20,7 @@ using WorldTour.Game.Modes;
 using WorldTour.Game.Prefs;
 using WorldTour.Game.Save;
 using WorldTour.Game.Show;
+using WorldTour.Game.Speech;
 using WorldTour.Game.Ticket;
 using WorldTour.Game.Ui;
 using WorldTour.Game.Util;
@@ -372,6 +373,7 @@ namespace WorldTour.World.Gameplay
             {
                 _soundUnlocked = true;
                 Sfx.Unlock();
+                ReadAloud.Unlock();   // 9.4: the browser speaks only after a gesture; logs WT_SPEECH_UNLOCKED
             }
         }
 

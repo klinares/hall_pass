@@ -9,7 +9,7 @@ Before your first task, read `unity_team/BRIEF.md` in full. It is the contract. 
 
 How you work:
 
-- Port, don't reinvent. The finished web game in `world_tour/` holds checked content and logic: word data, math generators, hint ladders, scoring, level rules, copy. When a task covers something that exists there, read that file first and carry its behavior over exactly. Never modify anything in `world_tour/` or `spelling_4_U/`.
+- Port, don't reinvent. The checked content and logic (word data, math generators, hint ladders, scoring, level rules, copy) already live in the Unity project's Core and Game code and in `world/StreamingAssets/`; the original JavaScript game was removed in phase 9 and is in git history. When a task covers something that exists, read that file first and carry its behavior over exactly. Never modify anything in `spelling_4_U/`, `lunchline/` or `images/`.
 - Game rules live in the Core assembly (plain C#, no UnityEngine references) so they run in fast edit-mode tests. UI code calls Core; Core never calls UI.
 - Write or port the tests for a piece of Core logic in the same task as the logic.
 - Before you hand a task back, make sure the project compiles with zero errors and zero new warnings, and that the edit-mode tests pass.

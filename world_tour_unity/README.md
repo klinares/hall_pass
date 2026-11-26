@@ -1,57 +1,32 @@
 # World Tour (Unity)
 
-The Unity version of the World Tour spelling and math game. The 3D game is `world/` at the repo root, a web build that GitHub Pages serves.
+World Tour is a spelling and 5th-grade math game where you walk around eight 3D places on a pop tour, talk to the crew, play gigs and shows, and earn fans. This Unity 6 project builds it as a web game into `world/` at the repo root, which GitHub Pages serves at `klinares.github.io/hall_pass/world/`.
 
-## Try it locally
+Try it locally from the repo root: `node world_tour_unity/Tests/Web/server.mjs world`, then open the address it prints in Chrome or Edge.
 
-From the repo root:
+## Add a week of words
 
-```
-node world_tour_unity/Tests/Web/server.mjs world
-```
+1. Edit `world/StreamingAssets/weeks.json` (the master copy). Put the new week first, inside `"weeks": [ ... ]`. The fields are in `Tools/WEEKS_FORMAT.md`.
+2. Check it: `node world_tour_unity/Tools/validate_data.mjs` should print `ok`.
+3. Commit and push. No rebuild is needed: the game reads the file every time it starts.
 
-Open the address it prints in Chrome and press start.
+## Change the math settings
 
-## Adding a week of words (no rebuild needed)
+Edit `world/StreamingAssets/math_config.json`, then validate and push the same way. What each switch does is in `Tools/MATH_CONFIG.md`.
 
-The game reads its word list at start-up, with caching turned off, so a new week shows up on the next visit without rebuilding.
+## Rebuild
 
-1. Edit `world/StreamingAssets/weeks.json`. This deployed copy is the master. Put the new week first, inside `"weeks": [ ... ]`. The fields are described in `Tools/WEEKS_FORMAT.md`.
-2. Check it:
-
-   ```
-   node world_tour_unity/Tools/validate_data.mjs
-   ```
-
-   It prints `ok`, or a numbered list of problems. The game refuses a file that has errors, so fix them first.
-3. Commit `world/StreamingAssets/weeks.json` and push.
-
-`world/StreamingAssets/math_config.json` works the same way.
-
-## Rebuilding after a code or art change
-
-You need Unity 6000.3.29f1 with Web build support. From the repo root, run:
+Needs Unity 6000.3.29f1 with Web build support. From the repo root:
 
 ```
 "D:\Unity\Editors\6000.3.29f1\Editor\Unity.exe" -batchmode -nographics -projectPath world_tour_unity -buildTarget WebGL -executeMethod BuildWeb.BuildWorld -buildSummary "%TEMP%\buildworld-summary.json" -logFile -
 ```
 
-- The build takes several minutes and writes into `world/`. It first copies `world/StreamingAssets/weeks.json` and `math_config.json` into the project and never overwrites them, so a rebuild never loses a week you added. The summary's `dataProof` shows the two files were identical before and after.
-- If `world/StreamingAssets/` is missing the build stops with an error; there is no fallback copy.
-- Unity can crash while shutting down after a good build, so ignore the exit code. Instead, check that the summary file says `Succeeded` and that `world/build.json` was just updated.
-- Then run the browser tests, for example `node world_tour_unity/Tests/Web/world_smoke.mjs --gpu d3d11`.
-- Commit `world/` and push.
+The build writes `world/` and never overwrites `world/StreamingAssets/`. Unity can crash on exit after a good build, so check that the summary says `Succeeded` instead of trusting the exit code.
 
-## Running the tests
+## Test
 
-- **Edit-mode and play-mode:** run Unity with `-runTests -testPlatform EditMode` or `PlayMode` and `-testResults <file>`. Judge the run by the counts in the results file, not by the exit code.
-- **Browser:** `node world_tour_unity/Tests/Web/world_smoke.mjs --gpu d3d11` (see `Tests/Web/README.md` for the other suites).
+- Edit-mode and play-mode: run Unity with `-runTests -testPlatform EditMode` (or `PlayMode`) and `-testResults <file>`, and read the counts in the results file.
+- Browser: run `npm ci` once in `world_tour_unity/Tests/Web`, then for example `node world_tour_unity/Tests/Web/world_smoke.mjs --gpu d3d11`. The other `world_*` suites are listed in `Tests/Web/README.md`.
 
-## Layout
-
-- `Assets/Core`: game rules with no Unity dependency (words, hints, math generators, save).
-- `Assets/Game`: screens, modes, UI and the show.
-- `Assets/Editor`: builders that make the prefabs, plus `BuildWeb`.
-- `Assets/Tests`: edit-mode and play-mode tests.
-- `Tests/Web`: the browser tests.
-- `Tools`: data checkers and the JS cross-check vector generators.
+Art, audio and font licences are in `ASSETS.md`.

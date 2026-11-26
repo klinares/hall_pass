@@ -130,7 +130,11 @@ async function gameplay() {
   if (!crewT) { gfail('no crew1 position logged'); await ctx.close(); return; }
   g.crewMode = crewT.mode;
   if (crewT.mode !== 'tickets') gfail(`crew1 offers "${crewT.mode}", the test types ticket sales answers`);
+  const speechEarly = waitLine ? await waitLine(/^WT_SPEECH_UNLOCKED/, 50) : null;
+  if (speechEarly) gfail('read-aloud unlocked before any click or key: ' + speechEarly.text);
   await page.mouse.click(crewT.x, crewT.y);
+  const speechUnlock = await waitLine(/^WT_SPEECH_UNLOCKED/, 5000);
+  if (!speechUnlock) gfail('no WT_SPEECH_UNLOCKED after the first click (read-aloud stays locked)'); else step('read-aloud unlocked: ' + speechUnlock.text);
   const talk = await waitLine(/^WT_WORLD_TALK crew=Crew_1/, 25000);
   if (!talk) { gfail('clicking crew 1 never started a talk'); await shot('talk_missing'); await ctx.close(); return; }
   step('talk: ' + talk.text);

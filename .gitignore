@@ -15,3 +15,6 @@ desktop.ini
 
 # Node
 node_modules/
+
+# Unity team working channel (kept on disk, not tracked; phase 9)
+unity_team/

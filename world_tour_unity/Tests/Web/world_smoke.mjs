@@ -23,12 +23,13 @@ import { wardrobeTests } from './world_wardrobe.mjs';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const project = path.resolve(here, '..', '..');
 const repo = path.resolve(project, '..');
-const { chromium } = createRequire(path.join(here, 'package.json'))('playwright');
+const { chromium, firefox } = createRequire(path.join(here, 'package.json'))('playwright');
 
 const argv = process.argv.slice(2);
 const opt = (n, d) => { const i = argv.indexOf(n); return i >= 0 && i + 1 < argv.length ? argv[i + 1] : d; };
 const site = path.resolve(opt('--site', path.join(repo, 'world')));
 const gpuMode = opt('--gpu', 'auto');
+const browserName = opt('--browser', 'chromium'); // chromium | firefox
 const sizes = opt('--sizes', '1366x768,1920x1080').split(',').map(s => s.split('x').map(Number));
 const outFile = path.resolve(opt('--out', path.join(project, 'Temp', 'world-results.json')));
 const shotsDir = path.resolve(opt('--shots', path.join(project, 'Temp', 'world-shots')));
@@ -237,7 +238,9 @@ async function gameplay() {
 try {
   if (!fs.existsSync(path.join(site, 'index.html'))) throw new Error(`no index.html in ${site}; run BuildWeb.BuildWorld first`);
   server = await startServer(site);
-  browser = await chromium.launch(launchOptions());
+  browser = browserName === 'firefox'
+    ? await firefox.launch({ headless: true })
+    : await chromium.launch(launchOptions());
   results.browserVersion = browser.version();
 
   for (const [vw, vh] of (argv.includes('--places-only') || argv.includes('--wardrobe-only') ? [] : sizes)) {

@@ -143,6 +143,43 @@
       say(LOST, true);
     }, false);
 
+    // Chrome and Edge (both say "Chrome/" in the user agent; Firefox never does) get the high-performance request; every other browser gets the default (no powerPreference at all).
+    function contextAttributes() {
+      var attrs = { preserveDrawingBuffer: false };
+      var ua = String(navigator.userAgent || "");
+      if (/Chrom(e|ium)\//.test(ua) && !/Firefox\/|FxiOS\//.test(ua)) attrs.powerPreference = 2;
+      return attrs;
+    }
+
+    // A canvas that stays blank with no error (a driver that accepts the context and then draws nothing) would look like a black screen. The game logs WT_WORLD_GAME_READY
+    // when it has loaded and drawn its first place; if that line has not come 75 seconds after the loader finished, say so and offer reload. If it arrives later the note goes away.
+    var gameReady = false, blankTimer = null, blankShown = false;
+    var BLANK = "the picture didn't start. press reload. if it keeps happening, open this page in chrome or edge.";
+    (function () {
+      var original = console.log;
+      console.log = function () {
+        try {
+          var first = arguments[0];
+          if (!gameReady && typeof first === "string" && first.indexOf("WT_WORLD_GAME_READY") === 0) {
+            gameReady = true;
+            if (blankTimer) clearTimeout(blankTimer);
+            if (blankShown) { message.style.display = "none"; reloadButton.style.display = "none"; blankShown = false; }
+          }
+        } catch (e) {}
+        return original.apply(console, arguments);
+      };
+    })();
+    var blankMs = 75000, blankArg = /[?&]wt_blank_ms=([0-9]+)/.exec(location.search);   // the page test shortens the wait
+    if (blankArg) blankMs = +blankArg[1];
+    function watchForBlank() {
+      blankTimer = setTimeout(function () {
+        if (gameReady || contextLost || message.style.display === "block") return;
+        console.warn("WT_BLANK_CANVAS no ready line 75 s after load");
+        blankShown = true;
+        say(BLANK, true);
+      }, blankMs);
+    }
+
     var config = {
       dataUrl: "Build/{{{ DATA_FILENAME }}}",
       frameworkUrl: "Build/{{{ FRAMEWORK_FILENAME }}}",
@@ -159,9 +196,10 @@
       symbolsUrl: "Build/{{{ SYMBOLS_FILENAME }}}",
 #endif
       streamingAssetsUrl: "StreamingAssets",
-      // two-GPU laptops: ask for the dedicated card. Unity/emscripten read this as a number (0 default, 1 low-power, 2 high-performance);
+      // two-GPU laptops: ask for the dedicated card, on Chrome and Edge only (phase 10A: a Firefox on the owner's machine showed a black canvas with no error while the other browsers drew, so
+      // Firefox and everything else get the default). Unity/emscripten read this as a number (0 default, 1 low-power, 2 high-performance);
       // the string "high-performance" would be looked up in that list and fall back to default.
-      webglContextAttributes: { preserveDrawingBuffer: false, powerPreference: 2 },
+      webglContextAttributes: contextAttributes(),
       companyName: {{{ JSON.stringify(COMPANY_NAME) }}},
       productName: {{{ JSON.stringify(PRODUCT_NAME) }}},
       productVersion: {{{ JSON.stringify(PRODUCT_VERSION) }}},
@@ -186,6 +224,7 @@
       }).then(function (instance) {
         unityInstance = instance;
         window.__wtInstance = instance;
+        watchForBlank();
         if (contextLost) return;
         loading.style.display = "none";
         canvas.focus();

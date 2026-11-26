@@ -4,6 +4,7 @@
   "type": "module",
   "description": "dev-only browser checks for world/ (Tests/Web/*.mjs); never loaded by the game",
   "devDependencies": {
-    "playwright": "^1.65.1"
+    "playwright": "^1.65.1",
+    "selenium-webdriver": "^4.54.0"
   }
 }

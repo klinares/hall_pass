@@ -27,3 +27,16 @@ node world_tour_unity/Tests/Web/world_blank_guard.mjs --browser firefox
 `world_smoke.mjs --browser firefox` loads `world/` at both window sizes, moves by keyboard and click, measures fps (headless Firefox on software GL runs well under Chrome's numbers, so judge it by "no console errors, the canvas draws, she moves", not by the fps floor) and visits the places. The same smoke test in Chrome is `--gpu d3d11` on this machine. Chrome behaviour must not change: `world_blank_guard.mjs` (no `--browser`) checks Chrome still asks for the high-performance GPU.
 
 A black screen that only the owner's Firefox shows could not be reproduced here (Firefox 159 on an Intel GPU draws the local and the published build). The page therefore asks for the default GPU on Firefox and shows a reload note if the game never reports ready.
+
+### The installed Firefox (not Playwright's)
+
+`world_firefox_real.mjs` drives the Firefox installed on the machine (the Microsoft Store package is found automatically; `--binary` otherwise) through selenium-webdriver and geckodriver, headed. It records every console message and error over WebDriver BiDi and every network response. It probes WebGL2 on a test canvas (unmasked renderer, `failIfMajorPerformanceCaveat`, `high-performance`, and a clear-and-read-back draw check), and takes screenshots at 30 s and 90 s with a black-pixel share. Output goes to `report.json` and PNGs in `--out` (default `firefox_real_out/<label>`, ignored by git).
+
+```
+node world_tour_unity/Tests/Web/world_firefox_real.mjs --label fresh
+node world_tour_unity/Tests/Web/world_firefox_real.mjs --label profile --profile <a COPY of the default profile folder>
+```
+
+It defaults to the published `https://klinares.github.io/hall_pass/world/`; pass `--url http://localhost:<port>/` for a local build. Copy the profile first (for example `robocopy <profile> <copy> /E /XF parent.lock lock`), because geckodriver uses the folder in place and writes prefs into it.
+
+Result on 2026-11-26 (Firefox 160.0.1 Store build, RTX 4070 laptop with Intel UHD, published efb9942): both a fresh profile and a copy of the owner's default profile drew the coffee place at about 75 fps, on both screens. There were no errors, the ready line arrived about 1 s after loading, the black share was 0.3 to 0.6%, and every WebGL2 variant was created and read back red. The owner's black screen came from a Firefox window that had been running since 2026-11-20 through several sleeps and power-source changes. The game did run in that window: its playtime was saved at 16:37. So the build is not the cause; that browser process's graphics state is. A full Firefox restart is the fix to try.

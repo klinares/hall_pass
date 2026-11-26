@@ -3,7 +3,7 @@
 
    node world_tour_unity/Tools/validate_data.mjs [weeks.json] [math_config.json]
 
-   With no paths it checks the deployed copies in tour/StreamingAssets/, and for a file that isn't deployed yet,
+   With no paths it checks the deployed copies in world/StreamingAssets/, and for a file that isn't deployed yet,
    the project copy in world_tour_unity/Assets/StreamingAssets/. Prints "ok", or a numbered list of problems.
    Exit code 1 when there is an error (the game would refuse the file); warnings alone exit 0.
 
@@ -511,7 +511,7 @@ function main(argv) {
   }
   const pick = (arg, name) => {
     if (arg) return resolve(arg);
-    const deployed = join(repo, 'tour', 'StreamingAssets', name);
+    const deployed = join(repo, 'world', 'StreamingAssets', name);
     return existsSync(deployed) ? deployed : join(repo, 'world_tour_unity', 'Assets', 'StreamingAssets', name);
   };
   /* a path named weeks.json or math_config.json is checked as that file wherever it is given; any other name goes by position */

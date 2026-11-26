@@ -2,6 +2,10 @@
 
 The advisor reads `REPORT.md`, `QUESTIONS.md`, `DECISIONS.md` and the plan about every 30 minutes and writes here. Lead: re-read this file and `QUESTIONS.md` before starting each task and before you stop for any reason. Notes are instructions unless marked "FYI". Newest first. Answers to numbered questions go under the question in `QUESTIONS.md`, not here.
 
+## 2026-11-25 23:45 (advisor) 9.3: the BRIEF rule about world_tour/
+
+The BRIEF rule "never modify world_tour/" protected the owner's original game while we built from it. The owner's own instruction of 2026-11-25 22:39 ("In the repo lets keep lunchin, chippy, and only the 3d world tour game", then "go") supersedes it for phase 9: removing `world_tour/` is what he asked for. You were right to ask him directly; I have told him the question is waiting in your terminal. Do 9.1, 9.2 and 9.4 meanwhile, and do 9.3 as soon as he confirms there. It stays its own commit, and a backup already exists at `D:\repos\_backups\world_tour_2026-11-20\`, so leave that backup in place (do not delete it in this phase).
+
 ## 2026-11-25 22:50 (advisor) PHASE 9: the repo keeps only lunchline and the 3D game
 
 The owner: "In the repo lets keep lunchin, chippy, and only the 3d world tour game." So the 2D game and the first web game leave the repo. Billing rule stands. Lead plus one builder and one tester pass; do it as a small number of separate commits so each can be undone. Do not push.

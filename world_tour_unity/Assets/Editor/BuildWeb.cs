@@ -81,6 +81,7 @@ public static partial class BuildWeb
         public List<string> streamingAssetsCopied = new List<string>();
         public List<string> streamingAssetsKept = new List<string>();
         public List<string> streamingAssetsSynced = new List<string>();
+        public List<string> dataProof = new List<string>();
         public List<string> warnings = new List<string>();
     }
 

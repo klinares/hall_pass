@@ -9,7 +9,7 @@
    node Tools/weeks_to_json.mjs --vectors <file>   also writes the test vector (weeks.js as-is plus this output)
 
    The output is the same bytes on every run: fixed key order, 2-space indent, \n line ends, one final \n.
-   After the first build, the deployed tour/StreamingAssets/weeks.json is the source of truth
+   After the first build, the deployed world/StreamingAssets/weeks.json is the source of truth
    (BuildWeb copies it back here). Edit that copy, or delete it so the next build recreates it.
    Field guide for the owner: Tools/WEEKS_FORMAT.md. Check a file: node Tools/validate_data.mjs */
 import { writeFileSync, readFileSync, existsSync, mkdirSync } from 'node:fs';

@@ -1,6 +1,6 @@
 # weeks.json: adding a week
 
-Edit `tour/StreamingAssets/weeks.json` and put the new week first, inside `"weeks": [ ... ]`, with a comma after its closing `}`.
+Edit `world/StreamingAssets/weeks.json` and put the new week first, inside `"weeks": [ ... ]`, with a comma after its closing `}`.
 
 - `id`: the test date, written 2026-11-23. The newest week on or before today opens by itself.
 - `label`: the name in the week menu, like "week of nov 23, 2026".

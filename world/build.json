@@ -2,6 +2,31 @@
     "writer": "WorldTour.BuildWeb",
     "note": "written by BuildWeb.cs; Build/ keeps the current and the previous build only",
     "current": {
+        "builtAt": "2026-11-25T23:00:12-05:00",
+        "files": [
+            {
+                "path": "Build/539203e82ca97f0a5a547559a18e14d7.loader.js",
+                "size": 47867
+            },
+            {
+                "path": "Build/63acf3cc879b0d982e8550d0961be406.data.unityweb",
+                "size": 8298926
+            },
+            {
+                "path": "Build/df640071771f7a1e2af3ec4512fce506.wasm.unityweb",
+                "size": 8291664
+            },
+            {
+                "path": "Build/df7c18ca252e7edff68495fde6ff032a.framework.js.unityweb",
+                "size": 90858
+            },
+            {
+                "path": "index.html",
+                "size": 6651
+            }
+        ]
+    },
+    "previous": {
         "builtAt": "2026-11-25T10:59:49-05:00",
         "files": [
             {
@@ -19,15 +44,7 @@
             {
                 "path": "Build/9d62772f178d106de0b650736e2ac85f.framework.js.unityweb",
                 "size": 90870
-            },
-            {
-                "path": "index.html",
-                "size": 6651
             }
         ]
-    },
-    "previous": {
-        "builtAt": "",
-        "files": []
     }
 }

@@ -5,7 +5,7 @@
    node Tools/config_to_json.mjs            writes the project copy
    node Tools/config_to_json.mjs --stdout   prints it instead
 
-   After the first build, the deployed tour/StreamingAssets/math_config.json is the source of truth
+   After the first build, the deployed world/StreamingAssets/math_config.json is the source of truth
    (BuildWeb copies it back here). Edit that copy, or delete it so the next build recreates it. */
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';

@@ -1,6 +1,6 @@
 # math_config.json: how hard the math plays
 
-Edit `tour/StreamingAssets/math_config.json`. The game reads it when it starts, so a change needs no rebuild: reload the page. Then run `node world_tour_unity/Tools/validate_data.mjs` and push only when it says ok.
+Edit `world/StreamingAssets/math_config.json`. The game reads it when it starts, so a change needs no rebuild: reload the page. Then run `node world_tour_unity/Tools/validate_data.mjs` and push only when it says ok.
 
 ## Switching a mode on or off
 

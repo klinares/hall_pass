@@ -4,8 +4,10 @@
 //   - the scene list is every Place_*.unity that exists, in tour order (Place_Coffee first), not the 2D build list;
 //   - for the length of the build the quality levels and the default pipeline point at UniversalRP_3D (3D
 //     renderer, HDR, shadows), then everything is put back, so tour/ builds and renders exactly as before;
-//   - weeks.json and math_config.json are copied FROM tour/StreamingAssets/ into world/StreamingAssets/ (overwriting
-//     the world copy): tour/ stays the one master.
+//   - world/StreamingAssets/weeks.json and math_config.json are the MASTER copies (phase 9.1). Before the build they are
+//     copied into Assets/StreamingAssets/ (WorldTour.Core.Data.WorldDataSync). world/StreamingAssets is never written: its
+//     fingerprint is taken before and after, recorded in the summary (dataProof), and the original bytes are put back if
+//     anything changed it. A missing world/StreamingAssets fails the build; there is no fallback.
 //
 //   Unity.exe -batchmode -nographics -projectPath world_tour_unity -buildTarget WebGL -executeMethod BuildWeb.BuildWorld
 //       [-buildOut <dir>] [-buildStaging <dir>] [-buildSummary <file>] [-buildForceAdopt]   (as BuildWeb.Build)
@@ -69,6 +71,7 @@ public static partial class BuildWeb
         bool swapped = false;
         string savedTemplate = null;
         byte[] projectBytes = null;
+        var masterBytes = new System.Collections.Generic.Dictionary<string, byte[]>();
         UniversalRenderPipelineAsset capPipe = null;
         float savedScale = 0; int savedMsaa = 0, savedMain = 0, savedAdd = 0;
         try
@@ -83,6 +86,16 @@ public static partial class BuildWeb
             summaryPath = ResolveSummaryPath(project, outDir, staging, defaultSummary, summary);
 
             if (!CheckPaths(project, outDir, staging, summary, "world")) throw new Exception("path check failed");
+            // 9.1: world/StreamingAssets is the master. Fail clearly if it is missing; remember its bytes so it stays identical.
+            string deployedSA = Path.Combine(outDir, "StreamingAssets");
+            foreach (var line in WorldTour.Core.Data.WorldDataSync.SyncToProject(deployedSA, Path.Combine(project, "Assets", "StreamingAssets")))
+            {
+                summary.streamingAssetsSynced.Add(line);
+                Debug.Log("BuildWorld: " + line);
+            }
+            foreach (var name in WorldTour.Core.Data.WorldDataSync.Files) masterBytes[name] = File.ReadAllBytes(Path.Combine(deployedSA, name));
+            summary.dataProof.Add("before: " + string.Join(" ", WorldTour.Core.Data.WorldDataSync.Fingerprint(deployedSA)));
+            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
             CleanStaleWorldBuild(outDir, summary);
 
             if (EditorUserBuildSettings.activeBuildTarget != BuildTarget.WebGL &&
@@ -171,20 +184,25 @@ public static partial class BuildWeb
                 summary.errors.Add("errors were logged during the build; world/ was not touched");
             else
             {
-                // tour/ is the master for the two data files: overwrite both the staged and the published copy.
-                string tourSA = Path.GetFullPath(Path.Combine(project, "..", "tour", "StreamingAssets"));
-                foreach (var name in LiveDataFiles)
-                {
-                    string src = Path.Combine(tourSA, name);
-                    if (!File.Exists(src)) { summary.errors.Add("missing master data file " + src); continue; }
-                    foreach (var dest in new[] { Path.Combine(player, "StreamingAssets", name), Path.Combine(outDir, "StreamingAssets", name) })
-                    {
-                        Directory.CreateDirectory(Path.GetDirectoryName(dest));
-                        File.Copy(src, dest, true);
-                    }
-                    summary.streamingAssetsSynced.Add("tour/StreamingAssets/" + name + " -> world/StreamingAssets/" + name);
-                }
                 if (summary.errors.Count == 0) Publish(player, outDir, summary);
+            }
+            // 9.1 proof: the master copies are byte-identical after the build; if not, put the originals back and say so.
+            string saDir = Path.Combine(outDir, "StreamingAssets");
+            bool altered = false;
+            foreach (var kv in masterBytes)
+            {
+                string mp = Path.Combine(saDir, kv.Key);
+                if (!File.Exists(mp) || !File.ReadAllBytes(mp).AsSpan().SequenceEqual(kv.Value))
+                {
+                    File.WriteAllBytes(mp, kv.Value);
+                    altered = true;
+                    summary.warnings.Add("world/StreamingAssets/" + kv.Key + " changed during the build; the original bytes were put back");
+                }
+            }
+            if (masterBytes.Count > 0)
+            {
+                summary.dataProof.Add("after:  " + string.Join(" ", WorldTour.Core.Data.WorldDataSync.Fingerprint(saDir)));
+                summary.dataProof.Add(altered ? "world/StreamingAssets was altered and restored" : "world/StreamingAssets identical before and after");
             }
             ok = summary.errors.Count == 0;
         }

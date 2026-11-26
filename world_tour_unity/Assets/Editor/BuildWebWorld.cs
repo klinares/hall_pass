@@ -1,16 +1,16 @@
-// BuildWeb.BuildWorld: builds the 3D scene(s) into world/ at the repo root. Same allowlist, staging and publish
-// code as BuildWeb.Build (this is a partial of that class), with these differences:
-//   - the output folder is only ever exactly <repo>/world (or a folder outside the repo, same rules as Build);
-//   - the scene list is every Place_*.unity that exists, in tour order (Place_Coffee first), not the 2D build list;
+// BuildWeb.BuildWorld: builds the 3D scene(s) into world/ at the repo root. Uses the allowlist, staging and publish
+// code in BuildWeb.cs (this is a partial of that class), and:
+//   - the output folder is only ever exactly <repo>/world (or a folder outside the repo, same rules as the path check);
+//   - the scene list is every Place_*.unity that exists, in tour order (Place_Coffee first);
 //   - for the length of the build the quality levels and the default pipeline point at UniversalRP_3D (3D
-//     renderer, HDR, shadows), then everything is put back, so tour/ builds and renders exactly as before;
+//     renderer, HDR, shadows), then everything is put back;
 //   - world/StreamingAssets/weeks.json and math_config.json are the MASTER copies (phase 9.1). Before the build they are
 //     copied into Assets/StreamingAssets/ (WorldTour.Core.Data.WorldDataSync). world/StreamingAssets is never written: its
 //     fingerprint is taken before and after, recorded in the summary (dataProof), and the original bytes are put back if
 //     anything changed it. A missing world/StreamingAssets fails the build; there is no fallback.
 //
 //   Unity.exe -batchmode -nographics -projectPath world_tour_unity -buildTarget WebGL -executeMethod BuildWeb.BuildWorld
-//       [-buildOut <dir>] [-buildStaging <dir>] [-buildSummary <file>] [-buildForceAdopt]   (as BuildWeb.Build)
+//       [-buildOut <dir>] [-buildStaging <dir>] [-buildSummary <file>] [-buildForceAdopt]
 using System;
 using System.IO;
 using System.Linq;
@@ -23,7 +23,7 @@ public static partial class BuildWeb
 {
     const string QualityFile = "ProjectSettings/QualitySettings.asset";
     const string ProjectSettingsFile = "ProjectSettings/ProjectSettings.asset";
-    // 8.4 P0a: world/ uses its own page template (WebGL context-loss handling); the shared WorldTour template belongs to tour/
+    // 8.4 P0a: world/ uses its own page template (WebGL context-loss handling)
     const string WorldTemplate = "PROJECT:WorldTourWorld";
     // 8.4 P0a: GPU memory caps for world/ only (the 3D pipeline asset is used by no 2D build)
     const float MaxRenderScale = 1.0f;

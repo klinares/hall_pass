@@ -71,13 +71,13 @@ namespace WorldTour.Game.Meta
             return s;
         }
 
-        static SaveBlob Blob { get { return MapScreen.Blob; } }
+        static SaveBlob Blob { get { return Boot.Blob; } }
 
         protected internal override void OnPushed()
         {
             // journal.js:15 awardStickers(): catches anything earned outside a show
             SaveBlob s = Blob;
-            if (ProgressRules.AwardStickers(s, ModeCatalog.Infos, LocalClock.TodayIso()).Count > 0) MapScreen.Persist();
+            if (ProgressRules.AwardStickers(s, ModeCatalog.Infos, LocalClock.TodayIso()).Count > 0) Boot.Persist();
             _pages = JournalBook.Pages(s);
             _pageNo = JournalBook.StartPage(_pages);
             Build();
@@ -296,7 +296,7 @@ namespace WorldTour.Game.Meta
                 if (js == null) continue;
                 CanvasGroup g = js.Body.GetComponent<CanvasGroup>();
                 Feedback.PeelOn(js.Body, true, () => { if (g != null) g.alpha = 1f; });
-                if (JournalBook.MarkSeen(Blob, new[] { js.Key }).Count > 0) MapScreen.Persist();
+                if (JournalBook.MarkSeen(Blob, new[] { js.Key }).Count > 0) Boot.Persist();
                 Debug.Log(PeelLog + " key=" + js.Key);
             }
             _peel = null;
@@ -341,7 +341,7 @@ namespace WorldTour.Game.Meta
             MetaRules.Place(Blob, js.Key, fx, fy, js.Slot.Spot.R);
             Spot p = Blob.Journal.Layout[js.Key];
             js.Slot.Spot = p;
-            MapScreen.Persist();
+            Boot.Persist();
             Debug.Log(PlaceLog + " key=" + js.Key + " x=" + p.X.ToString(CultureInfo.InvariantCulture) + " y=" + p.Y.ToString(CultureInfo.InvariantCulture));
             if (slap)
             {

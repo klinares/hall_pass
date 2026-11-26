@@ -9,7 +9,7 @@ namespace WorldTour.Game.Speech
     /// <summary>
     /// Read-aloud (QUESTIONS 1). In the web player it is the browser's speechSynthesis through Plugins/WebGL/speech.jslib,
     /// with world_tour/js/speech.js's behaviour: cancel before every speak, rate 0.8 (0.55 for the syllable hint), an
-    /// en-US voice preferred. It starts only after the start card's click (StartCard.Unlocked), which also warms it up
+    /// en-US voice preferred. It starts only after Unlock() (the removed 2D start card's click), which also warms it up
     /// with a silent utterance (speech.js warmUp). In the Editor, where there is no browser, every speak is only logged,
     /// so play-mode tests can assert on it. Every speak logs "WT_SPEAK word= rate=" in both.
     /// </summary>
@@ -29,20 +29,14 @@ namespace WorldTour.Game.Speech
         /// <summary>Tests: behave as if the browser had no voice (studio shows the clue).</summary>
         public static bool ForceNoVoice;
 
-        /// <summary>The start card has been clicked.</summary>
+        /// <summary>Unlock() has been called (the start card of the removed 2D game did that).</summary>
         public static bool Unlocked { get; private set; }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetStatics() { Unlocked = false; ForceNoVoice = false; }
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        private static void Hook()
-        {
-            StartCard.Unlocked -= OnUnlocked;
-            StartCard.Unlocked += OnUnlocked;
-        }
-
-        private static void OnUnlocked()
+        /// <summary>Allows speech (the browser needs a click first) and warms the voice up. Phase 9.2: the 2D start card used to call this; nothing calls it now.</summary>
+        public static void Unlock()
         {
             Unlocked = true;
 #if UNITY_WEBGL && !UNITY_EDITOR

@@ -45,7 +45,7 @@ You need Unity 6000.3.29f1 with Web build support. From the repo root, run:
 ## Running the tests
 
 - **Edit-mode and play-mode:** run Unity with `-runTests -testPlatform EditMode` or `PlayMode` and `-testResults <file>`. Judge the run by the counts in the results file, not by the exit code.
-- **Browser:** `node world_tour_unity/Tests/Web/run.mjs` (the 2D suite; it needs a build in `tour/`, which is going away).
+- **Browser:** `node world_tour_unity/Tests/Web/world_smoke.mjs --gpu d3d11` (see `Tests/Web/README.md` for the other suites).
 
 ## Layout
 

@@ -175,17 +175,6 @@ public static class FontSetup
         EditorUtility.SetDirty(TMP_Settings.instance);
         sum.defaultFont = AssetDatabase.GetAssetPath(TMP_Settings.defaultFontAsset);
 
-        // Boot scene text: off LiberationSans
-        var scene = EditorSceneManager.OpenScene("Assets/Scenes/Boot.unity", OpenSceneMode.Single);
-        foreach (var t in UnityEngine.Object.FindObjectsByType<TMP_Text>(FindObjectsInactive.Include, FindObjectsSortMode.None))
-        {
-            if (t.font == courier) continue;
-            t.font = courier;
-            t.fontSharedMaterial = courier.material;
-            EditorUtility.SetDirty(t);
-            sum.bootTextsRelinked++;
-        }
-        if (sum.bootTextsRelinked > 0) { EditorSceneManager.MarkSceneDirty(scene); EditorSceneManager.SaveScene(scene); }
         AssetDatabase.SaveAssets();
 
         // LiberationSans and EmojiOne: delete what nothing else uses; what something still uses (TMP's own shader

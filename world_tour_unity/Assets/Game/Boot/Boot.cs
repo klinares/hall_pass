@@ -1,9 +1,9 @@
 using System;
 using System.Collections;
-using TMPro;
 using UnityEngine;
 using WorldTour.Core;
 using WorldTour.Core.Data;
+using WorldTour.Core.Progress;
 using WorldTour.Game.Data;
 using WorldTour.Game.Save;
 using WorldTour.Game.Util;
@@ -11,62 +11,38 @@ using WorldTour.Game.Util;
 namespace WorldTour.Game
 {
     /// <summary>
-    /// Boot scene entry point. Sets the title label from Core (proving Core runs in the player),
-    /// then logs WT_BOOT_READY exactly once. The browser test times "label visible" from that line.
-    /// It then loads weeks.json and math_config.json (DataLoader) and logs one WT_DATA_READY line, then opens and writes
-    /// the save (SaveStore) and logs one WT_SAVE_READY line, for the browser tests. Then it sets Ready and shows the
-    /// start card (StartCard), whose click loads Main. Data and save problems are warnings, never errors, and never stop the game.
+    /// The world game's start-up: loads weeks.json and math_config.json (DataLoader) and opens the save (SaveStore), logging
+    /// one WT_DATA_READY and one WT_SAVE_READY line for the browser tests. Data and save problems are warnings, never
+    /// errors, and never stop the game. Also holds the session's save for the panels (Blob, Persist).
     /// </summary>
-    public sealed class Boot : MonoBehaviour
+    public static class Boot
     {
-        public const string ReadyLog = "WT_BOOT_READY";
         public const string DataReadyLog = "WT_DATA_READY";
         public const string SaveReadyLog = "WT_SAVE_READY";
 
-        /// <summary>The save for this session, once Boot has opened it (null before, or if opening failed).</summary>
+        /// <summary>The save for this session, once it has been opened (null before, or if opening failed).</summary>
         public static SaveStore Store { get; private set; }
 
-        [SerializeField] TMP_Text label;
-        [SerializeField] StartCard startCard;
-        /// <summary>True once data and save are loaded and the start card is showing.</summary>
+        /// <summary>True once data and save are loaded.</summary>
         public static bool Ready { get; private set; }
 
-        static bool s_Announced;
-        static bool s_DataAnnounced;
         static bool s_SaveAnnounced;
+        static SaveBlob s_Session;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        static void ResetStatics() { s_Announced = false; s_DataAnnounced = false; s_SaveAnnounced = false; Store = null; Ready = false; }
+        static void ResetStatics() { s_SaveAnnounced = false; s_Session = null; Store = null; Ready = false; }
 
-        void Start()
+        /// <summary>The save the panels read and change: the stored one, or a default one kept for the session when storage failed.</summary>
+        internal static SaveBlob Blob
         {
-            if (label != null) label.text = GameInfo.Title;
-            else Debug.LogError("boot: the title label is not assigned.");
-
-            if (s_Announced) return;
-            s_Announced = true;
-            Debug.Log(ReadyLog);
-            StartCoroutine(LoadData());
+            get
+            {
+                if (Store != null && Store.Blob != null) return Store.Blob;
+                return s_Session ?? (s_Session = SaveBlob.Defaults(LocalClock.TodayIso()));
+            }
         }
 
-        IEnumerator LoadData()
-        {
-            yield return DataLoader.Load();
-            if (s_DataAnnounced) yield break;
-            s_DataAnnounced = true;
-            try
-            {
-                Debug.Log(DataSummary(LocalClock.TodayIso()));
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarning("boot: could not summarize the data: " + e.Message);
-            }
-            OpenSave();
-            Ready = true;
-            if (startCard != null) startCard.Show();
-            else Debug.LogWarning("boot: the start card is not assigned.");
-        }
+        internal static void Persist() { if (Store != null) Store.Save(); }
 
         /// <summary>
         /// Phase 8.1: the world game's start. Loads weeks.json and math_config.json and opens the same save as Boot does

@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using WorldTour.Game.Map;
 using WorldTour.Game.Mascot;
 using WorldTour.Game.Motion;
 using WorldTour.Game.Show;
@@ -10,8 +9,7 @@ using WorldTour.Game.Ui;
 namespace WorldTour.Game.Flow
 {
     /// <summary>
-    /// Puts riff where the screens ask for him. The map: MapScreen.DogCue ("idle", "sleepy", "cheer") gives the pose
-    /// in MapScreen.DogHost. A show: <see cref="OpenWithDog"/> adds a dog with its bubble and a DogShowDirector to the
+    /// Puts riff where the screens ask for him. A show: <see cref="OpenWithDog"/> adds a dog with its bubble and a DogShowDirector to the
     /// show screen as the stack places it, so the director follows the engine from its first event (ShowScreen raises
     /// EngineReady inside Open, before Open returns), then moves the dog into the show's CoachArea when it starts.
     /// Each screen owns its own dog, so a dog is never lost when a screen is destroyed. The art comes from the theme
@@ -36,8 +34,6 @@ namespace WorldTour.Game.Flow
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Wire()
         {
-            MapScreen.DogCue -= OnMapCue;
-            MapScreen.DogCue += OnMapCue;
             ShowScreen.Started -= OnShowStarted;
             ShowScreen.Started += OnShowStarted;
             TicketScreen.Opened -= OnTicketOpened;
@@ -68,21 +64,8 @@ namespace WorldTour.Game.Flow
             rt.offsetMin = Vector2.zero; rt.offsetMax = Vector2.zero;
             DogRig rig = go.AddComponent<DogRig>();
             rig.Init(Art, TweenerPort.Instance, MotionSettingsPort.Instance);
-            rig.SetOutfit(DogPoses.OutfitOf(MapScreen.Blob));   // riff wears his backstage outfit everywhere (shop.js, look.js setOutfit)
+            rig.SetOutfit(DogPoses.OutfitOf(Boot.Blob));   // riff wears his backstage outfit everywhere (shop.js, look.js setOutfit)
             return rig;
-        }
-
-        // ---------- the map ----------
-
-        static void OnMapCue(MapScreen map, string cue)
-        {
-            if (map == null || map.DogHost == null) return;
-            if (Art == null) { Debug.LogWarning("[dog] no dog art in the theme asset"); return; }
-            DogRig rig = map.DogHost.GetComponentInChildren<DogRig>(true);
-            if (rig == null) rig = NewRig(map.DogHost);
-            DogPoses.TryParse(cue, out DogPose pose);
-            rig.SetPose(pose);
-            if (cue == "cheer") rig.Play(DogMotion.Hop);
         }
 
         // ---------- a show ----------

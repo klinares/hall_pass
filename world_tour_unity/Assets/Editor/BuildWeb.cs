@@ -1,29 +1,16 @@
-// Builds the Web player into tour/ at the repo root, the same way on any machine.
+// Shared build helpers for BuildWeb.BuildWorld (BuildWebWorld.cs): the path allowlist, staging, publish and summary code.
+// (The 2D game's BuildWeb.Build was removed in phase 9.2; this partial class keeps what the 3D build uses.)
 //
-//   Unity.exe -batchmode -nographics -projectPath world_tour_unity -buildTarget WebGL -executeMethod BuildWeb.Build
-//       [-buildOut <dir>]        default ../tour (relative to the project)
-//       [-buildStaging <dir>]    default Temp/BuildWeb-staging
-//       [-buildSummary <file>]   default Temp/BuildWeb-summary.json
-//       [-buildTag <text>]       test only: bakes a throwaway Resources text into the build so the data hash changes
-//       [-buildForceAdopt]       publish into an existing output folder that has no build.json written by BuildWeb
-//
-// Allowlist: BuildWeb only writes into folders it can prove it owns. Anything else is refused with a Failed
+// Allowlist: the build only writes into folders it can prove it owns. Anything else is refused with a Failed
 // summary before a single file is created, written or deleted.
-//   Output   inside the repo, only exactly <repo>/tour. Anywhere allowed, the folder must be missing, empty, or
+//   Output   inside the repo, only exactly <repo>/world. Anywhere allowed, the folder must be missing, empty, or
 //            hold a build.json with "writer": "WorldTour.BuildWeb". -buildForceAdopt is the only override, for an
-//            existing folder without that file. A legacy tour/build.json with no writer is accepted once.
+//            existing folder without that file.
 //   Staging  deleted and rebuilt on every run, so: strictly inside <project>/Temp, or outside the repo and missing,
-//            empty, or holding BuildWeb's .buildweb-staging marker. Never the output, project or repo, nor inside
-//            the output. The player is built into <staging>/player.
+//            empty, or holding the .buildweb-staging marker. Never the output, project or repo, nor inside the output.
 //   Summary  outside the repo or inside <project>/Temp, never inside the output or staging folder. Otherwise the
 //            summary goes to the default path and says why.
 // Publish order: Build/ files, index.html, new StreamingAssets files, build.json, then prune.
-//
-// Live data: the deployed tour/StreamingAssets/weeks.json and math_config.json are the single source of truth
-// (ADVISOR 2026-11-20 00:12). Before building, each of those two files is copied back into Assets/StreamingAssets/
-// when the deployed copy exists and differs (or the project copy is missing), so the build packages the live copy.
-// No other file is synced. Deployed StreamingAssets files are never overwritten or deleted; a missing one is
-// created from the project copy, and any other file that differs is kept and reported as a warning.
 //
 // The run always ends in EditorApplication.Exit(0 or 1). The Editor can crash at shutdown on some machines
 // (DECISIONS, D1), so the summary file is the evidence of a good build, not the exit code.
@@ -38,8 +25,6 @@ using UnityEngine;
 
 public static partial class BuildWeb
 {
-    const string TagFolder = "Assets/_BuildTag";
-
     [Serializable] public class FileEntry { public string path; public long size; }
     [Serializable] public class Setting { public string name; public string value; }
 
@@ -50,7 +35,7 @@ public static partial class BuildWeb
         public List<FileEntry> files = new List<FileEntry>();
     }
 
-    /// <summary>tour/build.json: which hashed Build/ files belong to the current and the previous build.</summary>
+    /// <summary>world/build.json: which hashed Build/ files belong to the current and the previous build.</summary>
     [Serializable]
     public class Manifest
     {
@@ -93,51 +78,6 @@ public static partial class BuildWeb
     }
 
     static string Now() => DateTime.Now.ToString("yyyy-MM-ddTHH:mm:sszzz");
-
-    public static void Build()
-    {
-        var summary = new Summary { startedAt = Now() };
-        bool ok = false;
-        string defaultSummary = null;
-        string summaryPath = null;
-        try
-        {
-            string project = Directory.GetCurrentDirectory();
-            defaultSummary = Path.Combine(project, "Temp", "BuildWeb-summary.json");
-            summaryPath = defaultSummary;
-            string outDir = Path.GetFullPath(Arg("-buildOut") ?? Path.Combine(project, "..", "tour"));
-            string staging = Path.GetFullPath(Arg("-buildStaging") ?? Path.Combine(project, "Temp", "BuildWeb-staging"));
-            summary.outputDir = outDir;
-            summary.stagingDir = staging;
-            summaryPath = ResolveSummaryPath(project, outDir, staging, defaultSummary, summary);
-            ok = Run(project, outDir, staging, summary);
-        }
-        catch (Exception e)
-        {
-            summary.errors.Add(e.ToString());
-            Debug.LogError("BuildWeb failed: " + e);
-            ok = false;
-        }
-        finally
-        {
-            try { RemoveTag(); }
-            catch (Exception e)
-            {
-                string msg = "could not remove the test-only " + TagFolder + " folder: " + e.Message;
-                summary.warnings.Add(msg);
-                Debug.LogWarning("BuildWeb: " + msg);
-            }
-        }
-
-        if (summary.errors.Count > 0) ok = false;
-        summary.result = ok ? "Succeeded" : "Failed";
-        summary.errorCount = summary.errors.Count;
-        summary.endedAt = Now();
-        if (!WriteSummary(summaryPath, summary) &&
-            !(defaultSummary != null && summaryPath != defaultSummary && WriteSummaryFallback(summaryPath, defaultSummary, summary)))
-            ok = false;
-        EditorApplication.Exit(ok ? 0 : 1);
-    }
 
     static string ResolveSummaryPath(string project, string outDir, string staging, string defaultSummary, Summary summary)
     {
@@ -185,106 +125,19 @@ public static partial class BuildWeb
         return WriteSummary(defaultSummary, summary);
     }
 
-    static bool Run(string project, string outDir, string staging, Summary summary)
-    {
-        // 0. Path guards, before anything is created, built or deleted.
-        if (!CheckPaths(project, outDir, staging, summary)) return false;
-
-        // 1. Settings that live in Library (not committed): set them on every run.
-        if (EditorUserBuildSettings.activeBuildTarget != BuildTarget.WebGL &&
-            !EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.WebGL, BuildTarget.WebGL))
-            throw new Exception("could not switch the active build target to Web");
-        UnityEditor.WebGL.UserBuildSettings.codeOptimization = UnityEditor.WebGL.WasmCodeOptimization.DiskSizeLTO;
-        EditorUserBuildSettings.development = false;
-
-        var scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray();
-        if (scenes.Length == 0) throw new Exception("no enabled scenes in the build list");
-        summary.scenes.AddRange(scenes);
-
-        // Settings read from ProjectSettings (committed): logged, never overridden.
-        var web = NamedBuildTarget.WebGL;
-        void S(string n, object v) => summary.settings.Add(new Setting { name = n, value = v?.ToString() ?? "null" });
-        S("activeBuildTarget", EditorUserBuildSettings.activeBuildTarget);
-        S("codeOptimization", UnityEditor.WebGL.UserBuildSettings.codeOptimization);
-        S("development", EditorUserBuildSettings.development);
-        S("compressionFormat", PlayerSettings.WebGL.compressionFormat);
-        S("decompressionFallback", PlayerSettings.WebGL.decompressionFallback);
-        S("nameFilesAsHashes", PlayerSettings.WebGL.nameFilesAsHashes);
-        S("dataCaching", PlayerSettings.WebGL.dataCaching);
-        S("exceptionSupport", PlayerSettings.WebGL.exceptionSupport);
-        S("template", PlayerSettings.WebGL.template);
-        S("managedStrippingLevel", PlayerSettings.GetManagedStrippingLevel(web));
-        S("il2cppCodeGeneration", PlayerSettings.GetIl2CppCodeGeneration(web));
-        S("stripEngineCode", PlayerSettings.stripEngineCode);
-        S("graphicsAPIs", string.Join(",", PlayerSettings.GetGraphicsAPIs(BuildTarget.WebGL)));
-        S("defaultWebScreen", $"{PlayerSettings.defaultWebScreenWidth}x{PlayerSettings.defaultWebScreenHeight}");
-        S("productName", PlayerSettings.productName);
-        S("splashScreen", PlayerSettings.SplashScreen.show);
-        Debug.Log("BuildWeb settings: " + string.Join(", ", summary.settings.Select(s => s.name + "=" + s.value)));
-
-        SyncLiveData(project, outDir, summary);
-
-        string tag = Arg("-buildTag");
-        if (!string.IsNullOrEmpty(tag)) WriteTag(tag, summary);
-
-        // 2. Build into a clean staging folder, never straight into tour/.
-        // The player goes into <staging>/player; the marker file at <staging> proves BuildWeb made the folder.
-        string player = PrepareStaging(project, staging);
-        var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
-        {
-            scenes = scenes,
-            locationPathName = player,
-            target = BuildTarget.WebGL,
-            targetGroup = BuildTargetGroup.WebGL,
-            options = BuildOptions.None,
-        });
-        foreach (var step in report.steps)
-            foreach (var m in step.messages)
-                if (m.type == LogType.Error || m.type == LogType.Exception || m.type == LogType.Assert)
-                    summary.errors.Add(m.content);
-
-        foreach (var f in Directory.GetFiles(player, "*", SearchOption.AllDirectories).OrderBy(p => p, StringComparer.Ordinal))
-        {
-            long len = new FileInfo(f).Length;
-            summary.files.Add(new FileEntry { path = Rel(player, f), size = len });
-            summary.totalBytes += len;
-        }
-
-        if (report.summary.result != BuildResult.Succeeded)
-        {
-            summary.errors.Add("build result: " + report.summary.result);
-            return false;
-        }
-        if (!File.Exists(Path.Combine(player, "index.html")) || !Directory.Exists(Path.Combine(player, "Build")))
-        {
-            summary.errors.Add("staging has no index.html or Build/");
-            return false;
-        }
-        // Any error logged during the build means no publish, even if BuildPlayer reported success.
-        if (summary.errors.Count > 0)
-        {
-            summary.errors.Add("errors were logged during the build; tour/ was not touched");
-            return false;
-        }
-
-        // 3. Publish.
-        Publish(player, outDir, summary);
-        return summary.errors.Count == 0;
-    }
-
     const string WriterId = "WorldTour.BuildWeb";
     const string StagingMarker = ".buildweb-staging";
 
     /// <summary>
     /// Allowlist: BuildWeb only writes into folders it can prove it owns. Runs before anything is created, written
     /// or deleted, and every refusal leaves the disk untouched.
-    /// Output: inside the repo only exactly &lt;repo&gt;/tour; anywhere allowed, the folder must be missing, empty, or
+    /// Output: inside the repo only exactly &lt;repo&gt;/world; anywhere allowed, the folder must be missing, empty, or
     /// hold a build.json with writer "WorldTour.BuildWeb" (-buildForceAdopt overrides the last part only).
-    /// A legacy tour/build.json with a current set but no writer field is accepted once and rewritten.
+    /// A legacy build.json with a current set but no writer field is accepted once and rewritten.
     /// Staging (deleted and recreated on every run): strictly inside &lt;project&gt;/Temp, or outside the repo and
     /// missing, empty, or holding the .buildweb-staging marker. It must not overlap the output, project or repo.
     /// </summary>
-    static bool CheckPaths(string project, string outDir, string staging, Summary summary, string allowedName = "tour")
+    static bool CheckPaths(string project, string outDir, string staging, Summary summary, string allowedName = "world")
     {
         string repo = Path.GetFullPath(Path.Combine(project, ".."));
         string temp = Path.Combine(project, "Temp");
@@ -359,27 +212,6 @@ public static partial class BuildWeb
         return player;
     }
 
-    /// <summary>The deployed copies of these files are the source of truth; the project copies mirror them.</summary>
-    static readonly string[] LiveDataFiles = { "weeks.json", "math_config.json" };
-
-    static void SyncLiveData(string project, string outDir, Summary summary)
-    {
-        bool changed = false;
-        foreach (var name in LiveDataFiles)
-        {
-            string deployed = Path.Combine(outDir, "StreamingAssets", name);
-            string local = Path.Combine(project, "Assets", "StreamingAssets", name);
-            if (!File.Exists(deployed)) continue;
-            if (File.Exists(local) && SameBytes(deployed, local)) continue;
-            Directory.CreateDirectory(Path.GetDirectoryName(local));
-            File.Copy(deployed, local, true);
-            changed = true;
-            summary.streamingAssetsSynced.Add("StreamingAssets/" + name);
-            Debug.Log($"BuildWeb: synced tour/StreamingAssets/{name} -> Assets/StreamingAssets/{name}");
-        }
-        if (changed) AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
-    }
-
     static string Norm(string p) => Path.GetFullPath(p).TrimEnd('\\', '/');
     static bool Same(string a, string b) => string.Equals(Norm(a), Norm(b), StringComparison.OrdinalIgnoreCase);
     /// <summary>True when <paramref name="child"/> is strictly inside <paramref name="parent"/>.</summary>
@@ -440,7 +272,7 @@ public static partial class BuildWeb
         foreach (var e in current.files.Where(e => !IsBuildFile(e.path)))
             CopyIfChanged(Path.Combine(staging, e.path), Path.Combine(outDir, e.path), e.path, summary);
 
-        // StreamingAssets: copy only files tour/ doesn't have yet; never overwrite or delete.
+        // StreamingAssets: copy only files world/ doesn't have yet; never overwrite or delete.
         string stagingSA = Path.Combine(staging, "StreamingAssets");
         if (Directory.Exists(stagingSA))
         {
@@ -456,7 +288,7 @@ public static partial class BuildWeb
                 }
                 else if (!SameBytes(f, dest))
                 {
-                    string msg = $"kept tour/{rel} (differs from project copy)";
+                    string msg = $"kept world/{rel} (differs from project copy)";
                     summary.streamingAssetsKept.Add(rel);
                     summary.warnings.Add(msg);
                     Debug.LogWarning("BuildWeb: " + msg);
@@ -504,24 +336,4 @@ public static partial class BuildWeb
 
     static string Rel(string root, string path) =>
         Path.GetRelativePath(root, path).Replace('\\', '/');
-
-    // ---- test-only build tag ----
-
-    static void WriteTag(string tag, Summary summary)
-    {
-        Directory.CreateDirectory(TagFolder + "/Resources");
-        File.WriteAllText(TagFolder + "/Resources/buildtag.txt", tag);
-        AssetDatabase.ImportAsset(TagFolder, ImportAssetOptions.ImportRecursive | ImportAssetOptions.ForceSynchronousImport);
-        summary.warnings.Add("test-only -buildTag \"" + tag + "\" baked into this build");
-    }
-
-    static void RemoveTag()
-    {
-        if (!AssetDatabase.IsValidFolder(TagFolder) && !Directory.Exists(TagFolder)) return;
-        if (!AssetDatabase.DeleteAsset(TagFolder))
-        {
-            Directory.Delete(TagFolder, true);
-            if (File.Exists(TagFolder + ".meta")) File.Delete(TagFolder + ".meta");
-        }
-    }
 }

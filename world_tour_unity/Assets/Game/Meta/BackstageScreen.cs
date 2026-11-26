@@ -68,7 +68,7 @@ namespace WorldTour.Game.Meta
             return s;
         }
 
-        static SaveBlob Blob { get { return MapScreen.Blob; } }
+        static SaveBlob Blob { get { return Boot.Blob; } }
 
         protected internal override void OnPushed()
         {
@@ -407,7 +407,7 @@ namespace WorldTour.Game.Meta
                     break;
                 case PressOutcome.Bought:
                     StopArm();
-                    MapScreen.Persist();          // progress.js buyItem: saveNow
+                    Boot.Persist();          // progress.js buyItem: saveNow
                     Sfx.Play(SfxId.StrumBig);
                     _focusAfterBuild = "Act";
                     GameSettings.Apply();          // applyLook(): a new theme re-skins everything (Build runs on Theme.Changed)
@@ -419,7 +419,7 @@ namespace WorldTour.Game.Meta
                     ConfettiLayer.Burst(_root, 40, _compact ? new Vector2(0.5f, 0.2f) : new Vector2(0.62f, 0.88f), ConfettiLayer.WinSeconds);
                     break;
                 case PressOutcome.Equipped:
-                    MapScreen.Persist();
+                    Boot.Persist();
                     Sfx.Play(SfxId.Pop);
                     _focusAfterBuild = "Act";
                     GameSettings.Apply();

@@ -192,7 +192,7 @@ namespace WorldTour.Game.Audio
             Sfx i = s_Instance;
             if (!s_Unlocked || !s_Enabled || i == null) return;
             AudioClip c = i._clips[(int)id];
-            if (c != null) i._src.PlayOneShot(c, volume);
+            if (c != null) { i._src.PlayOneShot(c, volume); if (AudioMeter.Active) AudioMeter.OneShot("sfx:" + id, c, volume * AudioListener.volume); }
         }
 
         /// <summary>Makes the crowd for a venue size ahead of time (call when a show starts), so the ticket screen doesn't wait.</summary>
@@ -204,7 +204,7 @@ namespace WorldTour.Game.Audio
             Sfx i = s_Instance;
             if (!s_Unlocked || !s_Enabled || i == null) return;
             AudioClip c = i.CrowdClip(size);
-            if (c != null) i._src.PlayOneShot(c, 1f);
+            if (c != null) { i._src.PlayOneShot(c, 1f); if (AudioMeter.Active) AudioMeter.OneShot("sfx:crowd", c, AudioListener.volume); }
         }
 
         AudioClip CrowdClip(double size)
@@ -230,6 +230,7 @@ namespace WorldTour.Game.Audio
             if (i._beat != null) Destroy(i._beat);
             i._beat = MakeClip("wt_beat", data, Synth.Rate);
             i._src.PlayOneShot(i._beat, 1f);
+            if (AudioMeter.Active) AudioMeter.OneShot("sfx:beat", i._beat, AudioListener.volume);
             return seconds;
         }
 

@@ -144,9 +144,9 @@
     }, false);
 
     var config = {
-      dataUrl: "Build/bc73fb40b51804a9e55b8785d9906bde.data.unityweb",
-      frameworkUrl: "Build/bdc9c70cb9cf1c7b69cd5012ebc5850d.framework.js.unityweb",
-      codeUrl: "Build/17a9c34d9098a1d16c287182111d19a8.wasm.unityweb",
+      dataUrl: "Build/f460c00e5537146c8f33cc62acfce4c0.data.unityweb",
+      frameworkUrl: "Build/a3332d01d83e32f25969c099b6b6a71b.framework.js.unityweb",
+      codeUrl: "Build/7e8134b3a75f1956c1da7e45ba7967a6.wasm.unityweb",
       streamingAssetsUrl: "StreamingAssets",
       // two-GPU laptops: ask for the dedicated card. Unity/emscripten read this as a number (0 default, 1 low-power, 2 high-performance);
       // the string "high-performance" would be looked up in that list and fall back to default.
@@ -168,7 +168,7 @@
     };
 
     var script = document.createElement("script");
-    script.src = "Build/697bb454670f84e22a4de99654625a4c.loader.js";
+    script.src = "Build/559ff3c8293ef0ea3b8209c8430c94a8.loader.js";
     script.onload = function () {
       createUnityInstance(canvas, config, function (progress) {
         fill.style.width = Math.round(100 * progress) + "%";

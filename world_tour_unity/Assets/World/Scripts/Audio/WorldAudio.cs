@@ -48,6 +48,8 @@ namespace WorldTour.World.Audio
         public bool PanelOpen;
         /// <summary>The stage show is on: the crowd murmur stays up.</summary>
         public bool ShowOn;
+        /// <summary>Test only (the audio probe): the crowd counts as full and close, so its level is the loudest it ever is.</summary>
+        public bool ProbeLoudest;
 
         /// <summary>The place the sound is bound to (tests and the browser log).</summary>
         public string PlaceId { get { return _placeId; } }
@@ -187,11 +189,22 @@ namespace WorldTour.World.Audio
             float dist = _player != null && _crowdCenter != null
                 ? Vector3.Distance(new Vector3(_player.transform.position.x, 0, _player.transform.position.z), new Vector3(_crowdCenter.position.x, 0, _crowdCenter.position.z))
                 : 99f;
-            float want = AudioPlan.CrowdVolume(CrowdFill, dist, ShowOn);
+            float want = ProbeLoudest ? AudioPlan.CrowdVolume(1f, 0f, false) : AudioPlan.CrowdVolume(CrowdFill, dist, ShowOn);
             _crowd.volume = Mathf.MoveTowards(_crowd.volume, want, dt * 0.4f);
 
             UpdateSteps(dt);
             UpdateCheer();
+            if (AudioMeter.Active) MeterFrame(dt);
+        }
+
+        /// <summary>Test only (AudioMeter): what each looping source is putting out this frame.</summary>
+        void MeterFrame(float dt)
+        {
+            float on = Sfx.Enabled ? AudioListener.volume : 0f;
+            if (_bed.isPlaying) AudioMeter.Loop("bed", _bed.clip, _bed.timeSamples, dt, _bed.volume * on);
+            if (_crowd.isPlaying) AudioMeter.Loop("crowd", _crowd.clip, _crowd.timeSamples, dt, _crowd.volume * on);
+            if (_cheer.isPlaying) AudioMeter.Loop("cheer", _cheer.clip, _cheer.timeSamples, dt, _cheer.volume * on);
+            AudioMeter.Frame(dt);
         }
 
         /// <summary>One step per stride of walking (about 1.6 m): the clip, its pitch and its volume vary a little, and the ground sets the base.</summary>
@@ -210,7 +223,9 @@ namespace WorldTour.World.Audio
             if (c == null) return;
             _step.pitch = UnityEngine.Random.Range(0.94f, 1.06f);   // the ground is in the synthesised step itself (WorldSynth.SpecFor)
             if (_loggedSurface != _surface) { _loggedSurface = _surface; Debug.Log(LogTag + "step synth:" + _surface + " place=" + _placeId); }
-            _step.PlayOneShot(c, AudioPlan.StepVolume(_surface) * UnityEngine.Random.Range(0.85f, 1f));
+            float stepVol = AudioPlan.StepVolume(_surface) * UnityEngine.Random.Range(0.85f, 1f);
+            _step.PlayOneShot(c, stepVol);
+            if (AudioMeter.Active) AudioMeter.OneShot("steps", c, stepVol * (Sfx.Enabled ? AudioListener.volume : 0f), _step.pitch);
         }
 
         void PlayCue(Cue cue)
@@ -253,7 +268,12 @@ namespace WorldTour.World.Audio
             }
         }
 
-        void One(AudioClip c, float volume) { if (c != null) _ui.PlayOneShot(c, volume); }
+        void One(AudioClip c, float volume)
+        {
+            if (c == null) return;
+            _ui.PlayOneShot(c, volume);
+            if (AudioMeter.Active) AudioMeter.OneShot("ui:" + c.name, c, volume * (Sfx.Enabled ? AudioListener.volume : 0f));
+        }
 
         /// <summary>Applause for a right answer: about 2 s, as loud as the crowd is full. One at a time, and not again within 1.2 s.</summary>
         void StartCheer()
@@ -270,7 +290,7 @@ namespace WorldTour.World.Audio
         {
             if (!_cheer.isPlaying) return;
             float t = Time.unscaledTime - _cheerAt;
-            float peak = 0.22f + 0.4f * Mathf.Clamp01(CrowdFill);
+            float peak = 0.22f + 0.4f * Mathf.Clamp01(ProbeLoudest ? 1f : CrowdFill);
             float env = t < 0.12f ? t / 0.12f : Mathf.Clamp01(1f - (t - 1.3f) / 0.9f);
             _cheer.volume = peak * env;
             if (t > 2.3f) _cheer.Stop();

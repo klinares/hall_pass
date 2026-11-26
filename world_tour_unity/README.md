@@ -1,6 +1,6 @@
-# World Tour (Unity)
+# Natalia's World Tour (Unity)
 
-World Tour is a spelling and 5th-grade math game where you walk around eight 3D places on a pop tour, talk to the crew, play gigs and shows, and earn fans. This Unity 6 project builds it as a web game into `world/` at the repo root, which GitHub Pages serves at `klinares.github.io/hall_pass/world/`.
+Natalia's World Tour is a spelling and 5th-grade math game where you walk around eight 3D places on a pop tour, talk to the crew, play gigs and shows, and earn fans. This Unity 6 project builds it as a web game into `world/` at the repo root, which GitHub Pages serves at `klinares.github.io/hall_pass/world/`.
 
 Try it locally from the repo root: `node world_tour_unity/Tests/Web/server.mjs world`, then open the address it prints in Chrome or Edge.
 

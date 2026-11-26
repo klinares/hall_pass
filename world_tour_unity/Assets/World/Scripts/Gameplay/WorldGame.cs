@@ -983,6 +983,52 @@ namespace WorldTour.World.Gameplay
             Boot.Store.Save();
         }
 
+        // ---------- the audio probe (phase 10A; only with ?wt_test) ----------
+
+        /// <summary>Test hook: SendMessage("WorldGame","AudioProbeStart","label") starts a fresh level window (see AudioMeter) with the crowd forced to its loudest.</summary>
+        public void AudioProbeStart(string label)
+        {
+            if (!TestMode) return;
+            Sfx.Unlock();
+            if (_audio != null) _audio.ProbeLoudest = true;
+            AudioMeter.Begin(label);
+        }
+
+        /// <summary>Test hook: plays every one-off sound once, a second or so apart (the guitar twice, with its gap between).</summary>
+        public void AudioProbeCues()
+        {
+            if (TestMode) StartCoroutine(ProbeCues());
+        }
+
+        IEnumerator ProbeCues()
+        {
+            var gap = new WaitForSecondsRealtime(1.2f);
+            Sfx.Play(SfxId.Tap); yield return gap;
+            Sfx.Play(SfxId.Pop); yield return gap;
+            Sfx.Play(SfxId.Peel); yield return gap;
+            Sfx.Play(SfxId.Thud); yield return gap;
+            Sfx.Play(SfxId.Tick); yield return gap;
+            WorldAudio.Play(Cue.CardOpen); yield return gap;
+            WorldAudio.Play(Cue.CardClose); yield return gap;
+            WorldAudio.Play(Cue.Whoosh); yield return gap;
+            WorldAudio.Play(Cue.GigDone); yield return gap;
+            WorldAudio.Play(Cue.Unlock); yield return gap;
+            WorldAudio.Play(Cue.Cheer); yield return gap;
+            yield return gap;
+            Sfx.Crowd(1.0); yield return new WaitForSecondsRealtime(4f);
+            for (int k = 0; k < 4; k++) { Sfx.Play(SfxId.Strum); yield return new WaitForSecondsRealtime(7f); }
+            Sfx.Play(SfxId.StrumBig); yield return new WaitForSecondsRealtime(3f);
+            Debug.Log("WT_AUDIO_PROBE_CUES_DONE");
+        }
+
+        /// <summary>Test hook: logs the peak and RMS (dBFS) of every source since AudioProbeStart.</summary>
+        public void AudioProbeReport()
+        {
+            if (!TestMode) return;
+            foreach (string line in AudioMeter.Report()) Debug.Log(line);
+            Debug.Log("WT_AUDIO_PROBE_REPORT_DONE");
+        }
+
         /// <summary>Test hook (only with ?wt_test): the browser memory test travels place to place in one session by SendMessage("WorldGame","TestTravel","<venue id>").</summary>
         public void TestTravel(string id)
         {

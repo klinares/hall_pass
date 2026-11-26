@@ -19,12 +19,13 @@ const { chromium } = createRequire(path.join(here, 'package.json'))('playwright'
 const argv = process.argv.slice(2);
 const opt = (n, d) => { const i = argv.indexOf(n); return i >= 0 && i + 1 < argv.length ? argv[i + 1] : d; };
 const label = opt('--label', 'run');
-const seconds = Number(opt('--seconds', '60'));
+const seconds = Number(opt('--seconds', argv.includes('--birds-only') ? '130' : '60'));
 const gpu = opt('--gpu', 'swiftshader') === 'd3d11';
 const outFile = path.resolve(opt('--out', path.join(project, 'Temp', `world-audio-${label}.json`)));
 const FANS = { coffee: 0, records: 20000, rec: 60000, rooftop: 125000, club: 225000, theater: 375000, festival: 600000, arena: 900000 };
 const ORDER = ['coffee', 'records', 'rec', 'rooftop', 'club', 'theater', 'festival', 'arena'];
-const places = opt('--places', ORDER.join(',')).split(',').filter(Boolean);
+const birdsOnly = argv.includes('--birds-only');   // coffee and festival for 130 s with no cues: only the bird chirps and their gaps are checked
+const places = opt('--places', (birdsOnly ? 'coffee,festival' : ORDER.join(','))).split(',').filter(Boolean);
 const BIRD_PLACES = ['coffee', 'festival'];
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
@@ -48,7 +49,7 @@ const TAP = `(() => {
               const inp = e.inputBuffer.getChannelData(Math.min(c, e.inputBuffer.numberOfChannels - 1)), out = e.outputBuffer.getChannelData(c);
               out.set(inp);
               if (!tap.on || c > 0) continue;
-              for (let i = 0; i < inp.length; i++) { const a = Math.abs(inp[i]); if (a > tap.peak) tap.peak = a; if (a >= 0.999) tap.full++; tap.sumsq += a * a; }
+              for (let i = 0; i < inp.length; i++) { const a = Math.abs(inp[i]); if (a > tap.peak) { tap.peak = a; tap.peakAt = (tap.n + i) / ctx.sampleRate; } if (a >= 0.999) tap.full++; tap.sumsq += a * a; }
               tap.n += inp.length;
             }
           };
@@ -74,7 +75,8 @@ for (const id of places) {
   const page = await ctx.newPage();
   const lines = [];
   const errors = [];
-  page.on('console', m => { lines.push(m.text().trim()); if (m.type() === 'error') errors.push(m.text()); });
+  const birdAt = [];
+  page.on('console', m => { const text = m.text().trim(); lines.push(text); if (/^WT_AUDIO bird chirp=/.test(text)) birdAt.push(Date.now()); if (m.type() === 'error') errors.push(m.text()); });
   page.on('pageerror', e => errors.push(String(e)));
   const wait = async (re, ms, from = 0) => { const end = Date.now() + ms; while (Date.now() < end) { for (let i = from; i < lines.length; i++) if (re.test(lines[i])) return i; await sleep(100); } return -1; };
   const send = (fn, arg) => page.evaluate(([f, a]) => window.__wtInstance && window.__wtInstance.SendMessage('WorldGame', f, a), [fn, arg ?? '']);
@@ -97,7 +99,7 @@ for (const id of places) {
     await page.keyboard.down(dir);
     while ((Date.now() - t0) / 1000 < seconds) {
       await sleep(1000);
-      if (!cues && Date.now() - t0 > 4000) { cues = true; await send('AudioProbeCues'); }
+      if (!cues && !birdsOnly && Date.now() - t0 > 4000) { cues = true; await send('AudioProbeCues'); }
       if (Math.floor((Date.now() - t0) / 1000) % 3 === 0) { await page.keyboard.up(dir); dir = dir === 'KeyD' ? 'KeyA' : 'KeyD'; await page.keyboard.down(dir); }
     }
     await page.keyboard.up(dir);
@@ -110,8 +112,8 @@ for (const id of places) {
       const m = /^WT_AUDIO_LEVELS label=\S+ source=(\S+) peak=(-?[\d.]+) rms=(-?[\d.]+)/.exec(l);
       if (m) sources[m[1]] = { peak: +m[2], rms: +m[3] };
     }
-    const birds = lines.filter(l => /^WT_AUDIO .*bird/i.test(l)).length;
-    results.places[id] = { audio: lines.filter(l => l.startsWith('WT_AUDIO ')).slice(0, 60), sources, tap: tap.n ? { peakDb: db(tap.peak), rmsDb: db(Math.sqrt(tap.sumsq / tap.n)), fullScaleSamples: tap.full, rate: tap.rate, contexts: tap.contexts, seconds: +(tap.n / (tap.rate || 1)).toFixed(1) } : null, birdLogs: birds, errors: errors.slice(0, 3) };
+    const birds = lines.filter(l => /^WT_AUDIO bird chirp=/.test(l)).length;
+    results.places[id] = { audio: lines.filter(l => l.startsWith('WT_AUDIO ')).slice(0, 60), sources, tap: tap.n ? { peakDb: db(tap.peak), rmsDb: db(Math.sqrt(tap.sumsq / tap.n)), fullScaleSamples: tap.full, rate: tap.rate, peakAtSeconds: +(tap.peakAt || 0).toFixed(2), contexts: tap.contexts, seconds: +(tap.n / (tap.rate || 1)).toFixed(1) } : null, birdLogs: birds, birdGaps: birdAt.slice(1).map((t, i) => +((t - birdAt[i]) / 1000).toFixed(1)), errors: errors.slice(0, 3) };
     console.log(`${id}: ` + Object.entries(sources).map(([k, v]) => `${k} ${v.peak}/${v.rms}`).join('  ') + (tap.n ? `  | browser mix peak ${db(tap.peak)} rms ${db(Math.sqrt(tap.sumsq / tap.n))} full-scale samples ${tap.full}` : '  | no browser tap'));
     if (errors.length) fail(`${id}: console errors: ${errors.slice(0, 2).join(' | ')}`);
   } catch (e) {
@@ -128,10 +130,12 @@ if (label === 'after') {
       if (src === 'mix' || src === 'cheer' || src === 'sfx:crowd') continue;
       if (v.peak > -12) fail(`${id}: ${src} peaks at ${v.peak} dBFS (over -12)`);
     }
-    if (r.sources.crowd) fail(`${id}: a crowd murmur is still playing`);
+    if (r.sources.crowd || r.sources.bed) fail(`${id}: a murmur or a bed is still playing`);
     if (r.tap && r.tap.fullScaleSamples > 0) fail(`${id}: the browser mix reached full scale (${r.tap.fullScaleSamples} samples)`);
-    const birds = r.sources.bed;
-    if (BIRD_PLACES.includes(id) ? false : !!birds) fail(`${id}: a bed plays in a place without birds`);
+
+    if (!BIRD_PLACES.includes(id) && (r.sources.birds || r.birdLogs)) fail(`${id}: birds in a place that should have none`);
+    for (const g of r.birdGaps || []) if (g < 19 || g > 42) fail(`${id}: two chirps ${g} s apart (should be 20 to 40)`);
+    if (r.birdLogs > Math.ceil(seconds / 20)) fail(`${id}: ${r.birdLogs} chirps in ${seconds} s (at most one per 20 s)`);
   }
 }
 fs.mkdirSync(path.dirname(outFile), { recursive: true });

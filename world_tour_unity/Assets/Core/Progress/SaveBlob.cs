@@ -52,6 +52,10 @@ namespace WorldTour.Core.Progress
         /// <summary>Keys this version doesn't know, kept in stored order (null = none).</summary>
         public JsonValue Extra;
         public bool Sound = true;
+        /// <summary>Phase 10A: the music and ambience slider, 0 to 100 in steps of 10. Null (not in the save) means the default, 40. Written only when set.</summary>
+        public int? Ambience;
+        /// <summary>Phase 10A: the effects slider, 0 to 100 in steps of 10. Null means the default, 100. Written only when set.</summary>
+        public int? Effects;
         public string Theme = "tour-pink";
         /// <summary>"auto" or "reduced".</summary>
         public string Motion = "auto";

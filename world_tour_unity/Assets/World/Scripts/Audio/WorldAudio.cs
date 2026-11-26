@@ -11,13 +11,14 @@ namespace WorldTour.World.Audio
     public enum Cue { CardOpen, CardClose, Whoosh, GigDone, Unlock, Cheer }
 
     /// <summary>
-    /// Phase 8.3: the sound of the world. Footsteps that follow her stride and suit the ground, a bed under each place (birds, a city hum, a hall murmur),
-    /// the crowd murmur near the stage, applause on right answers in a show, a pop and a click as cards open and close, a short jingle for a gig done and a new stop.
+    /// The sound of the world. Footsteps that follow her stride and suit the ground, a rare soft bird chirp in the daytime outdoor places, applause on right answers in a show,
+    /// a pop and a click as cards open and close, a short jingle for a gig done and a new stop.
     /// The cue clips (pop, click, whoosh, two jingles) are the CC0 Kenney ones, kept out of Resources in Assets/World/Audio/Clips and reached through the WorldAudioBank scene
-    /// that only the 3D build contains, so the 2D tour build never carries them (see ASSETS.md). Everything else (birds, footsteps, applause, crowd murmur, city hum) is
-    /// synthesised in code by <see cref="WorldSynth"/> and <see cref="MakeCityHum"/>, like the 2D game sounds.
-    /// Nothing plays until the first click or key (<see cref="Sfx.Unlocked"/>), and everything obeys the remembered sound toggle (<see cref="Sfx.Enabled"/>).
-    /// The beds stay quiet and drop while a gig or show panel is open, so the teaching sounds (<see cref="Sfx"/>) are always on top.
+    /// that only the 3D build contains, so the 2D tour build never carries them (see ASSETS.md). Everything else (birds, footsteps, applause) is synthesised in code by <see cref="WorldSynth"/>.
+    /// Nothing plays until the first click or key (<see cref="Sfx.Unlocked"/>), and everything obeys the remembered sound settings: <see cref="Sfx.AmbienceVolume"/> (the birds) and
+    /// <see cref="Sfx.EffectsVolume"/> (everything else here).
+    /// Phase 10A, the "loud static" fix: there is no noise bed any more (the city hum and the hall and crowd murmur are gone), every sound has a peak ceiling (see <see cref="AudioPlan"/>),
+    /// and the whole mix is held 1.5 dB down (<see cref="Headroom"/>) so the sources can never add up to clipping.
     /// </summary>
     public sealed class WorldAudio : MonoBehaviour
     {
@@ -27,28 +28,31 @@ namespace WorldTour.World.Audio
         public const string ClipDir = "Assets/World/Audio/Clips/";
         /// <summary>The log line each sound writes ("WT_AUDIO event source"), so a run shows what fired. Footsteps log once per ground.</summary>
         public const string LogTag = "WT_AUDIO ";
+        /// <summary>Master gain on everything Unity plays (AudioListener.volume): 0.85, about -1.4 dB. The loudest each source can be is capped, and these caps add up to under 1 with this on top.</summary>
+        public const float Headroom = 0.85f;
 
-        AudioSource _step, _bed, _crowd, _cheer, _ui;
+        AudioSource _step, _bird, _cheer, _ui;
         readonly Dictionary<Surface, AudioClip[]> _stepSets = new Dictionary<Surface, AudioClip[]>();
         AudioClip[] _steps;
+        AudioClip[] _chirps;
+        readonly Dictionary<AudioClip, float> _peaks = new Dictionary<AudioClip, float>();
         Surface _loggedSurface = (Surface)(-1);
-        AudioClip _birds, _murmur, _city, _applause, _open, _close, _whoosh, _done, _unlock;
+        AudioClip _applause, _open, _close, _whoosh, _done, _unlock;
         string _placeId = "";
         Surface _surface = Surface.Stone;
-        Bed _bedKind = Bed.Birds;
+        Bed _bedKind = Bed.None;
         PlayerController _player;
-        Transform _crowdCenter;
-        float _stride, _cheerAt = -10f, _lastCheer = -10f, _bedGain = 1f;
-        int _lastStep = -1;
+        float _stride, _cheerAt = -10f, _lastCheer = -10f, _birdWait = 30f;
+        int _lastStep = -1, _lastChirp = -1;
         bool _started;
 
-        /// <summary>0 to 1: how full the crowd is (set by the gameplay).</summary>
+        /// <summary>0 to 1: how full the crowd is (set by the gameplay); the applause is louder with a fuller crowd.</summary>
         public float CrowdFill;
-        /// <summary>A gig or a show panel is open: the bed drops.</summary>
+        /// <summary>A gig or a show panel is open: no birds.</summary>
         public bool PanelOpen;
-        /// <summary>The stage show is on: the crowd murmur stays up.</summary>
+        /// <summary>The stage show is on.</summary>
         public bool ShowOn;
-        /// <summary>Test only (the audio probe): the crowd counts as full and close, so its level is the loudest it ever is.</summary>
+        /// <summary>Test only (the audio probe): the crowd counts as full, so the applause is as loud as it ever gets.</summary>
         public bool ProbeLoudest;
 
         /// <summary>The place the sound is bound to (tests and the browser log).</summary>
@@ -74,15 +78,15 @@ namespace WorldTour.World.Audio
         void Awake()
         {
             Instance = this;
-            _step = Source("Steps", false);
-            _bed = Source("Bed", true);
-            _crowd = Source("Crowd", true);
-            _cheer = Source("Cheer", false);
-            _ui = Source("Ui", false);
-            _murmur = Clip("wt_murmur", WorldSynth.Murmur());
+            AudioListener.volume = Headroom;
+            _step = Source("Steps");
+            _bird = Source("Birds");
+            _cheer = Source("Cheer");
+            _ui = Source("Ui");
             _applause = Clip("wt_applause", WorldSynth.Applause());
-            _crowd.clip = _murmur;
             _cheer.clip = _applause;
+            _chirps = new AudioClip[WorldSynth.ChirpCount];
+            for (int i = 0; i < _chirps.Length; i++) _chirps[i] = Clip("wt_chirp" + i, WorldSynth.BirdChirp(i));
             StartCoroutine(LoadCueClips());
         }
 
@@ -121,90 +125,81 @@ namespace WorldTour.World.Audio
 
         void OnDestroy() { if (Instance == this) Instance = null; }
 
-        AudioSource Source(string name, bool loop)
+        AudioSource Source(string name)
         {
             var go = new GameObject(name);
             go.transform.SetParent(transform, false);
             var s = go.AddComponent<AudioSource>();
             s.playOnAwake = false;
-            s.loop = loop;
+            s.loop = false;
             s.spatialBlend = 0f;
             s.volume = 0f;
             return s;
         }
 
-        /// <summary>A new place has loaded: its ground, its bed, its crowd.</summary>
+        /// <summary>A new place has loaded: its ground and whether it has birds. The first chirp comes 20 to 40 seconds in.</summary>
         public void Bind(string placeId, PlayerController player, Transform crowdCenter)
         {
             _placeId = placeId;
             _player = player;
-            _crowdCenter = crowdCenter;
             _surface = AudioPlan.SurfaceFor(placeId);
             _bedKind = AudioPlan.BedFor(placeId);
             _stride = AudioPlan.Stride * 0.5f;
+            _birdWait = AudioPlan.BirdGap(UnityEngine.Random.value);
             if (!_stepSets.TryGetValue(_surface, out _steps))
             {
                 _steps = new AudioClip[4];
                 for (int i = 0; i < 4; i++) _steps[i] = Clip("wt_step_" + _surface + i, WorldSynth.Step(_surface, i));
                 _stepSets[_surface] = _steps;
             }
-            _bed.Stop();
-            _bed.clip = ClipFor(_bedKind);
-            _crowd.Stop();
-            if (_started) StartLoops();
-        }
-
-        AudioClip ClipFor(Bed b)
-        {
-            switch (b)
-            {
-                case Bed.Birds: if (_birds == null) _birds = Clip("wt_birds", WorldSynth.Birds()); return _birds;
-                case Bed.City: if (_city == null) _city = MakeCityHum(); return _city;
-                default: return _murmur;
-            }
-        }
-
-        void StartLoops()
-        {
-            if (_bed.clip != null && !_bed.isPlaying) { _bed.Play(); Debug.Log(LogTag + "bed " + _bedKind + " source=" + (_bedKind == Bed.City ? "synth:city-hum" : _bedKind == Bed.Birds ? "synth:birds" : "synth:murmur") + " place=" + _placeId); }
-            if (_crowd.clip != null && !_crowd.isPlaying)
-            {
-                _crowd.Play();
-                Debug.Log(LogTag + "crowd source=synth:murmur place=" + _placeId);
-                _crowd.time = Mathf.Min(_crowd.clip.length * 0.37f, Mathf.Max(0f, _crowd.clip.length - 0.1f));   // not in step with the hall bed, which is the same clip
-            }
+            Debug.Log(LogTag + "place " + placeId + " bed=" + _bedKind + (_bedKind == Bed.Birds ? " source=synth:birds" : " (silent)"));
         }
 
         void Update()
         {
             bool on = Sfx.Enabled;
-            AudioSource[] all = { _step, _bed, _crowd, _cheer, _ui };
+            AudioSource[] all = { _step, _bird, _cheer, _ui };
             for (int i = 0; i < all.Length; i++) all[i].mute = !on;
             if (!Sfx.Unlocked) return;
-            if (!_started) { _started = true; StartLoops(); }
 
             float dt = Time.unscaledDeltaTime;
-            _bedGain = Mathf.MoveTowards(_bedGain, PanelOpen ? 0.55f : 1f, dt * 1.5f);
-            _bed.volume = AudioPlan.BedVolume(_bedKind) * _bedGain;
-            float dist = _player != null && _crowdCenter != null
-                ? Vector3.Distance(new Vector3(_player.transform.position.x, 0, _player.transform.position.z), new Vector3(_crowdCenter.position.x, 0, _crowdCenter.position.z))
-                : 99f;
-            float want = ProbeLoudest ? AudioPlan.CrowdVolume(1f, 0f, false) : AudioPlan.CrowdVolume(CrowdFill, dist, ShowOn);
-            _crowd.volume = Mathf.MoveTowards(_crowd.volume, want, dt * 0.4f);
-
+            UpdateBirds(dt);
             UpdateSteps(dt);
             UpdateCheer();
             if (AudioMeter.Active) MeterFrame(dt);
         }
 
-        /// <summary>Test only (AudioMeter): what each looping source is putting out this frame.</summary>
+        /// <summary>
+        /// One short soft chirp every 20 to 40 seconds, only in a daytime outdoor place (<see cref="AudioPlan.BedFor"/>), never while a gig or show panel is open, never with the ambience slider off.
+        /// The wait only runs down while a chirp would be allowed, so two chirps are always at least 20 seconds apart. Never the same call twice running.
+        /// </summary>
+        void UpdateBirds(float dt)
+        {
+            if (_bedKind != Bed.Birds || PanelOpen || _player == null || Sfx.AmbienceVolume <= 0f) return;
+            _birdWait -= dt;
+            if (_birdWait > 0f) return;
+            _birdWait = AudioPlan.BirdGap(UnityEngine.Random.value);
+            int pick = UnityEngine.Random.Range(0, _chirps.Length);
+            if (pick == _lastChirp) pick = (pick + 1) % _chirps.Length;
+            _lastChirp = pick;
+            float v = AudioPlan.BirdPeak * Sfx.AmbienceVolume;
+            _bird.PlayOneShot(_chirps[pick], v);
+            Debug.Log(LogTag + "bird chirp=" + pick + " source=synth:birds place=" + _placeId);
+            if (AudioMeter.Active) AudioMeter.OneShot("birds", _chirps[pick], v * (Sfx.Enabled ? AudioListener.volume : 0f));
+        }
+
+        /// <summary>Test only (AudioMeter): what the looping source is putting out this frame (the applause is the only one that is driven frame by frame).</summary>
         void MeterFrame(float dt)
         {
             float on = Sfx.Enabled ? AudioListener.volume : 0f;
-            if (_bed.isPlaying) AudioMeter.Loop("bed", _bed.clip, _bed.timeSamples, dt, _bed.volume * on);
-            if (_crowd.isPlaying) AudioMeter.Loop("crowd", _crowd.clip, _crowd.timeSamples, dt, _crowd.volume * on);
             if (_cheer.isPlaying) AudioMeter.Loop("cheer", _cheer.clip, _cheer.timeSamples, dt, _cheer.volume * on);
             AudioMeter.Frame(dt);
+        }
+
+        /// <summary>Test only: reads the cue clips into memory now, so the meter can see their samples.</summary>
+        public void WarmCueClips()
+        {
+            foreach (AudioClip c in new[] { _open, _close, _whoosh, _done, _unlock }) if (c != null) c.LoadAudioData();
         }
 
         /// <summary>One step per stride of walking (about 1.6 m): the clip, its pitch and its volume vary a little, and the ground sets the base.</summary>
@@ -223,7 +218,8 @@ namespace WorldTour.World.Audio
             if (c == null) return;
             _step.pitch = UnityEngine.Random.Range(0.94f, 1.06f);   // the ground is in the synthesised step itself (WorldSynth.SpecFor)
             if (_loggedSurface != _surface) { _loggedSurface = _surface; Debug.Log(LogTag + "step synth:" + _surface + " place=" + _placeId); }
-            float stepVol = AudioPlan.StepVolume(_surface) * UnityEngine.Random.Range(0.85f, 1f);
+            float stepVol = AudioPlan.StepVolume(_surface) * UnityEngine.Random.Range(0.85f, 1f) * Sfx.EffectsVolume;
+            if (stepVol <= 0f) return;
             _step.PlayOneShot(c, stepVol);
             if (AudioMeter.Active) AudioMeter.OneShot("steps", c, stepVol * (Sfx.Enabled ? AudioListener.volume : 0f), _step.pitch);
         }
@@ -234,11 +230,11 @@ namespace WorldTour.World.Audio
             Debug.Log(LogTag + "cue " + cue + " source=" + (cue == Cue.Cheer ? "synth:applause" : "clip:" + CueName(cue) + (CueClip(cue) == null ? " (MISSING)" : "")));
             switch (cue)
             {
-                case Cue.CardOpen: One(_open, 0.5f); break;
-                case Cue.CardClose: One(_close, 0.4f); break;
-                case Cue.Whoosh: One(_whoosh, 0.45f); break;
-                case Cue.GigDone: One(_done, 0.5f); break;
-                case Cue.Unlock: One(_unlock, 0.55f); break;
+                case Cue.CardOpen: One(_open, AudioPlan.CueCard); break;
+                case Cue.CardClose: One(_close, AudioPlan.CueCard); break;
+                case Cue.Whoosh: One(_whoosh, AudioPlan.CueWhoosh); break;
+                case Cue.GigDone: One(_done, AudioPlan.CueJingle); break;
+                case Cue.Unlock: One(_unlock, AudioPlan.CueJingle); break;
                 case Cue.Cheer: StartCheer(); break;
             }
         }
@@ -268,9 +264,23 @@ namespace WorldTour.World.Audio
             }
         }
 
-        void One(AudioClip c, float volume)
+        /// <summary>The cue's volume that brings the clip's own peak to <paramref name="peak"/> (a clip that can't be read is treated as full scale, so it is only ever quieter than asked).</summary>
+        float CueVolume(AudioClip c, float peak)
+        {
+            float p;
+            if (!_peaks.TryGetValue(c, out p) || p <= 0f)
+            {
+                p = AudioMeter.PeakOf(c);
+                if (p > 0f) _peaks[c] = p;
+            }
+            return Mathf.Min(1f, peak / Mathf.Max(0.05f, p > 0f ? p : 1f)) * Sfx.EffectsVolume;
+        }
+
+        void One(AudioClip c, float peak)
         {
             if (c == null) return;
+            float volume = CueVolume(c, peak);
+            if (volume <= 0f) return;
             _ui.PlayOneShot(c, volume);
             if (AudioMeter.Active) AudioMeter.OneShot("ui:" + c.name, c, volume * (Sfx.Enabled ? AudioListener.volume : 0f));
         }
@@ -278,7 +288,7 @@ namespace WorldTour.World.Audio
         /// <summary>Applause for a right answer: about 2 s, as loud as the crowd is full. One at a time, and not again within 1.2 s.</summary>
         void StartCheer()
         {
-            if (_applause == null || Time.unscaledTime - _lastCheer < 1.2f) return;
+            if (_applause == null || Time.unscaledTime - _lastCheer < 1.2f || Sfx.EffectsVolume <= 0f) return;
             _lastCheer = _cheerAt = Time.unscaledTime;
             _cheer.Stop();
             _cheer.time = 0f;
@@ -290,49 +300,10 @@ namespace WorldTour.World.Audio
         {
             if (!_cheer.isPlaying) return;
             float t = Time.unscaledTime - _cheerAt;
-            float peak = 0.22f + 0.4f * Mathf.Clamp01(ProbeLoudest ? 1f : CrowdFill);
+            float peak = AudioPlan.CheerPeak(ProbeLoudest ? 1f : CrowdFill) / 0.8f * Sfx.EffectsVolume;   // the clip itself peaks at 0.8
             float env = t < 0.12f ? t / 0.12f : Mathf.Clamp01(1f - (t - 1.3f) / 0.9f);
             _cheer.volume = peak * env;
             if (t > 2.3f) _cheer.Stop();
-        }
-
-        /// <summary>
-        /// A soft city hum, 8 s that loops without a click: low-passed noise, two low tones (55 Hz and 82.5 Hz, whole cycles in the loop) and a slow swell.
-        /// The end is cross-faded into the start. Made once, the first time a place needs it.
-        /// </summary>
-        static AudioClip MakeCityHum()
-        {
-            const int sr = 22050, seconds = 8, fade = sr / 2;
-            int n = sr * seconds;
-            var rng = new System.Random(4242);
-            var raw = new float[n + fade];
-            float a = 0f, b = 0f;
-            for (int i = 0; i < raw.Length; i++)
-            {
-                float white = (float)(rng.NextDouble() * 2.0 - 1.0);
-                a += (white - a) * 0.035f;   // two one-pole low-passes: a rumble, no hiss
-                b += (a - b) * 0.12f;
-                raw[i] = b;
-            }
-            var data = new float[n];
-            for (int i = 0; i < n; i++)
-            {
-                float t = i / (float)sr;
-                float tone = 0.05f * Mathf.Sin(2f * Mathf.PI * 55f * t) + 0.03f * Mathf.Sin(2f * Mathf.PI * 82.5f * t);
-                float swell = 0.85f + 0.15f * Mathf.Sin(2f * Mathf.PI * 0.25f * t);
-                data[i] = (raw[i] * 3.2f + tone) * swell;
-            }
-            for (int i = 0; i < fade; i++)
-            {
-                float w = i / (float)fade;
-                data[i] = data[i] * w + raw[n + i] * 3.2f * (1f - w);   // the tail that follows the loop end, blended in at the start
-            }
-            float peak = 0.0001f;
-            for (int i = 0; i < n; i++) peak = Mathf.Max(peak, Mathf.Abs(data[i]));
-            for (int i = 0; i < n; i++) data[i] = data[i] / peak * 0.8f;
-            AudioClip clip = AudioClip.Create("wt_city_hum", n, 1, sr, false);
-            clip.SetData(data, 0);
-            return clip;
         }
     }
 }

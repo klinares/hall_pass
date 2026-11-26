@@ -68,7 +68,7 @@ namespace WorldTour.Game.Audio
         /// crowd(size): the end-of-show swell, size 0..1 by venue. Band-passed noise rising and falling over
         /// 2.6 + 1.4*size seconds, 12 + 40*size claps, and the big strum 350 ms in.
         /// </summary>
-        public static float[] Crowd(float size, Random rng, int sr = Rate)
+        public static float[] Crowd(float size, Random rng, int sr = Rate, int phrase = 0)
         {
             double dur = 2.6 + size * 1.4;
             float[] buf = new float[Samples(sr, (float)dur)];
@@ -110,7 +110,7 @@ namespace WorldTour.Game.Audio
             }
 
             // setTimeout(() => strum('big'), 350)
-            float[] big = Pluck(ChordBig, rng, sr);
+            float[] big = Pluck(BigPhrases[((phrase % PhraseCount) + PhraseCount) % PhraseCount], rng, sr);
             int off = (int)(0.35 * sr);
             for (int i = 0; i < big.Length && off + i < buf.Length; i++) buf[off + i] += big[i];
 
@@ -161,6 +161,53 @@ namespace WorldTour.Game.Audio
                 Osc(buf, sr, down ? 70f : 55f, Wave.Sine, 0.14f, down ? 0.35f : 0.15f, (float)k, 38f);
             }
             Master(buf, sr);
+            return buf;
+        }
+
+        // ------------------------------------------------------------------ guitar phrases (phase 10A)
+
+        /// <summary>
+        /// Phase 10A: the guitar for a right answer, five different phrases so it never plays the same one twice in a row (G, D, E minor, C and A minor, as strums and arpeggios). Low string first.
+        /// </summary>
+        public static readonly float[][] WinPhrases =
+        {
+            ChordWin,
+            new[] { 73.4f, 110f, 146.8f, 185f, 220f, 293.7f },     // D
+            new[] { 82.4f, 123.5f, 164.8f, 196f, 246.9f, 329.6f }, // Em
+            new[] { 130.8f, 164.8f, 196f, 261.6f, 329.6f },        // C
+            new[] { 110f, 164.8f, 220f, 261.6f, 329.6f },          // Am
+        };
+
+        /// <summary>The bigger moments (a purchase, the end of a show): five phrases too.</summary>
+        public static readonly float[][] BigPhrases =
+        {
+            ChordBig,
+            new[] { 87.3f, 130.8f, 174.6f, 220f, 261.6f, 349.2f }, // F
+            new[] { 110f, 164.8f, 220f, 261.6f, 329.6f, 440f },    // Am
+            new[] { 98f, 146.8f, 196f, 246.9f, 392f },             // G
+            new[] { 130.8f, 196f, 261.6f, 329.6f, 392f, 523.3f },  // C, wide
+        };
+
+        public const int PhraseCount = 5;
+
+        /// <summary>
+        /// One guitar phrase, soft and short: a plucked chord (0, 1 and 4 strummed down at different speeds; 2 and 3 rolled up and down as an arpeggio), a bit under a second,
+        /// faded out so nothing rings into the next question, and scaled to a peak of exactly 1 so the caller sets how loud it is with one number.
+        /// </summary>
+        public static float[] Phrase(bool big, int index, Random rng, int sr = Rate)
+        {
+            float[][] set = big ? BigPhrases : WinPhrases;
+            int i = ((index % PhraseCount) + PhraseCount) % PhraseCount;
+            float[] chord = (float[])set[i].Clone();
+            double stagger = i == 2 ? 0.1 : (i == 3 ? 0.085 : (i == 1 ? 0.045 : 0.03));
+            if (i == 3) Array.Reverse(chord);                      // a roll down
+            float[] buf = Pluck(chord, rng, sr, stagger, 0.75, 0.994);
+            Master(buf, sr);
+            int fade = Math.Min(buf.Length, (int)(0.3 * sr));
+            for (int k = 0; k < fade; k++) buf[buf.Length - 1 - k] *= k / (float)fade;
+            float peak = 1e-4f;
+            for (int k = 0; k < buf.Length; k++) peak = Math.Max(peak, Math.Abs(buf[k]));
+            for (int k = 0; k < buf.Length; k++) buf[k] /= peak;
             return buf;
         }
 

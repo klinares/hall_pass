@@ -6,6 +6,7 @@
         "WorldTour.World.Wardrobe",
         "WorldTour.World.Gameplay",
         "WorldTour.World.Audio",
+        "WorldTour.Game",
         "WorldTour.Core",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"

@@ -89,6 +89,41 @@ namespace WorldTour.Game.Prefs
             }
         }
 
+        /// <summary>
+        /// Phase 10A: the music and ambience slider (the birds and the guitar), 0 to 1 in steps of 0.1. 0.4 until she moves it. An old save with sound off reads as 0 on both sliders until she moves one.
+        /// </summary>
+        public static float Ambience
+        {
+            get { return !Data.Sound ? 0f : (Data.Ambience ?? Mathf.RoundToInt(Sfx.DefaultAmbience * 100f)) / 100f; }
+            set { SetSlider(true, value); }
+        }
+
+        /// <summary>Phase 10A: the effects slider (footsteps, taps, cues, applause), 0 to 1 in steps of 0.1. 1 until she moves it.</summary>
+        public static float Effects
+        {
+            get { return !Data.Sound ? 0f : (Data.Effects ?? Mathf.RoundToInt(Sfx.DefaultEffects * 100f)) / 100f; }
+            set { SetSlider(false, value); }
+        }
+
+        static void SetSlider(bool ambience, float value)
+        {
+            int percent = Mathf.Clamp(Mathf.RoundToInt(value * 10f) * 10, 0, 100);
+            SettingsData d = Data;
+            if (!d.Sound)
+            {
+                // sound was off (an old save): turn it on, but the slider she did not touch stays off, as she saw it
+                d.Sound = true;
+                d.Ambience = 0; d.Effects = 0;
+            }
+            if (s_Store != null && s_Store.Blob != null)
+            {
+                if (ambience) ProgressRules.SetAmbience(s_Store.Blob, percent); else ProgressRules.SetEffects(s_Store.Blob, percent);
+            }
+            else if (ambience) s_Session.Ambience = percent;
+            else s_Session.Effects = percent;
+            Commit();
+        }
+
         /// <summary>settings.motion.</summary>
         public static MotionMode Motion
         {
@@ -135,6 +170,8 @@ namespace WorldTour.Game.Prefs
         public static void Apply()
         {
             Sfx.Enabled = Sound;
+            Sfx.AmbienceVolume = Ambience;
+            Sfx.EffectsVolume = Effects;
             MotionPrefs.Reduced = ReducedMotion;
             LookArt.Apply(s_Store != null ? s_Store.Blob : null);
             Theme.Use(ThemeId);

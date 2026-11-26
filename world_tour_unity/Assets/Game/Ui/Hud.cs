@@ -21,6 +21,7 @@ namespace WorldTour.Game.Ui
         public static readonly string NoSaveText = "progress won" + (char)0x2019 + "t save on this device";
 
         RoundIconButton _sound;
+        SoundPanel _panel;
         GameObject _noSave;
         SaveStore _store;
 
@@ -46,6 +47,8 @@ namespace WorldTour.Game.Ui
             _store = store;
             _sound = RoundIconButton.Create(transform, "SoundToggle");
             var srt = (RectTransform)_sound.transform;
+            PlaceSound();
+            _panel = SoundPanel.Create(transform, srt);
             PlaceSound();
             _sound.Clicked += Toggle;
 
@@ -80,11 +83,13 @@ namespace WorldTour.Game.Ui
             {
                 srt.anchorMin = srt.anchorMax = srt.pivot = Vector2.zero;
                 srt.anchoredPosition = new Vector2(Tokens.GutterMin, Tokens.GutterMin);
+                if (_panel != null) _panel.Place(true);
             }
             else
             {
                 srt.anchorMin = srt.anchorMax = srt.pivot = Vector2.one;
                 srt.anchoredPosition = new Vector2(-Tokens.GutterMin, -Tokens.GutterMin);
+                if (_panel != null) _panel.Place(false);
             }
         }
 
@@ -98,12 +103,10 @@ namespace WorldTour.Game.Ui
 
         void ShowNoSave() { if (_noSave != null) _noSave.SetActive(true); }
 
-        /// <summary>main.js sb.onclick: flip settings.sound, save, apply; turning it on plays a tap (GameSettings does).</summary>
+        /// <summary>Phase 10A: the button opens and closes the sound card (two sliders); the old on/off flip is now both sliders at off.</summary>
         void Toggle()
         {
-            bool on = !GameSettings.Sound;
-            GameSettings.Sound = on;
-            Debug.Log(ToggleLog + " " + (on ? "on" : "off"));
+            if (_panel != null) _panel.Toggle();
             Paint();
         }
 
@@ -112,7 +115,8 @@ namespace WorldTour.Game.Ui
         {
             if (_sound == null) return;
             ThemeAsset t = Theme.Asset;
-            bool on = GameSettings.Sound;
+            bool on = GameSettings.Sound && (GameSettings.Ambience > 0f || GameSettings.Effects > 0f);   // the icon is the mute one when both sliders are off
+            if (_panel != null && _panel.IsOpen) _panel.Refresh();
             Sprite s = t != null ? (on ? t.iconSound : t.iconMute) : null;
             _sound.Icon = s;
             _sound.name = "SoundToggle";

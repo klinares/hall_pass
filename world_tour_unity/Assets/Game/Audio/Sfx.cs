@@ -47,18 +47,41 @@ namespace WorldTour.Game.Audio
         /// </summary>
         public static bool UsePcmCallback;
 
+        /// <summary>Phase 10A: the slider defaults. Ambience (the music and ambience slider: birds and the guitar) starts at 40 percent, effects at full.</summary>
+        public const float DefaultAmbience = 0.4f, DefaultEffects = 1f;
+        /// <summary>Phase 10A: how loud each sound may be at full slider: its peak sample, linear. The tap is the reference and plays as made (-21 dBFS);
+        /// nothing else peaks over -12 dBFS (0.25) except the end-of-show crowd, which is applause.</summary>
+        public const float GuitarPeak = 0.25f, EffectPeak = 0.2f, BeatPeak = 0.2f, CrowdPeak = 0.4f;
+
         static Sfx s_Instance;
         static bool s_Enabled = true;
         static bool s_Unlocked;
+        static float s_Ambience = DefaultAmbience, s_Effects = DefaultEffects;
+        static readonly GuitarPlanner s_Guitar = new GuitarPlanner();
+        static readonly System.Random s_Rng = new System.Random();
+        static int s_CrowdPhrase = -1;
 
         AudioSource _src;
         readonly AudioClip[] _clips = new AudioClip[7];
+        readonly float[] _gain = new float[7];
+        readonly AudioClip[] _win = new AudioClip[Synth.PhraseCount];
+        readonly AudioClip[] _big = new AudioClip[Synth.PhraseCount];
         readonly Dictionary<int, AudioClip> _crowd = new Dictionary<int, AudioClip>();
         AudioClip _beat;
         bool _building;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        static void ResetStatics() { s_Instance = null; s_Enabled = true; s_Unlocked = false; UsePcmCallback = false; Ready = false; }
+        static void ResetStatics()
+        {
+            s_Instance = null; s_Enabled = true; s_Unlocked = false; UsePcmCallback = false; Ready = false;
+            s_Ambience = DefaultAmbience; s_Effects = DefaultEffects; s_Guitar.Reset(); s_CrowdPhrase = -1;
+        }
+
+        /// <summary>The music and ambience slider, 0 to 1 (the birds and the guitar). Set by GameSettings.</summary>
+        public static float AmbienceVolume { get { return s_Ambience; } set { s_Ambience = Mathf.Clamp01(value); } }
+
+        /// <summary>The effects slider, 0 to 1 (footsteps, taps, thuds, cues, applause, the beat). Set by GameSettings.</summary>
+        public static float EffectsVolume { get { return s_Effects; } set { s_Effects = Mathf.Clamp01(value); } }
 
         /// <summary>True after the first click or key press of the session.</summary>
         public static bool Unlocked { get { return s_Unlocked; } }
@@ -116,7 +139,22 @@ namespace WorldTour.Game.Audio
                 float[] data;
                 try { data = Render((SfxId)k, sr); }
                 catch (Exception e) { Debug.LogWarning("[sound] could not make " + (SfxId)k + ": " + e.Message); data = null; }
-                if (data != null) _clips[k] = MakeClip("wt_" + ((SfxId)k).ToString().ToLowerInvariant(), data, sr);
+                if (data != null)
+                {
+                    _clips[k] = MakeClip("wt_" + ((SfxId)k).ToString().ToLowerInvariant(), data, sr);
+                    _gain[k] = GainFor((SfxId)k, data);
+                }
+                yield return null;
+            }
+            // the guitar phrases (the two strums above are only the first of each set, kept for the tests and the 2D-era callers)
+            for (int p = 0; p < Synth.PhraseCount; p++)
+            {
+                try
+                {
+                    _win[p] = MakeClip("wt_win" + p, Synth.Phrase(false, p, new System.Random(300 + p), sr), sr);
+                    _big[p] = MakeClip("wt_big" + p, Synth.Phrase(true, p, new System.Random(400 + p), sr), sr);
+                }
+                catch (Exception e) { Debug.LogWarning("[sound] could not make guitar phrase " + p + ": " + e.Message); }
                 yield return null;
             }
             Ready = true;
@@ -126,6 +164,16 @@ namespace WorldTour.Game.Audio
             string tail = " clips=" + made + " rate=" + sr + " mode=" + (UsePcmCallback ? "pcmcallback" : "setdata");
             if (Verify(_clips[(int)SfxId.Tick]) || Verify(_clips[(int)SfxId.Tap])) Debug.Log(ReadyLog + tail);
             else Debug.LogWarning(UnverifiedLog + tail + " (the clips read back as silence or could not be read)");
+        }
+
+        /// <summary>The playback gain that brings a sound's peak to its allowed level (never above 1): the tap plays as made, the others are held to <see cref="EffectPeak"/>.</summary>
+        public static float GainFor(SfxId id, float[] data)
+        {
+            if (id == SfxId.Tap) return 1f;
+            float peak = 1e-4f;
+            for (int i = 0; i < data.Length; i++) peak = Mathf.Max(peak, Mathf.Abs(data[i]));
+            float cap = id == SfxId.Strum || id == SfxId.StrumBig ? GuitarPeak : EffectPeak;
+            return Mathf.Min(1f, cap / peak);
         }
 
         /// <summary>True if the clip reads back (GetData) with at least one non-zero sample.</summary>
@@ -191,36 +239,81 @@ namespace WorldTour.Game.Audio
         {
             Sfx i = s_Instance;
             if (!s_Unlocked || !s_Enabled || i == null) return;
+            if (id == SfxId.Strum || id == SfxId.StrumBig) { i.PlayGuitar(id == SfxId.StrumBig, volume); return; }
             AudioClip c = i._clips[(int)id];
-            if (c != null) { i._src.PlayOneShot(c, volume); if (AudioMeter.Active) AudioMeter.OneShot("sfx:" + id, c, volume * AudioListener.volume); }
+            if (c == null) return;
+            float v = volume * i._gain[(int)id] * s_Effects;
+            if (v <= 0f) return;
+            i._src.PlayOneShot(c, v);
+            if (AudioMeter.Active) AudioMeter.OneShot("sfx:" + id, c, v * AudioListener.volume);
+        }
+
+        /// <summary>Phase 10A: a right answer or a big moment is a guitar phrase, one of five, never the same twice running, at most once every six seconds, quiet, and on the music slider. Too soon, or the slider off: silence.</summary>
+        void PlayGuitar(bool big, float volume)
+        {
+            if (s_Ambience <= 0f || !_win[0]) return;
+            int p = s_Guitar.Request(Time.unscaledTimeAsDouble, s_Rng);
+            if (p < 0) return;
+            AudioClip c = (big ? _big : _win)[p];
+            if (c == null) return;
+            float v = volume * GuitarPeak * s_Ambience;
+            _src.PlayOneShot(c, v);
+            Debug.Log("WT_AUDIO guitar phrase=" + p + (big ? " big" : " win"));
+            if (AudioMeter.Active) AudioMeter.OneShot("sfx:" + (big ? "StrumBig" : "Strum"), c, v * AudioListener.volume);
         }
 
         /// <summary>Makes the crowd for a venue size ahead of time (call when a show starts), so the ticket screen doesn't wait.</summary>
-        public static void PrepareCrowd(double size) { if (Instance != null) Instance.CrowdClip(size); }
+        public static void PrepareCrowd(double size)
+        {
+            if (Instance == null) return;
+            if (s_CrowdPhrase < 0) s_CrowdPhrase = NextCrowdPhrase();
+            Instance.CrowdClip(size, s_CrowdPhrase);
+        }
 
-        /// <summary>crowd(size): the end-of-show swell with claps and the big strum. Size 0..1 (Venue.Crowd).</summary>
+        static int s_LastCrowdPhrase = -1;
+
+        /// <summary>The next end-of-show guitar phrase: any of the five except the last one used.</summary>
+        static int NextCrowdPhrase()
+        {
+            int p = s_LastCrowdPhrase < 0 ? s_Rng.Next(Synth.PhraseCount) : s_Rng.Next(Synth.PhraseCount - 1);
+            if (s_LastCrowdPhrase >= 0 && p >= s_LastCrowdPhrase) p++;
+            return s_LastCrowdPhrase = p;
+        }
+
+        /// <summary>crowd(size): the end-of-show swell with claps and a guitar chord (a different phrase each show). Size 0..1 (Venue.Crowd). It is applause: on the effects slider, held to <see cref="CrowdPeak"/>.</summary>
         public static void Crowd(double size)
         {
             Sfx i = s_Instance;
             if (!s_Unlocked || !s_Enabled || i == null) return;
-            AudioClip c = i.CrowdClip(size);
-            if (c != null) { i._src.PlayOneShot(c, 1f); if (AudioMeter.Active) AudioMeter.OneShot("sfx:crowd", c, AudioListener.volume); }
+            int phrase = s_CrowdPhrase >= 0 ? s_CrowdPhrase : NextCrowdPhrase();
+            s_CrowdPhrase = -1;
+            AudioClip c = i.CrowdClip(size, phrase);
+            if (c == null || s_Effects <= 0f) return;
+            float v = i._crowdGain[CrowdKey(size, phrase)] * s_Effects;
+            i._src.PlayOneShot(c, v);
+            if (AudioMeter.Active) AudioMeter.OneShot("sfx:crowd", c, v * AudioListener.volume);
         }
 
-        AudioClip CrowdClip(double size)
+        readonly Dictionary<int, float> _crowdGain = new Dictionary<int, float>();
+
+        static int CrowdKey(double size, int phrase) { return (int)Math.Round(Math.Max(0, Math.Min(1, size)) * 20) * 10 + phrase; }
+
+        AudioClip CrowdClip(double size, int phrase)
         {
-            int key = (int)Math.Round(Math.Max(0, Math.Min(1, size)) * 20);   // 0.05 steps
+            int key = CrowdKey(size, phrase);
             if (_crowd.TryGetValue(key, out AudioClip c)) return c;
             try
             {
-                float[] data = Synth.Crowd(key / 20f, new System.Random(200 + key), Synth.Rate);
+                float[] data = Synth.Crowd(key / 10 / 20f, new System.Random(200 + key / 10), Synth.Rate, phrase);
                 c = MakeClip("wt_crowd_" + key, data, Synth.Rate);
+                float peak = 1e-4f;
+                for (int k = 0; k < data.Length; k++) peak = Mathf.Max(peak, Mathf.Abs(data[k]));
+                _crowdGain[key] = Mathf.Min(1f, CrowdPeak / peak);
             }
             catch (Exception e) { Debug.LogWarning("[sound] could not make the crowd: " + e.Message); c = null; }
             _crowd[key] = c;
             return c;
         }
-
         /// <summary>beat(notes): plays one beat-maker measure and returns its length in seconds (0 when silent), as sound.js does.</summary>
         public static double Beat(BeatNote[] notes, double whole = 1.6)
         {
@@ -229,8 +322,11 @@ namespace WorldTour.Game.Audio
             float[] data = Synth.Beat(notes, out double seconds, whole, Synth.Rate);
             if (i._beat != null) Destroy(i._beat);
             i._beat = MakeClip("wt_beat", data, Synth.Rate);
-            i._src.PlayOneShot(i._beat, 1f);
-            if (AudioMeter.Active) AudioMeter.OneShot("sfx:beat", i._beat, AudioListener.volume);
+            float peakB = 1e-4f;
+            for (int k = 0; k < data.Length; k++) peakB = Mathf.Max(peakB, Mathf.Abs(data[k]));
+            float vb = Mathf.Min(1f, BeatPeak / peakB) * s_Effects;
+            if (vb > 0f) i._src.PlayOneShot(i._beat, vb);
+            if (AudioMeter.Active && vb > 0f) AudioMeter.OneShot("sfx:beat", i._beat, vb * AudioListener.volume);
             return seconds;
         }
 

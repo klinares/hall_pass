@@ -161,14 +161,12 @@ namespace WorldTour.World.Tests
             foreach (var v in WorldTour.Core.Data.Venues.All)
             {
                 Surface s = AudioPlan.SurfaceFor(v.Id);
-                Assert.Greater(AudioPlan.StepVolume(s), 0.1f);
-                Assert.Less(AudioPlan.StepVolume(s), 0.7f, "gentle");
-                Assert.Less(AudioPlan.BedVolume(AudioPlan.BedFor(v.Id)), 0.35f, "the bed stays quiet");
+                Assert.Greater(AudioPlan.StepVolume(s), 0.04f);
+                Assert.Less(AudioPlan.StepVolume(s), 0.12f, "gentle: under the tap at full slider");
             }
             Assert.AreEqual(Bed.Birds, AudioPlan.BedFor("coffee"));
             Assert.AreEqual(Bed.Birds, AudioPlan.BedFor("festival"));
-            foreach (string id in new[] { "records", "club", "rooftop" }) Assert.AreEqual(Bed.City, AudioPlan.BedFor(id), id);
-            foreach (string id in new[] { "rec", "theater", "arena" }) Assert.AreEqual(Bed.Hall, AudioPlan.BedFor(id), id);
+            foreach (string id in new[] { "records", "club", "rooftop", "rec", "theater", "arena" }) Assert.AreEqual(Bed.None, AudioPlan.BedFor(id), id);
             Assert.AreEqual(Surface.Grass, AudioPlan.SurfaceFor("festival"));
         }
 
@@ -199,17 +197,6 @@ namespace WorldTour.World.Tests
                 Assert.IsNotNull(bank.open); Assert.IsNotNull(bank.close); Assert.IsNotNull(bank.whoosh); Assert.IsNotNull(bank.done); Assert.IsNotNull(bank.unlock);
             }
             finally { UnityEditor.SceneManagement.EditorSceneManager.CloseScene(scene, true); }
-        }
-
-        [Test]
-        public void CrowdMurmur_IsLouderWhenFullerAndCloser_AndSteadyInAShow()
-        {
-            Assert.AreEqual(0f, AudioPlan.CrowdVolume(0f, 2f, false), 1e-4f);
-            Assert.Greater(AudioPlan.CrowdVolume(1f, 2f, false), AudioPlan.CrowdVolume(0.3f, 2f, false));
-            Assert.Greater(AudioPlan.CrowdVolume(0.8f, 3f, false), AudioPlan.CrowdVolume(0.8f, 9f, false));
-            Assert.AreEqual(0f, AudioPlan.CrowdVolume(1f, 20f, false), 1e-4f, "gone far away");
-            Assert.Greater(AudioPlan.CrowdVolume(0.8f, 30f, true), 0.1f, "a show keeps it up wherever the camera is");
-            Assert.LessOrEqual(AudioPlan.CrowdVolume(1f, 0f, true), 0.4f);
         }
     }
 }

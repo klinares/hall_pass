@@ -277,6 +277,10 @@ namespace WorldTour.Core.Progress
 
         /// <summary>progress.js:120 <c>setSetting('sound', v)</c>.</summary>
         public static void SetSound(SaveBlob s, bool on) { s.Settings.Sound = on; }
+        /// <summary>Phase 10A: the music and ambience slider, 0 to 100 (clamped).</summary>
+        public static void SetAmbience(SaveBlob s, int percent) { s.Settings.Ambience = System.Math.Max(0, System.Math.Min(100, percent)); }
+        /// <summary>Phase 10A: the effects slider, 0 to 100 (clamped).</summary>
+        public static void SetEffects(SaveBlob s, int percent) { s.Settings.Effects = System.Math.Max(0, System.Math.Min(100, percent)); }
 
         /// <summary>progress.js:120 <c>setSetting('motion', v)</c>: "auto" or "reduced".</summary>
         public static void SetMotion(SaveBlob s, string motion) { s.Settings.Motion = motion; }

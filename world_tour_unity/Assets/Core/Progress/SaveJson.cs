@@ -46,7 +46,7 @@ namespace WorldTour.Core.Progress
         // after the known keys, the order JS { ...defaults, ...raw } gives.
         /// <summary>The top-level keys this version knows (anything else is kept as stored).</summary>
         public static readonly string[] TopKeys = { "v", "created", "updated", "settings", "fans", "streak", "venues", "skills", "words", "review", "shows", "time", "inventory", "journal" };
-        private static readonly string[] SettingsKeys = { "sound", "theme", "motion", "gentleSpelling", "gentleMath" };
+        private static readonly string[] SettingsKeys = { "sound", "theme", "motion", "gentleSpelling", "gentleMath", "ambience", "effects" };
         private static readonly string[] FansKeys = { "balance", "lifetime" };
         private static readonly string[] StreakKeys = { "days", "best", "last" };
         private static readonly string[] VenuesKeys = { "unlocked", "seen" };
@@ -112,6 +112,8 @@ namespace WorldTour.Core.Progress
                 d.Settings.Motion = JsonTree.Str(s["motion"]) ?? d.Settings.Motion;
                 if (s["gentleSpelling"] != null && s["gentleSpelling"].Kind == JsonKind.Bool) d.Settings.GentleSpelling = s["gentleSpelling"].BoolValue;
                 if (s["gentleMath"] != null && s["gentleMath"].Kind == JsonKind.Bool) d.Settings.GentleMath = s["gentleMath"].BoolValue;
+                if (s["ambience"] != null && s["ambience"].Kind == JsonKind.Number) d.Settings.Ambience = System.Math.Max(0, System.Math.Min(100, (int)JsonTree.Long(s["ambience"], 40)));
+                if (s["effects"] != null && s["effects"].Kind == JsonKind.Number) d.Settings.Effects = System.Math.Max(0, System.Math.Min(100, (int)JsonTree.Long(s["effects"], 100)));
                 d.Settings.Extra = Unknown(s, SettingsKeys);
             }
             JsonValue f = Obj(raw["fans"]);
@@ -421,6 +423,8 @@ namespace WorldTour.Core.Progress
             JsonValue o = JsonValue.Obj().Set("sound", st.Sound).Set("theme", st.Theme).Set("motion", st.Motion);
             if (st.GentleSpelling) o.Set("gentleSpelling", true);
             if (st.GentleMath) o.Set("gentleMath", true);
+            if (st.Ambience.HasValue) o.Set("ambience", (long)st.Ambience.Value);
+            if (st.Effects.HasValue) o.Set("effects", (long)st.Effects.Value);
             return o;
         }
 

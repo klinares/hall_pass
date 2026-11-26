@@ -3,8 +3,8 @@ using System;
 namespace WorldTour.World.Audio
 {
     /// <summary>
-    /// Phase 8.3: the world's own sounds, made from maths at start-up (no audio files, so no licence to check): gentle bird chirps, soft footsteps that suit the ground,
-    /// applause from bursts of filtered noise, and a crowd murmur from filtered noise with slow swells. Plain C# (floats in, floats out) so edit-mode tests can look at them.
+    /// Phase 8.3: the world's own sounds, made from maths at start-up (no audio files, so no licence to check): gentle bird chirps, soft footsteps that suit the ground and applause.
+    /// Phase 10A: the crowd murmur and the city hum (broadband noise beds, the "loud static") were removed; the only noise left is in single short events (a step, applause). Plain C# (floats in, floats out) so edit-mode tests can look at them.
     /// Every call is seeded, so the same sound comes out every time. Mono, 22.05 kHz.
     /// </summary>
     public static class WorldSynth
@@ -33,47 +33,26 @@ namespace WorldTour.World.Audio
             for (int i = 0; i < d.Length; i++) d[i] *= g;
         }
 
-        /// <summary>Make a loop from a longer render: the extra tail after the loop end is blended into the start, so the join has no click.</summary>
-        static float[] Loopify(float[] raw, int n)
-        {
-            int fade = raw.Length - n;
-            var d = new float[n];
-            Array.Copy(raw, d, n);
-            for (int i = 0; i < fade; i++)
-            {
-                float w = i / (float)fade;
-                d[i] = d[i] * w + raw[n + i] * (1f - w);
-            }
-            return d;
-        }
-
         // ---------------- birds ----------------
 
-        /// <summary>A few small chirps and trills at random gaps over near-silence, 12 s, every call inside the loop. Soft: a sine that glides, with a rounded envelope.</summary>
-        public static float[] Birds()
+        public const int ChirpCount = 4;
+
+        /// <summary>
+        /// One short, gentle bird call (phase 10A), a fraction of a second, four different ones: a single rising note, a falling pair, a soft three-note trill and a low
+        /// two-part tweet. Pure sine tones with rounded edges (no noise), scaled to a peak of exactly 1: how loud it plays is set by the caller.
+        /// </summary>
+        public static float[] BirdChirp(int variant)
         {
-            const int seconds = 12;
-            int n = SampleRate * seconds;
-            var d = new float[n];
-            var r = new Random(1701);
-            float t = 0.5f;
-            while (t < seconds - 1.2f)
+            int v = ((variant % ChirpCount) + ChirpCount) % ChirpCount;
+            var d = new float[(int)(0.7f * SampleRate)];
+            switch (v)
             {
-                bool trill = r.NextDouble() < 0.4;
-                float baseHz = 2300f + (float)r.NextDouble() * 1700f;
-                int notes = trill ? 3 + r.Next(4) : 1 + r.Next(2);
-                float gain = 0.35f + 0.35f * (float)r.NextDouble();
-                float at = t;
-                for (int k = 0; k < notes; k++)
-                {
-                    float len = trill ? 0.05f + 0.02f * (float)r.NextDouble() : 0.09f + 0.07f * (float)r.NextDouble();
-                    float up = r.NextDouble() < 0.6 ? 1f : -1f;
-                    Chirp(d, at, len, baseHz * (trill ? 1f + 0.03f * k : 1f), up * (0.18f + 0.2f * (float)r.NextDouble()), gain);
-                    at += len + (trill ? 0.03f : 0.12f);
-                }
-                t = at + 0.6f + (float)r.NextDouble() * 1.8f;
+                case 0: Chirp(d, 0.02f, 0.16f, 2900f, 0.35f, 1f); break;
+                case 1: Chirp(d, 0.02f, 0.11f, 3500f, -0.25f, 1f); Chirp(d, 0.18f, 0.14f, 2700f, -0.2f, 0.8f); break;
+                case 2: for (int k = 0; k < 3; k++) Chirp(d, 0.02f + k * 0.11f, 0.07f, 3100f + 160f * k, 0.18f, 1f - 0.15f * k); break;
+                default: Chirp(d, 0.02f, 0.2f, 2300f, 0.3f, 1f); Chirp(d, 0.27f, 0.12f, 2900f, -0.25f, 0.7f); break;
             }
-            Normalise(d, 0.8f);
+            Normalise(d, 1f);
             return d;
         }
 
@@ -182,42 +161,5 @@ namespace WorldTour.World.Audio
             return d;
         }
 
-        // ---------------- crowd murmur ----------------
-
-        /// <summary>
-        /// A hall full of people a little way off, 14 s as a loop: noise through a low band (voices without words), under three slow swells of different speeds,
-        /// plus a mid band that comes and goes about as fast as speech does.
-        /// </summary>
-        public static float[] Murmur()
-        {
-            const int seconds = 14, fade = SampleRate;
-            int n = SampleRate * seconds;
-            var raw = new float[n + fade];
-            var r = new Random(2468);
-            var lo1 = new Lp();
-            var lo2 = new Lp();
-            var hi = new Lp();
-            var m1 = new Lp();
-            var m2 = new Lp();
-            var sm = new Lp();
-            float kLow = K(650f), kHigh = K(140f), kMid = K(1500f), kOut = K(2200f);
-            float syl = 0.5f, sylNow = 0.5f;
-            double w1 = 2 * Math.PI / 7.0, w2 = 2 * Math.PI / 4.6, w3 = 2 * Math.PI / 2.8;
-            for (int i = 0; i < raw.Length; i++)
-            {
-                float t = i / (float)SampleRate;
-                float x = White(r);
-                float low = lo2.Run(lo1.Run(x, kLow), kLow) - hi.Run(x, kHigh);
-                float mid = m2.Run(m1.Run(White(r), kMid), kMid);
-                if (i % (SampleRate / 8) == 0) syl = (float)r.NextDouble();   // a new "syllable" level eight times a second
-                sylNow += (syl - sylNow) * 0.0015f;                            // glided into, not stepped
-                float gate = 0.35f + 0.65f * sylNow;
-                float swell = 0.62f + 0.18f * (float)Math.Sin(w1 * t) + 0.12f * (float)Math.Sin(w2 * t + 1.3) + 0.08f * (float)Math.Sin(w3 * t + 2.1);
-                raw[i] = sm.Run((low * 2.4f + mid * 3.0f * gate) * swell, kOut);
-            }
-            float[] d = Loopify(raw, n);
-            Normalise(d, 0.8f);
-            return d;
-        }
     }
 }

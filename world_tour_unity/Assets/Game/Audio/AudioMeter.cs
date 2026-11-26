@@ -54,6 +54,8 @@ namespace WorldTour.Game.Audio
             if (clip == null) return null;
             float[] d;
             if (s_Data.TryGetValue(clip, out d)) return d;
+            if (clip.loadState == AudioDataLoadState.Unloaded) { clip.LoadAudioData(); return null; }   // read in, then try again next time
+            if (clip.loadState == AudioDataLoadState.Loading) return null;
             try
             {
                 d = new float[clip.samples * clip.channels];

@@ -990,7 +990,7 @@ namespace WorldTour.World.Gameplay
         {
             if (!TestMode) return;
             Sfx.Unlock();
-            if (_audio != null) _audio.ProbeLoudest = true;
+            if (_audio != null) { _audio.ProbeLoudest = true; _audio.WarmCueClips(); }
             AudioMeter.Begin(label);
         }
 

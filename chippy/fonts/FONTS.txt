@@ -1,0 +1,7 @@
+Fonts bundled so the game runs offline (latin subset, woff2), from Google Fonts:
+
+fredoka-latin.woff2        Fredoka (variable, weights 400-700)   SIL Open Font License 1.1
+nunito-latin.woff2         Nunito (variable, weights 400-800)    SIL Open Font License 1.1
+special-elite-latin.woff2  Special Elite (400)                   Apache License 2.0
+
+License texts: https://openfontlicense.org and https://www.apache.org/licenses/LICENSE-2.0

@@ -325,9 +325,9 @@ body.debug *, body.debug *::before, body.debug *::after { transition: none !impo
 .sighting .shot > * { position: absolute; }
 .sighting .bg { inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .sighting .circle { aspect-ratio: 1; border: max(3px, calc(var(--u) * .35)) solid #ff2a1a; border-radius: 50%; transform: translate(-50%, -50%) rotate(-8deg); box-shadow: 0 0 10px rgba(255,42,26,.7), inset 0 0 6px rgba(255,42,26,.5); }
-.sighting .sight { left: 50%; top: 6%; transform: translateX(-50%) rotate(-8deg); font-size: max(13px, calc(var(--u) * 1.5)); padding: 0 10px; border-width: 3px; color: #ff2a1a; border-color: #ff2a1a; background: rgba(255,255,255,.88); opacity: 0; }
+.sighting .sight { left: 50%; top: 6%; transform: translate(-50%, -50%) rotate(-8deg); font-size: max(13px, calc(var(--u) * 1.5)); padding: 0 10px; border-width: 3px; color: #ff2a1a; border-color: #ff2a1a; background: rgba(255,255,255,.88); opacity: 0; }
 .sighting .sight.on { opacity: 1; animation: slamSmall 450ms cubic-bezier(.3,1.6,.5,1) both; }
-@keyframes slamSmall { from { opacity: 0; transform: translateX(-50%) rotate(-8deg) scale(2.2); } to { opacity: 1; transform: translateX(-50%) rotate(-8deg) scale(1); } }
+@keyframes slamSmall { from { opacity: 0; transform: translate(-50%, -50%) rotate(-8deg) scale(2.2); } to { opacity: 1; transform: translate(-50%, -50%) rotate(-8deg) scale(1); } }
 .sighting figcaption { font-family: 'Fredoka', sans-serif; font-weight: 600; color: var(--night); font-size: max(15px, calc(var(--u) * 1.6)); line-height: 1.15; padding: calc(var(--u) * .5) 4px calc(var(--u) * .6); text-align: center; }
 .sighting figcaption b { color: var(--red); }
 
@@ -584,10 +584,9 @@ body.debug *, body.debug *::before, body.debug *::after { transition: none !impo
   //   peek = {from:'l'|'r', show} = he is behind something on that side and only `show` of him peeks out,
   //   d = difficulty 1 (easy) to 3 (hard), rot = tilt in degrees, flip = face the other way.
   // A mess: p = prop, x/y = its centre, w = its width, rot = tilt.
-  // sight = which mess the sighting report circles, and its label.
   const SCENES = {
     kitchen: {
-      name: 'kitchen', sight: { m: 0, place: 'Kitchen', text: 'flour EVERYWHERE!' }, where: 'in the kitchen', cam: 'CAM 3 · KITCHEN', src: 'images/scenes/kitchen.webp', ar: 2400 / 1595,
+      name: 'kitchen', where: 'in the kitchen', cam: 'CAM 3 · KITCHEN', src: 'images/scenes/kitchen.webp', ar: 2400 / 1595,
       spots: [
         { x: 40, y: 64, h: 24, d: 1 },
         { x: 62, y: 77, h: 22, d: 1 },
@@ -602,7 +601,7 @@ body.debug *, body.debug *::before, body.debug *::after { transition: none !impo
       ],
     },
     tree: {
-      name: 'living room', sight: { m: 0, place: 'Christmas tree', text: 'ornaments on the floor!' }, where: 'in the living room', cam: 'CAM 5 · TREE ROOM', src: 'images/scenes/tree.webp', ar: 2400 / 1593,
+      name: 'living room', where: 'in the living room', cam: 'CAM 5 · TREE ROOM', src: 'images/scenes/tree.webp', ar: 2400 / 1593,
       spots: [
         { x: 45, y: 47, h: 20, d: 1 },
         { x: 22, y: 70, h: 24, d: 1 },
@@ -617,7 +616,7 @@ body.debug *, body.debug *::before, body.debug *::after { transition: none !impo
       ],
     },
     shelves: {
-      name: 'family room', sight: { m: 0, place: 'Bookshelf', text: 'toilet paper tornado!' }, where: 'in the family room', cam: 'CAM 7 · FAMILY ROOM', src: 'images/scenes/shelves.webp', ar: 2400 / 1586,
+      name: 'family room', where: 'in the family room', cam: 'CAM 7 · FAMILY ROOM', src: 'images/scenes/shelves.webp', ar: 2400 / 1586,
       spots: [
         { x: 15, y: 64.5, h: 22, d: 1 },
         { x: 15, y: 53, h: 18, d: 1 },
@@ -632,7 +631,7 @@ body.debug *, body.debug *::before, body.debug *::after { transition: none !impo
       ],
     },
     playroom: {
-      name: 'playroom', sight: { m: 1, place: 'Playroom', text: 'candy wrappers all over!' }, where: 'in the playroom', cam: 'CAM 6 · PLAYROOM', src: 'images/scenes/playroom.webp', ar: 2400 / 1807,
+      name: 'playroom', where: 'in the playroom', cam: 'CAM 6 · PLAYROOM', src: 'images/scenes/playroom.webp', ar: 2400 / 1807,
       spots: [
         { x: 41, y: 76, h: 22, d: 1 },
         { x: 23, y: 56, h: 16, d: 1 },
@@ -647,7 +646,7 @@ body.debug *, body.debug *::before, body.debug *::after { transition: none !impo
       ],
     },
     fireplace: {
-      name: 'fireplace', sight: { m: 0, place: 'Stockings', text: 'a sock went missing!' }, where: 'by the fireplace', cam: 'CAM 8 · FIREPLACE', src: 'images/scenes/fireplace.webp', ar: 2400 / 1802, tone: 'brightness(.92) sepia(.1)',
+      name: 'fireplace', where: 'by the fireplace', cam: 'CAM 8 · FIREPLACE', src: 'images/scenes/fireplace.webp', ar: 2400 / 1802, tone: 'brightness(.92) sepia(.1)',
       spots: [
         { x: 55, y: 22, h: 22, cut: 0.42, d: 1 },
         { x: 60, y: 76, h: 18, d: 1 },
@@ -662,7 +661,7 @@ body.debug *, body.debug *::before, body.debug *::after { transition: none !impo
       ],
     },
     ourLiving: {
-      name: 'living room', sight: { m: 1, place: 'Our living room', text: 'toilet paper on the fort!' }, where: 'in our living room', cam: 'CAM 2 · OUR LIVING ROOM', src: 'images/scenes/our-living-room.webp', ar: 1600 / 1200,
+      name: 'living room', where: 'in our living room', cam: 'CAM 2 · OUR LIVING ROOM', src: 'images/scenes/our-living-room.webp', ar: 1600 / 1200,
       spots: [
         { x: 52, y: 76, h: 17, d: 1 },
         { x: 15, y: 53, h: 16, d: 1 },
@@ -677,7 +676,7 @@ body.debug *, body.debug *::before, body.debug *::after { transition: none !impo
       ],
     },
     ourStairs: {
-      name: 'stairs', sight: { m: 0, place: 'Our stairs', text: 'candy wrappers on the steps!' }, where: 'on our stairs', cam: 'CAM 1 · STAIRS', src: 'images/scenes/our-stairs.webp', ar: 1500 / 894,
+      name: 'stairs', where: 'on our stairs', cam: 'CAM 1 · STAIRS', src: 'images/scenes/our-stairs.webp', ar: 1500 / 894,
       spots: [
         { x: 60, y: 32.5, h: 19, d: 1 },
         { x: 75, y: 52.6, h: 19, d: 1 },
@@ -901,21 +900,29 @@ body.debug *, body.debug *::before, body.debug *::after { transition: none !impo
   };
 
   // ---------- sighting report: the rooms of today's hunts, with the mess circled ----------
+  // the family's photos of Chippy caught being naughty (images/caught/), with Chippy circled
+  // x / y = the centre of the circle, w = its width (all % of the photo)
+  const SIGHTINGS = [
+    { src: 'images/caught/flour-kitchen.webp', x: 35, y: 60, w: 22, sx: 74, sy: 14, place: 'Kitchen', text: 'flour EVERYWHERE!',
+      alt: 'Chippy sitting on the kitchen counter next to spilled flour with tiny footprints' },
+    { src: 'images/caught/stairs-tp.webp', x: 33, y: 22, w: 14, sx: 74, sy: 84, place: 'Stairs', text: 'toilet paper tornado!',
+      alt: 'Chippy at the top of the stairs with toilet paper unrolled all the way down' },
+    { src: 'images/caught/wrapping-markers.webp', x: 55, y: 46, w: 28, sx: 20, sy: 14, place: 'Dining table', text: 'markers and ripped wrapping paper!',
+      alt: 'Chippy drawing with markers in a pile of ripped wrapping paper and ribbons' },
+    { src: 'images/caught/fort-toys.webp', x: 67, y: 22, w: 16, sx: 22, sy: 84, place: 'Toy fort', text: 'toys all over the floor!',
+      alt: 'Chippy on top of the blue foam fort with toy cars scattered everywhere' },
+  ];
+  const SIGHT_AR = 670 / 398;
+  $('#sightings').innerHTML = SIGHTINGS.map(g => `<figure class="sighting" style="--ar:${SIGHT_AR}">
+      <div class="shot">
+        <img class="bg" src="${g.src}" alt="${g.alt}">
+        <i class="circle" style="left:${g.x}%;top:${g.y}%;width:${g.w}%"></i>
+        <span class="stamp sight" style="left:${g.sx}%;top:${g.sy}%">SIGHTING</span>
+      </div>
+      <figcaption><b>${g.place}</b> — ${g.text}</figcaption>
+    </figure>`).join('');
   function showSightings() {
-    $('#sightings').innerHTML = plan.map((key, i) => {
-      const S = SCENES[key], m = S.messes[S.sight.m], M = MESS[m.p];
-      const mh = m.w * S.ar / M.ar;
-      const ring = Math.max(m.w, mh * 1 / S.ar) * 1.35;
-      return `<figure class="sighting" style="--ar:${S.ar}">
-        <div class="shot">
-          <img class="bg" src="${S.src}" alt="">
-          <img class="mess" src="${M.src}" alt="${M.name}" style="left:${m.x}%;top:${m.y}%;width:${m.w}%;transform:translate(-50%,-50%) rotate(${m.rot || 0}deg);filter:${S.tone || 'none'}">
-          <i class="circle" style="left:${m.x}%;top:${m.y}%;width:${ring}%"></i>
-          <span class="stamp sight">SIGHTING</span>
-        </div>
-        <figcaption><b>${S.sight.place}</b> — ${S.sight.text}</figcaption>
-      </figure>`;
-    }).join('');
+    $$('#sightings .sight').forEach(st => st.classList.remove('on'));
     $$('#sightings .sight').forEach((st, i) => later(() => { st.classList.add('on'); sfx.stamp(); }, 600 + i * 420));
   }
 

@@ -13,7 +13,7 @@ namespace WorldTour.Core.Tests
     /// <summary>
     /// Checks the C# Answers and Mistakes against vectors printed by the web game's own answer.js and
     /// mistakes.js (world_tour_unity/Tools/answer_vectors.mjs, which writes answer_vectors.json next to this file).
-    /// Regenerate with: node world_tour_unity/Tools/answer_vectors.mjs
+    /// Frozen in phase 9.3: the generator script and the JS source it read were retired; this file is the checked-in record.
     /// </summary>
     public class AnswerVectorTests
     {
@@ -33,7 +33,7 @@ namespace WorldTour.Core.Tests
         {
             if (_vectors != null) return _vectors;
             string path = Path.Combine(Application.dataPath, "Tests", "EditMode", "answer_vectors.json");
-            if (!File.Exists(path)) throw new FileNotFoundException("missing answer vectors; run node Tools/answer_vectors.mjs", path);
+            if (!File.Exists(path)) throw new FileNotFoundException("missing answer vectors; the vector file is frozen and must stay checked in", path);
             var v = JsonUtility.FromJson<Vectors>(File.ReadAllText(path));
             if (v == null || v.targets == null || v.targets.Length == 0 || v.texts == null || v.texts.Length == 0)
                 throw new InvalidDataException("answer_vectors.json is empty or malformed");

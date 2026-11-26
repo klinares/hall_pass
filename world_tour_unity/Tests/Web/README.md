@@ -1,6 +1,6 @@
 # Web build tests
 
-All of these test the 3D game in `world/` in a real (headless) Chrome, with the Playwright already installed in `world_tour/tests/e2e/node_modules` (read only; it installs nothing). Run them from the repo root after a build; `--gpu d3d11` uses this machine's GPU (fps floors are only meaningful that way). `server.mjs` is a plain static server (Content-Type and Content-Length only, like GitHub Pages); `node world_tour_unity/Tests/Web/server.mjs world` plays the build locally.
+All of these test the 3D game in `world/` in a real (headless) Chrome, with the Playwright pinned in `Tests/Web/package.json` (1.65.1 in the lockfile; run `npm ci --prefer-offline` once in this folder; `node_modules` is git-ignored; the browsers come from the Playwright cache in the user profile). Run them from the repo root after a build; `--gpu d3d11` uses this machine's GPU (fps floors are only meaningful that way). `server.mjs` is a plain static server (Content-Type and Content-Length only, like GitHub Pages); `node world_tour_unity/Tests/Web/server.mjs world` plays the build locally.
 
 - `world_smoke.mjs [--gpu d3d11]`: loads `world/` at 1366x768 and 1920x1080, waits for `WT_WORLD_READY`, moves by keyboard and by click, measures fps, plays a gig and a show, visits places and the wardrobe (uses `world_places.mjs` and `world_wardrobe.mjs`).
 - `world_places.mjs`: the place-by-place checks used by the smoke test (also runnable alone).

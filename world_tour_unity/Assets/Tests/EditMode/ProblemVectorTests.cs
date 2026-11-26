@@ -16,7 +16,7 @@ namespace WorldTour.Core.Tests
     /// world_tour/math/gen/) (world_tour_unity/Tools/gen_vectors.mjs writes problem_vectors.json next to this file).
     /// The same (skill, level, seed) must give the identical problem: every field and every string.
     /// Problems are compared as sha256 of canonical JSON (see Problem.ToCanonicalJson); a sample is stored
-    /// in full so a failure can be diffed. Regenerate with: node world_tour_unity/Tools/gen_vectors.mjs
+    /// in full so a failure can be diffed. Frozen in phase 9.3: the generator script and the JS source it read were retired; this file is the checked-in record.
     /// To see one JS problem: node world_tour_unity/Tools/gen_vectors.mjs --one dec 2 1234
     /// </summary>
     public class ProblemVectorTests
@@ -31,7 +31,7 @@ namespace WorldTour.Core.Tests
         {
             if (_vectors != null) return _vectors;
             string path = Path.Combine(Application.dataPath, "Tests", "EditMode", "problem_vectors.json");
-            if (!File.Exists(path)) throw new FileNotFoundException("missing problem vectors; run node Tools/gen_vectors.mjs", path);
+            if (!File.Exists(path)) throw new FileNotFoundException("missing problem vectors; the vector file is frozen and must stay checked in", path);
             var v = JsonUtility.FromJson<Vectors>(File.ReadAllText(path));
             if (v == null || v.version != 1 || v.groups == null || v.groups.Length == 0 || v.samples == null || v.samples.Length == 0)
                 throw new InvalidDataException("problem_vectors.json is empty or malformed");

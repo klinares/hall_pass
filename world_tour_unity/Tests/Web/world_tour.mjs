@@ -1,4 +1,4 @@
-// Phase 8.4 tester: the whole tour in legs. Plain Node plus the Playwright install already in world_tour/tests/e2e/node_modules (read only).
+// Phase 8.4 tester: the whole tour in legs. Plain Node plus the Playwright install from Tests/Web/node_modules (npm ci in Tests/Web).
 //
 //   node Tests/Web/world_tour.mjs --from coffee --to rec [--dir forward|back] [--state <file>] [--fresh] [--size 1366x768] [--gpu d3d11]
 //                                 [--shots <dir>] [--out <results.json>] [--fullshow coffee] [--fans 2000000]
@@ -16,7 +16,7 @@ import { startServer } from './server.mjs';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const project = path.resolve(here, '..', '..');
 const repo = path.resolve(project, '..');
-const { chromium } = createRequire(path.join(repo, 'world_tour', 'tests', 'e2e', 'package.json'))('playwright');
+const { chromium } = createRequire(path.join(here, 'package.json'))('playwright');
 const argv = process.argv.slice(2);
 const opt = (n, d) => { const i = argv.indexOf(n); return i >= 0 && i + 1 < argv.length ? argv[i + 1] : d; };
 const ORDER = ['coffee', 'records', 'rec', 'rooftop', 'club', 'theater', 'festival', 'arena'];

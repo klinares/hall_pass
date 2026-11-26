@@ -624,52 +624,5 @@ namespace WorldTour.Game.EditTests
             CollectionAssert.AreEqual(new[] { "empire" }, d.Options);
             Assert.AreEqual("a tricky clue", FanmailRules.ClueLower("A Tricky Clue"));
         }
-
-        // ---------- copy, word for word from the web game ----------
-
-        private static string WebFile(string rel)
-        {
-            var roots = new List<string>();
-            string env = Environment.GetEnvironmentVariable("WT_WEB");
-            if (!string.IsNullOrEmpty(env)) roots.Add(env);
-            roots.Add(Path.Combine(Directory.GetCurrentDirectory(), "..", "world_tour"));
-            roots.Add(Path.Combine(Directory.GetCurrentDirectory(), "world_tour"));
-            foreach (string root in roots)
-            {
-                string p = Path.GetFullPath(Path.Combine(root, "modes", "spelling", rel));
-                if (File.Exists(p)) return File.ReadAllText(p);
-            }
-            return null;
-        }
-
-        [Test]
-        public void EveryLineIsInTheWebSource()
-        {
-            string parts = WebFile("parts.js"), slots = WebFile("slots.js"), vowels = WebFile("vowels.js"), fan = WebFile("fanmail.js");
-            if (parts == null || slots == null || vowels == null || fan == null) Assert.Ignore("world_tour/modes/spelling not found next to the project");
-            StringAssert.Contains("placeholder = '" + SpellingLines.TypePlaceholder + "'", parts);
-            StringAssert.Contains("`" + SpellingLines.SoundsLike("${chunks(ctx.item)}") + "`", parts);
-            StringAssert.Contains("`" + SpellingLines.LetterForYou('X').Replace("<b>X</b>", "<b>${w[i]}</b>") + "`", parts);
-            StringAssert.Contains("[-1, 1.2, -.6, .8]", parts);
-            StringAssert.Contains("desk('" + SpellingLines.SlotsDeskTag + "', `${slotRow(w, hide, '" + SpellingLines.SlotsBlank + "')}", slots);
-            StringAssert.Contains("desk('" + SpellingLines.VowelsDeskTag + "', `${slotRow(w, hide, '" + SpellingLines.VowelsBlank + "')}", vowels);
-            StringAssert.Contains(">" + SpellingLines.CheckIt + "</button>", slots);
-            StringAssert.Contains(">" + SpellingLines.CheckIt + "</button>", vowels);
-            StringAssert.Contains("'" + MissingLetters.Vowels + "'.includes(c)", vowels);
-            StringAssert.Contains("const HANDLES = [" + string.Join(", ", SpellingLines.Handles.Select(x => "'" + x + "'")) + "];", fan);
-            StringAssert.Contains("<small>" + SpellingLines.SentYouAMessage + "</small>", fan);
-            StringAssert.Contains(SpellingLines.MessageBefore + "<i>${esc(v.h.toLowerCase())}</i>" + SpellingLines.MessageAfter, fan);
-            StringAssert.Contains(">" + SpellingLines.Avatar + "</span>", fan);
-            StringAssert.Contains(">" + SpellingLines.NextSong + "</button>", fan);
-            StringAssert.Contains("'" + SpellingLines.CrossedOne + "'", fan);
-            StringAssert.Contains("'" + SpellingLines.OneMoreGone + "'", fan);
-            StringAssert.Contains("`it starts with <b>" + (char)0x201C + "${w[0]}" + (char)0x201D + "</b> and has <b>${w.length}</b> letters.`", fan);
-            StringAssert.Contains("`it was <b>${w}</b>. it" + Rsq + "ll come back around.`", fan);
-            Assert.AreEqual("it was <b>empire</b>. it" + Rsq + "ll come back around.", SpellingLines.ItWas("empire"));
-            StringAssert.Contains("ctx.setupHints(" + FanmailRules.HintMax + ",", fan);
-            StringAssert.Contains("ctx.next(" + (int)Math.Round(FanmailRules.NextAfterWin * 1000) + ")", fan);
-            StringAssert.Contains("ctx.next(" + (int)Math.Round(TypedRound.NextAfterWin * 1000) + ")", parts);
-            StringAssert.Contains("ctx.next(" + (int)Math.Round(TypedRound.NextAfterReveal * 1000) + ")", parts);
-        }
     }
 }

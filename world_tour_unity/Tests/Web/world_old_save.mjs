@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 import { startServer } from './server.mjs';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repo = path.resolve(here, '..', '..', '..');
-const { chromium } = createRequire(path.join(repo, 'world_tour', 'tests', 'e2e', 'package.json'))('playwright');
+const { chromium } = createRequire(path.join(here, 'package.json'))('playwright');
 const argv = process.argv.slice(2);
 const opt = (n, d) => { const i = argv.indexOf(n); return i >= 0 ? argv[i + 1] : d; };
 const stateFile = opt('--state', path.join(here, 'fixtures', 'old_save_v1.json'));

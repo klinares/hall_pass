@@ -63,35 +63,5 @@ namespace WorldTour.Mascot.Tests
             Assert.AreEqual("2 days in a row. don" + R + "t break the chain.", DogLines.Home(null, "0", 2, 0, () => .7));
             Assert.AreEqual("one show a day keeps the streak alive.", DogLines.Home(null, "0", 1, 0, () => .7));
         }
-
-        static string WebFile(string rel)
-        {
-            foreach (var root in new[] { Path.Combine(Directory.GetCurrentDirectory(), ".."), Directory.GetCurrentDirectory() })
-            {
-                string p = Path.GetFullPath(Path.Combine(root, "world_tour", "js", rel));
-                if (File.Exists(p)) return File.ReadAllText(p);
-            }
-            return null;
-        }
-
-        [Test]
-        public void EveryLineIsInTheWebSource()
-        {
-            string copy = WebFile("copy.js"), show = WebFile("show.js");
-            if (copy == null || show == null) Assert.Ignore("world_tour/js not found next to the project");
-            foreach (var s in DogLines.Cheers.Concat(DogLines.ShowStart).Concat(DogLines.Win).Concat(DogLines.HintWin).Concat(DogLines.AfterMiss))
-                StringAssert.Contains("'" + s + "'", copy);
-            foreach (var s in DogLines.NextSong) StringAssert.Contains("'" + s + "'", show);
-            StringAssert.Contains("`" + DogLines.BonusSong + "`", show);
-            StringAssert.Contains("`" + DogLines.IdleHint.Replace("tap hint", "tap the bulb") + "`", copy);   // 7.4 intended copy difference: "tap hint" (IntendedDifferences.md)
-            StringAssert.Contains("${streak} in a row. the crowd is losing it.", copy);
-            StringAssert.Contains("`${G.streak} in a row!`", show);
-            StringAssert.Contains("export const NAME = '" + DogLines.Name + "'", copy);
-            // (the ladder and reveal lines are RemixLines'; RemixRulesTests checks them)
-            foreach (var f in new[] { "`oh hey. i napped for ${away} days. ready when you are.`", "`next stop: <b>${next}</b>. ${toGo} fans to go.`",
-                                      "'we made it to the arena. every show from here is a victory lap.'", "`${streak} days in a row. don" + R + "t break the chain.`",
-                                      "'one show a day keeps the streak alive.'" })
-                StringAssert.Contains(f, copy);
-        }
     }
 }

@@ -1,5 +1,5 @@
 // Browser smoke test for the 3D world build in world/ (phase 8.0 spike). Plain Node plus the Playwright install
-// already in world_tour/tests/e2e/node_modules (read only).
+// from Tests/Web/node_modules (npm ci in Tests/Web).
 //
 //   node Tests/Web/world_smoke.mjs [--site <folder>] [--gpu auto|swiftshader|d3d11|chrome] [--sizes 1366x768,1920x1080]
 //                                  [--out <results.json>] [--shots <dir>] [--seconds 5]
@@ -23,7 +23,7 @@ import { wardrobeTests } from './world_wardrobe.mjs';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const project = path.resolve(here, '..', '..');
 const repo = path.resolve(project, '..');
-const { chromium } = createRequire(path.join(repo, 'world_tour', 'tests', 'e2e', 'package.json'))('playwright');
+const { chromium } = createRequire(path.join(here, 'package.json'))('playwright');
 
 const argv = process.argv.slice(2);
 const opt = (n, d) => { const i = argv.indexOf(n); return i >= 0 && i + 1 < argv.length ? argv[i + 1] : d; };

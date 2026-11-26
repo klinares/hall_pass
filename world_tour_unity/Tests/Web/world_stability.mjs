@@ -1,4 +1,4 @@
-// Phase 8.4 P0b and P0d: nothing may get stuck, and nothing may hitch. Plain Node plus the Playwright install already in world_tour/tests/e2e/node_modules (read only).
+// Phase 8.4 P0b and P0d: nothing may get stuck, and nothing may hitch. Plain Node plus the Playwright install from Tests/Web/node_modules (npm ci in Tests/Web).
 //
 //   node Tests/Web/world_stability.mjs [--site <folder>] [--gpu d3d11|swiftshader] [--sizes 1366x768] [--places coffee,records,...] [--modes keyboard,mouse]
 //                                      [--hitch-ms 100] [--still] [--abuse] [--shots <dir>] [--out <results.json>]
@@ -21,7 +21,7 @@ import { makePage, loadReady } from './world_places.mjs';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const project = path.resolve(here, '..', '..');
 const repo = path.resolve(project, '..');
-const { chromium } = createRequire(path.join(repo, 'world_tour', 'tests', 'e2e', 'package.json'))('playwright');
+const { chromium } = createRequire(path.join(here, 'package.json'))('playwright');
 const argv = process.argv.slice(2);
 const opt = (n, d) => { const i = argv.indexOf(n); return i >= 0 && i + 1 < argv.length ? argv[i + 1] : d; };
 const ORDER = ['coffee', 'records', 'rec', 'rooftop', 'club', 'theater', 'festival', 'arena'];

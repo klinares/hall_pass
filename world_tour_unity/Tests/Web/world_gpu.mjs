@@ -19,7 +19,7 @@ import { makePage, loadReady } from './world_places.mjs';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const project = path.resolve(here, '..', '..');
 const repo = path.resolve(project, '..');
-const { chromium } = createRequire(path.join(repo, 'world_tour', 'tests', 'e2e', 'package.json'))('playwright');
+const { chromium } = createRequire(path.join(here, 'package.json'))('playwright');
 const argv = process.argv.slice(2);
 const opt = (n, d) => { const i = argv.indexOf(n); return i >= 0 && i + 1 < argv.length ? argv[i + 1] : d; };
 const site = path.resolve(opt('--site', path.join(repo, 'world')));

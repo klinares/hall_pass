@@ -13,7 +13,7 @@ namespace WorldTour.Core.Tests
     /// Checks the C# Rng, Rational and Money against vectors printed by the web game's own JS
     /// (world_tour_unity/Tools/js_vectors.mjs, which writes js_vectors.json next to this file).
     /// Doubles are compared by their 64-bit pattern, so a match is bit for bit.
-    /// Regenerate with: node world_tour_unity/Tools/js_vectors.mjs
+    /// Frozen in phase 9.3: the generator script and the JS source it read were retired; this file is the checked-in record.
     /// </summary>
     public class JsVectorTests
     {
@@ -33,7 +33,7 @@ namespace WorldTour.Core.Tests
         {
             if (_vectors != null) return _vectors;
             string path = Path.Combine(Application.dataPath, "Tests", "EditMode", "js_vectors.json");
-            if (!File.Exists(path)) throw new FileNotFoundException("missing JS vectors; run node Tools/js_vectors.mjs", path);
+            if (!File.Exists(path)) throw new FileNotFoundException("missing JS vectors; the vector file is frozen and must stay checked in", path);
             var v = JsonUtility.FromJson<Vectors>(File.ReadAllText(path));
             if (v == null || v.rng == null || v.rng.Length == 0 || v.calls == null || v.calls.Length == 0)
                 throw new InvalidDataException("js_vectors.json is empty or malformed");

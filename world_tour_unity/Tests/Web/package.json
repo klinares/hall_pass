@@ -1,0 +1,9 @@
+{
+  "name": "world-tour-web-tests",
+  "private": true,
+  "type": "module",
+  "description": "dev-only browser checks for world/ (Tests/Web/*.mjs); never loaded by the game",
+  "devDependencies": {
+    "playwright": "^1.65.1"
+  }
+}

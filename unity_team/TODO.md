@@ -1,8 +1,8 @@
 ## Phase 9 (repo keeps only lunchline + the 3D game) - ADVISOR 2026-11-25 22:50; lead + 1 builder + 1 tester pass; separate commits; do not push
 - Before: 179.7 MB tracked (5,497 files), size-pack 209.0 MiB.
 - [x] 9.1 world/ stands alone: world/StreamingAssets is the master (BuildWorld keeps the deployed copies, syncs back into the project); validator, README, MATH_CONFIG point at world/
-- [ ] 9.2 (builder running) remove the 2D game (tour/, 2D scenes/screens/art/atlases/builders, BuildWeb.Build, WorldTour template, tour/ browser suites, 2D play-mode tests); keep anything world/ uses; unused-asset check
-- [ ] 9.3 remove world_tour/: OWNER APPROVED 2026-11-26 (keep the backup). Freeze vectors as data, retire generators, move Playwright
+- [x] 9.2 (committed) remove the 2D game (tour/, 2D scenes/screens/art/atlases/builders, BuildWeb.Build, WorldTour template, tour/ browser suites, 2D play-mode tests); keep anything world/ uses; unused-asset check
+- [x] 9.3 (committed) remove world_tour/: OWNER APPROVED 2026-11-26 (keep the backup). Freeze vectors as data, retire generators, move Playwright
 - [ ] 9.4 paperwork: unity_team/ untracked (stays on disk), one README in world_tour_unity/, root README, publish.bat -> world/
 - [ ] 9.5 verify + one tester pass + REPORT ("tour/ address stops working after the push")
 - HOLD: spelling_4_U/ (owner asked about "chippy"). Never touch lunchline/, images/, .Rhistory.

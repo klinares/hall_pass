@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { startServer } from './server.mjs';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repo = path.resolve(here, '..', '..', '..');
-const { chromium } = createRequire(path.join(repo, 'world_tour', 'tests', 'e2e', 'package.json'))('playwright');
+const { chromium } = createRequire(path.join(here, 'package.json'))('playwright');
 const server = await startServer(path.join(repo, 'world'));
 const browser = await chromium.launch({ headless: true, args: ['--use-gl=angle', '--use-angle=d3d11', '--ignore-gpu-blocklist'] });
 const ctx = await browser.newContext({ viewport: { width: 1366, height: 768 } });

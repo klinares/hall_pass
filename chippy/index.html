@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Operation: Where Is Chippy?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&family=Nunito:wght@400..800&family=Special+Elite&display=swap">
+<style>
+:root {
+  --night: #1B2A4A;
+  --night2: #13203B;
+  --cream: #FFF8EC;
+  --manila: #EDDDBA;
+  --paper: #FFFDF7;
+  --red: #C8372B;
+  --red-soft: #F06A5B;
+  --gold: #F4B942;
+  --ink: #3D4A63;
+  --mist: #C9D6EA;
+  --pine: #2F7D5B;
+}
+* { box-sizing: border-box; margin: 0; }
+html, body { height: 100%; }
+body {
+  background: var(--night);
+  color: var(--cream);
+  font-family: 'Nunito', Arial, sans-serif;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+button { font: inherit; cursor: pointer; }
+
+/* ---------- frame ---------- */
+#app { height: 100vh; height: 100dvh; display: flex; flex-direction: column; }
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 20px; gap: 12px;
+  font-family: 'Special Elite', 'Courier New', monospace; letter-spacing: 2px;
+  color: var(--gold); font-size: 18px;
+}
+.dots { display: flex; gap: 8px; }
+.dots span { width: 12px; height: 12px; border-radius: 50%; background: #34456B; }
+.dots span.on { background: var(--gold); }
+.icon-btn {
+  background: transparent; border: 2px solid #34456B; color: var(--mist);
+  border-radius: 999px; padding: 4px 14px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 700;
+}
+.icon-btn:hover { border-color: var(--gold); color: var(--gold); }
+.top-right { display: flex; gap: 8px; }
+
+main { flex: 1; position: relative; min-height: 0; }
+.screen {
+  position: absolute; inset: 0; display: none;
+  flex-direction: column; align-items: center; justify-content: center;
+  padding: 8px 24px 16px; gap: 20px; text-align: center;
+}
+.screen.show { display: flex; animation: fadeIn 450ms ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
+.bottombar {
+  display: flex; align-items: center; gap: 16px; padding: 12px 20px 18px;
+}
+.say {
+  flex: 1; background: var(--night2); border: 2px solid #34456B; border-radius: 16px;
+  padding: 10px 18px; text-align: left; min-height: 58px; display: flex; align-items: center; gap: 12px;
+}
+.say b { font-family: 'Special Elite', monospace; color: var(--gold); font-weight: 400; font-size: 15px; letter-spacing: 1px; white-space: nowrap; }
+.say span { font-size: clamp(16px, 2vw, 22px); color: var(--cream); }
+body.noscript .say { visibility: hidden; }
+.next {
+  background: var(--gold); color: var(--night); border: 4px solid var(--night2);
+  box-shadow: 0 6px 0 #8A6A1C; border-radius: 999px;
+  font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: clamp(20px, 2.6vw, 30px);
+  padding: 10px 34px; transition: transform 120ms;
+}
+.next:active { transform: translateY(4px); box-shadow: 0 2px 0 #8A6A1C; }
+.next[hidden] { display: none; }
+
+/* ---------- type ---------- */
+.eyebrow { font-family: 'Special Elite', monospace; color: var(--gold); letter-spacing: 3px; font-size: clamp(16px, 2vw, 24px); }
+.title { font-family: 'Fredoka', sans-serif; font-weight: 700; color: var(--gold); font-size: clamp(40px, 7vw, 96px); line-height: 1; }
+.h2 { font-family: 'Fredoka', sans-serif; font-weight: 600; color: var(--cream); font-size: clamp(30px, 4.6vw, 60px); line-height: 1.05; }
+.lede { font-size: clamp(18px, 2.4vw, 30px); color: var(--mist); max-width: 900px; }
+.stamp {
+  font-family: 'Special Elite', monospace; color: var(--red-soft); border: 5px solid var(--red-soft);
+  border-radius: 10px; padding: 4px 22px; font-size: clamp(22px, 3vw, 40px); transform: rotate(-6deg);
+  display: inline-block; white-space: nowrap;
+}
+.stamp.slam { animation: slam 450ms ease-out both; }
+@keyframes slam { from { opacity: 0; transform: rotate(-6deg) scale(2); } to { opacity: 1; transform: rotate(-6deg) scale(1); } }
+
+/* ---------- title ---------- */
+.peek-gift { width: min(280px, 30vh); }
+
+/* ---------- cards ---------- */
+.cards { display: flex; gap: clamp(12px, 2.4vw, 32px); flex-wrap: wrap; justify-content: center; }
+.card {
+  background: var(--paper); color: var(--night); border: 4px solid var(--night2); border-radius: 22px;
+  box-shadow: 0 10px 0 #0B1428; padding: 18px 22px; width: clamp(200px, 26vw, 320px);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.card h3 { font-family: 'Fredoka', sans-serif; font-size: clamp(24px, 3vw, 36px); font-weight: 600; }
+.card p { font-size: clamp(16px, 1.8vw, 22px); color: var(--ink); }
+.tag { font-family: 'Special Elite', monospace; background: var(--gold); color: var(--night); border-radius: 6px; padding: 2px 12px; font-size: 16px; letter-spacing: 2px; }
+.tag.target { background: var(--red); color: var(--cream); }
+.card svg, .card img { height: clamp(110px, 20vh, 190px); }
+
+/* ---------- profile ---------- */
+.profile { display: flex; gap: clamp(20px, 4vw, 56px); align-items: center; justify-content: center; flex-wrap: wrap; }
+.profile-photo {
+  position: relative; background: var(--manila); border: 4px solid var(--night2); border-radius: 20px;
+  box-shadow: 0 10px 0 #0B1428; padding: 18px 40px; cursor: pointer;
+}
+.profile-photo img { height: clamp(200px, 46vh, 440px); display: block; transform-origin: 50% 90%; }
+.profile-photo img.wiggle { animation: wiggle 700ms ease-in-out; }
+@keyframes wiggle { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-7deg); } 50% { transform: rotate(6deg); } 75% { transform: rotate(-3deg); } }
+.bubble {
+  position: absolute; right: -30px; top: 6px; transform: translateX(60%);
+  background: var(--cream); color: var(--night); font-family: 'Fredoka', sans-serif; font-weight: 600;
+  font-size: clamp(16px, 2vw, 24px); padding: 10px 16px; border-radius: 18px; border: 3px solid var(--night2);
+  white-space: nowrap; opacity: 0; transition: opacity 250ms;
+}
+.bubble.on { opacity: 1; }
+.fields { display: flex; flex-direction: column; gap: 14px; text-align: left; max-width: 520px; }
+.field { border-bottom: 3px dashed #34456B; padding-bottom: 10px; }
+.field .k { font-family: 'Special Elite', monospace; color: var(--red-soft); letter-spacing: 2px; font-size: clamp(14px, 1.6vw, 20px); }
+.field .v { font-family: 'Fredoka', sans-serif; font-size: clamp(22px, 2.8vw, 36px); color: var(--cream); line-height: 1.15; }
+
+/* ---------- when/where ---------- */
+.cal { width: clamp(160px, 20vw, 240px); border: 4px solid var(--night2); border-radius: 18px; overflow: hidden; background: var(--paper); }
+.cal .m { background: var(--red); color: var(--cream); font-family: 'Special Elite', monospace; letter-spacing: 2px; font-size: clamp(16px, 2vw, 24px); padding: 8px; }
+.cal .d { color: var(--night); font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: clamp(44px, 6vw, 80px); padding: 6px 0 10px; }
+
+/* ---------- rules ---------- */
+.steps .card { width: clamp(190px, 24vw, 300px); }
+.num { width: 64px; height: 64px; border-radius: 50%; background: var(--gold); border: 4px solid var(--night2); display: grid; place-items: center; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 34px; }
+.shout-btn {
+  background: var(--red); color: var(--cream); border: 4px solid var(--night2); box-shadow: 0 8px 0 #6E1C15;
+  border-radius: 999px; font-family: 'Fredoka', sans-serif; font-weight: 700;
+  font-size: clamp(24px, 3.4vw, 44px); padding: 12px 40px;
+}
+.shout-btn:active { transform: translateY(5px); box-shadow: 0 3px 0 #6E1C15; }
+
+/* ---------- hunt ---------- */
+.hunt { padding: 4px 12px 8px; gap: 10px; }
+.hunt-head { display: flex; align-items: baseline; gap: 20px; flex-wrap: wrap; justify-content: center; }
+.hunt-head .h2 { font-size: clamp(24px, 3.4vw, 44px); }
+.timer { font-family: 'Special Elite', monospace; color: var(--mist); font-size: clamp(16px, 2vw, 22px); letter-spacing: 2px; }
+.stage {
+  position: relative; border: 5px solid var(--night2); border-radius: 18px; overflow: hidden;
+  box-shadow: 0 0 0 3px #34456B; cursor: crosshair; touch-action: manipulation;
+  width: min(96vw, calc((100dvh - 250px) * var(--ar)));
+  aspect-ratio: var(--ar);
+}
+.stage img.bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.hider { position: absolute; aspect-ratio: 234 / 596; transform-origin: 50% 100%; }
+.hider img { width: 100%; height: 100%; display: block; pointer-events: none; }
+.hider::after { content: ""; position: absolute; inset: -14px; }
+.hider.found { animation: boing 700ms ease-out both; }
+@keyframes boing { 0% { scale: 1; } 30% { scale: 1.35; } 55% { scale: .9; } 75% { scale: 1.12; } 100% { scale: 1.05; } }
+.ring {
+  position: absolute; border: 6px solid var(--gold); border-radius: 50%; pointer-events: none;
+  box-shadow: 0 0 0 4px rgba(27,42,74,.6), 0 0 30px rgba(244,185,66,.8);
+  animation: ringIn 500ms ease-out both;
+}
+@keyframes ringIn { from { opacity: 0; transform: scale(2.4); } to { opacity: 1; transform: scale(1); } }
+.scan {
+  position: absolute; border: 5px dashed var(--gold); border-radius: 50%; pointer-events: none;
+  background: rgba(244,185,66,.12); animation: scan 1.6s ease-in-out infinite alternate;
+}
+@keyframes scan { from { opacity: .45; } to { opacity: 1; } }
+.nope {
+  position: absolute; transform: translate(-50%, -50%); pointer-events: none;
+  font-family: 'Fredoka', sans-serif; font-weight: 700; color: var(--cream); font-size: clamp(18px, 2.4vw, 30px);
+  background: rgba(19,32,59,.85); border: 3px solid var(--red-soft); border-radius: 999px; padding: 4px 16px;
+  animation: nope 900ms ease-out forwards;
+}
+@keyframes nope { 0% { opacity: 0; scale: .6; } 15% { opacity: 1; scale: 1.1; } 70% { opacity: 1; } 100% { opacity: 0; translate: 0 -30px; } }
+.banner {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) rotate(-4deg);
+  background: var(--red); color: var(--cream); font-family: 'Fredoka', sans-serif; font-weight: 700;
+  font-size: clamp(28px, 5vw, 64px); padding: 10px 36px; border-radius: 999px; border: 5px solid var(--cream);
+  box-shadow: 0 10px 30px rgba(0,0,0,.4); white-space: nowrap; pointer-events: none;
+  animation: bannerIn 500ms cubic-bezier(.2,.9,.3,1.3) both;
+}
+@keyframes bannerIn { from { opacity: 0; transform: translate(-50%, -50%) rotate(-4deg) scale(.3); } }
+.hint-btn { background: transparent; color: var(--gold); border: 3px solid var(--gold); border-radius: 999px; padding: 4px 18px; font-weight: 800; font-size: clamp(15px, 1.7vw, 19px); }
+.hint-btn[hidden] { display: none; }
+.hint-btn.pulse { animation: pulse 1s ease-in-out infinite alternate; }
+@keyframes pulse { from { box-shadow: 0 0 0 0 rgba(244,185,66,.0); } to { box-shadow: 0 0 0 8px rgba(244,185,66,.35); } }
+
+/* night overlay between days */
+.night {
+  position: absolute; inset: 0; background: rgba(8,14,30,.94); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 18px; z-index: 5; transition: opacity 600ms;
+}
+.night.gone { opacity: 0; pointer-events: none; }
+.night .moon { width: 90px; height: 90px; border-radius: 50%; background: var(--cream); box-shadow: -22px 0 0 0 rgba(8,14,30,1) inset, 0 0 40px rgba(255,248,236,.35); }
+
+/* ---------- screen 9: placeholder ---------- */
+.locked {
+  width: clamp(220px, 26vw, 320px); aspect-ratio: 3 / 4; border-radius: 18px;
+  border: 6px solid var(--gold); background: var(--night2);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+}
+.locked .tap { font-family: 'Special Elite', monospace; color: var(--mist); font-size: 18px; letter-spacing: 2px; }
+
+.score { font-family: 'Fredoka', sans-serif; font-size: clamp(20px, 2.6vw, 32px); color: var(--cream); }
+.score b { color: var(--gold); }
+
+/* confetti */
+.confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 20; }
+.confetti i { position: absolute; top: -20px; width: 12px; height: 18px; border-radius: 3px; animation: fall linear forwards; }
+@keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
+
+@media (max-height: 560px) {
+  .say { min-height: 44px; padding: 6px 12px; }
+  .bottombar { padding: 6px 12px 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; }
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <span id="fileLabel">CASE FILE #1225 · TOP SECRET</span>
+    <div class="dots" id="dots" aria-hidden="true"></div>
+    <div class="top-right">
+      <button class="icon-btn" id="scriptBtn" title="Show or hide Agent Ezekiel's lines">Script: on</button>
+      <button class="icon-btn" id="soundBtn" title="Sound on or off">Sound: on</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- 1. title -->
+    <section class="screen" data-say="Attention, agents! This is a TOP SECRET mission. Today I will tell you about my family’s December mystery: Operation… WHERE IS CHIPPY?">
+      <span class="stamp slam">TOP SECRET</span>
+      <p class="eyebrow">OPERATION:</p>
+      <h1 class="title">Where Is Chippy?</h1>
+      <p class="lede">A family tradition, presented by Agent Ezekiel</p>
+      <svg class="peek-gift" viewBox="0 0 520 440" role="img" aria-label="Two eyes peeking out from behind a red present">
+        <ellipse cx="200" cy="135" rx="48" ry="58" fill="#FFF8EC" stroke="#F4B942" stroke-width="8"/>
+        <ellipse cx="320" cy="135" rx="48" ry="58" fill="#FFF8EC" stroke="#F4B942" stroke-width="8"/>
+        <circle cx="208" cy="148" r="22" fill="#1B2A4A"/><circle cx="328" cy="148" r="22" fill="#1B2A4A"/>
+        <circle cx="215" cy="139" r="7" fill="#FFF8EC"/><circle cx="335" cy="139" r="7" fill="#FFF8EC"/>
+        <rect x="90" y="250" width="340" height="190" rx="10" fill="#C8372B"/>
+        <rect x="60" y="182" width="400" height="84" rx="14" fill="#E2513C"/>
+        <rect x="232" y="182" width="56" height="258" fill="#F4B942"/>
+        <path d="M260 182 C200 120 150 150 196 182 Z" fill="#F4B942"/><path d="M260 182 C320 120 370 150 324 182 Z" fill="#F4B942"/>
+      </svg>
+    </section>
+
+    <!-- 2. agents -->
+    <section class="screen" data-say="Every December, my sister Natalia and I become secret agents. I’m Agent Ezekiel. She’s Agent Natalia. And our target is… CHIPPY!">
+      <p class="eyebrow">FILE 1 · THE AGENTS</p>
+      <h2 class="h2">Meet the secret agents</h2>
+      <div class="cards">
+        <div class="card">
+          <svg viewBox="0 0 160 160" role="img" aria-label="Spy agent with a hat and sunglasses"><circle cx="80" cy="80" r="76" fill="#EDDDBA"/><circle cx="80" cy="92" r="38" fill="#E8B98E"/><rect x="36" y="50" width="88" height="14" rx="7" fill="#1B2A4A"/><path d="M50 52 Q52 20 80 20 Q108 20 110 52 Z" fill="#1B2A4A"/><rect x="50" y="80" width="26" height="16" rx="6" fill="#1B2A4A"/><rect x="84" y="80" width="26" height="16" rx="6" fill="#1B2A4A"/><rect x="74" y="84" width="12" height="4" fill="#1B2A4A"/><path d="M66 110 Q80 120 94 110" stroke="#1B2A4A" stroke-width="5" fill="none" stroke-linecap="round"/></svg>
+          <span class="tag">AGENT</span><h3>Ezekiel</h3><p>Seeker #1</p>
+        </div>
+        <div class="card">
+          <svg viewBox="0 0 160 160" role="img" aria-label="Spy agent with long hair, a hat and sunglasses"><circle cx="80" cy="80" r="76" fill="#EDDDBA"/><path d="M40 90 Q38 140 60 150 L100 150 Q122 140 120 90 Z" fill="#4A3426"/><circle cx="80" cy="92" r="38" fill="#E8B98E"/><rect x="36" y="50" width="88" height="14" rx="7" fill="#C8372B"/><path d="M50 52 Q52 20 80 20 Q108 20 110 52 Z" fill="#C8372B"/><rect x="50" y="80" width="26" height="16" rx="6" fill="#1B2A4A"/><rect x="84" y="80" width="26" height="16" rx="6" fill="#1B2A4A"/><rect x="74" y="84" width="12" height="4" fill="#1B2A4A"/><path d="M66 110 Q80 120 94 110" stroke="#1B2A4A" stroke-width="5" fill="none" stroke-linecap="round"/></svg>
+          <span class="tag">AGENT</span><h3>Natalia</h3><p>Seeker #2</p>
+        </div>
+        <div class="card">
+          <img src="images/chippy.png" alt="Chippy the elf">
+          <span class="tag target">TARGET</span><h3>Chippy</h3><p>Champion hider</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. profile -->
+    <section class="screen" data-say="This is Chippy. He is the sneakiest hider in the whole world. Nobody ever sees him move! Tap him and see what he says.">
+      <p class="eyebrow">FILE 2 · TARGET PROFILE</p>
+      <div class="profile">
+        <div class="profile-photo" id="profilePhoto" role="button" aria-label="Tap Chippy">
+          <img src="images/chippy.png" alt="Chippy the elf in his red suit and white collar">
+          <div class="bubble" id="bubble">You’ll never find me!</div>
+        </div>
+        <div class="fields">
+          <h2 class="h2">Code name: Chippy</h2>
+          <div class="field"><p class="k">SPECIAL SKILL</p><p class="v">Hiding. The best hider in the world.</p></div>
+          <div class="field"><p class="k">SUPERPOWER</p><p class="v">Nobody ever sees him move!</p></div>
+          <div class="field"><p class="k">WEAKNESS</p><p class="v">Agent Ezekiel always finds him.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. when & where -->
+    <section class="screen" data-say="Chippy comes every December, the whole month! Every night he sneaks to a brand-new hiding spot somewhere in our house.">
+      <p class="eyebrow">FILE 3 · WHEN AND WHERE</p>
+      <h2 class="h2">Every December, all over our house</h2>
+      <div class="cards">
+        <div class="card">
+          <div class="cal"><div class="m">DECEMBER</div><div class="d">1–31</div></div>
+          <span class="tag">WHEN</span><p>Every day, all month long!</p>
+        </div>
+        <div class="card">
+          <svg viewBox="0 0 260 240" role="img" aria-label="A house with Chippy’s eyes peeking out of the window"><rect x="180" y="30" width="34" height="70" fill="#8B5E3C" stroke="#1B2A4A" stroke-width="5"/><polygon points="130,12 10,110 250,110" fill="#C8372B" stroke="#1B2A4A" stroke-width="6" stroke-linejoin="round"/><rect x="34" y="108" width="192" height="126" fill="#FFF8EC" stroke="#1B2A4A" stroke-width="6"/><rect x="108" y="160" width="44" height="74" rx="6" fill="#2F7D5B" stroke="#1B2A4A" stroke-width="5"/><rect x="52" y="130" width="46" height="44" fill="#1B2A4A"/><ellipse cx="66" cy="152" rx="8" ry="10" fill="#FFF8EC"/><ellipse cx="85" cy="152" rx="8" ry="10" fill="#FFF8EC"/><circle cx="68" cy="154" r="4" fill="#1B2A4A"/><circle cx="87" cy="154" r="4" fill="#1B2A4A"/><rect x="162" y="130" width="46" height="44" fill="#F4B942" stroke="#1B2A4A" stroke-width="5"/></svg>
+          <span class="tag">WHERE</span><p>Upstairs, downstairs… anywhere!</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. rules -->
+    <section class="screen" data-say="Here’s how the mission works. Chippy hides. We search. And when we find him, we shout… FOUND YOU, CHIPPY! Let’s practice. Ready? 1, 2, 3!">
+      <p class="eyebrow">FILE 4 · THE MISSION</p>
+      <div class="cards steps">
+        <div class="card"><div class="num">1</div><h3>Chippy hides</h3><p>He sneaks to a new spot. Nobody sees how!</p></div>
+        <div class="card"><div class="num">2</div><h3>We search</h3><p>High and low, under and over.</p></div>
+        <div class="card"><div class="num">3</div><h3>We find him!</h3><p>And everybody shouts:</p></div>
+      </div>
+      <button class="shout-btn" id="practiceBtn">“FOUND YOU, CHIPPY!”</button>
+    </section>
+
+    <!-- 6–8. hunts (filled by script) -->
+    <section class="screen hunt" data-hunt="0"></section>
+    <section class="screen hunt" data-hunt="1"></section>
+    <section class="screen hunt" data-hunt="2"></section>
+
+    <!-- 9. placeholder (new file 5 coming soon) -->
+    <section class="screen" data-say="Agents, there is one more top secret file about Chippy. But it is still CLASSIFIED. Coming soon!">
+      <p class="eyebrow">FILE 5</p>
+      <h2 class="h2">CLASSIFIED: coming soon.</h2>
+      <div class="locked" role="img" aria-label="A locked top secret folder">
+        <span class="stamp">CLASSIFIED</span>
+        <p class="tap">COMING SOON</p>
+      </div>
+    </section>
+
+    <!-- 10. end -->
+    <section class="screen" data-say="Case closed! Thank you for being such great agents. Happy December, everybody!">
+      <span class="stamp slam">CASE CLOSED</span>
+      <h2 class="title">Thank you, agents!</h2>
+      <p class="score" id="score"></p>
+      <p class="lede">Remember: if you ever find a Chippy, shout <b style="color:var(--gold)">“FOUND YOU, CHIPPY!”</b></p>
+      <button class="next" id="againBtn">Play again</button>
+    </section>
+  </main>
+
+  <footer class="bottombar">
+    <div class="say"><b>AGENT EZEKIEL SAYS</b><span id="sayText"></span></div>
+    <button class="next" id="nextBtn">Next ▸</button>
+  </footer>
+</div>
+<div class="confetti" id="confetti"></div>
+
+<script>
+(() => {
+  // ---------- hiding spots (percent of the photo) ----------
+  // x = centre of Chippy, b = where his bottom sits, h = his height, rot = tilt
+  const SCENES = {
+    living: { src: 'images/living-room.jpg', ar: 1600 / 1200, label: 'CAM 2 · LIVING ROOM' },
+    stairs: { src: 'images/stairs.jpg', ar: 1500 / 894, label: 'CAM 1 · STAIRS' },
+  };
+  // Chippy always sits with his legs dangling, so every spot is a ledge:
+  // x = centre of Chippy, seat = height of the ledge he sits on, h = his height (all % of the photo).
+  // One spot is picked at random each round, so the game changes every time.
+  const HUNTS = [
+    { day: 'DAY 1', title: 'Find Chippy in the living room!', scene: 'living',
+      say: 'Day one! Chippy moved in the night. He’s hiding in our living room. Who can find him? Come tap him!',
+      spots: [ { x: 52, seat: 76, h: 17 }, { x: 47, seat: 30, h: 14 }, { x: 15, seat: 53, h: 16 } ] },
+    { day: 'DAY 2', title: 'Now he’s on the stairs!', scene: 'stairs',
+      say: 'Day two! Chippy sneaked to the stairs. Look closely, agents!',
+      spots: [ { x: 60, seat: 32.5, h: 19 }, { x: 75, seat: 52.6, h: 19 }, { x: 35, seat: 80.5, h: 19 } ] },
+    { day: 'DAY 3', title: 'The hardest hiding spot yet!', scene: 'living',
+      say: 'Day three is the hardest! Chippy is super tiny and super sneaky. Use your spy eyes!',
+      spots: [ { x: 92, seat: 21, h: 9 }, { x: 26, seat: 34, h: 8 }, { x: 58, seat: 12, h: 7, scene: 'stairs' } ] },
+  ];
+
+  const $ = (s, el = document) => el.querySelector(s);
+  const screens = [...document.querySelectorAll('.screen')];
+  const nextBtn = $('#nextBtn');
+  const sayText = $('#sayText');
+  let idx = 0;
+  const results = [];
+
+  // ---------- sound ----------
+  let soundOn = true, ctx;
+  function tone(freq, dur, type = 'sine', when = 0, vol = 0.18) {
+    if (!soundOn) return;
+    try {
+      ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
+      const t = ctx.currentTime + when, o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = type; o.frequency.setValueAtTime(freq, t);
+      g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+      o.connect(g).connect(ctx.destination); o.start(t); o.stop(t + dur + 0.02);
+    } catch (e) {}
+  }
+  const sfx = {
+    fanfare() { [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.28, 'triangle', i * 0.12)); },
+    nope() { tone(220, 0.18, 'square', 0, 0.08); tone(170, 0.22, 'square', 0.12, 0.08); },
+    stamp() { tone(90, 0.25, 'sawtooth', 0, 0.2); },
+    blip() { tone(880, 0.08, 'sine', 0, 0.1); },
+    giggle() { [988, 1175, 988, 1319].forEach((f, i) => tone(f, 0.09, 'sine', i * 0.09, 0.1)); },
+  };
+  $('#soundBtn').onclick = e => { soundOn = !soundOn; e.target.textContent = 'Sound: ' + (soundOn ? 'on' : 'off'); };
+  $('#scriptBtn').onclick = e => { document.body.classList.toggle('noscript'); e.target.textContent = 'Script: ' + (document.body.classList.contains('noscript') ? 'off' : 'on'); };
+
+  function confetti(n = 70) {
+    const box = $('#confetti'), colors = ['#F4B942', '#C8372B', '#FFF8EC', '#2F7D5B', '#C9D6EA'];
+    for (let i = 0; i < n; i++) {
+      const c = document.createElement('i');
+      c.style.left = Math.random() * 100 + 'vw';
+      c.style.background = colors[i % colors.length];
+      c.style.animationDuration = 1.8 + Math.random() * 1.6 + 's';
+      c.style.animationDelay = Math.random() * 0.4 + 's';
+      box.appendChild(c);
+      setTimeout(() => c.remove(), 4000);
+    }
+  }
+
+  // ---------- navigation ----------
+  const dots = $('#dots');
+  screens.forEach(() => dots.appendChild(document.createElement('span')));
+  function show(i) {
+    idx = i;
+    screens.forEach((s, k) => s.classList.toggle('show', k === i));
+    [...dots.children].forEach((d, k) => d.classList.toggle('on', k <= i));
+    const s = screens[i];
+    sayText.textContent = s.dataset.say || '';
+    nextBtn.hidden = i === screens.length - 1;
+    nextBtn.textContent = 'Next ▸';
+    if (s.dataset.hunt !== undefined) startHunt(+s.dataset.hunt, s);
+    if (i === screens.length - 1) finish();
+    s.querySelectorAll('.stamp.slam').forEach(st => { st.style.animation = 'none'; st.offsetWidth; st.style.animation = ''; });
+    if (s.querySelector('.stamp.slam')) setTimeout(sfx.stamp, 250);
+  }
+  function next() {
+    if (nextBtn.hidden) return;
+    sfx.blip();
+    if (idx < screens.length - 1) show(idx + 1);
+  }
+  nextBtn.onclick = next;
+  document.addEventListener('keydown', e => {
+    if (['ArrowRight', ' ', 'Enter', 'PageDown'].includes(e.key)) { e.preventDefault(); next(); }
+    if (['ArrowLeft', 'PageUp'].includes(e.key) && idx > 0) { e.preventDefault(); show(idx - 1); }
+  });
+
+  // ---------- profile: tap Chippy ----------
+  $('#profilePhoto').onclick = () => {
+    const img = $('#profilePhoto img'), b = $('#bubble');
+    img.classList.remove('wiggle'); img.offsetWidth; img.classList.add('wiggle');
+    b.classList.add('on'); sfx.giggle();
+    setTimeout(() => b.classList.remove('on'), 1800);
+  };
+  $('#practiceBtn').onclick = () => { sfx.fanfare(); confetti(50); };
+
+  // ---------- hunts ----------
+  let timerId, hintId;
+  function startHunt(n, section) {
+    clearInterval(timerId); clearTimeout(hintId);
+    const H = HUNTS[n];
+    const forced = new URLSearchParams(location.search).get('spot'); // ?spot=0|1|2 to test one spot
+    const spot = H.spots[forced !== null ? (+forced % H.spots.length) : Math.floor(Math.random() * H.spots.length)];
+    const S = SCENES[spot.scene || H.scene];
+    section.dataset.say = H.say; sayText.textContent = H.say;
+    nextBtn.hidden = true;
+    section.innerHTML = `
+      <div class="hunt-head">
+        <p class="eyebrow">${H.day} · ${S.label}</p>
+        <h2 class="h2">${H.title}</h2>
+        <span class="timer">00:00</span>
+        <button class="hint-btn" hidden>Spy scanner</button>
+      </div>
+      <div class="stage" style="--ar:${S.ar}">
+        <img class="bg" src="${S.src}" alt="">
+        <div class="hider" role="button" aria-label="Chippy"><img src="images/chippy.png" alt=""></div>
+        <div class="night"><div class="moon"></div><p class="h2">Night falls…</p><p class="lede">Chippy sneaks to a new hiding spot.</p></div>
+      </div>`;
+    const stage = $('.stage', section), target = $('.hider', section);
+    target.style.height = spot.h + '%';
+    target.style.left = spot.x + '%';
+    target.style.top = (spot.seat - 0.74 * spot.h) + '%'; // his seat is 74% of the way down the cutout
+    target.style.transform = 'translateX(-50%)';
+
+    let t0 = 0, misses = 0, done = false;
+    const timerEl = $('.timer', section), hintBtn = $('.hint-btn', section);
+    const night = $('.night', section);
+    setTimeout(() => {
+      night.classList.add('gone');
+      t0 = performance.now();
+      timerId = setInterval(() => {
+        const s = Math.floor((performance.now() - t0) / 1000);
+        timerEl.textContent = `00:${String(Math.min(s, 99)).padStart(2, '0')}`;
+      }, 250);
+      hintId = setTimeout(() => { hintBtn.hidden = false; hintBtn.classList.add('pulse'); }, 12000);
+    }, 1800);
+
+    hintBtn.onclick = e => {
+      e.stopPropagation(); hintBtn.hidden = true; sfx.blip();
+      const r = target.getBoundingClientRect(), sr = stage.getBoundingClientRect();
+      const size = Math.max(r.height * 1.9, sr.width * 0.18);
+      const cx = r.left + r.width / 2 - sr.left + (Math.random() - .5) * size * .4;
+      const cy = r.top + r.height / 2 - sr.top + (Math.random() - .5) * size * .4;
+      const sc = document.createElement('div'); sc.className = 'scan';
+      Object.assign(sc.style, { width: size + 'px', height: size + 'px', left: cx - size / 2 + 'px', top: cy - size / 2 + 'px' });
+      stage.appendChild(sc);
+    };
+
+    target.addEventListener('pointerdown', e => {
+      e.stopPropagation();
+      if (done || !t0) return;
+      done = true;
+      clearInterval(timerId); clearTimeout(hintId);
+      const secs = Math.round((performance.now() - t0) / 1000);
+      results[n] = { secs, misses };
+      target.classList.add('found');
+      stage.querySelectorAll('.scan').forEach(s => s.remove());
+      const r = target.getBoundingClientRect(), sr = stage.getBoundingClientRect();
+      const size = Math.max(r.width, r.height) * 1.25;
+      const ring = document.createElement('div'); ring.className = 'ring';
+      Object.assign(ring.style, { width: size + 'px', height: size + 'px', left: r.left + r.width / 2 - sr.left - size / 2 + 'px', top: r.top + r.height / 2 - sr.top - size / 2 + 'px' });
+      stage.appendChild(ring);
+      const ban = document.createElement('div'); ban.className = 'banner'; ban.textContent = 'FOUND YOU, CHIPPY!';
+      stage.appendChild(ban);
+      hintBtn.hidden = true;
+      sfx.fanfare(); confetti();
+      sayText.textContent = 'Everybody shout… FOUND YOU, CHIPPY!';
+      nextBtn.hidden = false;
+      nextBtn.textContent = n < HUNTS.length - 1 ? 'Next day ▸' : 'Next ▸';
+    });
+    stage.addEventListener('pointerdown', e => {
+      if (done || !t0) return;
+      misses++;
+      sfx.nope();
+      const sr = stage.getBoundingClientRect();
+      const p = document.createElement('div'); p.className = 'nope';
+      p.textContent = ['Not there!', 'Nope!', 'Keep looking!', 'Sneaky Chippy!'][misses % 4];
+      p.style.left = e.clientX - sr.left + 'px'; p.style.top = e.clientY - sr.top + 'px';
+      stage.appendChild(p); setTimeout(() => p.remove(), 950);
+    });
+  }
+
+  // ---------- end ----------
+  function finish() {
+    const total = results.reduce((a, r) => a + (r ? r.secs : 0), 0);
+    const found = results.filter(Boolean).length;
+    $('#score').innerHTML = `Chippy found <b>${found} of ${HUNTS.length}</b> times in <b>${total} seconds</b>.`;
+  }
+  $('#againBtn').onclick = () => { results.length = 0; show(0); };
+
+  show(0);
+})();
+</script>
+</body>
+</html>

@@ -677,7 +677,7 @@ namespace WorldTour.World.Gameplay
             stripe.anchorMin = new Vector2(0f, 0f); stripe.anchorMax = new Vector2(1f, 0f); stripe.pivot = new Vector2(.5f, 0f);
             stripe.offsetMin = new Vector2(4f, 26f); stripe.offsetMax = new Vector2(-4f, 56f);
             ShowUi.Panel(stripe, ColorRole.Accent2).raycastTarget = false;
-            TMP_Text name = ShowUi.Label(stripe, "Text", "world tour", 20f, FontRole.BodyBold, ColorRole.OnInk);
+            TMP_Text name = ShowUi.Label(stripe, "Text", "natalia" + (char)0x2019 + "s world tour", 20f, FontRole.BodyBold, ColorRole.OnInk);
             name.textWrappingMode = TextWrappingModes.NoWrap;
             _wheelA = Wheel(-BusW / 2f + 78f);
             _wheelB = Wheel(BusW / 2f - 78f);

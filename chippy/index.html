@@ -200,22 +200,13 @@ body.noscript .say { visibility: hidden; }
 .night.gone { opacity: 0; pointer-events: none; }
 .night .moon { width: 90px; height: 90px; border-radius: 50%; background: var(--cream); box-shadow: -22px 0 0 0 rgba(8,14,30,1) inset, 0 0 40px rgba(255,248,236,.35); }
 
-/* ---------- reveal ---------- */
-.folder {
-  position: relative; width: clamp(240px, 30vw, 380px); aspect-ratio: 3 / 4; cursor: pointer;
-  border-radius: 18px; border: 6px solid var(--gold); background: var(--night2);
+/* ---------- screen 9: placeholder ---------- */
+.locked {
+  width: clamp(220px, 26vw, 320px); aspect-ratio: 3 / 4; border-radius: 18px;
+  border: 6px solid var(--gold); background: var(--night2);
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
 }
-.folder img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 12px; opacity: 0; transform: scale(.85); transition: opacity 500ms, transform 500ms; }
-.folder.open img { opacity: 1; transform: none; }
-.folder .tap { font-family: 'Special Elite', monospace; color: var(--mist); font-size: 18px; letter-spacing: 2px; }
-.folder.open .cover-ui { display: none; }
-.reveal-row { display: flex; gap: clamp(20px, 4vw, 56px); align-items: center; justify-content: center; flex-wrap: wrap; }
-.reveal-text { display: flex; flex-direction: column; gap: 16px; align-items: flex-start; text-align: left; max-width: 520px; }
-.reveal-text .late { opacity: 0; transition: opacity 600ms; }
-.reveal-text .late.on { opacity: 1; }
-.zeke-stamp { position: absolute; left: 50%; bottom: 8%; transform: translateX(-50%); z-index: 2; }
-.zeke-stamp .stamp { background: rgba(255,248,236,.9); color: var(--red); border-color: var(--red); }
+.locked .tap { font-family: 'Special Elite', monospace; color: var(--mist); font-size: 18px; letter-spacing: 2px; }
 
 .score { font-family: 'Fredoka', sans-serif; font-size: clamp(20px, 2.6vw, 32px); color: var(--cream); }
 .score b { color: var(--gold); }
@@ -240,7 +231,7 @@ body.noscript .say { visibility: hidden; }
     <span id="fileLabel">CASE FILE #1225 · TOP SECRET</span>
     <div class="dots" id="dots" aria-hidden="true"></div>
     <div class="top-right">
-      <button class="icon-btn" id="scriptBtn" title="Show or hide Agent Zeke's lines">Script: on</button>
+      <button class="icon-btn" id="scriptBtn" title="Show or hide Agent Ezekiel's lines">Script: on</button>
       <button class="icon-btn" id="soundBtn" title="Sound on or off">Sound: on</button>
     </div>
   </header>
@@ -251,7 +242,7 @@ body.noscript .say { visibility: hidden; }
       <span class="stamp slam">TOP SECRET</span>
       <p class="eyebrow">OPERATION:</p>
       <h1 class="title">Where Is Chippy?</h1>
-      <p class="lede">A family tradition, presented by Agent Zeke</p>
+      <p class="lede">A family tradition, presented by Agent Ezekiel</p>
       <svg class="peek-gift" viewBox="0 0 520 440" role="img" aria-label="Two eyes peeking out from behind a red present">
         <ellipse cx="200" cy="135" rx="48" ry="58" fill="#FFF8EC" stroke="#F4B942" stroke-width="8"/>
         <ellipse cx="320" cy="135" rx="48" ry="58" fill="#FFF8EC" stroke="#F4B942" stroke-width="8"/>
@@ -265,13 +256,13 @@ body.noscript .say { visibility: hidden; }
     </section>
 
     <!-- 2. agents -->
-    <section class="screen" data-say="Every December, my sister Natalia and I become secret agents. I’m Agent Zeke. She’s Agent Natalia. And our target is… CHIPPY!">
+    <section class="screen" data-say="Every December, my sister Natalia and I become secret agents. I’m Agent Ezekiel. She’s Agent Natalia. And our target is… CHIPPY!">
       <p class="eyebrow">FILE 1 · THE AGENTS</p>
       <h2 class="h2">Meet the secret agents</h2>
       <div class="cards">
         <div class="card">
           <svg viewBox="0 0 160 160" role="img" aria-label="Spy agent with a hat and sunglasses"><circle cx="80" cy="80" r="76" fill="#EDDDBA"/><circle cx="80" cy="92" r="38" fill="#E8B98E"/><rect x="36" y="50" width="88" height="14" rx="7" fill="#1B2A4A"/><path d="M50 52 Q52 20 80 20 Q108 20 110 52 Z" fill="#1B2A4A"/><rect x="50" y="80" width="26" height="16" rx="6" fill="#1B2A4A"/><rect x="84" y="80" width="26" height="16" rx="6" fill="#1B2A4A"/><rect x="74" y="84" width="12" height="4" fill="#1B2A4A"/><path d="M66 110 Q80 120 94 110" stroke="#1B2A4A" stroke-width="5" fill="none" stroke-linecap="round"/></svg>
-          <span class="tag">AGENT</span><h3>Zeke</h3><p>Seeker #1</p>
+          <span class="tag">AGENT</span><h3>Ezekiel</h3><p>Seeker #1</p>
         </div>
         <div class="card">
           <svg viewBox="0 0 160 160" role="img" aria-label="Spy agent with long hair, a hat and sunglasses"><circle cx="80" cy="80" r="76" fill="#EDDDBA"/><path d="M40 90 Q38 140 60 150 L100 150 Q122 140 120 90 Z" fill="#4A3426"/><circle cx="80" cy="92" r="38" fill="#E8B98E"/><rect x="36" y="50" width="88" height="14" rx="7" fill="#C8372B"/><path d="M50 52 Q52 20 80 20 Q108 20 110 52 Z" fill="#C8372B"/><rect x="50" y="80" width="26" height="16" rx="6" fill="#1B2A4A"/><rect x="84" y="80" width="26" height="16" rx="6" fill="#1B2A4A"/><rect x="74" y="84" width="12" height="4" fill="#1B2A4A"/><path d="M66 110 Q80 120 94 110" stroke="#1B2A4A" stroke-width="5" fill="none" stroke-linecap="round"/></svg>
@@ -296,7 +287,7 @@ body.noscript .say { visibility: hidden; }
           <h2 class="h2">Code name: Chippy</h2>
           <div class="field"><p class="k">SPECIAL SKILL</p><p class="v">Hiding. The best hider in the world.</p></div>
           <div class="field"><p class="k">SUPERPOWER</p><p class="v">Nobody ever sees him move!</p></div>
-          <div class="field"><p class="k">WEAKNESS</p><p class="v">Agent Zeke always finds him.</p></div>
+          <div class="field"><p class="k">WEAKNESS</p><p class="v">Agent Ezekiel always finds him.</p></div>
         </div>
       </div>
     </section>
@@ -333,22 +324,13 @@ body.noscript .say { visibility: hidden; }
     <section class="screen hunt" data-hunt="1"></section>
     <section class="screen hunt" data-hunt="2"></section>
 
-    <!-- 9. reveal -->
-    <section class="screen" id="revealScreen" data-say="Agents, I have one more secret. Our spy cameras FINALLY took a picture of Chippy without his disguise. Do you want to see what he really looks like? Tap the folder!">
-      <p class="eyebrow">FILE 5 · CLASSIFIED PHOTO</p>
-      <div class="reveal-row">
-        <div class="reveal-text">
-          <h2 class="h2">Chippy’s TRUE identity</h2>
-          <p class="lede">Our spy cameras caught him WITHOUT his disguise…</p>
-          <p class="h2 late" id="late1" style="color:var(--gold)">Wait a minute…</p>
-          <p class="h2 late" id="late2">That’s ME!<br><span style="font-size:.6em;color:var(--mist)">…or IS it?</span></p>
-        </div>
-        <div class="folder" id="folder" role="button" aria-label="Open the classified folder">
-          <div class="cover-ui"><span class="stamp">CLASSIFIED</span></div>
-          <p class="tap cover-ui">TAP TO OPEN</p>
-          <img src="images/zeke-elf.svg" alt="Cartoon of Zeke dressed as an elf with pointy ears, grinning on the stairs">
-          <div class="zeke-stamp" id="zekeStamp" hidden><span class="stamp slam">IT’S ZEKE?!</span></div>
-        </div>
+    <!-- 9. placeholder (new file 5 coming soon) -->
+    <section class="screen" data-say="Agents, there is one more top secret file about Chippy. But it is still CLASSIFIED. Coming soon!">
+      <p class="eyebrow">FILE 5</p>
+      <h2 class="h2">CLASSIFIED: coming soon.</h2>
+      <div class="locked" role="img" aria-label="A locked top secret folder">
+        <span class="stamp">CLASSIFIED</span>
+        <p class="tap">COMING SOON</p>
       </div>
     </section>
 
@@ -363,7 +345,7 @@ body.noscript .say { visibility: hidden; }
   </main>
 
   <footer class="bottombar">
-    <div class="say"><b>AGENT ZEKE SAYS</b><span id="sayText"></span></div>
+    <div class="say"><b>AGENT EZEKIEL SAYS</b><span id="sayText"></span></div>
     <button class="next" id="nextBtn">Next ▸</button>
   </footer>
 </div>
@@ -446,7 +428,6 @@ body.noscript .say { visibility: hidden; }
     nextBtn.hidden = i === screens.length - 1;
     nextBtn.textContent = 'Next ▸';
     if (s.dataset.hunt !== undefined) startHunt(+s.dataset.hunt, s);
-    if (s.id === 'revealScreen') resetReveal();
     if (i === screens.length - 1) finish();
     s.querySelectorAll('.stamp.slam').forEach(st => { st.style.animation = 'none'; st.offsetWidth; st.style.animation = ''; });
     if (s.querySelector('.stamp.slam')) setTimeout(sfx.stamp, 250);
@@ -556,28 +537,6 @@ body.noscript .say { visibility: hidden; }
       stage.appendChild(p); setTimeout(() => p.remove(), 950);
     });
   }
-
-  // ---------- reveal ----------
-  let opened = false;
-  function resetReveal() {
-    opened = false;
-    $('#folder').classList.remove('open');
-    $('#zekeStamp').hidden = true;
-    $('#late1').classList.remove('on'); $('#late2').classList.remove('on');
-    nextBtn.hidden = true;
-  }
-  $('#folder').onclick = () => {
-    if (opened) return;
-    opened = true;
-    $('#folder').classList.add('open'); sfx.blip();
-    setTimeout(() => { $('#late1').classList.add('on'); }, 1200);
-    setTimeout(() => {
-      $('#zekeStamp').hidden = false; sfx.stamp();
-      $('#late2').classList.add('on'); sfx.giggle(); confetti(60);
-      sayText.textContent = 'Wait a minute… THAT’S ME! …or IS it?';
-      nextBtn.hidden = false;
-    }, 2600);
-  };
 
   // ---------- end ----------
   function finish() {

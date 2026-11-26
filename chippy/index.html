@@ -11,217 +11,354 @@
 @font-face { font-family: 'Special Elite'; font-style: normal; font-weight: 400; font-display: swap; src: url(fonts/special-elite-latin.woff2) format('woff2'); }
 
 :root {
-  --night: #1B2A4A;
-  --night2: #13203B;
-  --cream: #FFF8EC;
-  --manila: #EDDDBA;
-  --paper: #FFFDF7;
-  --red: #C8372B;
-  --red-soft: #F06A5B;
-  --gold: #F4B942;
-  --ink: #3D4A63;
-  --mist: #C9D6EA;
-  --pine: #2F7D5B;
+  --night: #1B2A4A; --night2: #13203B; --line: #34456B;
+  --cream: #FFF8EC; --manila: #EDDDBA; --paper: #FFFDF7;
+  --red: #C8372B; --red-soft: #F06A5B; --gold: #F4B942;
+  --ink: #3D4A63; --mist: #C9D6EA; --pine: #2F7D5B; --cam: #9CFFB0;
+  /* 1u = 1% of a 16:9 frame, so 1.5u is about 29px on a 1920x1080 screen */
+  --u: min(1vw, 1.7778vh);
 }
 * { box-sizing: border-box; margin: 0; }
 html, body { height: 100%; }
 body {
-  background: var(--night);
-  color: var(--cream);
-  font-family: 'Nunito', Arial, sans-serif;
-  overflow: hidden;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
+  background: radial-gradient(ellipse at 50% 30%, #22345c 0%, var(--night) 55%, #101b33 100%);
+  color: var(--cream); font-family: 'Nunito', Arial, sans-serif;
+  overflow: hidden; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none;
+}
+/* spy-monitor scan lines over everything */
+body::after {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 50;
+  background: repeating-linear-gradient(to bottom, rgba(255,255,255,.035) 0 2px, transparent 2px 5px);
+  mix-blend-mode: overlay;
 }
 button { font: inherit; cursor: pointer; }
 
 /* ---------- frame ---------- */
 #app { height: 100vh; height: 100dvh; display: flex; flex-direction: column; }
 .topbar {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 20px; gap: 12px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: calc(var(--u) * .6) calc(var(--u) * 1.2);
   font-family: 'Special Elite', 'Courier New', monospace; letter-spacing: 2px;
-  color: var(--gold); font-size: 18px;
+  color: var(--gold); font-size: max(13px, calc(var(--u) * 1.5));
 }
-.dots { display: flex; gap: 8px; }
-.dots span { width: 12px; height: 12px; border-radius: 50%; background: #34456B; }
+.dots { display: flex; gap: calc(var(--u) * .45); }
+.dots span { width: calc(var(--u) * .7); height: calc(var(--u) * .7); min-width: 7px; min-height: 7px; border-radius: 50%; background: var(--line); }
 .dots span.on { background: var(--gold); }
-.icon-btn {
-  background: transparent; border: 2px solid #34456B; color: var(--mist);
-  border-radius: 999px; padding: 4px 14px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 700;
-}
-.icon-btn:hover { border-color: var(--gold); color: var(--gold); }
 .top-right { display: flex; gap: 8px; }
+.icon-btn {
+  background: transparent; border: 2px solid var(--line); color: var(--mist);
+  border-radius: 999px; padding: 2px 14px; font-family: 'Nunito', sans-serif; font-weight: 800;
+  font-size: max(12px, calc(var(--u) * 1.5)); white-space: nowrap;
+}
+.icon-btn:hover, .icon-btn:focus-visible { border-color: var(--gold); color: var(--gold); outline: none; }
 
 main { flex: 1; position: relative; min-height: 0; }
 .screen {
   position: absolute; inset: 0; display: none;
   flex-direction: column; align-items: center; justify-content: center;
-  padding: 8px 24px 16px; gap: 20px; text-align: center;
+  padding: calc(var(--u) * .5) calc(var(--u) * 1.5) calc(var(--u) * .8); gap: calc(var(--u) * 1.3); text-align: center;
 }
-.screen.show { display: flex; animation: fadeIn 450ms ease-out; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+.screen.show { display: flex; animation: screenIn 500ms cubic-bezier(.2,.8,.3,1); }
+@keyframes screenIn { from { opacity: 0; transform: translateY(24px) scale(.98); } to { opacity: 1; transform: none; } }
 
-.bottombar {
-  display: flex; align-items: center; gap: 16px; padding: 12px 20px 18px;
-}
+.bottombar { display: flex; align-items: center; gap: calc(var(--u) * 1); padding: calc(var(--u) * .5) calc(var(--u) * 1.2) calc(var(--u) * .9); }
 .say {
-  flex: 1; background: var(--night2); border: 2px solid #34456B; border-radius: 16px;
-  padding: 10px 18px; text-align: left; min-height: 58px; display: flex; align-items: center; gap: 12px;
+  flex: 1; background: var(--night2); border: 2px solid var(--line); border-radius: 16px;
+  padding: calc(var(--u) * .5) calc(var(--u) * 1); text-align: left; min-height: calc(var(--u) * 4);
+  display: flex; align-items: center; gap: calc(var(--u) * .9);
 }
-.say b { font-family: 'Special Elite', monospace; color: var(--gold); font-weight: 400; font-size: 15px; letter-spacing: 1px; white-space: nowrap; }
-.say span { font-size: clamp(16px, 2vw, 22px); color: var(--cream); }
+.say b { font-family: 'Special Elite', monospace; color: var(--gold); font-weight: 400; font-size: max(11px, calc(var(--u) * 1.5)); letter-spacing: 1px; white-space: nowrap; }
+.say span { font-size: max(15px, calc(var(--u) * 1.75)); color: var(--cream); font-weight: 700; line-height: 1.25; }
 body.noscript .say { visibility: hidden; }
 .next {
   background: var(--gold); color: var(--night); border: 4px solid var(--night2);
-  box-shadow: 0 6px 0 #8A6A1C; border-radius: 999px;
-  font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: clamp(20px, 2.6vw, 30px);
-  padding: 10px 34px; transition: transform 120ms;
+  box-shadow: 0 6px 0 #8A6A1C; border-radius: 999px; white-space: nowrap;
+  font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: max(18px, calc(var(--u) * 2));
+  padding: calc(var(--u) * .5) calc(var(--u) * 1.8); min-height: 64px; transition: transform 120ms;
 }
 .next:active { transform: translateY(4px); box-shadow: 0 2px 0 #8A6A1C; }
 .next[hidden] { display: none; }
 
 /* ---------- type ---------- */
-.eyebrow { font-family: 'Special Elite', monospace; color: var(--gold); letter-spacing: 3px; font-size: clamp(16px, 2vw, 24px); }
-.title { font-family: 'Fredoka', sans-serif; font-weight: 700; color: var(--gold); font-size: clamp(40px, 7vw, 96px); line-height: 1; }
-.h2 { font-family: 'Fredoka', sans-serif; font-weight: 600; color: var(--cream); font-size: clamp(30px, 4.6vw, 60px); line-height: 1.05; }
-.lede { font-size: clamp(18px, 2.4vw, 30px); color: var(--mist); max-width: 900px; }
+.eyebrow { font-family: 'Special Elite', monospace; color: var(--gold); letter-spacing: 3px; font-size: max(14px, calc(var(--u) * 1.6)); }
+.title { font-family: 'Fredoka', sans-serif; font-weight: 700; color: var(--gold); font-size: max(38px, calc(var(--u) * 5.6)); line-height: 1; text-shadow: 0 6px 0 rgba(0,0,0,.25); }
+.h2 { font-family: 'Fredoka', sans-serif; font-weight: 600; color: var(--cream); font-size: max(26px, calc(var(--u) * 3.4)); line-height: 1.05; }
+.lede { font-size: max(16px, calc(var(--u) * 2)); color: var(--mist); max-width: 1100px; font-weight: 700; }
 .stamp {
   font-family: 'Special Elite', monospace; color: var(--red-soft); border: 5px solid var(--red-soft);
-  border-radius: 10px; padding: 4px 22px; font-size: clamp(22px, 3vw, 40px); transform: rotate(-6deg);
-  display: inline-block; white-space: nowrap;
+  border-radius: 10px; padding: 2px 22px; font-size: max(20px, calc(var(--u) * 2.4)); transform: rotate(-6deg);
+  display: inline-block; white-space: nowrap; background: rgba(19,32,59,.35);
 }
-.stamp.slam { animation: slam 450ms ease-out both; }
-@keyframes slam { from { opacity: 0; transform: rotate(-6deg) scale(2); } to { opacity: 1; transform: rotate(-6deg) scale(1); } }
+.stamp.slam { animation: slam 520ms cubic-bezier(.3,1.6,.5,1) both; }
+@keyframes slam { 0% { opacity: 0; transform: rotate(-6deg) scale(2.4); } 60% { opacity: 1; transform: rotate(-6deg) scale(.92); } 100% { opacity: 1; transform: rotate(-6deg) scale(1); } }
 
-/* ---------- title ---------- */
-.peek-gift { width: min(280px, 30vh); }
+/* ---------- start ---------- */
+.start-btn {
+  background: var(--red); color: var(--cream); border: 6px solid var(--cream); border-radius: 32px;
+  font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: max(30px, calc(var(--u) * 4.4)); line-height: 1.1;
+  padding: calc(var(--u) * 2) calc(var(--u) * 4); box-shadow: 0 12px 0 #6E1C15, 0 0 60px rgba(240,106,91,.45);
+  animation: breathe 1.6s ease-in-out infinite alternate;
+}
+.start-btn small { display: block; font-size: .45em; color: var(--manila); letter-spacing: 2px; font-family: 'Special Elite', monospace; font-weight: 400; margin-top: 8px; }
+@keyframes breathe { from { transform: scale(1); } to { transform: scale(1.04); } }
+.fp { width: max(80px, calc(var(--u) * 9)); opacity: .9; }
+
+/* ---------- title radar ---------- */
+.title-row { display: flex; align-items: center; justify-content: center; gap: calc(var(--u) * 3); flex-wrap: wrap; }
+.title-text { display: flex; flex-direction: column; align-items: center; gap: calc(var(--u) * 1); }
+.radar { position: relative; width: max(200px, calc(var(--u) * 22)); aspect-ratio: 1; }
+.radar svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.radar .sweep {
+  position: absolute; inset: 4%; border-radius: 50%;
+  background: conic-gradient(from 0deg, rgba(156,255,176,.55), rgba(156,255,176,0) 70deg, transparent 360deg);
+  animation: sweep 3s linear infinite;
+}
+@keyframes sweep { to { transform: rotate(360deg); } }
+.blink { animation: blink 1s steps(2, start) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
 
 /* ---------- cards ---------- */
-.cards { display: flex; gap: clamp(12px, 2.4vw, 32px); flex-wrap: wrap; justify-content: center; }
+.cards { display: flex; gap: calc(var(--u) * 2); flex-wrap: wrap; justify-content: center; }
 .card {
   background: var(--paper); color: var(--night); border: 4px solid var(--night2); border-radius: 22px;
-  box-shadow: 0 10px 0 #0B1428; padding: 18px 22px; width: clamp(200px, 26vw, 320px);
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  box-shadow: 0 10px 0 #0B1428; padding: calc(var(--u) * 1) calc(var(--u) * 1.4); width: max(200px, calc(var(--u) * 19));
+  display: flex; flex-direction: column; align-items: center; gap: calc(var(--u) * .5);
 }
-.card h3 { font-family: 'Fredoka', sans-serif; font-size: clamp(24px, 3vw, 36px); font-weight: 600; }
-.card p { font-size: clamp(16px, 1.8vw, 22px); color: var(--ink); }
-.tag { font-family: 'Special Elite', monospace; background: var(--gold); color: var(--night); border-radius: 6px; padding: 2px 12px; font-size: 16px; letter-spacing: 2px; }
+.card h3 { font-family: 'Fredoka', sans-serif; font-size: max(22px, calc(var(--u) * 2.4)); font-weight: 600; line-height: 1.1; overflow-wrap: anywhere; }
+.card p { font-size: max(14px, calc(var(--u) * 1.5)); color: var(--ink); font-weight: 700; }
+.tag { font-family: 'Special Elite', monospace; background: var(--gold); color: var(--night); border-radius: 6px; padding: 0 12px; font-size: max(13px, calc(var(--u) * 1.5)); letter-spacing: 2px; }
 .tag.target { background: var(--red); color: var(--cream); }
-.card svg, .card img { height: clamp(110px, 20vh, 190px); }
+.card .pic { height: max(110px, calc(var(--u) * 12)); }
+.badge-svg { height: 100%; aspect-ratio: 1; display: block; }
+.card img.pic { width: auto; }
 
 /* ---------- profile ---------- */
-.profile { display: flex; gap: clamp(20px, 4vw, 56px); align-items: center; justify-content: center; flex-wrap: wrap; }
+.profile { display: flex; gap: calc(var(--u) * 3); align-items: center; justify-content: center; flex-wrap: wrap; }
 .profile-photo {
   position: relative; background: var(--manila); border: 4px solid var(--night2); border-radius: 20px;
-  box-shadow: 0 10px 0 #0B1428; padding: 18px 40px; cursor: pointer;
+  box-shadow: 0 10px 0 #0B1428; padding: calc(var(--u) * 1) calc(var(--u) * 2.4); cursor: pointer;
 }
-.profile-photo img { height: clamp(200px, 46vh, 440px); display: block; transform-origin: 50% 90%; }
+.profile-photo img { height: max(200px, calc(var(--u) * 26)); display: block; transform-origin: 50% 90%; }
 .profile-photo img.wiggle { animation: wiggle 700ms ease-in-out; }
 @keyframes wiggle { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-7deg); } 50% { transform: rotate(6deg); } 75% { transform: rotate(-3deg); } }
 .bubble {
-  position: absolute; right: -30px; top: 6px; transform: translateX(60%);
+  position: absolute; right: 0; top: 4%; transform: translateX(70%);
   background: var(--cream); color: var(--night); font-family: 'Fredoka', sans-serif; font-weight: 600;
-  font-size: clamp(16px, 2vw, 24px); padding: 10px 16px; border-radius: 18px; border: 3px solid var(--night2);
-  white-space: nowrap; opacity: 0; transition: opacity 250ms;
+  font-size: max(16px, calc(var(--u) * 1.8)); padding: 8px 16px; border-radius: 18px; border: 3px solid var(--night2);
+  white-space: nowrap; opacity: 0; transition: opacity 250ms; pointer-events: none;
 }
 .bubble.on { opacity: 1; }
-.fields { display: flex; flex-direction: column; gap: 14px; text-align: left; max-width: 520px; }
-.field { border-bottom: 3px dashed #34456B; padding-bottom: 10px; }
-.field .k { font-family: 'Special Elite', monospace; color: var(--red-soft); letter-spacing: 2px; font-size: clamp(14px, 1.6vw, 20px); }
-.field .v { font-family: 'Fredoka', sans-serif; font-size: clamp(22px, 2.8vw, 36px); color: var(--cream); line-height: 1.15; }
+.fields { display: flex; flex-direction: column; gap: calc(var(--u) * .8); text-align: left; max-width: max(320px, calc(var(--u) * 34)); }
+.field { border-bottom: 3px dashed var(--line); padding-bottom: calc(var(--u) * .5); }
+.field .k { font-family: 'Special Elite', monospace; color: var(--red-soft); letter-spacing: 2px; font-size: max(13px, calc(var(--u) * 1.5)); }
+.field .v { font-family: 'Fredoka', sans-serif; font-size: max(20px, calc(var(--u) * 2.3)); color: var(--cream); line-height: 1.15; }
 
-/* ---------- when/where ---------- */
-.cal { width: clamp(160px, 20vw, 240px); border: 4px solid var(--night2); border-radius: 18px; overflow: hidden; background: var(--paper); }
-.cal .m { background: var(--red); color: var(--cream); font-family: 'Special Elite', monospace; letter-spacing: 2px; font-size: clamp(16px, 2vw, 24px); padding: 8px; }
-.cal .d { color: var(--night); font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: clamp(44px, 6vw, 80px); padding: 6px 0 10px; }
-
-/* ---------- rules ---------- */
-.steps .card { width: clamp(190px, 24vw, 300px); }
-.num { width: 64px; height: 64px; border-radius: 50%; background: var(--gold); border: 4px solid var(--night2); display: grid; place-items: center; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 34px; }
+/* ---------- when / rules ---------- */
+.cal { width: max(150px, calc(var(--u) * 13)); border: 4px solid var(--night2); border-radius: 18px; overflow: hidden; background: var(--paper); }
+.cal .m { background: var(--red); color: var(--cream); font-family: 'Special Elite', monospace; letter-spacing: 2px; font-size: max(14px, calc(var(--u) * 1.6)); padding: 6px; }
+.cal .d { color: var(--night); font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: max(40px, calc(var(--u) * 5)); padding: 4px 0 8px; }
+.num { width: max(52px, calc(var(--u) * 4)); aspect-ratio: 1; border-radius: 50%; background: var(--gold); border: 4px solid var(--night2); display: grid; place-items: center; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: max(26px, calc(var(--u) * 2.2)); }
 .shout-btn {
   background: var(--red); color: var(--cream); border: 4px solid var(--night2); box-shadow: 0 8px 0 #6E1C15;
   border-radius: 999px; font-family: 'Fredoka', sans-serif; font-weight: 700;
-  font-size: clamp(24px, 3.4vw, 44px); padding: 12px 40px;
+  font-size: max(24px, calc(var(--u) * 3)); padding: calc(var(--u) * .7) calc(var(--u) * 2.4); min-height: 80px;
 }
 .shout-btn:active { transform: translateY(5px); box-shadow: 0 3px 0 #6E1C15; }
 
+/* ---------- evidence file ---------- */
+.polaroids { display: flex; gap: calc(var(--u) * 2.4); justify-content: center; flex-wrap: wrap; }
+.polaroid {
+  position: relative; background: #fffef9; color: var(--night); padding: calc(var(--u) * .8) calc(var(--u) * .8) 0;
+  width: max(200px, calc(var(--u) * 21)); box-shadow: 0 14px 30px rgba(0,0,0,.45); border-radius: 4px; cursor: pointer;
+  transition: transform 300ms cubic-bezier(.3,1.5,.5,1);
+}
+.polaroid:nth-child(1) { transform: rotate(-4deg); }
+.polaroid:nth-child(2) { transform: rotate(2.5deg) translateY(-10px); }
+.polaroid:nth-child(3) { transform: rotate(-1.5deg); }
+.polaroid.seen { transform: rotate(0) scale(1.06); z-index: 2; }
+.polaroid:nth-child(4) { transform: rotate(3.5deg) translateY(-6px); }
+.polaroid .photo { position: relative; aspect-ratio: 4 / 3.4; overflow: hidden; background: #222; }
+.polaroid .photo::after { content: ""; position: absolute; inset: 0; box-shadow: inset 0 0 30px rgba(0,0,0,.35); }
+.polaroid .photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.polaroid .cap { font-family: 'Special Elite', monospace; font-size: max(14px, calc(var(--u) * 1.5)); line-height: 1.15; padding: calc(var(--u) * .6) 4px calc(var(--u) * .8); min-height: calc(var(--u) * 5.6); display: flex; flex-direction: column; justify-content: center; }
+.polaroid .cap b { color: var(--red); font-weight: 400; }
+.polaroid .tape { position: absolute; top: -14px; left: 50%; width: 38%; height: 26px; transform: translateX(-50%) rotate(-3deg); background: rgba(244,185,66,.65); }
+.polaroid .evi { position: absolute; left: 50%; top: 40%; transform: translate(-50%, -50%) rotate(-12deg); opacity: 0; pointer-events: none; }
+.polaroid.seen .evi { opacity: 1; animation: slam 500ms cubic-bezier(.3,1.6,.5,1) both; }
+.polaroid .evi .stamp { transform: none; background: rgba(255,255,255,.85); color: var(--red); border-color: var(--red); }
+
 /* ---------- hunt ---------- */
-.hunt { padding: 4px 12px 8px; gap: 10px; }
-.hunt-head { display: flex; align-items: baseline; gap: 20px; flex-wrap: wrap; justify-content: center; }
-.hunt-head .h2 { font-size: clamp(24px, 3.4vw, 44px); }
-.timer { font-family: 'Special Elite', monospace; color: var(--mist); font-size: clamp(16px, 2vw, 22px); letter-spacing: 2px; }
+.hunt { padding: calc(var(--u) * .3) calc(var(--u) * .8) calc(var(--u) * .4); gap: calc(var(--u) * .6); }
+.hunt-head { display: flex; align-items: center; gap: calc(var(--u) * 1.4); flex-wrap: wrap; justify-content: center; }
+.hunt-head .h2 { font-size: max(22px, calc(var(--u) * 2.6)); }
+.hunt-head .eyebrow { font-size: max(13px, calc(var(--u) * 1.5)); }
+.pill { font-family: 'Special Elite', monospace; color: var(--mist); font-size: max(13px, calc(var(--u) * 1.5)); letter-spacing: 2px; border: 2px solid var(--line); border-radius: 999px; padding: 0 12px; white-space: nowrap; }
+.pill b { color: var(--gold); font-weight: 400; }
 .stage {
   position: relative; border: 5px solid var(--night2); border-radius: 18px; overflow: hidden;
-  box-shadow: 0 0 0 3px #34456B; cursor: crosshair; touch-action: manipulation;
-  width: min(96vw, calc((100dvh - 250px) * var(--ar)));
-  aspect-ratio: var(--ar);
+  box-shadow: 0 0 0 3px var(--line), 0 18px 40px rgba(0,0,0,.45); cursor: crosshair; touch-action: manipulation;
+  width: min(98vw, calc((100dvh - max(205px, calc(var(--u) * 17))) * var(--ar)));
+  aspect-ratio: var(--ar); background: #000; container-type: inline-size;
 }
-.stage img.bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
-.hider { position: absolute; aspect-ratio: 234 / 596; transform-origin: 50% 100%; }
-.hider img { width: 100%; height: 100%; display: block; pointer-events: none; }
-.hider::after { content: ""; position: absolute; inset: -14px; }
-.hider.found { animation: boing 700ms ease-out both; }
-@keyframes boing { 0% { scale: 1; } 30% { scale: 1.35; } 55% { scale: .9; } 75% { scale: 1.12; } 100% { scale: 1.05; } }
+.stage > * { position: absolute; }
+.stage img.bg { inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.stage .bg, .stage .layer, .stage .hider { transition: filter 900ms ease, opacity 500ms ease; }
+.stage.dark .bg { filter: grayscale(1) brightness(.42) contrast(1.2) sepia(1) hue-rotate(60deg) saturate(2.6); }
+.stage.dark .actor { filter: grayscale(1) brightness(1.35) sepia(.6) hue-rotate(60deg) saturate(1.6) drop-shadow(0 0 4px #eaffef) drop-shadow(0 0 14px rgba(156,255,176,.9)); }
+.stage.dark .layer, .stage.dark .hider { filter: grayscale(1) brightness(.62) sepia(1) hue-rotate(60deg) saturate(2.2); }
+.stage .layer { inset: 0; pointer-events: none; }
+.stage.pre .trail, .stage.pre .hider { opacity: 0; }
+.mess { position: absolute; transform: translate(-50%, -50%); pointer-events: auto; cursor: pointer; transition: filter 300ms; }
+.mess.unmade { visibility: hidden; }
+.mess.made { animation: made 420ms cubic-bezier(.3,1.7,.5,1) both; }
+@keyframes made { from { opacity: 0; scale: .15; } to { opacity: 1; scale: 1; } }
+.puff { z-index: 4; pointer-events: none; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.95) 0 30%, rgba(255,255,255,.5) 50%, rgba(255,255,255,0) 70%); animation: puff 600ms ease-out forwards; }
+@keyframes puff { from { opacity: 1; scale: .3; } to { opacity: 0; scale: 1.8; } }
+/* Chippy caught on the night camera, making his messes */
+.actor { z-index: 4; pointer-events: none; transform: translate(-50%, -100%); }
+.actor img { height: 100%; display: block; transform-origin: 50% 90%; }
+.actor.busy img { animation: busy 260ms ease-in-out 2; }
+@keyframes busy { 25% { transform: rotate(-12deg); } 75% { transform: rotate(12deg); } }
+.actor.zoom img { filter: blur(1.5px); }
+.mess.counted { filter: drop-shadow(0 0 6px #ffe27a) drop-shadow(0 0 14px #f4b942) !important; }
+.trail i { position: absolute; display: block; transform: translate(-50%, -50%); }
+.trail .crumb { border-radius: 45% 55% 50% 50%; background: #8a5a2b; box-shadow: inset -1px -1px 0 rgba(0,0,0,.25); }
+.trail .boot { background: url(images/mess/bootprint.svg) center / contain no-repeat; opacity: .8; }
+.trail.glow i { animation: trailGlow 900ms ease-in-out infinite alternate; }
+.trail.glow .crumb { background: #ffcf4a; }
+@keyframes trailGlow { from { filter: drop-shadow(0 0 2px #fff6c4) drop-shadow(0 0 6px #ffb300); } to { filter: drop-shadow(0 0 6px #fff6c4) drop-shadow(0 0 16px #ffb300); scale: 1.35; } }
+.hider { pointer-events: none; }
+.hider img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.hider .shade { position: absolute; left: 12%; width: 76%; height: 5%; border-radius: 50%; background: radial-gradient(closest-side, rgba(0,0,0,.45), rgba(0,0,0,0)); }
+.hider.found { animation: boing 700ms ease-out both; transform-origin: 50% 80%; }
+@keyframes boing { 0% { scale: 1; } 30% { scale: 1.3; } 55% { scale: .92; } 75% { scale: 1.1; } 100% { scale: 1.04; } }
+.hit { transform: translate(-50%, -50%); min-width: 80px; min-height: 80px; z-index: 3; cursor: pointer; border-radius: 30%; }
+body.debug .hit { outline: 2px dashed #0f0; }
+body.debug *, body.debug *::before, body.debug *::after { transition: none !important; animation-duration: 1ms !important; animation-delay: 0ms !important; }
 .ring {
-  position: absolute; border: 6px solid var(--gold); border-radius: 50%; pointer-events: none;
-  box-shadow: 0 0 0 4px rgba(27,42,74,.6), 0 0 30px rgba(244,185,66,.8);
-  animation: ringIn 500ms ease-out both;
+  border: 6px solid var(--gold); border-radius: 50%; pointer-events: none; z-index: 4;
+  box-shadow: 0 0 0 4px rgba(27,42,74,.6), 0 0 30px rgba(244,185,66,.8); animation: ringIn 500ms ease-out both;
 }
 @keyframes ringIn { from { opacity: 0; transform: scale(2.4); } to { opacity: 1; transform: scale(1); } }
-.scan {
-  position: absolute; border: 5px dashed var(--gold); border-radius: 50%; pointer-events: none;
-  background: rgba(244,185,66,.12); animation: scan 1.6s ease-in-out infinite alternate;
+.pop {
+  transform: translate(-50%, -50%); pointer-events: none; z-index: 6; white-space: nowrap;
+  font-family: 'Fredoka', sans-serif; font-weight: 700; color: var(--cream); font-size: max(16px, calc(var(--u) * 1.7));
+  background: rgba(19,32,59,.88); border: 3px solid var(--red-soft); border-radius: 999px; padding: 2px 16px;
+  animation: pop 950ms ease-out forwards;
 }
-@keyframes scan { from { opacity: .45; } to { opacity: 1; } }
-.nope {
-  position: absolute; transform: translate(-50%, -50%); pointer-events: none;
-  font-family: 'Fredoka', sans-serif; font-weight: 700; color: var(--cream); font-size: clamp(18px, 2.4vw, 30px);
-  background: rgba(19,32,59,.85); border: 3px solid var(--red-soft); border-radius: 999px; padding: 4px 16px;
-  animation: nope 900ms ease-out forwards;
-}
-@keyframes nope { 0% { opacity: 0; scale: .6; } 15% { opacity: 1; scale: 1.1; } 70% { opacity: 1; } 100% { opacity: 0; translate: 0 -30px; } }
+.pop.good { border-color: var(--gold); color: var(--gold); }
+@keyframes pop { 0% { opacity: 0; scale: .6; } 15% { opacity: 1; scale: 1.1; } 70% { opacity: 1; } 100% { opacity: 0; translate: 0 -30px; } }
 .banner {
-  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) rotate(-4deg);
+  left: 50%; top: 50%; transform: translate(-50%, -50%) rotate(-4deg); z-index: 7;
   background: var(--red); color: var(--cream); font-family: 'Fredoka', sans-serif; font-weight: 700;
-  font-size: clamp(28px, 5vw, 64px); padding: 10px 36px; border-radius: 999px; border: 5px solid var(--cream);
+  font-size: max(26px, calc(var(--u) * 3.8)); padding: 6px 36px; border-radius: 999px; border: 5px solid var(--cream);
   box-shadow: 0 10px 30px rgba(0,0,0,.4); white-space: nowrap; pointer-events: none;
   animation: bannerIn 500ms cubic-bezier(.2,.9,.3,1.3) both;
 }
 @keyframes bannerIn { from { opacity: 0; transform: translate(-50%, -50%) rotate(-4deg) scale(.3); } }
-.hint-btn { background: transparent; color: var(--gold); border: 3px solid var(--gold); border-radius: 999px; padding: 4px 18px; font-weight: 800; font-size: clamp(15px, 1.7vw, 19px); }
-.hint-btn[hidden] { display: none; }
-.hint-btn.pulse { animation: pulse 1s ease-in-out infinite alternate; }
-@keyframes pulse { from { box-shadow: 0 0 0 0 rgba(244,185,66,.0); } to { box-shadow: 0 0 0 8px rgba(244,185,66,.35); } }
 
-/* night overlay between days */
-.night {
-  position: absolute; inset: 0; background: rgba(8,14,30,.94); display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 18px; z-index: 5; transition: opacity 600ms;
+/* security camera beat */
+.cam { inset: 0; pointer-events: none; z-index: 5; font-family: 'Special Elite', monospace; color: var(--cam); font-size: max(13px, calc(var(--u) * 1.5)); letter-spacing: 2px; transition: opacity 600ms; text-shadow: 0 0 6px rgba(156,255,176,.7); }
+.cam.off { opacity: 0; }
+.cam::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(to bottom, rgba(156,255,176,.10) 0 2px, transparent 2px 6px), radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,.55) 100%); }
+.cam .rec { position: absolute; left: 3%; top: 4%; display: flex; align-items: center; gap: 10px; color: #ff6b5e; }
+.cam .rec i { width: calc(var(--u) * 1.2); height: calc(var(--u) * 1.2); min-width: 12px; min-height: 12px; border-radius: 50%; background: #ff3b2f; box-shadow: 0 0 10px #ff3b2f; animation: blink 1s steps(2, start) infinite; }
+.cam .label { position: absolute; right: 3%; top: 4%; }
+.cam .clock { position: absolute; left: 3%; bottom: 4%; }
+.cam .night-txt { position: absolute; left: 50%; top: 16%; transform: translate(-50%, -50%); font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: max(28px, calc(var(--u) * 4)); color: var(--cream); text-shadow: 0 0 20px rgba(0,0,0,.8); white-space: nowrap; letter-spacing: 1px; }
+.cam .corner { position: absolute; width: 6%; aspect-ratio: 1; border: 4px solid var(--cam); }
+.cam .c1 { left: 1.5%; top: 2.5%; border-right: 0; border-bottom: 0; } .cam .c2 { right: 1.5%; top: 2.5%; border-left: 0; border-bottom: 0; }
+.cam .c3 { left: 1.5%; bottom: 2.5%; border-right: 0; border-top: 0; } .cam .c4 { right: 1.5%; bottom: 2.5%; border-left: 0; border-top: 0; }
+
+/* final showdown */
+.spotlight { inset: 0; z-index: 5; pointer-events: none; transition: opacity 600ms; opacity: 0; }
+.spotlight.on { opacity: 1; }
+.captured { left: 50%; top: 14%; transform: translateX(-50%); z-index: 8; pointer-events: none; }
+.captured .stamp { font-size: max(26px, calc(var(--u) * 4.2)); color: #fff; background: var(--red); border-color: #fff; border-width: 7px; box-shadow: 0 10px 40px rgba(0,0,0,.5); }
+.salute { right: 3%; bottom: 4%; width: 22%; z-index: 8; pointer-events: none; animation: salute 900ms cubic-bezier(.3,1.6,.5,1) both, bob 700ms 900ms ease-in-out infinite alternate; }
+@keyframes salute { from { opacity: 0; transform: translateY(80%) scale(.4); } to { opacity: 1; transform: none; } }
+@keyframes bob { to { transform: translateY(-8%) rotate(-4deg); } }
+.salute .hand { transform-origin: 30px 120px; animation: handUp 900ms 300ms ease-out both; }
+@keyframes handUp { from { transform: rotate(60deg); } to { transform: rotate(0); } }
+.salute .name { position: absolute; left: 50%; bottom: -6%; transform: translateX(-50%); background: var(--gold); color: var(--night); font-family: 'Special Elite', monospace; font-size: max(13px, calc(var(--u) * 1.5)); padding: 0 10px; border-radius: 6px; white-space: nowrap; }
+
+/* ---------- mess meter ---------- */
+.meter-wrap { width: min(92vw, calc(var(--u) * 80)); display: flex; flex-direction: column; gap: calc(var(--u) * 1.2); align-items: center; }
+.meter { position: relative; width: 100%; height: max(48px, calc(var(--u) * 6)); border: 5px solid var(--cream); border-radius: 999px; background: var(--night2); overflow: hidden; }
+.meter .fill { position: absolute; inset: 0 auto 0 0; width: 0; background: repeating-linear-gradient(45deg, #ffcf4a 0 24px, #f4b942 24px 48px); transition: width 1.6s cubic-bezier(.3,.9,.4,1); }
+.meter .ticks { position: absolute; inset: 0; display: flex; }
+.meter .ticks i { flex: 1; border-right: 3px dashed rgba(255,248,236,.35); }
+.meter .ticks i:last-child { border-right: 0; }
+.meter-scale { display: flex; justify-content: space-between; width: 100%; font-family: 'Special Elite', monospace; color: var(--mist); font-size: max(13px, calc(var(--u) * 1.5)); }
+.meter-count { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: max(30px, calc(var(--u) * 4.4)); color: var(--gold); }
+.mess-row { display: flex; gap: calc(var(--u) * 1.2); flex-wrap: wrap; justify-content: center; min-height: calc(var(--u) * 7); }
+.mess-row img { height: max(54px, calc(var(--u) * 7)); width: auto; max-width: max(90px, calc(var(--u) * 12)); object-fit: contain; animation: popIn 400ms cubic-bezier(.3,1.6,.5,1) both; }
+@keyframes popIn { from { opacity: 0; transform: scale(.3); } }
+
+/* ---------- next mission ---------- */
+.mission { display: flex; align-items: center; justify-content: center; gap: calc(var(--u) * 3); flex-wrap: wrap; }
+.giver { position: relative; height: max(220px, calc(var(--u) * 30)); }
+.giver > img { height: 100%; display: block; filter: drop-shadow(0 10px 14px rgba(0,0,0,.45)); }
+.envelope {
+  position: absolute; left: 30%; top: 52%; width: max(150px, calc(var(--u) * 17)); aspect-ratio: 1.5; cursor: pointer;
+  transform: rotate(-10deg); animation: glow 1.2s ease-in-out infinite alternate; border-radius: 6px; z-index: 2;
 }
-.night.gone { opacity: 0; pointer-events: none; }
-.night .moon { width: 90px; height: 90px; border-radius: 50%; background: var(--cream); box-shadow: -22px 0 0 0 rgba(8,14,30,1) inset, 0 0 40px rgba(255,248,236,.35); }
-
-/* ---------- screen 9: placeholder ---------- */
-.locked {
-  width: clamp(220px, 26vw, 320px); aspect-ratio: 3 / 4; border-radius: 18px;
-  border: 6px solid var(--gold); background: var(--night2);
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+@keyframes glow { from { filter: drop-shadow(0 0 8px rgba(255,226,122,.6)); } to { filter: drop-shadow(0 0 26px rgba(255,226,122,1)) drop-shadow(0 0 50px rgba(244,185,66,.7)); } }
+.envelope svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.envelope .flap { transform-origin: 50% 0; transition: transform 600ms ease; }
+.envelope.open .flap { transform: scaleY(-1); }
+.envelope.open { animation: none; pointer-events: none; }
+.tap-hint { position: absolute; left: 50%; top: 104%; transform: translateX(-50%); white-space: nowrap; font-family: 'Special Elite', monospace; color: var(--gold); font-size: max(13px, calc(var(--u) * 1.5)); letter-spacing: 2px; }
+.file {
+  position: relative; background: var(--manila); color: var(--night); border-radius: 14px; border: 4px solid var(--night2);
+  box-shadow: 0 16px 0 #0B1428; padding: calc(var(--u) * 1) calc(var(--u) * 2); width: min(94vw, calc(var(--u) * 66));
+  display: none; flex-direction: column; align-items: center; gap: calc(var(--u) * .6);
 }
-.locked .tap { font-family: 'Special Elite', monospace; color: var(--mist); font-size: 18px; letter-spacing: 2px; }
+.file.show { display: flex; animation: fileUp 700ms cubic-bezier(.2,.9,.3,1.2) both; }
+@keyframes fileUp { from { opacity: 0; transform: translateY(60px) scale(.7); } }
+.file .stamp { color: var(--red); border-color: var(--red); background: transparent; margin: 4px 0 10px; }
+.file h2 { font-family: 'Fredoka', sans-serif; font-weight: 700; color: var(--red); font-size: max(26px, calc(var(--u) * 3.6)); line-height: 1.05; }
+.file-row { display: flex; gap: calc(var(--u) * 2); align-items: center; justify-content: center; flex-wrap: wrap; }
+.np-radar { width: max(150px, calc(var(--u) * 14)); aspect-ratio: 1; position: relative; }
+.np-radar svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.np-radar .sweep { position: absolute; inset: 4%; border-radius: 50%; background: conic-gradient(from 0deg, rgba(156,255,176,.6), rgba(156,255,176,0) 80deg, transparent); animation: sweep 2.4s linear infinite; }
+.file-facts { display: flex; flex-direction: column; gap: calc(var(--u) * .7); align-items: center; }
+.countdown { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: max(28px, calc(var(--u) * 3.4)); color: var(--night); line-height: 1.05; }
+.countdown b { color: var(--red); font-size: 1.4em; }
+.clearance { font-family: 'Special Elite', monospace; font-size: max(14px, calc(var(--u) * 1.6)); background: var(--night); color: var(--gold); padding: 4px 14px; border-radius: 6px; letter-spacing: 1px; }
+.hoofs { width: max(160px, calc(var(--u) * 18)); }
+.yes-btn { background: var(--pine); color: var(--cream); border: 4px solid var(--night2); box-shadow: 0 8px 0 #174a33; border-radius: 999px; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: max(26px, calc(var(--u) * 2.8)); padding: 2px 48px; min-height: 80px; }
+.yes-btn:active { transform: translateY(5px); box-shadow: 0 3px 0 #174a33; }
 
-.score { font-family: 'Fredoka', sans-serif; font-size: clamp(20px, 2.6vw, 32px); color: var(--cream); }
-.score b { color: var(--gold); }
+/* ---------- case closed ---------- */
+.stats { display: flex; gap: calc(var(--u) * 1.6); flex-wrap: wrap; justify-content: center; }
+.stat { background: var(--paper); color: var(--night); border: 4px solid var(--night2); border-radius: 18px; box-shadow: 0 8px 0 #0B1428; padding: calc(var(--u) * .7) calc(var(--u) * 1.6); min-width: max(170px, calc(var(--u) * 17)); }
+.stat .k { font-family: 'Special Elite', monospace; color: var(--red); font-size: max(13px, calc(var(--u) * 1.5)); letter-spacing: 1px; }
+.stat .v { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: max(28px, calc(var(--u) * 3.2)); line-height: 1.1; }
+.room { font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: max(22px, calc(var(--u) * 2.6)); color: var(--cream); cursor: pointer; border-bottom: 3px dashed var(--line); }
+.room b { color: var(--gold); }
+.end-btns { display: flex; gap: calc(var(--u) * 1.4); flex-wrap: wrap; justify-content: center; }
+.link-btn { background: transparent; color: var(--mist); border: 3px solid var(--line); border-radius: 999px; font-weight: 800; font-size: max(15px, calc(var(--u) * 1.5)); padding: 6px 24px; min-height: 64px; }
+
+/* credits overlay */
+.overlay { position: fixed; inset: 0; z-index: 40; background: rgba(8,14,30,.88); display: none; align-items: center; justify-content: center; padding: 24px; }
+.overlay.show { display: flex; }
+.credits { background: var(--paper); color: var(--night); border-radius: 18px; border: 4px solid var(--night2); padding: calc(var(--u) * 1.6) calc(var(--u) * 2); max-width: min(96vw, 1500px); max-height: 92vh; overflow: auto; text-align: left; }
+.credits h2 { font-family: 'Fredoka', sans-serif; font-size: max(24px, calc(var(--u) * 2.6)); margin-bottom: 10px; }
+.credits li { font-size: max(14px, calc(var(--u) * 1.5)); margin: 6px 0 6px 1em; line-height: 1.3; }
+.credits p { font-size: max(14px, calc(var(--u) * 1.5)); margin-top: 10px; }
+.credits a { color: var(--red); }
+.credits button { margin-top: 14px; }
+
+.toast { position: fixed; left: 50%; top: 12%; transform: translateX(-50%); z-index: 45; background: var(--night2); color: var(--gold); border: 3px solid var(--gold); border-radius: 999px; padding: 6px 24px; font-family: 'Special Elite', monospace; font-size: max(15px, calc(var(--u) * 1.6)); opacity: 0; transition: opacity 200ms; pointer-events: none; white-space: nowrap; }
+.toast.on { opacity: 1; }
 
 /* confetti */
-.confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 20; }
+.confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 30; }
 .confetti i { position: absolute; top: -20px; width: 12px; height: 18px; border-radius: 3px; animation: fall linear forwards; }
 @keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
 
-@media (max-height: 560px) {
-  .say { min-height: 44px; padding: 6px 12px; }
-  .bottombar { padding: 6px 12px 10px; }
-}
+@media (max-height: 560px) { .bottombar { padding-bottom: 6px; } }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; }
 }
@@ -230,55 +367,56 @@ body.noscript .say { visibility: hidden; }
 <body>
 <div id="app">
   <header class="topbar">
-    <span id="fileLabel">CASE FILE #1225 · TOP SECRET</span>
+    <span>CASE FILE #1225 · TOP SECRET</span>
     <div class="dots" id="dots" aria-hidden="true"></div>
     <div class="top-right">
       <button class="icon-btn" id="scriptBtn" title="Show or hide Agent Ezekiel's lines">Script: on</button>
       <button class="icon-btn" id="soundBtn" title="Sound on or off">Sound: on</button>
+      <button class="icon-btn" id="musicBtn" title="Spy music on or off">Music: on</button>
     </div>
   </header>
 
   <main>
-    <!-- 1. title -->
-    <section class="screen" data-say="Attention, agents! This is a TOP SECRET mission. Today I will tell you about my family’s December mystery: Operation… WHERE IS CHIPPY?">
+    <!-- 1. start: unlocks audio (iPad needs a tap first) -->
+    <section class="screen" id="startScreen" data-say="Agents, tap the big red button to begin our top secret mission!">
       <span class="stamp slam">TOP SECRET</span>
-      <p class="eyebrow">OPERATION:</p>
-      <h1 class="title">Where Is Chippy?</h1>
-      <p class="lede">A family tradition, presented by Agent Ezekiel</p>
-      <svg class="peek-gift" viewBox="0 0 520 440" role="img" aria-label="Two eyes peeking out from behind a red present">
-        <ellipse cx="200" cy="135" rx="48" ry="58" fill="#FFF8EC" stroke="#F4B942" stroke-width="8"/>
-        <ellipse cx="320" cy="135" rx="48" ry="58" fill="#FFF8EC" stroke="#F4B942" stroke-width="8"/>
-        <circle cx="208" cy="148" r="22" fill="#1B2A4A"/><circle cx="328" cy="148" r="22" fill="#1B2A4A"/>
-        <circle cx="215" cy="139" r="7" fill="#FFF8EC"/><circle cx="335" cy="139" r="7" fill="#FFF8EC"/>
-        <rect x="90" y="250" width="340" height="190" rx="10" fill="#C8372B"/>
-        <rect x="60" y="182" width="400" height="84" rx="14" fill="#E2513C"/>
-        <rect x="232" y="182" width="56" height="258" fill="#F4B942"/>
-        <path d="M260 182 C200 120 150 150 196 182 Z" fill="#F4B942"/><path d="M260 182 C320 120 370 150 324 182 Z" fill="#F4B942"/>
-      </svg>
+      <button class="start-btn" id="startBtn">Tap to begin<br>the mission<small>AGENTS ONLY</small></button>
+      <p class="lede">Operation: Where Is Chippy?</p>
     </section>
 
-    <!-- 2. agents -->
-    <section class="screen" data-say="Every December, my sister Natalia and I become secret agents. I’m Agent Ezekiel. She’s Agent Natalia. And our target is… CHIPPY!">
-      <p class="eyebrow">FILE 1 · THE AGENTS</p>
-      <h2 class="h2">Meet the secret agents</h2>
-      <div class="cards">
-        <div class="card">
-          <svg viewBox="0 0 160 160" role="img" aria-label="Spy agent with a hat and sunglasses"><circle cx="80" cy="80" r="76" fill="#EDDDBA"/><circle cx="80" cy="92" r="38" fill="#E8B98E"/><rect x="36" y="50" width="88" height="14" rx="7" fill="#1B2A4A"/><path d="M50 52 Q52 20 80 20 Q108 20 110 52 Z" fill="#1B2A4A"/><rect x="50" y="80" width="26" height="16" rx="6" fill="#1B2A4A"/><rect x="84" y="80" width="26" height="16" rx="6" fill="#1B2A4A"/><rect x="74" y="84" width="12" height="4" fill="#1B2A4A"/><path d="M66 110 Q80 120 94 110" stroke="#1B2A4A" stroke-width="5" fill="none" stroke-linecap="round"/></svg>
-          <span class="tag">AGENT</span><h3>Ezekiel</h3><p>Seeker #1</p>
+    <!-- 2. title with radar -->
+    <section class="screen" data-say="Attention, agents! I am Agent Ezekiel. Welcome to Operation: Where Is Chippy!">
+      <div class="title-row">
+        <div class="title-text">
+          <span class="stamp slam">TOP SECRET</span>
+          <p class="eyebrow">OPERATION:</p>
+          <h1 class="title">Where Is Chippy?</h1>
+          <p class="lede">A family tradition, presented by Agent Ezekiel</p>
         </div>
-        <div class="card">
-          <svg viewBox="0 0 160 160" role="img" aria-label="Spy agent with long hair, a hat and sunglasses"><circle cx="80" cy="80" r="76" fill="#EDDDBA"/><path d="M40 90 Q38 140 60 150 L100 150 Q122 140 120 90 Z" fill="#4A3426"/><circle cx="80" cy="92" r="38" fill="#E8B98E"/><rect x="36" y="50" width="88" height="14" rx="7" fill="#C8372B"/><path d="M50 52 Q52 20 80 20 Q108 20 110 52 Z" fill="#C8372B"/><rect x="50" y="80" width="26" height="16" rx="6" fill="#1B2A4A"/><rect x="84" y="80" width="26" height="16" rx="6" fill="#1B2A4A"/><rect x="74" y="84" width="12" height="4" fill="#1B2A4A"/><path d="M66 110 Q80 120 94 110" stroke="#1B2A4A" stroke-width="5" fill="none" stroke-linecap="round"/></svg>
-          <span class="tag">AGENT</span><h3>Natalia</h3><p>Seeker #2</p>
-        </div>
-        <div class="card">
-          <img src="images/chippy.png" alt="Chippy the elf">
-          <span class="tag target">TARGET</span><h3>Chippy</h3><p>Champion hider</p>
+        <div class="radar" aria-label="A spy radar scanning for Chippy" role="img">
+          <svg viewBox="0 0 200 200">
+            <circle cx="100" cy="100" r="96" fill="#0d2a1c" stroke="#9CFFB0" stroke-width="3"/>
+            <g fill="none" stroke="#9CFFB0" stroke-opacity=".45" stroke-width="1.5"><circle cx="100" cy="100" r="72"/><circle cx="100" cy="100" r="48"/><circle cx="100" cy="100" r="24"/><path d="M100 4 V196 M4 100 H196"/></g>
+          </svg>
+          <div class="sweep"></div>
+          <svg viewBox="0 0 200 200"><g class="blink"><circle cx="138" cy="64" r="8" fill="#ff5a4a"/><circle cx="138" cy="64" r="15" fill="none" stroke="#ff5a4a" stroke-width="2"/></g><text x="100" y="182" text-anchor="middle" font-family="Special Elite, monospace" font-size="15" fill="#9CFFB0" letter-spacing="2">TARGET: CHIPPY</text></svg>
         </div>
       </div>
     </section>
 
-    <!-- 3. profile -->
-    <section class="screen" data-say="This is Chippy. He is the sneakiest hider in the whole world. Nobody ever sees him move! Tap him and see what he says.">
+    <!-- 3. agents -->
+    <section class="screen" data-say="My sister Natalia and I are secret agents. Our target is Chippy!">
+      <p class="eyebrow">FILE 1 · THE AGENTS</p>
+      <h2 class="h2">Meet the secret agents</h2>
+      <div class="cards">
+        <div class="card"><div class="pic" data-badge="ezekiel"></div><span class="tag">AGENT</span><h3>Ezekiel</h3><p>Seeker #1</p></div>
+        <div class="card"><div class="pic" data-badge="natalia"></div><span class="tag">AGENT</span><h3>Natalia</h3><p>Seeker #2</p></div>
+        <div class="card"><img class="pic" src="images/chippy.png" alt="Chippy the elf"><span class="tag target">TARGET</span><h3>Chippy</h3><p>Champion hider</p></div>
+      </div>
+    </section>
+
+    <!-- 4. profile -->
+    <section class="screen" data-say="This is Chippy. He hides every night. Nobody ever sees him move! Tap him!">
       <p class="eyebrow">FILE 2 · TARGET PROFILE</p>
       <div class="profile">
         <div class="profile-photo" id="profilePhoto" role="button" aria-label="Tap Chippy">
@@ -294,26 +432,23 @@ body.noscript .say { visibility: hidden; }
       </div>
     </section>
 
-    <!-- 4. when & where -->
-    <section class="screen" data-say="Chippy comes every December, the whole month! Every night he sneaks to a brand-new hiding spot somewhere in our house.">
+    <!-- 5. when & where -->
+    <section class="screen" data-say="Chippy comes every December. Every night he hides in a brand-new spot.">
       <p class="eyebrow">FILE 3 · WHEN AND WHERE</p>
       <h2 class="h2">Every December, all over our house</h2>
       <div class="cards">
+        <div class="card"><div class="cal"><div class="m">DECEMBER</div><div class="d">1–31</div></div><span class="tag">WHEN</span><p>Every day, all month long!</p></div>
         <div class="card">
-          <div class="cal"><div class="m">DECEMBER</div><div class="d">1–31</div></div>
-          <span class="tag">WHEN</span><p>Every day, all month long!</p>
-        </div>
-        <div class="card">
-          <svg viewBox="0 0 260 240" role="img" aria-label="A house with Chippy’s eyes peeking out of the window"><rect x="180" y="30" width="34" height="70" fill="#8B5E3C" stroke="#1B2A4A" stroke-width="5"/><polygon points="130,12 10,110 250,110" fill="#C8372B" stroke="#1B2A4A" stroke-width="6" stroke-linejoin="round"/><rect x="34" y="108" width="192" height="126" fill="#FFF8EC" stroke="#1B2A4A" stroke-width="6"/><rect x="108" y="160" width="44" height="74" rx="6" fill="#2F7D5B" stroke="#1B2A4A" stroke-width="5"/><rect x="52" y="130" width="46" height="44" fill="#1B2A4A"/><ellipse cx="66" cy="152" rx="8" ry="10" fill="#FFF8EC"/><ellipse cx="85" cy="152" rx="8" ry="10" fill="#FFF8EC"/><circle cx="68" cy="154" r="4" fill="#1B2A4A"/><circle cx="87" cy="154" r="4" fill="#1B2A4A"/><rect x="162" y="130" width="46" height="44" fill="#F4B942" stroke="#1B2A4A" stroke-width="5"/></svg>
+          <svg class="pic" viewBox="0 0 260 240" role="img" aria-label="A house with Chippy’s eyes peeking out of the window"><rect x="180" y="30" width="34" height="70" fill="#8B5E3C" stroke="#1B2A4A" stroke-width="5"/><polygon points="130,12 10,110 250,110" fill="#C8372B" stroke="#1B2A4A" stroke-width="6" stroke-linejoin="round"/><rect x="34" y="108" width="192" height="126" fill="#FFF8EC" stroke="#1B2A4A" stroke-width="6"/><rect x="108" y="160" width="44" height="74" rx="6" fill="#2F7D5B" stroke="#1B2A4A" stroke-width="5"/><rect x="52" y="130" width="46" height="44" fill="#1B2A4A"/><ellipse cx="66" cy="152" rx="8" ry="10" fill="#FFF8EC"/><ellipse cx="85" cy="152" rx="8" ry="10" fill="#FFF8EC"/><circle cx="68" cy="154" r="4" fill="#1B2A4A"/><circle cx="87" cy="154" r="4" fill="#1B2A4A"/><rect x="162" y="130" width="46" height="44" fill="#F4B942" stroke="#1B2A4A" stroke-width="5"/></svg>
           <span class="tag">WHERE</span><p>Upstairs, downstairs… anywhere!</p>
         </div>
       </div>
     </section>
 
-    <!-- 5. rules -->
-    <section class="screen" data-say="Here’s how the mission works. Chippy hides. We search. And when we find him, we shout… FOUND YOU, CHIPPY! Let’s practice. Ready? 1, 2, 3!">
+    <!-- 6. rules -->
+    <section class="screen" data-say="Chippy hides. We search. When we find him, we shout: FOUND YOU, CHIPPY! Let’s practice!">
       <p class="eyebrow">FILE 4 · THE MISSION</p>
-      <div class="cards steps">
+      <div class="cards">
         <div class="card"><div class="num">1</div><h3>Chippy hides</h3><p>He sneaks to a new spot. Nobody sees how!</p></div>
         <div class="card"><div class="num">2</div><h3>We search</h3><p>High and low, under and over.</p></div>
         <div class="card"><div class="num">3</div><h3>We find him!</h3><p>And everybody shouts:</p></div>
@@ -321,28 +456,95 @@ body.noscript .say { visibility: hidden; }
       <button class="shout-btn" id="practiceBtn">“FOUND YOU, CHIPPY!”</button>
     </section>
 
-    <!-- 6–8. hunts (filled by script) -->
+    <!-- 7. evidence file -->
+    <section class="screen" id="evidenceScreen" data-say="Chippy is naughty! Our spy cameras caught him making messes. Tap each photo!">
+      <p class="eyebrow">FILE 5 · THE EVIDENCE</p>
+      <h2 class="h2">Chippy was here!</h2>
+      <div class="polaroids" id="polaroids"></div>
+    </section>
+
+    <!-- 8–10. hunts, 12. final showdown (built by the script) -->
     <section class="screen hunt" data-hunt="0"></section>
     <section class="screen hunt" data-hunt="1"></section>
     <section class="screen hunt" data-hunt="2"></section>
 
-    <!-- 9. placeholder (new file 5 coming soon) -->
-    <section class="screen" data-say="Agents, there is one more top secret file about Chippy. But it is still CLASSIFIED. Coming soon!">
-      <p class="eyebrow">FILE 5</p>
-      <h2 class="h2">CLASSIFIED: coming soon.</h2>
-      <div class="locked" role="img" aria-label="A locked top secret folder">
-        <span class="stamp">CLASSIFIED</span>
-        <p class="tap">COMING SOON</p>
+    <!-- 11. mess meter -->
+    <section class="screen" id="meterScreen" data-say="Look at all the messes Chippy made! Let’s check our Mess Meter!">
+      <p class="eyebrow">FILE 6 · DAMAGE REPORT</p>
+      <h2 class="h2">The Mess Meter</h2>
+      <div class="meter-wrap">
+        <div class="meter"><div class="fill" id="meterFill"></div><div class="ticks" id="meterTicks"></div></div>
+        <div class="meter-scale"><span>TIDY</span><span>MESSY</span><span>MEGA MESS!</span></div>
+        <p class="meter-count" id="meterCount"></p>
+        <div class="mess-row" id="messRow"></div>
       </div>
     </section>
 
-    <!-- 10. end -->
-    <section class="screen" data-say="Case closed! Thank you for being such great agents. Happy December, everybody!">
+    <section class="screen hunt" data-hunt="3"></section>
+
+    <!-- 13. next mission -->
+    <section class="screen" id="missionScreen" data-say="Chippy left us a secret letter! Tap the glowing envelope!">
+      <p class="eyebrow" id="missionEyebrow">INCOMING · NORTH POLE MAIL</p>
+      <div class="mission">
+        <div class="giver" id="giver">
+          <img src="images/chippy.png" alt="Chippy holding out a letter">
+          <div class="envelope" id="envelope" role="button" aria-label="Open the sealed envelope">
+            <svg viewBox="0 0 300 200">
+              <rect x="4" y="4" width="292" height="192" rx="10" fill="#FFF3D6" stroke="#B89C6E" stroke-width="6"/>
+              <path d="M4 196 L150 96 L296 196" fill="none" stroke="#D9C49A" stroke-width="5"/>
+              <g transform="translate(200 62) rotate(10)">
+                <circle r="54" fill="rgba(255,255,255,.4)" stroke="#3f6fd1" stroke-width="4" stroke-dasharray="6 4"/>
+                <text y="-4" text-anchor="middle" font-family="Special Elite, monospace" font-size="27" fill="#3f6fd1">NORTH</text>
+                <text y="24" text-anchor="middle" font-family="Special Elite, monospace" font-size="27" fill="#3f6fd1">POLE</text>
+                <path d="M-90 -14 q12 -8 24 0 t24 0 M-90 0 q12 -8 24 0 t24 0 M-90 14 q12 -8 24 0 t24 0" fill="none" stroke="#3f6fd1" stroke-width="3"/>
+              </g>
+              <path class="flap" d="M4 6 L150 116 L296 6 Z" fill="#F6E4BC" stroke="#B89C6E" stroke-width="6" stroke-linejoin="round"/>
+              <g transform="translate(150 112)"><circle r="30" fill="#B3261E"/><circle r="22" fill="none" stroke="#7d140f" stroke-width="3"/><path d="M-10 -10 L10 10 M10 -10 L-10 10 M0 -14 V14 M-14 0 H14" stroke="#ffd9d2" stroke-width="3" stroke-linecap="round"/></g>
+            </svg>
+            <span class="tap-hint">TAP TO OPEN</span>
+          </div>
+        </div>
+        <div class="file" id="missionFile">
+          <span class="stamp">TOP SECRET: NEXT MISSION</span>
+          <h2>OPERATION: FIND SANTA CLAUS</h2>
+          <div class="file-row">
+            <div class="np-radar" role="img" aria-label="North Pole radar with a blinking sleigh">
+              <svg viewBox="0 0 200 200">
+                <circle cx="100" cy="100" r="96" fill="#0d2a1c" stroke="#1B2A4A" stroke-width="5"/>
+                <g fill="none" stroke="#9CFFB0" stroke-opacity=".5" stroke-width="1.5"><circle cx="100" cy="100" r="70"/><circle cx="100" cy="100" r="44"/><path d="M100 6 V194 M6 100 H194"/></g>
+                <text x="100" y="94" text-anchor="middle" font-family="Special Elite, monospace" font-size="26" fill="#9CFFB0">N. POLE</text>
+              </svg>
+              <div class="sweep"></div>
+              <svg viewBox="0 0 200 200"><g class="blink" transform="translate(140 58)"><circle r="9" fill="#ff5a4a"/><path d="M-16 14 h30 q6 0 6 -6" stroke="#ffd24a" stroke-width="3" fill="none"/></g><text x="100" y="150" text-anchor="middle" font-family="Special Elite, monospace" font-size="26" fill="#ff8a7a">SLEIGH?</text></svg>
+            </div>
+            <div class="file-facts">
+              <svg class="hoofs" viewBox="0 0 220 60" role="img" aria-label="Reindeer hoofprints">
+                <g fill="#5a3b1e"><g id="hoof"><path d="M0 0 q-8 6 -6 18 q2 6 6 4 q2 -10 0 -22 Z M4 0 q8 6 6 18 q-2 6 -6 4 q-2 -10 0 -22 Z"/></g>
+                <use href="#hoof" x="20" y="30"/><use href="#hoof" x="70" y="12"/><use href="#hoof" x="120" y="30"/><use href="#hoof" x="170" y="12"/><use href="#hoof" x="210" y="30"/></g>
+              </svg>
+              <p class="countdown" id="countdown"></p>
+              <p class="clearance">Clearance level: JUNIOR AGENTS ONLY.</p>
+            </div>
+          </div>
+          <button class="yes-btn" id="yesBtn">YES!</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 14. case closed -->
+    <section class="screen" id="endScreen" data-say="Case closed! Thank you, agents. Happy December, everybody!">
       <span class="stamp slam">CASE CLOSED</span>
       <h2 class="title">Thank you, agents!</h2>
-      <p class="score" id="score"></p>
-      <p class="lede">Remember: if you ever find a Chippy, shout <b style="color:var(--gold)">“FOUND YOU, CHIPPY!”</b></p>
-      <button class="next" id="againBtn">Play again</button>
+      <div class="stats">
+        <div class="stat"><p class="k">CHIPPY FOUND</p><p class="v" id="statFound"></p></div>
+        <div class="stat"><p class="k">FASTEST FIND</p><p class="v" id="statFast"></p></div>
+        <div class="stat"><p class="k">MESS METER</p><p class="v" id="statMess"></p></div>
+      </div>
+      <p class="room" id="roomLine" role="button" title="Tap to type your room or class">Junior Agents of <b id="roomName"></b></p>
+      <div class="end-btns">
+        <button class="next" id="againBtn">Play again</button>
+        <button class="link-btn" id="creditsBtn">Photo credits</button>
+      </div>
     </section>
   </main>
 
@@ -351,204 +553,731 @@ body.noscript .say { visibility: hidden; }
     <button class="next" id="nextBtn">Next ▸</button>
   </footer>
 </div>
+
+<div class="overlay" id="creditsBox" role="dialog" aria-label="Photo credits">
+  <div class="credits">
+    <h2>Photo credits</h2>
+    <ul id="creditsList"></ul>
+    <p>Our living room and stairs photos are the family’s own. The Evidence File photos of Chippy were made by the family with Google Gemini. The mess drawings and agent badges were drawn for this game. Full details are in CREDITS.md.</p>
+    <button class="next" id="creditsClose">Close</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
 <div class="confetti" id="confetti"></div>
 
 <script>
 (() => {
-  // ---------- hiding spots (percent of the photo) ----------
-  // x = centre of Chippy, b = where his bottom sits, h = his height, rot = tilt
-  const SCENES = {
-    living: { src: 'images/living-room.jpg', ar: 1600 / 1200, label: 'CAM 2 · LIVING ROOM' },
-    stairs: { src: 'images/stairs.jpg', ar: 1500 / 894, label: 'CAM 1 · STAIRS' },
+  'use strict';
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+  const params = new URLSearchParams(location.search);
+  if (params.has('debug')) document.body.classList.add('debug');
+
+  // ---------- Chippy picture ----------
+  const CHIPPY_AR = 475 / 1269;   // width / height of images/chippy.png
+  const SEAT = 0.74;              // his bottom (where he sits) is 74% of the way down the picture
+
+  // ---------- mess props ----------
+  const MESS = {
+    flour:    { src: 'images/mess/flour.svg',          ar: 600 / 300, name: 'Flour disaster' },
+    tp:       { src: 'images/mess/toilet-paper.svg',   ar: 640 / 360, name: 'Toilet paper tornado' },
+    chips:    { src: 'images/mess/choc-chips-hi.svg',  ar: 420 / 260, name: 'Chocolate chip HI' },
+    mallows:  { src: 'images/mess/marshmallows.svg',   ar: 360 / 240, name: 'Marshmallow mountain' },
+    wrappers: { src: 'images/mess/candy-wrappers.svg', ar: 640 / 240, name: 'Candy-cane wrappers' },
+    ornaments:{ src: 'images/mess/ornaments.svg',      ar: 520 / 220, name: 'Ornament avalanche' },
+    sock:     { src: 'images/mess/sock.svg',           ar: 420 / 300, name: 'Stolen sock' },
   };
-  // Chippy always sits with his legs dangling, so every spot is a ledge:
-  // x = centre of Chippy, seat = height of the ledge he sits on, h = his height (all % of the photo).
-  // One spot is picked at random each round, so the game changes every time.
-  const HUNTS = [
-    { day: 'DAY 1', title: 'Find Chippy in the living room!', scene: 'living',
-      say: 'Day one! Chippy moved in the night. He’s hiding in our living room. Who can find him? Come tap him!',
-      spots: [ { x: 52, seat: 76, h: 17 }, { x: 47, seat: 30, h: 14 }, { x: 15, seat: 53, h: 16 } ] },
-    { day: 'DAY 2', title: 'Now he’s on the stairs!', scene: 'stairs',
-      say: 'Day two! Chippy sneaked to the stairs. Look closely, agents!',
-      spots: [ { x: 60, seat: 32.5, h: 19 }, { x: 75, seat: 52.6, h: 19 }, { x: 35, seat: 80.5, h: 19 } ] },
-    { day: 'DAY 3', title: 'The hardest hiding spot yet!', scene: 'living',
-      say: 'Day three is the hardest! Chippy is super tiny and super sneaky. Use your spy eyes!',
-      spots: [ { x: 92, seat: 21, h: 9 }, { x: 26, seat: 34, h: 8 }, { x: 58, seat: 12, h: 7, scene: 'stairs' } ] },
+
+  // ---------- scenes ----------
+  // Every number is a percent of the photo. A spot is where Chippy hides:
+  //   x = his centre, y = the line he sits on (or, with cut, the edge of the thing he is behind),
+  //   h = his height, cut = how much of him shows above that edge (0..1),
+  //   peek = {from:'l'|'r', show} = he is behind something on that side and only `show` of him peeks out,
+  //   d = difficulty 1 (easy) to 3 (hard), rot = tilt in degrees, flip = face the other way.
+  // A mess: p = prop, x/y = its centre, w = its width, rot = tilt.
+  const SCENES = {
+    kitchen: {
+      name: 'kitchen', where: 'in the kitchen', cam: 'CAM 3 · KITCHEN', src: 'images/scenes/kitchen.webp', ar: 2400 / 1595,
+      spots: [
+        { x: 40, y: 64, h: 24, d: 1 },
+        { x: 62, y: 77, h: 22, d: 1 },
+        { x: 44, y: 39.5, h: 14, d: 2 },
+        { x: 52, y: 57, h: 16, cut: 0.42, d: 2 },
+        { x: 18, y: 27.5, h: 9, d: 3 },
+      ],
+      messes: [
+        { p: 'flour', x: 42, y: 58, w: 18, rot: -3 },
+        { p: 'chips', x: 70, y: 87, w: 11 },
+        { p: 'wrappers', x: 30, y: 92, w: 24, rot: 4 },
+      ],
+    },
+    tree: {
+      name: 'living room', where: 'in the living room', cam: 'CAM 5 · TREE ROOM', src: 'images/scenes/tree.webp', ar: 2400 / 1593,
+      spots: [
+        { x: 45, y: 47, h: 20, d: 1 },
+        { x: 22, y: 70, h: 24, d: 1 },
+        { x: 73, y: 68, h: 15, cut: 0.45, d: 2 },
+        { x: 22, y: 15.5, h: 13, d: 2 },
+        { x: 79, y: 33, h: 8, d: 3, tone: 'brightness(1.05)' },
+      ],
+      messes: [
+        { p: 'ornaments', x: 58, y: 84, w: 15, rot: 3 },
+        { p: 'wrappers', x: 45, y: 93, w: 24, rot: -4 },
+        { p: 'sock', x: 28, y: 23, w: 7, rot: 14 },
+      ],
+    },
+    shelves: {
+      name: 'family room', where: 'in the family room', cam: 'CAM 7 · FAMILY ROOM', src: 'images/scenes/shelves.webp', ar: 2400 / 1586,
+      spots: [
+        { x: 15, y: 64.5, h: 22, d: 1 },
+        { x: 15, y: 53, h: 18, d: 1 },
+        { x: 82, y: 55.5, h: 15, d: 2 },
+        { x: 39, y: 45.5, h: 13, cut: 0.45, d: 2 },
+        { x: 60, y: 20, h: 9, d: 3 },
+      ],
+      messes: [
+        { p: 'tp', x: 24, y: 80, w: 26, rot: 3 },
+        { p: 'ornaments', x: 56, y: 88, w: 16 },
+        { p: 'chips', x: 42, y: 80, w: 11 },
+      ],
+    },
+    bathroom: {
+      name: 'bathroom', where: 'in the bathroom', cam: 'CAM 4 · BATHROOM', src: 'images/scenes/bathroom.webp', ar: 2400 / 1602,
+      spots: [
+        { x: 23, y: 50, h: 22, d: 1 },
+        { x: 70, y: 73, h: 22, d: 1 },
+        { x: 80, y: 61, h: 16, cut: 0.45, d: 2 },
+        { x: 34.5, y: 78, h: 15, d: 2 },
+        { x: 48.5, y: 44, h: 9, d: 3 },
+      ],
+      messes: [
+        { p: 'tp', x: 18, y: 93, w: 30, rot: 2 },
+        { p: 'mallows', x: 76, y: 70, w: 7 },
+        { p: 'chips', x: 36, y: 96, w: 9 },
+      ],
+    },
+    playroom: {
+      name: 'playroom', where: 'in the playroom', cam: 'CAM 6 · PLAYROOM', src: 'images/scenes/playroom.webp', ar: 2400 / 1807,
+      spots: [
+        { x: 41, y: 76, h: 22, d: 1 },
+        { x: 23, y: 56, h: 16, d: 1 },
+        { x: 66, y: 50.5, h: 13, cut: 0.45, d: 2 },
+        { x: 79, y: 38.5, h: 13, d: 2 },
+        { x: 10, y: 23, h: 8, d: 3 },
+      ],
+      messes: [
+        { p: 'ornaments', x: 30, y: 92, w: 18 },
+        { p: 'wrappers', x: 58, y: 86, w: 22, rot: -6 },
+        { p: 'mallows', x: 70, y: 62, w: 9 },
+      ],
+    },
+    fireplace: {
+      name: 'fireplace', where: 'by the fireplace', cam: 'CAM 8 · FIREPLACE', src: 'images/scenes/fireplace.webp', ar: 2400 / 1802, tone: 'brightness(.92) sepia(.1)',
+      spots: [
+        { x: 55, y: 22, h: 22, cut: 0.42, d: 1 },
+        { x: 60, y: 76, h: 18, d: 1 },
+        { x: 78, y: 24, h: 18, cut: 0.36, d: 2 },
+        { x: 30, y: 12, h: 15, d: 2 },
+        { x: 95.5, y: 56, h: 9, d: 3 },
+      ],
+      messes: [
+        { p: 'sock', x: 40, y: 62, w: 13, rot: -8 },
+        { p: 'wrappers', x: 24, y: 94, w: 26 },
+        { p: 'mallows', x: 46, y: 74, w: 8 },
+      ],
+    },
+    ourLiving: {
+      name: 'living room', where: 'in our living room', cam: 'CAM 2 · OUR LIVING ROOM', src: 'images/scenes/our-living-room.webp', ar: 1600 / 1200,
+      spots: [
+        { x: 52, y: 76, h: 17, d: 1 },
+        { x: 15, y: 53, h: 16, d: 1 },
+        { x: 47, y: 30, h: 14, d: 2 },
+        { x: 92, y: 21, h: 9, d: 3 },
+        { x: 26, y: 34, h: 8, d: 3 },
+      ],
+      messes: [
+        { p: 'flour', x: 28, y: 86, w: 24, rot: 4 },
+        { p: 'tp', x: 62, y: 20, w: 30, rot: -6 },
+        { p: 'ornaments', x: 14, y: 61, w: 14 },
+      ],
+    },
+    ourStairs: {
+      name: 'stairs', where: 'on our stairs', cam: 'CAM 1 · STAIRS', src: 'images/scenes/our-stairs.webp', ar: 1500 / 894,
+      spots: [
+        { x: 60, y: 32.5, h: 19, d: 1 },
+        { x: 75, y: 52.6, h: 19, d: 1 },
+        { x: 35, y: 80.5, h: 19, d: 2 },
+        { x: 19.5, y: 52, h: 19, flip: true, peek: { from: 'l', show: 0.55 }, d: 2 },
+        { x: 58, y: 12, h: 7, d: 3 },
+      ],
+      messes: [
+        { p: 'wrappers', x: 52, y: 57, w: 24 },
+        { p: 'sock', x: 25, y: 86, w: 12, rot: 12 },
+        { p: 'chips', x: 44, y: 22, w: 10 },
+      ],
+    },
+  };
+
+  const LEVELS = [
+    { day: 'DAY 1', d: 1, scale: 1,
+      title: s => `Find Chippy ${s.where}!`,
+      say: 'Day one! Look at that mess! Can you find Chippy? Tap him!' },
+    { day: 'DAY 2', d: 2, scale: .95,
+      title: s => `Now he’s hiding ${s.where}!`,
+      say: 'Day two! Chippy is sneakier now. Follow the crumbs, agents!' },
+    { day: 'DAY 3', d: 3, scale: .92,
+      title: s => `The hardest spot yet, ${s.where}!`,
+      say: 'Day three is hard! Chippy is tiny. Use your spy eyes!' },
+    { day: 'FINAL SHOWDOWN', d: 3, scale: .85, final: true,
+      title: s => `Final showdown ${s.where}!`,
+      say: 'Final showdown! This is his best hiding spot ever. Find him!' },
   ];
 
-  const $ = (s, el = document) => el.querySelector(s);
-  const screens = [...document.querySelectorAll('.screen')];
-  const nextBtn = $('#nextBtn');
-  const sayText = $('#sayText');
-  let idx = 0;
-  const results = [];
+  const CREDITS = [
+    ['Sustainable Kitchen', 'Jeremy Levine', 'CC BY 2.0', 'https://commons.wikimedia.org/wiki/File:Sustainable_Kitchen_-_Flickr_-_Jeremy_Levine_Design.jpg'],
+    ['Living room in Winnipeg', 'Alexhalipchuk', 'CC BY 4.0', 'https://commons.wikimedia.org/wiki/File:Living_room_in_Winnipeg.jpg'],
+    ['In Context', 'Casey Fleser', 'CC BY 2.0', 'https://commons.wikimedia.org/wiki/File:In_Context_(4522859217).jpg'],
+    ['Red modern bathroom interior', 'Nenad Stojkovic', 'CC BY 2.0', 'https://commons.wikimedia.org/wiki/File:Red_modern_bathroom_interior._(51528276166).jpg'],
+    ['Rosella, 20221231, playroom, 12', 'AleWi', 'CC BY-SA 4.0', 'https://commons.wikimedia.org/wiki/File:Rosella,_20221231,_playroom,_12.jpg'],
+    ['Stockings above the fireplace', 'Ruth Hartnup', 'CC BY 2.0', 'https://commons.wikimedia.org/wiki/File:Stockings_above_the_fireplace_(8333133021).jpg'],
+  ];
 
-  // ---------- sound ----------
-  let soundOn = true, ctx;
-  function tone(freq, dur, type = 'sine', when = 0, vol = 0.18) {
-    if (!soundOn) return;
-    try {
-      ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
-      const t = ctx.currentTime + when, o = ctx.createOscillator(), g = ctx.createGain();
-      o.type = type; o.frequency.setValueAtTime(freq, t);
-      g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
-      o.connect(g).connect(ctx.destination); o.start(t); o.stop(t + dur + 0.02);
-    } catch (e) {}
+  // ---------- state ----------
+  const screens = $$('.screen');
+  const nextBtn = $('#nextBtn'), sayText = $('#sayText');
+  let idx = 0, plan = [], results = [], messLog = [];  // messLog[n] = {shown, found:Set}
+  const timers = new Set();
+  const later = (fn, ms) => { const t = setTimeout(() => { timers.delete(t); fn(); }, ms); timers.add(t); return t; };
+  const clearLater = () => { timers.forEach(clearTimeout); timers.clear(); };
+
+  function newPlan() {
+    const keys = Object.keys(SCENES);
+    for (let i = keys.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [keys[i], keys[j]] = [keys[j], keys[i]]; }
+    const forced = params.get('scene');
+    if (forced && SCENES[forced]) { keys.splice(keys.indexOf(forced), 1); keys.unshift(forced); }
+    plan = keys.slice(0, LEVELS.length);
+    results = []; messLog = [];
   }
+  newPlan();
+
+  // ---------- sound (all synthesized with Web Audio, no files) ----------
+  const AC = window.AudioContext || window.webkitAudioContext;
+  let ctx = null, master, sfxBus, musicBus, noiseBuf;
+  let soundOn = true, musicOn = true, musicTimer = null, musicStep = 0, musicNext = 0;
+  function audio() {
+    if (ctx || !AC) return ctx;
+    ctx = new AC();
+    master = ctx.createGain(); master.gain.value = soundOn ? 1 : 0; master.connect(ctx.destination);
+    sfxBus = ctx.createGain(); sfxBus.gain.value = .9; sfxBus.connect(master);
+    musicBus = ctx.createGain(); musicBus.gain.value = 0; musicBus.connect(master);
+    noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 1.5, ctx.sampleRate);
+    const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    return ctx;
+  }
+  function unlock() {
+    if (!audio()) return;
+    if (ctx.state === 'suspended') ctx.resume();
+    const s = ctx.createBufferSource(); s.buffer = ctx.createBuffer(1, 1, 22050); s.connect(ctx.destination); s.start(0);
+  }
+  function tone(freq, dur, o = {}) {
+    if (!ctx || !soundOn) return;
+    const t = ctx.currentTime + (o.when || 0), osc = ctx.createOscillator(), g = ctx.createGain();
+    osc.type = o.type || 'sine'; osc.frequency.setValueAtTime(freq, t);
+    if (o.to) osc.frequency.exponentialRampToValueAtTime(o.to, t + dur);
+    const v = o.vol ?? .2;
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v, t + (o.attack || .006));
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.connect(g).connect(o.bus || sfxBus); osc.start(t); osc.stop(t + dur + .05);
+  }
+  function noise(dur, o = {}) {
+    if (!ctx || !soundOn) return;
+    const t = ctx.currentTime + (o.when || 0), src = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    src.buffer = noiseBuf; f.type = o.filter || 'bandpass'; f.Q.value = o.q || 1;
+    f.frequency.setValueAtTime(o.freq || 1000, t); if (o.to) f.frequency.exponentialRampToValueAtTime(o.to, t + dur);
+    const v = o.vol ?? .2;
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v, t + (o.attack || .01));
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    src.connect(f).connect(g).connect(o.bus || sfxBus); src.start(t); src.stop(t + dur + .05);
+  }
+  const bell = (f, when, vol = .09) => { tone(f, .5, { when, vol }); tone(f * 2.76, .25, { when, vol: vol * .45 }); tone(f * 5.4, .12, { when, vol: vol * .25 }); };
   const sfx = {
-    fanfare() { [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.28, 'triangle', i * 0.12)); },
-    nope() { tone(220, 0.18, 'square', 0, 0.08); tone(170, 0.22, 'square', 0.12, 0.08); },
-    stamp() { tone(90, 0.25, 'sawtooth', 0, 0.2); },
-    blip() { tone(880, 0.08, 'sine', 0, 0.1); },
-    giggle() { [988, 1175, 988, 1319].forEach((f, i) => tone(f, 0.09, 'sine', i * 0.09, 0.1)); },
+    blip()    { tone(880, .09, { vol: .12 }); tone(1320, .06, { when: .05, vol: .07 }); },
+    nope()    { tone(220, .16, { type: 'triangle', vol: .16 }); tone(185, .22, { type: 'triangle', when: .13, vol: .14 }); },
+    fanfare() { [523, 659, 784, 1047].forEach((f, i) => tone(f, .26, { type: 'triangle', when: i * .11, vol: .2 }));
+                [523, 659, 784, 1047].forEach(f => tone(f, .9, { type: 'triangle', when: .46, vol: .09 })); },
+    stamp()   { tone(140, .3, { to: 45, vol: .45 }); noise(.12, { filter: 'lowpass', freq: 500, vol: .35 }); },
+    whoosh()  { noise(.7, { freq: 300, to: 4200, q: 1.3, vol: .35, attack: .25 }); },
+    giggle()  { [1568, 1760, 1976, 2093, 1760, 2349].forEach((f, i) => bell(f, i * .075, .07)); },
+    ping()    { tone(1480, .7, { vol: .16 }); tone(1480, .5, { when: .28, vol: .06 }); tone(1480, .35, { when: .56, vol: .025 }); },
+    sleigh()  { for (let i = 0; i < 18; i++) { const w = i * .14 + (i % 2) * .02; noise(.09, { filter: 'highpass', freq: 6500, vol: .1, when: w });
+                  bell(2600 + (i * 373) % 1600, w, .035); } [784, 988, 1175, 1568].forEach((f, i) => bell(f, 2.6 + i * .12, .06)); },
+    count()   { tone(660, .1, { type: 'triangle', vol: .12 }); },
+    poof()    { noise(.32, { filter: 'lowpass', freq: 1400, to: 300, vol: .32 }); tone(520, .14, { type: 'triangle', to: 820, vol: .09 }); },
   };
-  $('#soundBtn').onclick = e => { soundOn = !soundOn; e.target.textContent = 'Sound: ' + (soundOn ? 'on' : 'off'); };
-  $('#scriptBtn').onclick = e => { document.body.classList.toggle('noscript'); e.target.textContent = 'Script: ' + (document.body.classList.contains('noscript') ? 'off' : 'on'); };
+  // sneaky spy music: a quiet walking bass with a tick on the off-beats
+  const BASS = [82.41, 0, 98, 0, 110, 0, 116.54, 123.47, 82.41, 0, 98, 0, 110, 0, 98, 92.5,
+                82.41, 0, 98, 0, 110, 0, 116.54, 123.47, 130.81, 0, 123.47, 0, 116.54, 110, 98, 92.5];
+  function musicTick() {
+    if (!ctx) return;
+    const step = 60 / 104 / 2;   // eighth notes at 104 bpm
+    while (musicNext < ctx.currentTime + .15) {
+      const i = musicStep % BASS.length, f = BASS[i], w = musicNext - ctx.currentTime;
+      if (f) { tone(f, .2, { type: 'triangle', when: w, vol: .5, bus: musicBus }); tone(f * 2, .12, { type: 'sine', when: w, vol: .12, bus: musicBus }); }
+      if (i % 2 === 1) noise(.03, { filter: 'highpass', freq: 7000, vol: .12, when: w, bus: musicBus });
+      if (i === 0 || i === 16) tone(i ? 659 : 587, .5, { when: w + step * 4, vol: .08, bus: musicBus });
+      musicStep++; musicNext += step;
+    }
+  }
+  function setMusic() {
+    if (!ctx) return;
+    const on = musicOn && soundOn;
+    musicBus.gain.setTargetAtTime(on ? .14 : 0, ctx.currentTime, .3);
+    if (on && !musicTimer) { musicNext = ctx.currentTime + .1; musicTimer = setInterval(musicTick, 40); }
+    if (!on && musicTimer) { clearInterval(musicTimer); musicTimer = null; }
+  }
+  $('#soundBtn').onclick = e => {
+    soundOn = !soundOn; e.currentTarget.textContent = 'Sound: ' + (soundOn ? 'on' : 'off');
+    if (ctx) master.gain.setTargetAtTime(soundOn ? 1 : 0, ctx.currentTime, .05);
+    setMusic();
+  };
+  $('#musicBtn').onclick = e => { unlock(); musicOn = !musicOn; e.currentTarget.textContent = 'Music: ' + (musicOn ? 'on' : 'off'); setMusic(); };
+  $('#scriptBtn').onclick = e => { document.body.classList.toggle('noscript'); e.currentTarget.textContent = 'Script: ' + (document.body.classList.contains('noscript') ? 'off' : 'on'); };
+
+  function toast(text, ms = 1100) { const t = $('#toast'); t.textContent = text; t.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('on'), ms); }
+  function soundTest() {
+    unlock();
+    const list = ['blip', 'nope', 'fanfare', 'stamp', 'whoosh', 'giggle', 'ping', 'sleigh'];
+    list.forEach((n, i) => setTimeout(() => { toast('Sound test: ' + n); sfx[n](); }, i * 1300));
+    setTimeout(() => toast(musicOn ? 'Sound test: spy music is on (M to switch)' : 'Spy music is off (M to switch)', 2200), list.length * 1300 + 2000);
+  }
 
   function confetti(n = 70) {
     const box = $('#confetti'), colors = ['#F4B942', '#C8372B', '#FFF8EC', '#2F7D5B', '#C9D6EA'];
     for (let i = 0; i < n; i++) {
       const c = document.createElement('i');
-      c.style.left = Math.random() * 100 + 'vw';
-      c.style.background = colors[i % colors.length];
-      c.style.animationDuration = 1.8 + Math.random() * 1.6 + 's';
-      c.style.animationDelay = Math.random() * 0.4 + 's';
-      box.appendChild(c);
-      setTimeout(() => c.remove(), 4000);
+      c.style.left = Math.random() * 100 + 'vw'; c.style.background = colors[i % colors.length];
+      c.style.animationDuration = 1.8 + Math.random() * 1.6 + 's'; c.style.animationDelay = Math.random() * .4 + 's';
+      box.appendChild(c); setTimeout(() => c.remove(), 4200);
     }
   }
+
+  // ---------- cartoon agent badges (no photos of the kids) ----------
+  function badge(kind, salute = false) {
+    const hat = kind === 'natalia' ? '#C8372B' : '#1B2A4A';
+    const hair = kind === 'natalia' ? '<path d="M40 90 Q38 140 60 150 L100 150 Q122 140 120 90 Z" fill="#4A3426"/>' : '';
+    const hand = salute ? '<g class="hand"><path d="M30 120 L52 62" stroke="#E8B98E" stroke-width="16" stroke-linecap="round"/><ellipse cx="54" cy="58" rx="13" ry="9" fill="#E8B98E" transform="rotate(-30 54 58)"/></g>' : '';
+    return `<svg class="badge-svg" viewBox="0 0 160 160" role="img" aria-label="Cartoon spy agent ${kind === 'natalia' ? 'Natalia' : 'Ezekiel'} with a hat and sunglasses"><circle cx="80" cy="80" r="76" fill="#EDDDBA" stroke="#13203B" stroke-width="4"/>${hair}<circle cx="80" cy="92" r="38" fill="#E8B98E"/><rect x="36" y="50" width="88" height="14" rx="7" fill="${hat}"/><path d="M50 52 Q52 20 80 20 Q108 20 110 52 Z" fill="${hat}"/><rect x="50" y="80" width="26" height="16" rx="6" fill="#1B2A4A"/><rect x="84" y="80" width="26" height="16" rx="6" fill="#1B2A4A"/><rect x="74" y="84" width="12" height="4" fill="#1B2A4A"/><path d="M66 110 Q80 120 94 110" stroke="#1B2A4A" stroke-width="5" fill="none" stroke-linecap="round"/>${hand}</svg>`;
+  }
+  $$('[data-badge]').forEach(el => { el.innerHTML = badge(el.dataset.badge); });
+
+  // ---------- evidence polaroids ----------
+  // photos of Chippy caught in the act, made by the family (images/caught/)
+  const EXHIBITS = [
+    { letter: 'A', name: 'The Great Flour Disaster', src: 'images/caught/flour-kitchen.webp', pos: '30% 50%', alt: 'Chippy sitting on the kitchen counter next to spilled flour with tiny footprints' },
+    { letter: 'B', name: 'Toilet Paper Tornado', src: 'images/caught/stairs-tp.webp', pos: '28% 40%', alt: 'Chippy at the top of the stairs with toilet paper unrolled all the way down' },
+    { letter: 'C', name: 'Marker Graffiti', src: 'images/caught/wrapping-markers.webp', pos: '50% 45%', alt: 'Chippy drawing with markers in a pile of ripped wrapping paper and ribbons' },
+    { letter: 'D', name: 'Toy Fort Takeover', src: 'images/caught/fort-toys.webp', pos: '72% 40%', alt: 'Chippy on top of the blue foam fort with toy cars scattered everywhere' },
+  ];
+  $('#polaroids').innerHTML = EXHIBITS.map((e, i) => `
+    <div class="polaroid" data-i="${i}" role="button" aria-label="Exhibit ${e.letter}: ${e.name}">
+      <span class="tape"></span>
+      <div class="photo"><img src="${e.src}" alt="${e.alt}" style="object-position:${e.pos}"></div>
+      <p class="cap"><b>Exhibit ${e.letter}:</b> ${e.name}</p>
+      <div class="evi"><span class="stamp">EVIDENCE</span></div>
+    </div>`).join('');
+  $$('.polaroid').forEach(p => p.onclick = () => { if (p.classList.contains('seen')) return; p.classList.add('seen'); sfx.stamp(); });
 
   // ---------- navigation ----------
   const dots = $('#dots');
   screens.forEach(() => dots.appendChild(document.createElement('span')));
   function show(i) {
-    idx = i;
-    screens.forEach((s, k) => s.classList.toggle('show', k === i));
-    [...dots.children].forEach((d, k) => d.classList.toggle('on', k <= i));
-    const s = screens[i];
+    clearLater(); stopHunt();
+    idx = Math.max(0, Math.min(i, screens.length - 1));
+    screens.forEach((s, k) => s.classList.toggle('show', k === idx));
+    [...dots.children].forEach((d, k) => d.classList.toggle('on', k <= idx));
+    const s = screens[idx];
     sayText.textContent = s.dataset.say || '';
-    nextBtn.hidden = i === screens.length - 1;
+    nextBtn.hidden = idx === 0 || idx === screens.length - 1;
     nextBtn.textContent = 'Next ▸';
     if (s.dataset.hunt !== undefined) startHunt(+s.dataset.hunt, s);
-    if (i === screens.length - 1) finish();
-    s.querySelectorAll('.stamp.slam').forEach(st => { st.style.animation = 'none'; st.offsetWidth; st.style.animation = ''; });
-    if (s.querySelector('.stamp.slam')) setTimeout(sfx.stamp, 250);
+    if (s.id === 'evidenceScreen') $$('.polaroid').forEach(p => p.classList.remove('seen'));
+    if (s.id === 'meterScreen') showMeter();
+    if (s.id === 'missionScreen') resetMission();
+    if (s.id === 'endScreen') finish();
+    s.querySelectorAll(':scope > .stamp.slam, .title-text > .stamp.slam').forEach(st => { st.style.animation = 'none'; st.offsetWidth; st.style.animation = ''; });
+    if (s.querySelector(':scope > .stamp.slam, .title-text > .stamp.slam')) later(sfx.stamp, 260);
   }
   function next() {
+    if (idx === 0) { begin(); return; }
     if (nextBtn.hidden) return;
-    sfx.blip();
-    if (idx < screens.length - 1) show(idx + 1);
+    sfx.blip(); show(idx + 1);
   }
+  function begin() { unlock(); setMusic(); sfx.blip(); show(1); }
+  $('#startBtn').onclick = begin;
   nextBtn.onclick = next;
+  function skipHunt() {
+    const s = screens[idx];
+    if (s.dataset.hunt === undefined) return;
+    toast('Hunt skipped'); show(idx + 1);
+  }
+  function fullscreen() {
+    const d = document, el = d.documentElement;
+    if (d.fullscreenElement || d.webkitFullscreenElement) (d.exitFullscreen || d.webkitExitFullscreen).call(d);
+    else (el.requestFullscreen || el.webkitRequestFullscreen)?.call(el);
+  }
   document.addEventListener('keydown', e => {
-    if (['ArrowRight', ' ', 'Enter', 'PageDown'].includes(e.key)) { e.preventDefault(); next(); }
-    if (['ArrowLeft', 'PageUp'].includes(e.key) && idx > 0) { e.preventDefault(); show(idx - 1); }
+    if (e.target.isContentEditable || e.ctrlKey || e.metaKey || e.altKey) return;
+    if ($('#creditsBox').classList.contains('show')) { if (e.key === 'Escape') closeCredits(); return; }
+    unlock();
+    const k = e.key;
+    if (['ArrowRight', ' ', 'Enter', 'PageDown'].includes(k)) { e.preventDefault(); next(); }
+    else if (['ArrowLeft', 'PageUp'].includes(k)) { e.preventDefault(); if (idx > 1) show(idx - 1); }
+    else if (k === 'f' || k === 'F') fullscreen();
+    else if (k === 'n' || k === 'N') skipHunt();
+    else if (k === 's' || k === 'S') soundTest();
+    else if (k === 'm' || k === 'M') $('#musicBtn').click();
   });
 
-  // ---------- profile: tap Chippy ----------
+  // ---------- profile + practice ----------
   $('#profilePhoto').onclick = () => {
     const img = $('#profilePhoto img'), b = $('#bubble');
     img.classList.remove('wiggle'); img.offsetWidth; img.classList.add('wiggle');
-    b.classList.add('on'); sfx.giggle();
-    setTimeout(() => b.classList.remove('on'), 1800);
+    b.classList.add('on'); sfx.giggle(); later(() => b.classList.remove('on'), 1800);
   };
   $('#practiceBtn').onclick = () => { sfx.fanfare(); confetti(50); };
 
   // ---------- hunts ----------
-  let timerId, hintId;
+  let huntTimer = null;
+  function stopHunt() { clearInterval(huntTimer); huntTimer = null; }
+
+  function pickSpot(S, L) {
+    const forced = params.get('spot');
+    if (forced !== null) return S.spots[+forced % S.spots.length];
+    let pool = S.spots.filter(s => s.d === L.d);
+    if (!pool.length) pool = S.spots.filter(s => Math.abs(s.d - L.d) === 1);
+    if (!pool.length) pool = S.spots;
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
+
+  // where Chippy goes on the stage (all in % of the stage) and which part of him shows
+  function layoutSpot(spot, S, scale = 1) {
+    const h = spot.h * scale, w = h * CHIPPY_AR / S.ar;
+    const anchor = spot.cut ?? SEAT, cutB = spot.cut ? 1 - spot.cut : 0;
+    let left = spot.x - w / 2, clipL = 0, clipR = 0;
+    if (spot.peek) {
+      const hid = 1 - spot.peek.show;
+      if (spot.peek.from === 'l') { clipL = hid; left = spot.x - hid * w; } else { clipR = hid; left = spot.x - (1 - hid) * w; }
+    }
+    const top = spot.y - anchor * h;
+    const vis = { x1: left + clipL * w, x2: left + (1 - clipR) * w, y1: top, y2: top + (1 - cutB) * h };
+    return { left, top, w, h, clipL, clipR, cutB, vis };
+  }
+
+  function buildChippy(spot, S, scale) {
+    const L = layoutSpot(spot, S, scale);
+    const el = document.createElement('div'); el.className = 'hider';
+    Object.assign(el.style, { left: L.left + '%', top: L.top + '%', width: L.w + '%', height: L.h + '%' });
+    const tone = spot.tone || S.tone || '';
+    // flipping mirrors the picture, so the side clips swap too
+    const cl = spot.flip ? L.clipR : L.clipL, cr = spot.flip ? L.clipL : L.clipR;
+    el.innerHTML = (spot.cut || spot.peek ? '' : `<i class="shade" style="top:${SEAT * 100 - 2.5}%"></i>`) +
+      `<img src="images/chippy.png" alt="" style="clip-path:inset(0 ${cr * 100}% ${L.cutB * 100}% ${cl * 100}%);` +
+      `transform:rotate(${spot.rot || 0}deg) scaleX(${spot.flip ? -1 : 1});filter:${tone} drop-shadow(0 .35cqw .3cqw rgba(0,0,0,.45))">`;
+    return { el, L };
+  }
+
+  function buildMesses(S, layer) {
+    return S.messes.map((m, i) => {
+      const M = MESS[m.p], img = document.createElement('img');
+      img.src = M.src; img.alt = M.name; img.className = params.has('debug') ? 'mess' : 'mess unmade'; img.dataset.i = i;
+      Object.assign(img.style, { left: m.x + '%', top: m.y + '%', width: m.w + '%', transform: `translate(-50%,-50%) rotate(${m.rot || 0}deg)`, filter: S.tone || '' });
+      layer.appendChild(img); return img;
+    });
+  }
+
+  // a trail of crumbs and tiny boot prints from the first mess towards Chippy
+  function buildTrail(S, L, layer) {
+    const m = S.trail || S.messes[0];
+    const sx = m.x, sy = m.y, ex = (L.vis.x1 + L.vis.x2) / 2, ey = L.vis.y2;
+    const dx = ex - sx, dy = ey - sy, len = Math.hypot(dx * S.ar, dy);
+    const cx = (sx + ex) / 2 - dy * .25 / S.ar, cy = (sy + ey) / 2 + dx * .25 * S.ar * .2;
+    const n = Math.max(6, Math.min(14, Math.round(len / 6)));
+    for (let i = 1; i <= n; i++) {
+      const t = .08 + .8 * (i / n), u = 1 - t;
+      const x = u * u * sx + 2 * u * t * cx + t * t * ex, y = u * u * sy + 2 * u * t * cy + t * t * ey;
+      const tx = 2 * u * (cx - sx) + 2 * t * (ex - cx), ty = 2 * u * (cy - sy) + 2 * t * (ey - cy);
+      const ang = Math.atan2(ty, tx * S.ar) * 180 / Math.PI + 90;
+      const it = document.createElement('i');
+      if (i % 2) { it.className = 'boot'; Object.assign(it.style, { width: '1.5%', height: (1.5 * 1.5 * S.ar) + '%', transform: `translate(-50%,-50%) rotate(${ang}deg)` }); }
+      else { const s = .55 + Math.random() * .35; it.className = 'crumb'; Object.assign(it.style, { width: s + '%', height: s * S.ar + '%' }); }
+      it.style.left = x + '%'; it.style.top = y + '%';
+      layer.appendChild(it);
+    }
+  }
+
+  // On the night camera Chippy hops from spot to spot making each mess, then dashes into his hiding place.
+  // Returns when (ms) the lights should come up.
+  function naughty(stage, S, lay, messes, nightTxt) {
+    const actor = document.createElement('div'); actor.className = 'actor';
+    const ah = Math.min(32, Math.max(22, lay.h * 1.15));           // his height in % of the stage
+    Object.assign(actor.style, { height: ah + '%', width: ah * CHIPPY_AR / S.ar + '%', left: '-14%', top: '88%' });
+    actor.innerHTML = '<img src="images/chippy.png" alt="">';
+    stage.insertBefore(actor, $('.cam', stage));
+    const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+    let pos = { x: -14, y: 88 }, t = 600;
+    const hop = (to, dur) => {
+      const f = pos, mid = { x: (f.x + to.x) / 2, y: Math.min(f.y, to.y) - 12 };
+      pos = to;
+      later(() => {
+        actor.classList.add('zoom');
+        actor.animate([{ left: f.x + '%', top: f.y + '%' }, { left: mid.x + '%', top: mid.y + '%' }, { left: to.x + '%', top: to.y + '%' }],
+          { duration: dur, easing: 'ease-in-out', fill: 'forwards' });
+      }, t);
+      t += dur;
+      later(() => actor.classList.remove('zoom'), t);
+    };
+    later(() => { nightTxt.textContent = 'Look! It’s Chippy!'; sayText.textContent = 'Look! Chippy is making a mess! What a naughty elf!'; }, 900);
+    S.messes.forEach((m, i) => {
+      const mh = m.w * S.ar / MESS[m.p].ar;                          // mess height in % of the stage
+      hop({ x: clamp(m.x - m.w * .38, 4, 96), y: clamp(m.y + mh * .3, ah * .6, 99) }, 560);
+      later(() => {
+        actor.classList.remove('busy'); void actor.offsetWidth; actor.classList.add('busy');
+        messes[i].classList.remove('unmade'); messes[i].classList.add('made');
+        const p = document.createElement('div'); p.className = 'puff';
+        Object.assign(p.style, { left: m.x + '%', top: m.y + '%', width: m.w * 1.1 + '%', aspectRatio: '1' });
+        stage.appendChild(p); setTimeout(() => p.remove(), 650);
+        sfx.poof();
+      }, t);
+      t += 560;
+    });
+    hop({ x: lay.left + lay.w / 2, y: lay.top + lay.h }, 520);       // dash into the hiding spot
+    later(() => {
+      sfx.giggle(); nightTxt.textContent = '';
+      actor.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 260, fill: 'forwards' });
+      stage.classList.remove('pre');
+    }, t);
+    return t + 450;
+  }
+
+  function pop(stage, x, y, text, good) {
+    const p = document.createElement('div'); p.className = 'pop' + (good ? ' good' : ''); p.textContent = text;
+    p.style.left = x + 'px'; p.style.top = y + 'px'; stage.appendChild(p); setTimeout(() => p.remove(), 960);
+  }
+
   function startHunt(n, section) {
-    clearInterval(timerId); clearTimeout(hintId);
-    const H = HUNTS[n];
-    const forced = new URLSearchParams(location.search).get('spot'); // ?spot=0|1|2 to test one spot
-    const spot = H.spots[forced !== null ? (+forced % H.spots.length) : Math.floor(Math.random() * H.spots.length)];
-    const S = SCENES[spot.scene || H.scene];
-    section.dataset.say = H.say; sayText.textContent = H.say;
+    const L = LEVELS[n], key = plan[n], S = SCENES[key], spot = pickSpot(S, L);
+    const log = messLog[n] = { shown: S.messes.length, found: new Set(), names: S.messes.map(m => m.p) };
+    section.dataset.say = L.say;
     nextBtn.hidden = true;
     section.innerHTML = `
       <div class="hunt-head">
-        <p class="eyebrow">${H.day} · ${S.label}</p>
-        <h2 class="h2">${H.title}</h2>
-        <span class="timer">00:00</span>
-        <button class="hint-btn" hidden>Spy scanner</button>
+        <p class="eyebrow">${L.day} · ${S.cam}</p>
+        <h2 class="h2">${L.title(S)}</h2>
+        <span class="pill timer">00:00</span>
+        <span class="pill">MESSES <b class="mcount">0/${S.messes.length}</b></span>
       </div>
-      <div class="stage" style="--ar:${S.ar}">
+      <div class="stage dark pre" style="--ar:${S.ar}">
         <img class="bg" src="${S.src}" alt="">
-        <div class="hider" role="button" aria-label="Chippy"><img src="images/chippy.png" alt=""></div>
-        <div class="night"><div class="moon"></div><p class="h2">Night falls…</p><p class="lede">Chippy sneaks to a new hiding spot.</p></div>
+        <div class="layer messes"></div>
+        <div class="layer trail"></div>
+        <div class="cam">
+          <i class="corner c1"></i><i class="corner c2"></i><i class="corner c3"></i><i class="corner c4"></i>
+          <span class="rec"><i></i>REC</span><span class="label">${S.cam}</span><span class="clock"></span>
+          <span class="night-txt">Night falls…</span>
+        </div>
       </div>`;
-    const stage = $('.stage', section), target = $('.hider', section);
-    target.style.height = spot.h + '%';
-    target.style.left = spot.x + '%';
-    target.style.top = (spot.seat - 0.74 * spot.h) + '%'; // his seat is 74% of the way down the cutout
-    target.style.transform = 'translateX(-50%)';
+    const stage = $('.stage', section), messLayer = $('.messes', stage), trailLayer = $('.trail', stage);
+    const messes = buildMesses(S, messLayer);
+    const { el: hider, L: lay } = buildChippy(spot, S, L.scale);
+    stage.insertBefore(hider, $('.cam', stage));
+    buildTrail(S, lay, trailLayer);
+    const hit = document.createElement('div'); hit.className = 'hit';
+    const vw = lay.vis.x2 - lay.vis.x1, vh = lay.vis.y2 - lay.vis.y1;
+    Object.assign(hit.style, { left: (lay.vis.x1 + vw / 2) + '%', top: (lay.vis.y1 + vh / 2) + '%', width: vw * 1.15 + '%', height: vh * 1.1 + '%' });
+    stage.appendChild(hit);
+    if (params.has('debug')) debugSpots(stage, S, L);
 
-    let t0 = 0, misses = 0, done = false;
-    const timerEl = $('.timer', section), hintBtn = $('.hint-btn', section);
-    const night = $('.night', section);
-    setTimeout(() => {
-      night.classList.add('gone');
-      t0 = performance.now();
-      timerId = setInterval(() => {
-        const s = Math.floor((performance.now() - t0) / 1000);
-        timerEl.textContent = `00:${String(Math.min(s, 99)).padStart(2, '0')}`;
-      }, 250);
-      hintId = setTimeout(() => { hintBtn.hidden = false; hintBtn.classList.add('pulse'); }, 12000);
-    }, 1800);
+    // ---- the night-falls security-camera beat: Chippy is caught making his messes ----
+    sayText.textContent = 'Shh… night falls. Our spy camera is watching!';
+    const clock = $('.clock', stage), dayNum = 10 + n * 3, nightTxt = $('.night-txt', stage);
+    let secs = 2 * 3600 + 14 * 60 + 7;
+    const tick = () => { const h = Math.floor(secs / 3600), m = Math.floor(secs / 60) % 60, s = secs % 60; clock.textContent = `DEC ${dayNum}  ${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')} AM`; secs++; };
+    tick(); const clockTimer = setInterval(tick, 1000); timers.add(clockTimer);
+    const lightsAt = params.has('debug') ? 200 : naughty(stage, S, lay, messes, nightTxt);
+    later(() => { stage.classList.remove('dark'); $('.cam', stage).classList.add('off'); sfx.ping(); }, lightsAt);
+    let t0 = 0, done = false, misses = 0;
+    later(() => {
+      clearInterval(clockTimer);
+      t0 = performance.now(); sayText.textContent = L.say;
+      const timerEl = $('.timer', section);
+      huntTimer = setInterval(() => { const s = Math.floor((performance.now() - t0) / 1000); timerEl.textContent = `00:${String(Math.min(s, 99)).padStart(2, '0')}`; }, 250);
+      later(() => { if (done) return; trailLayer.classList.add('glow'); sfx.ping(); sayText.textContent = 'Hint: follow the glowing trail to Chippy!'; }, 12000);
+    }, lightsAt + 700);
+    if (params.has('debug')) stage.classList.remove('pre');
 
-    hintBtn.onclick = e => {
-      e.stopPropagation(); hintBtn.hidden = true; sfx.blip();
-      const r = target.getBoundingClientRect(), sr = stage.getBoundingClientRect();
-      const size = Math.max(r.height * 1.9, sr.width * 0.18);
-      const cx = r.left + r.width / 2 - sr.left + (Math.random() - .5) * size * .4;
-      const cy = r.top + r.height / 2 - sr.top + (Math.random() - .5) * size * .4;
-      const sc = document.createElement('div'); sc.className = 'scan';
-      Object.assign(sc.style, { width: size + 'px', height: size + 'px', left: cx - size / 2 + 'px', top: cy - size / 2 + 'px' });
-      stage.appendChild(sc);
-    };
-
-    target.addEventListener('pointerdown', e => {
+    messes.forEach(m => m.addEventListener('pointerdown', e => {
+      e.stopPropagation();
+      if (!t0 || done) return;
+      const sr = stage.getBoundingClientRect();
+      if (!log.found.has(+m.dataset.i)) {
+        log.found.add(+m.dataset.i); m.classList.add('counted'); sfx.count();
+        $('.mcount', section).textContent = `${log.found.size}/${log.shown}`;
+        pop(stage, e.clientX - sr.left, e.clientY - sr.top, 'Mess found!', true);
+      } else pop(stage, e.clientX - sr.left, e.clientY - sr.top, 'Already found!', true);
+    }));
+    hit.addEventListener('pointerdown', e => {
       e.stopPropagation();
       if (done || !t0) return;
-      done = true;
-      clearInterval(timerId); clearTimeout(hintId);
-      const secs = Math.round((performance.now() - t0) / 1000);
+      done = true; stopHunt(); clearLater();
+      const secs = Math.max(1, Math.round((performance.now() - t0) / 1000));
       results[n] = { secs, misses };
-      target.classList.add('found');
-      stage.querySelectorAll('.scan').forEach(s => s.remove());
-      const r = target.getBoundingClientRect(), sr = stage.getBoundingClientRect();
-      const size = Math.max(r.width, r.height) * 1.25;
+      hider.classList.add('found');
+      trailLayer.classList.remove('glow');
+      const r = hit.getBoundingClientRect(), sr = stage.getBoundingClientRect();
+      const size = Math.max(r.width, r.height) * 1.2;
       const ring = document.createElement('div'); ring.className = 'ring';
       Object.assign(ring.style, { width: size + 'px', height: size + 'px', left: r.left + r.width / 2 - sr.left - size / 2 + 'px', top: r.top + r.height / 2 - sr.top - size / 2 + 'px' });
       stage.appendChild(ring);
+      if (L.final) { capture(stage, r, sr); return; }
       const ban = document.createElement('div'); ban.className = 'banner'; ban.textContent = 'FOUND YOU, CHIPPY!';
       stage.appendChild(ban);
-      hintBtn.hidden = true;
       sfx.fanfare(); confetti();
-      sayText.textContent = 'Everybody shout… FOUND YOU, CHIPPY!';
-      nextBtn.hidden = false;
-      nextBtn.textContent = n < HUNTS.length - 1 ? 'Next day ▸' : 'Next ▸';
+      sayText.textContent = 'Everybody shout: FOUND YOU, CHIPPY!';
+      nextBtn.hidden = false; nextBtn.textContent = n < 2 ? 'Next day ▸' : 'Next ▸';
     });
     stage.addEventListener('pointerdown', e => {
       if (done || !t0) return;
-      misses++;
-      sfx.nope();
+      misses++; sfx.nope();
       const sr = stage.getBoundingClientRect();
-      const p = document.createElement('div'); p.className = 'nope';
-      p.textContent = ['Not there!', 'Nope!', 'Keep looking!', 'Sneaky Chippy!'][misses % 4];
-      p.style.left = e.clientX - sr.left + 'px'; p.style.top = e.clientY - sr.top + 'px';
-      stage.appendChild(p); setTimeout(() => p.remove(), 950);
+      pop(stage, e.clientX - sr.left, e.clientY - sr.top, ['Nope!', 'Not there!', 'Keep looking!', 'Sneaky Chippy!'][misses % 4]);
     });
   }
 
-  // ---------- end ----------
-  function finish() {
-    const total = results.reduce((a, r) => a + (r ? r.secs : 0), 0);
-    const found = results.filter(Boolean).length;
-    $('#score').innerHTML = `Chippy found <b>${found} of ${HUNTS.length}</b> times in <b>${total} seconds</b>.`;
+  // Final showdown: spotlight, giant stamp, saluting badge
+  function capture(stage, r, sr) {
+    const cx = (r.left + r.width / 2 - sr.left) / sr.width * 100, cy = (r.top + r.height / 2 - sr.top) / sr.height * 100;
+    const rad = Math.max(r.width, r.height) * .9;
+    const spot = document.createElement('div'); spot.className = 'spotlight';
+    spot.style.background = `radial-gradient(circle ${rad}px at ${cx}% ${cy}%, rgba(255,250,220,.12) 0, rgba(255,250,220,.05) 70%, rgba(4,8,18,.86) 100%)`;
+    stage.appendChild(spot); requestAnimationFrame(() => spot.classList.add('on'));
+    sfx.stamp();
+    later(() => {
+      const st = document.createElement('div'); st.className = 'captured';
+      st.innerHTML = '<span class="stamp slam">CAPTURED BY AGENT EZEKIEL!</span>';
+      stage.appendChild(st); sfx.stamp(); sfx.fanfare(); confetti(110);
+    }, 500);
+    later(() => {
+      const b = document.createElement('div'); b.className = 'salute';
+      b.innerHTML = badge('ezekiel', true) + '<span class="name">AGENT EZEKIEL</span>';
+      stage.appendChild(b); sfx.giggle();
+      sayText.textContent = 'I found you, Chippy! Mission complete!';
+      nextBtn.hidden = false; nextBtn.textContent = 'Next ▸';
+    }, 1100);
   }
-  $('#againBtn').onclick = () => { results.length = 0; show(0); };
 
-  show(0);
+  // ---------- mess meter ----------
+  function showMeter() {
+    const logs = messLog.slice(0, 3).filter(Boolean);
+    const shown = logs.reduce((a, l) => a + l.shown, 0) || 9;
+    const found = logs.reduce((a, l) => a + l.found.size, 0);
+    $('#meterTicks').innerHTML = '<i></i>'.repeat(shown);
+    const fill = $('#meterFill'); fill.style.transition = 'none'; fill.style.width = '0'; fill.offsetWidth; fill.style.transition = '';
+    const row = $('#messRow'); row.innerHTML = '';
+    const count = $('#meterCount'); count.textContent = '0 messes found';
+    const names = []; logs.forEach(l => l.found.forEach(i => names.push(l.names[i])));
+    later(() => { fill.style.width = (found / shown * 100) + '%'; }, 300);
+    for (let i = 1; i <= found; i++) later(() => {
+      count.textContent = `${i} mess${i === 1 ? '' : 'es'} found!`; sfx.count();
+      const img = document.createElement('img'); img.src = MESS[names[i - 1]].src; img.alt = MESS[names[i - 1]].name; row.appendChild(img);
+    }, 300 + i * (1500 / Math.max(found, 1)));
+    later(() => {
+      const word = found === 0 ? 'Chippy was super sneaky!' : found >= shown ? 'MEGA MESS! You found them all!' : found >= shown / 2 ? `${found} messes! Super messy!` : `${found} mess${found === 1 ? '' : 'es'} found!`;
+      count.textContent = word; sfx[found >= shown ? 'fanfare' : 'ping']();
+      sayText.textContent = found ? `We found ${found} of Chippy’s messes! What a messy elf!` : 'Chippy hid his messes well! Sneaky elf!';
+      if (found >= shown) confetti(60);
+    }, 2100);
+  }
+
+  // ---------- next mission ----------
+  function resetMission() {
+    const env = $('#envelope');
+    env.classList.remove('open'); env.style.display = ''; $('#missionFile').classList.remove('show'); $('#giver').style.display = '';
+    $('#missionEyebrow').textContent = 'INCOMING · NORTH POLE MAIL';
+    nextBtn.hidden = true;
+  }
+  function daysToEve() {
+    const now = new Date(), y = now.getFullYear();
+    const today = new Date(y, now.getMonth(), now.getDate());
+    let eve = new Date(y, 11, 24);
+    if (today > eve) eve = new Date(y + 1, 11, 24);
+    return Math.round((eve - today) / 86400000);
+  }
+  $('#envelope').onclick = () => {
+    const env = $('#envelope');
+    if (env.classList.contains('open')) return;
+    env.classList.add('open'); sfx.whoosh(); sfx.sleigh();
+    const d = daysToEve();
+    $('#countdown').innerHTML = d === 0 ? 'Mission starts <b>TONIGHT!</b>' : `<b>${d}</b> day${d === 1 ? '' : 's'} until December 24`;
+    later(() => {
+      $('#giver').style.display = 'none'; $('#missionFile').classList.add('show');
+      $('#missionEyebrow').textContent = 'FILE 7 · OPENED BY AGENT EZEKIEL';
+      sayText.textContent = 'Our next mission… is to find SANTA! Agents, are you in?';
+      nextBtn.hidden = false;
+    }, 700);
+  };
+  $('#yesBtn').onclick = () => { sfx.sleigh(); sfx.fanfare(); confetti(90); sayText.textContent = 'YES! Junior agents, get ready for Christmas Eve!'; };
+
+  // ---------- case closed ----------
+  function readRoom() {
+    let r = params.get('room');
+    if (!r) { try { r = localStorage.getItem('chippy-room'); } catch (e) {} }
+    return r;
+  }
+  function paintRoom() {
+    const r = readRoom();
+    $('#roomName').textContent = r ? (/^\d+[A-Za-z]?$/.test(r) ? 'Room ' + r : r) : 'Ezekiel’s class';
+  }
+  $('#roomLine').onclick = () => {
+    const r = prompt('Your room number or class name (for example 12 or Mrs. Lee’s class):', readRoom() || '');
+    if (r === null) return;
+    try { localStorage.setItem('chippy-room', r.trim()); } catch (e) {}
+    paintRoom();
+  };
+  function finish() {
+    const hunts = LEVELS.length, done = results.filter(Boolean);
+    $('#statFound').textContent = `${done.length} of ${hunts}`;
+    $('#statFast').textContent = done.length ? `${Math.min(...done.map(r => r.secs))} sec` : '—';
+    const mess = messLog.filter(Boolean).reduce((a, l) => a + l.found.size, 0);
+    $('#statMess').textContent = `${mess} mess${mess === 1 ? '' : 'es'}`;
+    paintRoom();
+    later(() => { sfx.sleigh(); confetti(60); }, 500);
+  }
+  $('#againBtn').onclick = () => { newPlan(); show(1); };
+
+  // ---------- credits ----------
+  $('#creditsList').innerHTML = CREDITS.map(([t, a, l, u]) => `<li><a href="${u}" target="_blank" rel="noopener">${t}</a>, by ${a} (${l})</li>`).join('');
+  function closeCredits() { $('#creditsBox').classList.remove('show'); }
+  $('#creditsBtn').onclick = () => $('#creditsBox').classList.add('show');
+  $('#creditsClose').onclick = closeCredits;
+  $('#creditsBox').onclick = e => { if (e.target.id === 'creditsBox') closeCredits(); };
+
+  // ---------- debug: ?debug&scene=kitchen shows every hiding spot at once ----------
+  function debugSpots(stage, S, L) {
+    S.spots.forEach((sp, i) => {
+      const { el } = buildChippy(sp, S, 1); el.style.outline = '2px dashed #0f0'; el.style.zIndex = 2;
+      const tag = document.createElement('b'); tag.textContent = `${i} d${sp.d}`;
+      Object.assign(tag.style, { position: 'absolute', left: 0, top: '-1.6em', color: '#0f0', background: '#000', font: '700 16px monospace', padding: '0 4px' });
+      el.appendChild(tag); stage.appendChild(el);
+    });
+    stage.addEventListener('click', e => {
+      const r = stage.getBoundingClientRect();
+      toast(`x ${((e.clientX - r.left) / r.width * 100).toFixed(1)}  y ${((e.clientY - r.top) / r.height * 100).toFixed(1)}`, 4000);
+    });
+  }
+
+  window.__chippy = { show, SCENES, LEVELS, plan: () => plan, results: () => results, messLog: () => messLog, sfx, newPlan, screens, audioState: () => ctx ? ctx.state : "none", musicOn: () => !!musicTimer };
+  const startAt = +params.get('screen');
+  show(startAt > 0 ? startAt : 0);
 })();
 </script>
 </body>

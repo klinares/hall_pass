@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-label="Toilet paper unrolled and draped">
+  <defs>
+    <linearGradient id="p" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e6e9ef"/></linearGradient>
+    <linearGradient id="r" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#dfe3ea"/><stop offset=".5" stop-color="#ffffff"/><stop offset="1" stop-color="#d4d9e1"/></linearGradient>
+    <filter id="sh" x="-10%" y="-10%" width="120%" height="140%"><feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="#000" flood-opacity=".28"/></filter>
+  </defs>
+  <g filter="url(#sh)">
+    <path d="M520 250 C430 250 420 120 330 120 C230 120 250 300 150 290 C80 284 60 210 20 200 L22 236 C60 246 78 322 152 326 C270 336 256 156 332 156 C400 156 418 286 520 286 Z" fill="url(#p)" stroke="#c9ced8" stroke-width="3"/>
+    <g stroke="#c9ced8" stroke-width="3" stroke-dasharray="6 7" fill="none">
+      <path d="M440 220 L452 258"/><path d="M372 148 L360 180"/><path d="M280 160 L262 196"/><path d="M216 266 L196 300"/><path d="M96 252 L84 288"/>
+    </g>
+    <rect x="500" y="200" width="110" height="120" rx="20" fill="url(#r)" stroke="#c9ced8" stroke-width="3"/>
+    <ellipse cx="610" cy="260" rx="22" ry="60" fill="#f4f6f9" stroke="#c9ced8" stroke-width="3"/>
+    <ellipse cx="610" cy="260" rx="9" ry="24" fill="#b9a68a"/>
+  </g>
+</svg>

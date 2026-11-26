@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 260" role="img" aria-label="Chocolate chips spelling HI">
+  <defs>
+    <radialGradient id="c" cx="35%" cy="30%" r="70%"><stop offset="0" stop-color="#7a4a2a"/><stop offset=".6" stop-color="#4a2a17"/><stop offset="1" stop-color="#2e190d"/></radialGradient>
+    <filter id="sh" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="3" stdDeviation="2.5" flood-color="#000" flood-opacity=".35"/></filter>
+    <g id="chip"><path d="M0 -15 C4 -6 13 2 13 8 C13 14 7 16 0 16 C-7 16 -13 14 -13 8 C-13 2 -4 -6 0 -15 Z" fill="url(#c)"/><path d="M-3 -6 C-1 -9 1 -9 2 -6" stroke="#a87a55" stroke-width="2" fill="none" stroke-linecap="round"/></g>
+  </defs>
+  <g filter="url(#sh)">
+    <use href="#chip" x="70" y="40"/><use href="#chip" x="70" y="76"/><use href="#chip" x="70" y="112"/><use href="#chip" x="70" y="148"/><use href="#chip" x="70" y="184"/><use href="#chip" x="70" y="220"/>
+    <use href="#chip" x="106" y="130"/><use href="#chip" x="142" y="130"/><use href="#chip" x="178" y="130"/>
+    <use href="#chip" x="214" y="40"/><use href="#chip" x="214" y="76"/><use href="#chip" x="214" y="112"/><use href="#chip" x="214" y="148"/><use href="#chip" x="214" y="184"/><use href="#chip" x="214" y="220"/>
+    <use href="#chip" x="300" y="40"/><use href="#chip" x="336" y="40"/><use href="#chip" x="372" y="40"/>
+    <use href="#chip" x="336" y="76"/><use href="#chip" x="336" y="112"/><use href="#chip" x="336" y="148"/><use href="#chip" x="336" y="184"/>
+    <use href="#chip" x="300" y="220"/><use href="#chip" x="336" y="220"/><use href="#chip" x="372" y="220"/>
+    <use href="#chip" x="20" y="200" transform="rotate(30 20 200)"/><use href="#chip" x="260" y="236" transform="rotate(-40 260 236)"/>
+  </g>
+</svg>

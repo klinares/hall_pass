@@ -39,6 +39,8 @@ namespace WorldTour.Core.Progress
         public JournalData Journal = new JournalData();
         /// <summary>Phase 10B.1 (version 3): owned avatar items, the worn look and the five outfits. Written only when it holds something.</summary>
         public AvatarData Avatar = new AvatarData();
+        /// <summary>Phase 10B.2: her home (owned furniture, what stands where, wall and floor colors, rooms bought). Written only when it holds something; an older save has an empty first room.</summary>
+        public HomeData Home = new HomeData();
         /// <summary>Top-level keys this version doesn't know, kept in their stored order and written back after the known ones (null = none).</summary>
         public JsonValue Extra;
 

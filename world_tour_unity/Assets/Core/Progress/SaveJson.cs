@@ -45,7 +45,7 @@ namespace WorldTour.Core.Progress
         // Keys each part of the save knows. Anything else is kept as it was stored (save version 2) and written back
         // after the known keys, the order JS { ...defaults, ...raw } gives.
         /// <summary>The top-level keys this version knows (anything else is kept as stored).</summary>
-        public static readonly string[] TopKeys = { "v", "created", "updated", "settings", "fans", "streak", "venues", "skills", "words", "review", "shows", "time", "inventory", "journal", "avatar" };
+        public static readonly string[] TopKeys = { "v", "created", "updated", "settings", "fans", "streak", "venues", "skills", "words", "review", "shows", "time", "inventory", "journal", "avatar", "home" };
         private static readonly string[] SettingsKeys = { "sound", "theme", "motion", "gentleSpelling", "gentleMath", "ambience", "effects" };
         private static readonly string[] FansKeys = { "balance", "lifetime", "coins", "coinsGranted" };
         private static readonly string[] StreakKeys = { "days", "best", "last" };
@@ -197,6 +197,8 @@ namespace WorldTour.Core.Progress
 
             // version 3: the avatar (an older save has none; AvatarRules works its look out from the old backstage items)
             d.Avatar = AvatarJson.Read(raw["avatar"]);
+            // phase 10B.2: her home (an older save has none: an empty first room)
+            d.Home = HomeJson.Read(raw["home"]);
 
             // store.js:34 skills, words, time must be plain objects
             JsonValue sk = Dict(raw["skills"]);
@@ -415,6 +417,8 @@ namespace WorldTour.Core.Progress
             o.Set("journal", WithExtra(JsonValue.Obj().Set("stickers", stk).Set("layout", lay).Set("seen", StrArr(b.Journal.Seen)), b.Journal.Extra));
             JsonValue av = AvatarJson.Write(b.Avatar);
             if (av != null) o.Set("avatar", av);
+            JsonValue home = HomeJson.Write(b.Home);
+            if (home != null) o.Set("home", home);
             return WithExtra(o, b.Extra);
         }
 

@@ -25,11 +25,11 @@ namespace WorldTour.Core.Tests
         }
 
         [Test]
-        public void Version_IsTwo_UnderTheSameKey()
+        public void Version_IsThree_UnderTheSameKey()
         {
-            Assert.AreEqual(2, SaveBlob.Version);
+            Assert.AreEqual(3, SaveBlob.Version);
             Assert.AreEqual("worldtour.v1", SaveBlob.Key, "one key, unchanged, so the old save is found");
-            StringAssert.StartsWith("{\"v\":2,", SaveJson.ToText(SaveBlob.Defaults(Day)));
+            StringAssert.StartsWith("{\"v\":3,", SaveJson.ToText(SaveBlob.Defaults(Day)));
         }
 
         [Test]
@@ -39,7 +39,7 @@ namespace WorldTour.Core.Tests
             JsonValue raw = StrictJson.Parse(v1);
             Assert.AreEqual(1, raw["v"].Int);
             SaveBlob b = SaveJson.Load(v1, Day).Blob;
-            Assert.AreEqual(2, b.V);
+            Assert.AreEqual(3, b.V);
             Assert.AreEqual(raw["fans"]["lifetime"].Long, b.Fans.Lifetime);
             Assert.AreEqual(raw["fans"]["balance"].Long, b.Fans.Balance);
             CollectionAssert.AreEqual(raw["venues"]["unlocked"].Items.Select(x => x.String), b.Venues.Unlocked);
@@ -115,9 +115,9 @@ namespace WorldTour.Core.Tests
         [Test]
         public void NewerSave_KeepsItsVersion()
         {
-            SaveBlob b = SaveJson.Load("{\"v\":3,\"fans\":{\"balance\":5,\"lifetime\":5},\"later\":true}", Day).Blob;
-            Assert.AreEqual(3, b.V, "never stamped back down to 2");
-            StringAssert.StartsWith("{\"v\":3,", SaveJson.ToText(b));
+            SaveBlob b = SaveJson.Load("{\"v\":4,\"fans\":{\"balance\":5,\"lifetime\":5},\"later\":true}", Day).Blob;
+            Assert.AreEqual(4, b.V, "never stamped back down to 3");
+            StringAssert.StartsWith("{\"v\":4,", SaveJson.ToText(b));
             StringAssert.Contains("\"later\":true", SaveJson.ToText(b));
         }
 

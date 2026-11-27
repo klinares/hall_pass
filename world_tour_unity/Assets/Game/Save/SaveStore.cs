@@ -152,6 +152,7 @@ namespace WorldTour.Game.Save
             var st = new SaveStore { _backend = backend ?? DefaultBackend() };
             LoadResult r = SaveJson.Load(st._backend.Read(SaveBlob.Key), today);
             st.Blob = r.Blob;
+            WorldTour.Core.Meta.CoinRules.GrantFromFans(st.Blob);   // phase 10B.1: an old save's one-time coin grant (never repeats; a new save is marked done)
             if (r.Unreadable)
             {
                 st.LoadError = r.Error;
@@ -197,6 +198,7 @@ namespace WorldTour.Game.Save
         public bool Replace(SaveBlob incoming)
         {
             if (incoming == null) throw new ArgumentNullException(nameof(incoming));
+            WorldTour.Core.Meta.CoinRules.GrantFromFans(incoming);
             Blob = incoming;
             return Save();
         }
@@ -241,6 +243,7 @@ namespace WorldTour.Game.Save
                 Debug.Log("WT_SAVE_SWAP kind=" + kind + " backup=Failed saved=false");
                 return new SwapResult { Changed = false, Backup = b, Saved = false };
             }
+            WorldTour.Core.Meta.CoinRules.GrantFromFans(next);
             Blob = next;
             bool saved = Save();
             Debug.Log("WT_SAVE_SWAP kind=" + kind + " backup=" + b + " saved=" + (saved ? "true" : "false"));

@@ -26,6 +26,9 @@ namespace WorldTour.Game.Ui
 
         public Selectable FirstSelected { get { return firstSelected; } set { firstSelected = value; } }
 
+        /// <summary>A screen that groups its controls takes Tab itself (true when it moved the focus). Default: Tab goes in reading order.</summary>
+        protected internal virtual bool HandleTab(int dir) { return false; }
+
         /// <summary>Once, right after it is created and placed on the stack.</summary>
         protected internal virtual void OnPushed() { }
 

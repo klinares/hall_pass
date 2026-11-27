@@ -134,7 +134,7 @@ namespace WorldTour.Core.Tests
             if (r.Ok) return "ok";
             switch (r.Reason)
             {
-                case BuyReason.Short: return "short:" + r.Need.ToString(CultureInfo.InvariantCulture);
+                case BuyReason.Short: return "short:" + (r.Need * CoinRules.FansPerGrantCoin).ToString(CultureInfo.InvariantCulture);   // 10B.1: coins, shown as the fans the web game counts
                 case BuyReason.Owned: return "owned";
                 default: return "unknown";
             }
@@ -149,6 +149,7 @@ namespace WorldTour.Core.Tests
             IReadOnlyList<ModeInfo> modes = new[] { AllModes, TestModes, new ModeInfo[0] }[r.Int(0, 2)];
             s.Fans.Balance = r.Int(0, 80) * 1000;
             s.Fans.Lifetime = s.Fans.Balance + r.Int(0, 50) * 1000;
+            s.Fans.Coins = s.Fans.Balance / CoinRules.FansPerGrantCoin;   // phase 10B.1: the wallet is coins now (every price is a multiple of 500 fans); Balance stands in for it below
             foreach (ShopItem it in Shop.All) if (r.Chance(.15) && !s.Inventory.Owned.Contains(it.Id)) s.Inventory.Owned.Add(it.Id);
             if (r.Chance(.1)) s.Inventory.Owned.Add("retired:item");
             foreach (string slot in new[] { "theme", "guitar", "dog" })
@@ -214,6 +215,7 @@ namespace WorldTour.Core.Tests
                 {
                     string id = r.Pick(ItemIds);
                     BuyResult res = MetaRules.Buy(s, id);
+                    s.Fans.Balance = s.Fans.Coins * CoinRules.FansPerGrantCoin;
                     o.Add("b " + id + " " + BuyText(res) + " " + s.Fans.Balance + " " + s.Fans.Lifetime);
                 }
                 else if (op == 1)
@@ -246,7 +248,7 @@ namespace WorldTour.Core.Tests
                 else
                 {
                     int add = r.Int(1, 40) * 1000;
-                    s.Fans.Balance += add; s.Fans.Lifetime += add;
+                    s.Fans.Balance += add; s.Fans.Lifetime += add; s.Fans.Coins += add / CoinRules.FansPerGrantCoin;
                     o.Add("f " + s.Fans.Balance + " " + s.Fans.Lifetime);
                 }
             }

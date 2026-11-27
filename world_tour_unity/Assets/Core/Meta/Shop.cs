@@ -128,7 +128,7 @@ namespace WorldTour.Core.Meta
         public static readonly IReadOnlyList<ShopSlot> WorldSlots = new[]
         {
             new ShopSlot(Outfit, "outfits", "what you wear on tour"),
-            new ShopSlot(Hair, "hair colours", "shows on you everywhere"),
+            new ShopSlot(Hair, "hair colors", "shows on you everywhere"),
             new ShopSlot(Guitar, "guitar skins", "the one you play on stage"),
             new ShopSlot(Dog, "riff" + Q + "s outfits", "riff wears it everywhere"),
             new ShopSlot(Lights, "stage lights", "every stage, every place"),

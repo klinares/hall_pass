@@ -34,6 +34,36 @@ namespace WorldTour.Core.Tests
         }
 
         [Test]
+        public void BothSlidersAtZero_SurviveAReload_AndStayZero_NotTheDefaults()
+        {
+            var d = SaveBlob.Defaults("2026-11-20");
+            ProgressRules.SetAmbience(d, 0);
+            ProgressRules.SetEffects(d, 0);
+            string text = SaveJson.ToText(d);
+            StringAssert.Contains("\"ambience\":0", text);
+            StringAssert.Contains("\"effects\":0", text);
+            SaveBlob once = SaveJson.Load(text, "2026-11-21").Blob;
+            Assert.AreEqual(0, once.Settings.Ambience);
+            Assert.AreEqual(0, once.Settings.Effects);
+            // and again: a second save and reload keeps them (zero is a value, never "not set")
+            SaveBlob twice = SaveJson.Load(SaveJson.ToText(once), "2026-11-22").Blob;
+            Assert.AreEqual(0, twice.Settings.Ambience);
+            Assert.AreEqual(0, twice.Settings.Effects);
+            Assert.AreEqual(SaveJson.ToCanonical(d), SaveJson.ToCanonical(twice));
+        }
+
+        [Test]
+        public void AmbienceAtZero_WithEffectsUp_SurvivesAReload()
+        {
+            var d = SaveBlob.Defaults("2026-11-20");
+            ProgressRules.SetAmbience(d, 0);
+            ProgressRules.SetEffects(d, 70);
+            SaveBlob back = SaveJson.Load(SaveJson.ToText(d), "2026-11-21").Blob;
+            Assert.AreEqual(0, back.Settings.Ambience);
+            Assert.AreEqual(70, back.Settings.Effects);
+        }
+
+        [Test]
         public void Sliders_AreClamped_OnSetAndOnLoad()
         {
             var d = SaveBlob.Defaults("2026-11-20");

@@ -61,7 +61,7 @@ namespace WorldTour.Core.Tests
             {
                 new[] { "", "paste your code first." },
                 new[] { "   ", "paste your code first." },
-                new[] { "hello there", "that doesn't look like a world tour code. it starts with WT1-" },
+                new[] { "hello there", "that doesn't look like a code from this game. it starts with WT1-" },
                 new[] { "WT2-abcd-12345678", "that code is from a newer version of the game." },
                 new[] { code.Substring(0, code.Length - 3), "the end of the code is missing." },
                 new[] { code.Substring(0, dash) + "-zzzzzzzz", "the end of the code is mistyped." },
@@ -69,7 +69,7 @@ namespace WorldTour.Core.Tests
                 new[] { code.Substring(0, code.Length / 2) + code.Substring(dash), null },
                 new[] { flipped, null },
                 new[] { wrongCheck, "the code doesn't check out. copy it again, all of it." },
-                new[] { "{\"hello\":1}", "that isn't a world tour save." },
+                new[] { "{\"hello\":1}", "that isn't a save from this game." },
                 new[] { "{\"fans\":{},\"venues\":{},\"v\":" + (SaveBlob.Version + 1) + "}", "that save is from a newer version of the game." },
                 new[] { "{\"fans\":", "the save inside the code can't be read." },
             };

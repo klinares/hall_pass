@@ -45,9 +45,9 @@ namespace WorldTour.Core.Progress
         // Keys each part of the save knows. Anything else is kept as it was stored (save version 2) and written back
         // after the known keys, the order JS { ...defaults, ...raw } gives.
         /// <summary>The top-level keys this version knows (anything else is kept as stored).</summary>
-        public static readonly string[] TopKeys = { "v", "created", "updated", "settings", "fans", "streak", "venues", "skills", "words", "review", "shows", "time", "inventory", "journal" };
+        public static readonly string[] TopKeys = { "v", "created", "updated", "settings", "fans", "streak", "venues", "skills", "words", "review", "shows", "time", "inventory", "journal", "avatar" };
         private static readonly string[] SettingsKeys = { "sound", "theme", "motion", "gentleSpelling", "gentleMath", "ambience", "effects" };
-        private static readonly string[] FansKeys = { "balance", "lifetime" };
+        private static readonly string[] FansKeys = { "balance", "lifetime", "coins", "coinsGranted" };
         private static readonly string[] StreakKeys = { "days", "best", "last" };
         private static readonly string[] VenuesKeys = { "unlocked", "seen" };
         private static readonly string[] ReviewKeys = { "words", "math" };
@@ -121,6 +121,8 @@ namespace WorldTour.Core.Progress
             {
                 d.Fans.Balance = JsonTree.Long(f["balance"], 0);
                 d.Fans.Lifetime = JsonTree.Long(f["lifetime"], 0);
+                d.Fans.Coins = System.Math.Max(0, JsonTree.Long(f["coins"], 0));
+                d.Fans.CoinsGranted = f["coinsGranted"] != null && f["coinsGranted"].Kind == JsonKind.Bool && f["coinsGranted"].BoolValue;
                 d.Fans.Extra = Unknown(f, FansKeys);
             }
             JsonValue st = Obj(raw["streak"]);
@@ -192,6 +194,9 @@ namespace WorldTour.Core.Progress
                 if (seen != null) d.Journal.Seen = seen.Distinct().ToList();
                 d.Journal.Extra = Unknown(jo, JournalKeys);
             }
+
+            // version 3: the avatar (an older save has none; AvatarRules works its look out from the old backstage items)
+            d.Avatar = AvatarJson.Read(raw["avatar"]);
 
             // store.js:34 skills, words, time must be plain objects
             JsonValue sk = Dict(raw["skills"]);
@@ -345,6 +350,15 @@ namespace WorldTour.Core.Progress
             }
         }
 
+        /// <summary>The fans object: balance and lifetime always; coins and coinsGranted (phase 10B.1) only once she has some, so an older save's text is unchanged.</summary>
+        private static JsonValue FansObj(FansData f)
+        {
+            JsonValue o = JsonValue.Obj().Set("balance", f.Balance).Set("lifetime", f.Lifetime);
+            if (f.Coins != 0) o.Set("coins", f.Coins);
+            if (f.CoinsGranted) o.Set("coinsGranted", true);
+            return o;
+        }
+
         // ---------- write ----------
 
         /// <summary>The save as the JSON object the JS keeps (same keys and shapes).</summary>
@@ -355,7 +369,7 @@ namespace WorldTour.Core.Progress
                 .Set("created", b.Created)
                 .Set("updated", b.Updated)
                 .Set("settings", WithExtra(WriteSettings(b.Settings), b.Settings.Extra))
-                .Set("fans", WithExtra(JsonValue.Obj().Set("balance", b.Fans.Balance).Set("lifetime", b.Fans.Lifetime), b.Fans.Extra))
+                .Set("fans", WithExtra(FansObj(b.Fans), b.Fans.Extra))
                 .Set("streak", WithExtra(JsonValue.Obj().Set("days", b.Streak.Days).Set("best", b.Streak.Best).Set("last", b.Streak.Last), b.Streak.Extra))
                 .Set("venues", WithExtra(JsonValue.Obj().Set("unlocked", StrArr(b.Venues.Unlocked)).Set("seen", StrArr(b.Venues.Seen)), b.Venues.Extra));
             var skills = JsonValue.Obj();
@@ -399,6 +413,8 @@ namespace WorldTour.Core.Progress
             foreach (var kv in b.Journal.Layout)
                 lay.Set(kv.Key, WithExtra(JsonValue.Obj().Set("x", JsonValue.Num(kv.Value.X)).Set("y", JsonValue.Num(kv.Value.Y)).Set("r", JsonValue.Num(kv.Value.R)), kv.Value.Extra));
             o.Set("journal", WithExtra(JsonValue.Obj().Set("stickers", stk).Set("layout", lay).Set("seen", StrArr(b.Journal.Seen)), b.Journal.Extra));
+            JsonValue av = AvatarJson.Write(b.Avatar);
+            if (av != null) o.Set("avatar", av);
             return WithExtra(o, b.Extra);
         }
 

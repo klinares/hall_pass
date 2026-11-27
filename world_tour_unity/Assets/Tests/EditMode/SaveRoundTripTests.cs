@@ -20,7 +20,7 @@ namespace WorldTour.Core.Tests
                 "{\"created\":\"2026-11-20\",\"fans\":{\"balance\":0,\"lifetime\":0},\"inventory\":{\"equipped\":{\"dog\":\"none\",\"guitar\":\"classic\",\"theme\":\"tour-pink\"}," +
                 "\"owned\":[\"theme:tour-pink\",\"guitar:classic\",\"dog:none\"]},\"journal\":{\"layout\":{},\"seen\":[],\"stickers\":{}},\"review\":{\"math\":[],\"words\":[]}," +
                 "\"settings\":{\"motion\":\"auto\",\"sound\":true,\"theme\":\"tour-pink\"},\"shows\":[],\"skills\":{},\"streak\":{\"best\":0,\"days\":0,\"last\":null}," +
-                "\"time\":{},\"updated\":0,\"v\":2,\"venues\":{\"seen\":[\"coffee\"],\"unlocked\":[\"coffee\"]},\"words\":{}}",
+                "\"time\":{},\"updated\":0,\"v\":3,\"venues\":{\"seen\":[\"coffee\"],\"unlocked\":[\"coffee\"]},\"words\":{}}",
                 SaveJson.ToCanonical(d));
         }
 

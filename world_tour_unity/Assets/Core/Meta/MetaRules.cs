@@ -13,7 +13,7 @@ namespace WorldTour.Core.Meta
         Unknown,
         /// <summary>Already hers, or free ("owned").</summary>
         Owned,
-        /// <summary>Not enough fans to spend ("short"); <see cref="BuyResult.Need"/> says how many more.</summary>
+        /// <summary>Not enough coins ("short"); <see cref="BuyResult.Need"/> says how many more.</summary>
         Short,
     }
 
@@ -82,16 +82,17 @@ namespace WorldTour.Core.Meta
         }
 
         /// <summary>
-        /// meta.js:11 <c>buy</c>: spends fans to spend (balance) only; lifetime fans never go down. Refuses an
-        /// unknown item, one she owns (or a free one), and one she can't afford, changing nothing.
+        /// meta.js:11 <c>buy</c>, changed in phase 10B.1: the price is paid in coins (<see cref="CoinRules.PriceOf"/>); fans are never
+        /// deducted, neither the balance nor the lifetime. Refuses an unknown item, one she owns (or a free one), and one she can't
+        /// afford, changing nothing.
         /// </summary>
         public static BuyResult Buy(SaveBlob s, string id)
         {
             ShopItem it = Shop.ById(id);
             if (it == null) return new BuyResult { Reason = BuyReason.Unknown };
             if (Owns(s, id)) return new BuyResult { Reason = BuyReason.Owned };
-            if (s.Fans.Balance < it.Price) return new BuyResult { Reason = BuyReason.Short, Need = it.Price - s.Fans.Balance };
-            s.Fans.Balance -= it.Price;
+            long price = CoinRules.PriceOf(it);
+            if (!CoinRules.TrySpend(s, price)) return new BuyResult { Reason = BuyReason.Short, Need = price - CoinRules.Coins(s) };
             s.Inventory.Owned.Add(id);
             return new BuyResult { Ok = true };
         }

@@ -31,9 +31,9 @@ namespace WorldTour.Core.Progress
         /// <summary>The largest file the picker reads, in bytes (a byte-order mark and a trailing line break on top).</summary>
         public const int MaxFileBytes = MaxChars + 16;
 
-        public const string TooBig = "that's too big to be a world tour save.";
+        public const string TooBig = "that's too big to be a save from this game.";
         public const string Empty = "paste your code first.";
-        public const string NotACode = "that doesn't look like a world tour code. it starts with " + ExportCode.Prefix;
+        public const string NotACode = "that doesn't look like a code from this game. it starts with " + ExportCode.Prefix;
         public const string NewerCode = "that code is from a newer version of the game.";
 
         /// <summary>

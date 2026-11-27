@@ -227,7 +227,7 @@ namespace WorldTour.Game.Show
             });
             _result = new ShowResult { Request = request, Engine = Engine, Week = request.Week };
             // Attach first, so the save (and the stickers) are done before this screen reacts to ShowFinished.
-            ProgressRules.Attach(Engine, Save, Today, v => _result.Unlocks.Add(v), ModeList.All(config), st => _result.Stickers = st);
+            ProgressRules.Attach(Engine, Save, Today, v => _result.Unlocks.Add(v), ModeList.All(config), st => _result.Stickers = st, CoinChip.Notify);
             Engine.Raised += OnEvent;
 
             Build();

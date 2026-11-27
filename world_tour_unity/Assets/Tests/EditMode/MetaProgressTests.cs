@@ -19,9 +19,9 @@ namespace WorldTour.Core.Tests
         [Test]
         public void BuyEquipPlace_GoThroughTheMetaRules()
         {
-            SaveBlob s = SaveBlob.Defaults(Today); s.Fans.Balance = 20000; s.Fans.Lifetime = 20000;
+            SaveBlob s = SaveBlob.Defaults(Today); s.Fans.Balance = 20000; s.Fans.Lifetime = 20000; s.Fans.Coins = 40;
             Assert.IsTrue(ProgressRules.BuyItem(s, "guitar:mint").Ok);
-            Assert.AreEqual(2000, s.Fans.Balance); Assert.AreEqual(20000, s.Fans.Lifetime);
+            Assert.AreEqual(4, s.Fans.Coins); Assert.AreEqual(20000, s.Fans.Balance); Assert.AreEqual(20000, s.Fans.Lifetime);
             Assert.AreEqual(BuyReason.Owned, ProgressRules.BuyItem(s, "guitar:mint").Reason);
             Assert.IsTrue(ProgressRules.EquipItem(s, "guitar:mint"));
             Assert.AreEqual("#8fe3c4", MetaRules.GetLook(s).Guitar);

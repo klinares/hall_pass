@@ -199,6 +199,12 @@ namespace WorldTour.Game.Meta
         /// For the browser playthroughs: one line naming where each control is, as fractions of the window from the top-left
         /// ("WT_HITS screen=backstage back=0.0713,0.0677 ..."), so a test can click it with the mouse.
         /// </summary>
+        /// <summary>The page was opened with ?wt_test (browser tests only).</summary>
+        public static bool TestMode
+        {
+            get { string u = Application.absoluteURL; return !string.IsNullOrEmpty(u) && u.IndexOf("wt_test", System.StringComparison.OrdinalIgnoreCase) >= 0; }
+        }
+
         public static void LogHits(string screen, IEnumerable<KeyValuePair<string, RectTransform>> controls)
         {
             var sb = new StringBuilder("WT_HITS screen=").Append(screen);

@@ -124,8 +124,8 @@ namespace WorldTour.Core.Meta
             bool own = MetaRules.Owns(_s, it.Id), wearing = Wearing(it);
             string tag = wearing ? (it.Slot == Shop.Theme ? "on" : "wearing")
                 : own ? (it.Slot == Shop.StickerSlot ? "in journal" : "yours")
-                : Fmt(it.Price);
-            return new ItemTag { Tag = tag, Own = own, Wearing = wearing, Short = !own && it.Price > _s.Fans.Balance, Pressed = it.Id == Selected };
+                : Fmt(CoinRules.PriceOf(it));
+            return new ItemTag { Tag = tag, Own = own, Wearing = wearing, Short = !own && CoinRules.PriceOf(it) > CoinRules.Coins(_s), Pressed = it.Id == Selected };
         }
 
         /// <summary>backstage.js:73-97 <c>paint()</c>: the mirror for the selected item.</summary>
@@ -147,8 +147,8 @@ namespace WorldTour.Core.Meta
             if (wearing) { m.Action = it.Slot == Shop.Theme ? "theme is on" : "wearing it"; m.Does = MirrorAction.None; }
             else if (own && it.Slot == Shop.StickerSlot) { m.Action = "see it in your journal"; m.Does = MirrorAction.Journal; }
             else if (own) { m.Action = it.Slot == Shop.Theme ? "switch to this theme" : "wear it"; m.Does = MirrorAction.Equip; }
-            else if (it.Price > _s.Fans.Balance) { m.Action = Fmt(it.Price - _s.Fans.Balance) + " more fans needed"; m.Does = MirrorAction.None; }
-            else { m.Action = Armed == it.Id ? "tap again to buy" : "buy for " + Fmt(it.Price); m.Does = MirrorAction.Buy; }
+            else if (CoinRules.PriceOf(it) > CoinRules.Coins(_s)) { m.Action = Fmt(CoinRules.PriceOf(it) - CoinRules.Coins(_s)) + " more coins needed"; m.Does = MirrorAction.None; }
+            else { m.Action = Armed == it.Id ? "tap again to buy" : "buy for " + Fmt(CoinRules.PriceOf(it)) + " coins"; m.Does = MirrorAction.Buy; }
             return m;
         }
 
@@ -193,7 +193,7 @@ namespace WorldTour.Core.Meta
 
         public const string BackLink = "the map";
         public const string Title = "backstage";
-        public const string FansToSpend = "fans to spend";
+        public const string FansToSpend = "coins to spend";
 
         /// <summary>backstage.js:31 the eyebrow: "merch + wardrobe ✶ cosmetic only".</summary>
         public static readonly string Eyebrow = "merch + wardrobe " + JournalBook.Star + " cosmetic only";
@@ -201,7 +201,7 @@ namespace WorldTour.Core.Meta
         /// <summary>backstage.js:35: "spending never lowers your total fans (12,345), so the map only goes forward."</summary>
         public static string Note(long lifetime)
         {
-            return "spending never lowers your total fans (" + Fmt(lifetime) + "), so the map only goes forward.";
+            return "coins buy things. your fans (" + Fmt(lifetime) + ") are never spent.";
         }
     }
 }

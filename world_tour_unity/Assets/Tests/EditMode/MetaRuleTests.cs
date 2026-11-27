@@ -23,7 +23,7 @@ namespace WorldTour.Core.Tests
 
         private sealed class Snapshot
         {
-            public long Balance, Lifetime;
+            public long Balance, Lifetime, Coins;
             public List<string> Owned;
             public Dictionary<string, string> Stickers;
             public HashSet<string> LayoutKeys;
@@ -32,7 +32,7 @@ namespace WorldTour.Core.Tests
             {
                 return new Snapshot
                 {
-                    Balance = s.Fans.Balance, Lifetime = s.Fans.Lifetime, Owned = s.Inventory.Owned.ToList(),
+                    Balance = s.Fans.Balance, Lifetime = s.Fans.Lifetime, Coins = s.Fans.Coins, Owned = s.Inventory.Owned.ToList(),
                     Stickers = new Dictionary<string, string>(s.Journal.Stickers), LayoutKeys = new HashSet<string>(s.Journal.Layout.Keys),
                 };
             }
@@ -55,6 +55,7 @@ namespace WorldTour.Core.Tests
                 SaveBlob s = MetaTests.Fresh();
                 s.Fans.Balance = r.Int(0, 120) * 1000 + r.Int(0, 999);
                 s.Fans.Lifetime = s.Fans.Balance + r.Int(0, 900) * 1000;
+                s.Fans.Coins = s.Fans.Balance / CoinRules.FansPerGrantCoin;   // 10B.1: coins pay, in the same sizes as the old fans
                 s.Streak.Best = r.Int(0, 12);
                 for (int j = r.Int(0, 12); j > 0; j--)
                     s.Shows.Add(new ShowRecord { D = "2026-11-18", Mode = r.Pick(Modes).Id, N = 10, First = r.Int(0, 10), Encore = r.Chance(.2) });
@@ -69,7 +70,7 @@ namespace WorldTour.Core.Tests
                     {
                         string id = r.Pick(ids);
                         BuyResult res = MetaRules.Buy(s, id);
-                        if (res.Ok) { buys++; spent = Shop.ById(id).Price; Assert.AreEqual(before.Owned.Count + 1, s.Inventory.Owned.Count, what); }
+                        if (res.Ok) { buys++; spent = CoinRules.PriceOf(Shop.ById(id)); Assert.AreEqual(before.Owned.Count + 1, s.Inventory.Owned.Count, what); }
                         else Assert.AreEqual(before.Owned.Count, s.Inventory.Owned.Count, what);
                         if (res.Reason == BuyReason.Short) { shorts++; Assert.Greater(res.Need, 0, what); }
                     }
@@ -78,8 +79,9 @@ namespace WorldTour.Core.Tests
                     else MetaRules.Place(s, r.Pick(keys), r.Int(-50, 150) / 100.0, r.Int(-50, 150) / 100.0, r.Int(-9, 9));
 
                     Assert.AreEqual(before.Lifetime, s.Fans.Lifetime, what + ": lifetime fans moved");
-                    Assert.AreEqual(before.Balance - spent, s.Fans.Balance, what + ": balance changed by more than a price");
-                    Assert.GreaterOrEqual(s.Fans.Balance, 0, what + ": balance went negative");
+                    Assert.AreEqual(before.Coins - spent, s.Fans.Coins, what + ": coins changed by more than a price");
+                    Assert.AreEqual(before.Balance, s.Fans.Balance, what + ": fans were spent");
+                    Assert.GreaterOrEqual(s.Fans.Coins, 0, what + ": coins went negative");
                     CollectionAssert.AreEqual(before.Owned, s.Inventory.Owned.Take(before.Owned.Count).ToList(), what + ": an owned item was lost");
                     foreach (KeyValuePair<string, string> e in before.Stickers)
                         Assert.AreEqual(e.Value, s.Journal.Stickers[e.Key], what + ": sticker " + e.Key + " was lost or re-dated");
@@ -93,23 +95,23 @@ namespace WorldTour.Core.Tests
         [Test]
         public void Buy_AtExactlyTheBalance_LeavesZero_AndOneFanShortIsRefused()
         {
-            SaveBlob s = MetaTests.Fresh(); s.Fans.Balance = 12000; s.Fans.Lifetime = 12000;
+            SaveBlob s = MetaTests.Fresh(); s.Fans.Balance = 12000; s.Fans.Lifetime = 12000; s.Fans.Coins = 24;
             Assert.IsTrue(MetaRules.Buy(s, "sticker:pass").Ok);
-            Assert.AreEqual(0, s.Fans.Balance); Assert.AreEqual(12000, s.Fans.Lifetime);
-            s.Fans.Balance = 4999;
+            Assert.AreEqual(0, s.Fans.Coins); Assert.AreEqual(12000, s.Fans.Lifetime); Assert.AreEqual(12000, s.Fans.Balance);
+            s.Fans.Coins = 9;
             BuyResult r = MetaRules.Buy(s, "sticker:pick");
-            Assert.AreEqual(BuyReason.Short, r.Reason); Assert.AreEqual(1, r.Need); Assert.AreEqual(4999, s.Fans.Balance);
+            Assert.AreEqual(BuyReason.Short, r.Reason); Assert.AreEqual(1, r.Need); Assert.AreEqual(9, s.Fans.Coins);
         }
 
         [Test]
         public void Refusals_ChangeNothing()
         {
-            SaveBlob s = MetaTests.Fresh(); s.Fans.Balance = 3000;
+            SaveBlob s = MetaTests.Fresh(); s.Fans.Balance = 3000; s.Fans.Coins = 6;
             var owned = s.Inventory.Owned.ToList();
             foreach (string id in new[] { "nope:x", "dog:none", "guitar:cherry", "" })
             {
                 Assert.IsFalse(MetaRules.Buy(s, id).Ok, id);
-                Assert.AreEqual(3000, s.Fans.Balance); CollectionAssert.AreEqual(owned, s.Inventory.Owned);
+                Assert.AreEqual(6, s.Fans.Coins); Assert.AreEqual(3000, s.Fans.Balance); CollectionAssert.AreEqual(owned, s.Inventory.Owned);
             }
             var eq = new Dictionary<string, string>(s.Inventory.Equipped);
             foreach (string id in new[] { "nope:x", "guitar:cherry", "sticker:pick", "theme:" }) Assert.IsFalse(MetaRules.Equip(s, id), id);

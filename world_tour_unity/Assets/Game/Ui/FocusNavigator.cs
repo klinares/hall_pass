@@ -65,6 +65,7 @@ namespace WorldTour.Game.Ui
 
         void Move(int dir)
         {
+            if (_stack.Top != null && _stack.Top.HandleTab(dir)) return;
             Collect();
             if (_list.Count == 0) return;
             GameObject cur = EventSystem.current.currentSelectedGameObject;

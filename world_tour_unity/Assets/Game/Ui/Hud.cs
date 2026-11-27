@@ -27,6 +27,10 @@ namespace WorldTour.Game.Ui
 
         public RectTransform Rect { get { return (RectTransform)transform; } }
         public RoundIconButton SoundButton { get { return _sound; } }
+        CoinChip _counters;
+        /// <summary>Phase 10B.1: the fans and coins numbers (top-left). Only the 3D world asks for them.</summary>
+        public CoinChip Counters { get { return _counters; } }
+        public void AddCounters() { if (_counters == null) _counters = CoinChip.Create(transform, _store); }
 
         public static Hud Create(Transform canvas, SaveStore store)
         {

@@ -49,14 +49,14 @@ namespace WorldTour.Core.Tests
         }
 
         [Test]
-        public void Buy_SpendsBalanceOnly_NeverLifetime_AndNeverTwice()
+        public void Buy_SpendsCoinsOnly_NeverFans_AndNeverTwice()
         {
-            SaveBlob s = Fresh(); s.Fans.Balance = 20000; s.Fans.Lifetime = 50000;
+            SaveBlob s = Fresh(); s.Fans.Balance = 20000; s.Fans.Lifetime = 50000; s.Fans.Coins = 40;
             Assert.AreEqual(new BuyResult { Ok = true }, MetaRules.Buy(s, "guitar:sunburst"));
-            Assert.AreEqual(2000, s.Fans.Balance); Assert.AreEqual(50000, s.Fans.Lifetime);
+            Assert.AreEqual(4, s.Fans.Coins); Assert.AreEqual(20000, s.Fans.Balance); Assert.AreEqual(50000, s.Fans.Lifetime);
             Assert.AreEqual(BuyReason.Owned, MetaRules.Buy(s, "guitar:sunburst").Reason);
             BuyResult r = MetaRules.Buy(s, "dog:beanie");
-            Assert.AreEqual(BuyReason.Short, r.Reason); Assert.AreEqual(18000, r.Need); Assert.AreEqual(2000, s.Fans.Balance);
+            Assert.AreEqual(BuyReason.Short, r.Reason); Assert.AreEqual(36, r.Need); Assert.AreEqual(4, s.Fans.Coins);
             Assert.AreEqual(BuyReason.Unknown, MetaRules.Buy(s, "nope:x").Reason);
             Assert.AreEqual(BuyReason.Owned, MetaRules.Buy(s, "theme:tour-pink").Reason);
         }
@@ -64,7 +64,7 @@ namespace WorldTour.Core.Tests
         [Test]
         public void Equip_OnlyWhatSheOwns_StickersAreNeverEquipped_LookFallsBackSafely()
         {
-            SaveBlob s = Fresh(); s.Fans.Balance = 1000000;
+            SaveBlob s = Fresh(); s.Fans.Balance = 1000000; s.Fans.Coins = 2000;
             Assert.IsFalse(MetaRules.Equip(s, "dog:shades"));
             MetaRules.Buy(s, "dog:shades"); MetaRules.Buy(s, "theme:peach-navy"); MetaRules.Buy(s, "guitar:mint"); MetaRules.Buy(s, "sticker:pick");
             Assert.IsTrue(MetaRules.Equip(s, "dog:shades") && MetaRules.Equip(s, "theme:peach-navy") && MetaRules.Equip(s, "guitar:mint"));
@@ -112,7 +112,7 @@ namespace WorldTour.Core.Tests
         [Test]
         public void JournalPage_EarnedThenBought_SpotsStayOnThePage_PlacingClampsAndKeepsTheTilt()
         {
-            SaveBlob s = Fresh(); s.Fans.Balance = 100000;
+            SaveBlob s = Fresh(); s.Fans.Balance = 100000; s.Fans.Coins = 200;
             s.Journal.Stickers = new Dictionary<string, string> { { "first-show", "d1" }, { "streak-3", "d2" } }; MetaRules.Buy(s, "sticker:note");
             CollectionAssert.AreEqual(new[] { "first-show", "streak-3", "sticker:note" }, MetaRules.PageItems(s).Select(i => i.Key).ToList());
             Assert.AreEqual(Milestones.All.Count - 2, MetaRules.ToEarn(s).Count);

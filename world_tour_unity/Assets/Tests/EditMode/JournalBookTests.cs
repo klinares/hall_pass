@@ -104,18 +104,19 @@ namespace WorldTour.Core.Tests
         public void Backstage_TwoTapBuy_ThemeIsPutOn_TotalFansNeverMove()
         {
             SaveBlob s = Fresh();
-            ProgressRules.AddFans(s, 61000);
+            ProgressRules.AddFans(s, 61000); s.Fans.Coins = 122;   // 10B.1: backstage takes coins; fans only unlock places
             var b = new Backstage(s);
             Assert.AreEqual("dog:none", b.Selected);
             b.Select("theme:peach-navy");
             Mirror m = b.Mirror();
-            Assert.AreEqual("buy for 60,000", m.Action);
+            Assert.AreEqual("buy for 120 coins", m.Action);
             Assert.AreEqual("peach-navy", m.Theme, "trying it on");
             Assert.AreEqual(PressOutcome.Armed, b.Press());
             Assert.AreEqual("tap again to buy", b.Mirror().Action);
-            Assert.AreEqual(61000, s.Fans.Balance, "one tap never spends");
+            Assert.AreEqual(122, s.Fans.Coins, "one tap never spends");
             Assert.AreEqual(PressOutcome.Bought, b.Press());
-            Assert.AreEqual(1000, s.Fans.Balance);
+            Assert.AreEqual(2, s.Fans.Coins);
+            Assert.AreEqual(61000, s.Fans.Balance, "fans are never spent");
             Assert.AreEqual(61000, s.Fans.Lifetime);
             Assert.AreEqual("peach-navy", MetaRules.GetLook(s).Theme);
             Assert.AreEqual("theme is on", b.Mirror().Action);
@@ -131,7 +132,7 @@ namespace WorldTour.Core.Tests
         public void Backstage_PickingAnotherItem_OrTheTimer_CancelsTheArmedBuy()
         {
             SaveBlob s = Fresh();
-            ProgressRules.AddFans(s, 20000);
+            ProgressRules.AddFans(s, 20000); s.Fans.Coins = 40;   // 10B.1: coins pay
             var b = new Backstage(s);
             b.Select("sticker:pick");
             Assert.AreEqual(PressOutcome.Armed, b.Press());
@@ -139,7 +140,7 @@ namespace WorldTour.Core.Tests
             Assert.IsNull(b.Armed);
             Assert.AreEqual(PressOutcome.Armed, b.Press());
             b.Disarm();
-            Assert.AreEqual("buy for 5,000", b.Mirror().Action);
+            Assert.AreEqual("buy for 10 coins", b.Mirror().Action);
             Assert.AreEqual(PressOutcome.Armed, b.Press());
             Assert.AreEqual(PressOutcome.Bought, b.Press());
             Assert.AreEqual("stuck it in!", Backstage.BoughtToast(Shop.ById("sticker:note")));
@@ -152,14 +153,14 @@ namespace WorldTour.Core.Tests
         public void Backstage_ShortOfFans_SaysHowManyMore_AndCannotBuy()
         {
             SaveBlob s = Fresh();
-            ProgressRules.AddFans(s, 59000);
+            ProgressRules.AddFans(s, 59000); s.Fans.Coins = 118;
             var b = new Backstage(s);
             b.Select("theme:peach-navy");
             Mirror m = b.Mirror();
-            Assert.AreEqual("1,000 more fans needed", m.Action);
+            Assert.AreEqual("2 more coins needed", m.Action);
             Assert.AreEqual(MirrorAction.None, m.Does);
             Assert.AreEqual(PressOutcome.None, b.Press());
-            Assert.AreEqual(59000, s.Fans.Balance);
+            Assert.AreEqual(118, s.Fans.Coins);
             Assert.IsTrue(b.Tag(Shop.ById("theme:peach-navy")).Short);
         }
 
@@ -167,7 +168,8 @@ namespace WorldTour.Core.Tests
         public void Copy_IsTheWebGames()
         {
             Assert.AreEqual("merch + wardrobe ✶ cosmetic only", Backstage.Eyebrow);
-            Assert.AreEqual("spending never lowers your total fans (12,345), so the map only goes forward.", Backstage.Note(12345));
+            // phase 10B.1: backstage takes coins now, so the web game's note about fans becomes one about coins
+            Assert.AreEqual("coins buy things. your fans (12,345) are never spent.", Backstage.Note(12345));
         }
 
         /// <summary>

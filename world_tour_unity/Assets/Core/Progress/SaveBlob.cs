@@ -16,9 +16,9 @@ namespace WorldTour.Core.Progress
         /// <summary>
         /// The save format version. 1 = the web game's store.js format; 2 = phase 5: adds <c>journal.seen</c> and keeps
         /// keys this version doesn't know. Migrate writes this version, or the stored one if it is newer (so a save from a
-        /// newer game is never stamped back down and re-migrated by it).
+        /// newer game is never stamped back down and re-migrated by it). 3 = phase 10B.1: adds <c>avatar</c> (and, from the same phase, <c>fans.coins</c>); an older save loads with nothing lost.
         /// </summary>
-        public const int Version = 2;
+        public const int Version = 3;
 
         public int V = Version;
         /// <summary>The day the save was made ("yyyy-mm-dd").</summary>
@@ -37,6 +37,8 @@ namespace WorldTour.Core.Progress
         public Dictionary<string, int> Time = new Dictionary<string, int>();
         public InventoryData Inventory = new InventoryData();
         public JournalData Journal = new JournalData();
+        /// <summary>Phase 10B.1 (version 3): owned avatar items, the worn look and the five outfits. Written only when it holds something.</summary>
+        public AvatarData Avatar = new AvatarData();
         /// <summary>Top-level keys this version doesn't know, kept in their stored order and written back after the known ones (null = none).</summary>
         public JsonValue Extra;
 
@@ -72,6 +74,10 @@ namespace WorldTour.Core.Progress
         public JsonValue Extra;
         public long Balance;
         public long Lifetime;
+        /// <summary>Phase 10B.1: coins, what the stores take. Earned only by answering (see CoinRules); written only when not zero.</summary>
+        public long Coins;
+        /// <summary>Phase 10B.1: the one-time coin grant for fans from before coins has been given (CoinRules.GrantFromFans); written only when true.</summary>
+        public bool CoinsGranted;
     }
 
     /// <summary>The day streak.</summary>

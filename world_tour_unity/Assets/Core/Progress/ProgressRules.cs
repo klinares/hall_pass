@@ -317,7 +317,7 @@ namespace WorldTour.Core.Progress
         /// ones go to <paramref name="onStickers"/> for the ticket screen (called with an empty list when none).
         /// </summary>
         public static void Attach(ShowEngine engine, SaveBlob s, Func<string> today, Action<Venue> onUnlock = null,
-            IReadOnlyList<ModeInfo> modes = null, Action<List<Milestone>> onStickers = null)
+            IReadOnlyList<ModeInfo> modes = null, Action<List<Milestone>> onStickers = null, Action<long> onCoins = null)
         {
             if (engine == null) throw new ArgumentNullException(nameof(engine));
             if (!ReferenceEquals(engine.SkillRecord, Skill(s, engine.Skill)))
@@ -330,6 +330,12 @@ namespace WorldTour.Core.Progress
                         foreach (Venue v in AddFans(s, e.Amount)) if (onUnlock != null) onUnlock(v);
                         break;
                     case ShowEventKind.ItemRecorded:
+                        // phase 10B.1: coins for a right answer (first try most, hinted some); a miss earns nothing and costs nothing
+                        if (!e.Missed)
+                        {
+                            long coins = CoinRules.Earn(s, e.Clean, e.Hinted && !e.Clean);
+                            if (coins > 0 && onCoins != null) onCoins(coins);
+                        }
                         var m = e.Slot.Item as MathItem;
                         if (engine.IsMath && m != null) RecordMath(s, engine.Skill, m, e.Clean, e.Missed, e.Keep);
                         else

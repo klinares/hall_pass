@@ -84,7 +84,7 @@ namespace WorldTour.Core.Progress
             JsonValue raw;
             StrictJsonException jerr;
             if (!StrictJson.TryParse(text, out raw, out jerr)) return Fail(p, "the save inside the code can't be read.");
-            if (raw.Kind != JsonKind.Object || raw["fans"] == null || raw["venues"] == null) return Fail(p, "that isn't a world tour save.");
+            if (raw.Kind != JsonKind.Object || raw["fans"] == null || raw["venues"] == null) return Fail(p, "that isn't a save from this game.");
             JsonValue v = raw["v"];
             if (v != null && JsonTree.IsNum(v) && v.Number > SaveBlob.Version) return Fail(p, "that save is from a newer version of the game.");
 
@@ -135,7 +135,7 @@ namespace WorldTour.Core.Progress
             s = sb.ToString();
             if (s.Length >= 4 && s.StartsWith("WT", StringComparison.OrdinalIgnoreCase) && s[3] == '-' && char.IsDigit(s[2]) && s[2] != '1')
                 return "that code is from a newer version of the game.";
-            if (!s.StartsWith(Prefix, StringComparison.Ordinal)) return "that doesn't look like a world tour code. it starts with " + Prefix;
+            if (!s.StartsWith(Prefix, StringComparison.Ordinal)) return "that doesn't look like a code from this game. it starts with " + Prefix;
             string body = s.Substring(Prefix.Length);
             int dash = body.LastIndexOf('-');
             if (dash < 0 || body.Length - dash - 1 != 8) return "the end of the code is missing.";

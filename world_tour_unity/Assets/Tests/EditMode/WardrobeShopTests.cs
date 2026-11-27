@@ -59,9 +59,9 @@ namespace WorldTour.Core.Tests
         [Test]
         public void BuyEquip_SpendsOnlyTheBalance_AndTheLookFollows()
         {
-            SaveBlob s = SaveBlob.Defaults(Day); s.Fans.Balance = 20000; s.Fans.Lifetime = 20000;
+            SaveBlob s = SaveBlob.Defaults(Day); s.Fans.Balance = 20000; s.Fans.Lifetime = 20000; s.Fans.Coins = 40;   // 10B.1: coins pay (the old price over 500); fans are never spent
             Assert.IsTrue(MetaRules.Buy(s, "outfit:peach-navy").Ok);
-            Assert.AreEqual(15000, s.Fans.Balance); Assert.AreEqual(20000, s.Fans.Lifetime);
+            Assert.AreEqual(30, s.Fans.Coins); Assert.AreEqual(20000, s.Fans.Balance); Assert.AreEqual(20000, s.Fans.Lifetime);
             Assert.IsFalse(MetaRules.Equip(s, "outfit:cherry"), "not owned");
             Assert.IsTrue(MetaRules.Equip(s, "outfit:peach-navy"));
             Assert.IsTrue(MetaRules.Buy(s, "hair:blonde").Ok); Assert.IsTrue(MetaRules.Equip(s, "hair:blonde"));
@@ -69,7 +69,7 @@ namespace WorldTour.Core.Tests
             WardrobeLook l = WardrobeLook.Of(s);
             Assert.AreEqual("outfit:peach-navy", l.Outfit); Assert.AreEqual("hair:blonde", l.Hair); Assert.AreEqual("lights:pink", l.Lights);
             Assert.AreEqual(BuyReason.Short, MetaRules.Buy(s, "outfit:starlight").Reason);
-            Assert.AreEqual(35000 - s.Fans.Balance, MetaRules.Buy(s, "outfit:starlight").Need);
+            Assert.AreEqual(70 - s.Fans.Coins, MetaRules.Buy(s, "outfit:starlight").Need);
             Assert.AreEqual(BuyReason.Owned, MetaRules.Buy(s, "outfit:peach-navy").Reason);
         }
 
@@ -90,21 +90,21 @@ namespace WorldTour.Core.Tests
         [Test]
         public void ShopModel_WorksOnWorldItems_TwoTapBuy_StartsOnTheWornOutfit()
         {
-            SaveBlob s = SaveBlob.Defaults(Day); s.Fans.Balance = 7000; s.Fans.Lifetime = 7000;
+            SaveBlob s = SaveBlob.Defaults(Day); s.Fans.Balance = 7000; s.Fans.Lifetime = 7000; s.Fans.Coins = 14;
             var b = new Backstage(s, Shop.Outfit);
             Assert.AreEqual("outfit:tour", b.Selected);
             b.Select("outfit:peach-navy");
             Mirror m = b.Mirror();
-            Assert.AreEqual("trying on", m.Eyebrow); Assert.AreEqual("buy for 5,000", m.Action); Assert.AreEqual(MirrorAction.Buy, m.Does);
+            Assert.AreEqual("trying on", m.Eyebrow); Assert.AreEqual("buy for 10 coins", m.Action); Assert.AreEqual(MirrorAction.Buy, m.Does);
             Assert.AreEqual(PressOutcome.Armed, b.Press());
-            Assert.AreEqual(7000, s.Fans.Balance, "a stray tap never spends");
+            Assert.AreEqual(14, s.Fans.Coins, "a stray tap never spends");
             Assert.AreEqual("tap again to buy", b.Mirror().Action);
             Assert.AreEqual(PressOutcome.Bought, b.Press());
-            Assert.AreEqual(2000, s.Fans.Balance); Assert.AreEqual(7000, s.Fans.Lifetime);
+            Assert.AreEqual(4, s.Fans.Coins); Assert.AreEqual(7000, s.Fans.Balance); Assert.AreEqual(7000, s.Fans.Lifetime);
             Assert.AreEqual("outfit:peach-navy", WardrobeLook.Of(s).Outfit, "bought items are put on at once");
             Assert.AreEqual("wearing", b.Tag(Shop.ById("outfit:peach-navy")).Tag);
             b.Select("outfit:cherry");
-            Assert.AreEqual("23,000 more fans needed", b.Mirror().Action);
+            Assert.AreEqual("46 more coins needed", b.Mirror().Action);
             Assert.AreEqual(PressOutcome.None, b.Press());
             b.Select("outfit:tour");
             Assert.AreEqual(PressOutcome.Equipped, b.Press());
@@ -117,7 +117,7 @@ namespace WorldTour.Core.Tests
         [Test]
         public void Save_RoundTrips_AndTheOldGameKeepsWhatItDoesNotKnow()
         {
-            SaveBlob s = SaveBlob.Defaults(Day); s.Fans.Balance = 90000; s.Fans.Lifetime = 90000;
+            SaveBlob s = SaveBlob.Defaults(Day); s.Fans.Balance = 90000; s.Fans.Lifetime = 90000; s.Fans.Coins = 180;
             foreach (string id in new[] { "outfit:peach-navy", "hair:lilac", "lights:gold", "guitar:mint", "dog:beanie" }) { Assert.IsTrue(MetaRules.Buy(s, id).Ok, id); Assert.IsTrue(MetaRules.Equip(s, id), id); }
             string text = SaveJson.ToText(s);
             SaveBlob back = SaveJson.Load(text, Day).Blob;

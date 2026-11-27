@@ -173,7 +173,7 @@ namespace WorldTour.Game.Meta
         void Wallet(SaveBlob s, float right, float y)
         {
             // screens.css .wallet: card, ink border, shadow-md, star 46, balance 1.5rem, "fans to spend" .75rem; tilt-2
-            TextMeshProUGUI bal = UiKit.Text(_root, "Balance", Backstage.Fmt(s.Fans.Balance), FontRole.BodyBold, 24f, ColorRole.Ink, TextAlignmentOptions.BottomLeft, false);
+            TextMeshProUGUI bal = UiKit.Text(_root, "Balance", Backstage.Fmt(CoinRules.Coins(s)), FontRole.BodyBold, 24f, ColorRole.Ink, TextAlignmentOptions.BottomLeft, false);
             TextMeshProUGUI lbl = UiKit.Text(_root, "BalanceLabel", Backstage.FansToSpend, FontRole.Body, 12f, ColorRole.Ink, TextAlignmentOptions.TopLeft, false);
             float textW = Mathf.Max(UiKit.WidthOf(bal), UiKit.WidthOf(lbl)) + 4f;
             float w = 8f + 46f + 8f + textW + 16f, h = 62f;

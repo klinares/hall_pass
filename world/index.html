@@ -181,9 +181,9 @@
     }
 
     var config = {
-      dataUrl: "Build/037e9bf90faf9b5183205813cfc33bc6.data.unityweb",
-      frameworkUrl: "Build/8d7527face0a553f7de8743843b072c8.framework.js.unityweb",
-      codeUrl: "Build/31d2412c4517ed089017d3f8c52148b6.wasm.unityweb",
+      dataUrl: "Build/09e9c96555674babb508baa57ab17474.data.unityweb",
+      frameworkUrl: "Build/ec653ff5725af74a1fff69488c37e010.framework.js.unityweb",
+      codeUrl: "Build/b25a470fbfac4049bfc242417086efde.wasm.unityweb",
       streamingAssetsUrl: "StreamingAssets",
       // two-GPU laptops: ask for the dedicated card, on Chrome and Edge only (phase 10A: a Firefox on the owner's machine showed a black canvas with no error while the other browsers drew, so
       // Firefox and everything else get the default). Unity/emscripten read this as a number (0 default, 1 low-power, 2 high-performance);
@@ -206,7 +206,7 @@
     };
 
     var script = document.createElement("script");
-    script.src = "Build/52939fe1ec50c63499f91acce96c4185.loader.js";
+    script.src = "Build/540b5478782149cc9e4a66cb7daad668.loader.js";
     script.onload = function () {
       createUnityInstance(canvas, config, function (progress) {
         fill.style.width = Math.round(100 * progress) + "%";

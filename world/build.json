@@ -2,6 +2,31 @@
     "writer": "WorldTour.BuildWeb",
     "note": "written by BuildWeb.cs; Build/ keeps the current and the previous build only",
     "current": {
+        "builtAt": "2026-11-27T12:48:54-05:00",
+        "files": [
+            {
+                "path": "Build/2702ff512a61ae1cf5052130758e64ac.wasm.unityweb",
+                "size": 8249975
+            },
+            {
+                "path": "Build/4eac1f438c15c20b4d9b2f5f37d33799.framework.js.unityweb",
+                "size": 89803
+            },
+            {
+                "path": "Build/8ecf51d3575bb198af4949f28b1d56ed.data.unityweb",
+                "size": 8578344
+            },
+            {
+                "path": "Build/a8a43ce58ec79d6fe2e681c50f2084cb.loader.js",
+                "size": 47867
+            },
+            {
+                "path": "index.html",
+                "size": 9339
+            }
+        ]
+    },
+    "previous": {
         "builtAt": "2026-11-27T06:53:34-05:00",
         "files": [
             {
@@ -15,31 +40,6 @@
             {
                 "path": "Build/b25a470fbfac4049bfc242417086efde.wasm.unityweb",
                 "size": 8324035
-            },
-            {
-                "path": "Build/ec653ff5725af74a1fff69488c37e010.framework.js.unityweb",
-                "size": 89904
-            },
-            {
-                "path": "index.html",
-                "size": 8859
-            }
-        ]
-    },
-    "previous": {
-        "builtAt": "2026-11-27T05:35:50-05:00",
-        "files": [
-            {
-                "path": "Build/399f08d91ec53b1a3b4ee53d55bb4365.loader.js",
-                "size": 47867
-            },
-            {
-                "path": "Build/68961fa8898d6d96dd0d8c7aa113cbb6.data.unityweb",
-                "size": 8519265
-            },
-            {
-                "path": "Build/dc31bf3ee22ed3dc19fd7fade5461351.wasm.unityweb",
-                "size": 8322403
             },
             {
                 "path": "Build/ec653ff5725af74a1fff69488c37e010.framework.js.unityweb",

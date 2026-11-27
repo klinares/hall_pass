@@ -83,6 +83,69 @@ namespace WorldTour.World.Tests
         }
 
         /// <summary>
+        /// 10B.1 retest stall: in the club she was wedged between two chairs (-2.12, 2.86): the walk's push-out goes one blocker at a time, so between two overlapping chairs
+        /// it left her inside one, a notch the planner sees as solid on every side (a click then had no path and did nothing for ever). Walking the keys' way (down and left
+        /// from the north side of the chair row) must never end inside a chair now, and must keep her out of the notch.
+        /// </summary>
+        [Test]
+        public void Club_WalkingIntoTheChairRowNeverWedgesHerBetweenTwoChairs()
+        {
+            EditorSceneManager.OpenScene(Scenes + "/Place_Club.unity", OpenSceneMode.Single);
+            var circles = new List<Vector3>();
+            foreach (var o in Object.FindObjectsByType<Obstacle>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+                circles.Add(new Vector3(o.transform.position.x, o.transform.position.z, o.radius));
+            System.Func<Vector3, float, bool> blockedAt = (p, margin) =>
+            {
+                foreach (Vector3 c in circles) { float dx = p.x - c.x, dz = p.z - c.y, m = c.z + margin; if (dx * dx + dz * dz < m * m) return true; }
+                return false;
+            };
+            System.Func<Vector3, Vector3> pushOut = p =>
+            {
+                foreach (Vector3 c in circles)
+                {
+                    float dx = p.x - c.x, dz = p.z - c.y, m = c.z + PlayerController.WalkMargin, d = Mathf.Sqrt(dx * dx + dz * dz);
+                    if (d < m) { if (d < 1e-4f) { dx = 1f; d = 1f; } p.x = c.x + dx / d * m; p.z = c.y + dz / d * m; }
+                }
+                return p;
+            };
+            System.Func<Vector3, bool> blocked = p => blockedAt(p, PlayerController.StepMargin);
+            int wedged = 0, plainWedged = 0;
+            // walk from many starts north-east of the table and chair rows (where she spawns and walks from), heading down-left along the keys' diagonal and then straight left
+            for (float sx = 0.5f; sx <= 3.5f; sx += 0.37f)
+                for (float sz = 5.0f; sz <= 7.0f; sz += 0.23f)
+                {
+                    Vector3 a = new Vector3(sx, 0f, sz), b = a;
+                    if (blockedAt(a, 0.35f)) continue;
+                    for (int i = 0; i < 400; i++)
+                    {
+                        Vector3 dir = i < 200 ? new Vector3(-0.82f, 0f, -0.57f) : new Vector3(-1f, 0f, 0f);
+                        Vector3 d = dir * (5f / 60f);
+                        a = Obstacle.SlideStep(a, d, pushOut, blocked);
+                        b = pushOut(b + d);
+                        Assert.IsFalse(blocked(a), "never ends a step inside a chair, start " + sx + "," + sz + " step " + i + " at " + a);
+                    }
+                    bool Stuck(Vector3 at) { return blockedAt(at, PlayerController.PlanMargin) && PathGrid.FindEscaping(at, new Vector3(-5.6f, 0f, -0.6f), 13.5f, blockedAt, PlayerController.PlanMargin, PlayerController.TightMargin, out bool r).Count == 0; }
+                    if (Stuck(a)) { wedged++; }
+                    if (Stuck(b)) plainWedged++;
+                }
+            Assert.AreEqual(0, wedged, "with the slide step she is never wedged (the old plain push-out wedged " + plainWedged + " of these walks)");
+        }
+
+        [Test]
+        public void SlideStep_SlidesAlongABlockerAndFreesAWedgedWalker()
+        {
+            // one wall-like blocker: a circle at the origin, margin 0.35 push-out, 0.34 test
+            System.Func<Vector3, Vector3> push = p => { var d = new Vector2(p.x, p.z); float m = 1f + 0.35f; if (d.magnitude < m) { d = d.normalized * m; p.x = d.x; p.z = d.y; } return p; };
+            System.Func<Vector3, bool> blocked = p => new Vector2(p.x, p.z).magnitude < 1f + 0.345f;
+            Vector3 at = new Vector3(0f, 0f, 1.4f);
+            Vector3 next = Obstacle.SlideStep(at, new Vector3(0f, 0f, -0.1f), push, blocked);
+            Assert.IsFalse(blocked(next), "pushed out, never inside");
+            Vector3 wedged = new Vector3(0f, 0f, 0.5f);   // already inside: the plain push-out is used so a step can take her out
+            Assert.IsTrue(blocked(wedged));
+            Assert.AreEqual(1.35f, new Vector2(Obstacle.SlideStep(wedged, new Vector3(0f, 0f, 0.1f), push, blocked).x, Obstacle.SlideStep(wedged, new Vector3(0f, 0f, 0.1f), push, blocked).z).magnitude, 1e-3f);
+        }
+
+        /// <summary>
         /// Round 8.4: not only from the spawn. Every point a player stands at (spawn, stage spot, exit, a talking spot at each crew member) must reach every other,
         /// the way a click-walk from the stage to the exit does.
         /// </summary>

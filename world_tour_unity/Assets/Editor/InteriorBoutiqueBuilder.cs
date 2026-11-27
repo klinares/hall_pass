@@ -134,7 +134,7 @@ public static class InteriorBoutiqueBuilder
 
         // the sign over the mirror
         var panel = Prim(PrimitiveType.Cube, "SignPanel", racks, V(0.2f, 3.55f, 6.2f), V(4.2f, 0.9f, 0.18f), sign);
-        PixelText(panel.transform, "BOUTIQUE", V(0, 0, -0.62f), 0.1f, ink, "bq_text_boutique", 0.4f);
+        BoutiqueSignFix.SignText(panel.transform.parent, "BOUTIQUE", V(0.2f, 3.55f, 6.2f - 0.09f - 0.03f), new Vector2(3.9f, 0.7f), ink.color);   // 10B: TextMeshPro, was pixel letters
 
         // the mirror: a gold frame round a pale glass, with a stand mark on the rug in front of it
         var mirror = Empty("Mirror", racks, V(0.2f, 0, 6.3f));
@@ -374,7 +374,7 @@ public static class InteriorBoutiqueBuilder
         var mint = Lit("bq_sign", C("#8fe3c4"), 0.2f);
         var ink = Lit("bq_ink", C("#2b2350"), 0.2f);
         var panel = Prim(PrimitiveType.Cube, "BoutiqueSign", t, V(1f, 5.85f, 7.95f), V(3.5f, 1.5f, 0.25f), mint);
-        PixelText(panel.transform, "BOUTIQUE", V(0, 0.1f, -0.62f), 0.058f, ink, "bq_text_boutique_door", 0.4f);
+        BoutiqueSignFix.SignText(t, "BOUTIQUE", V(1f, 5.95f, 7.95f - 0.125f - 0.03f), new Vector2(3.2f, 0.95f), ink.color);   // 10B: TextMeshPro, was pixel letters
         Prim(PrimitiveType.Cube, "Hanger", panel.transform, V(0, -0.35f, -0.62f), V(0.4f, 0.05f, 0.1f), ink);
         Prim(PrimitiveType.Cube, "HangerHook", panel.transform, V(0, -0.22f, -0.62f), V(0.05f, 0.2f, 0.1f), ink);
         // the empty the gameplay finds: on the threshold, with the spot she stands on when she comes back out

@@ -163,7 +163,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2574b7893d69bc24886edc66f0972003, type: 3}
   m_Name: 
   m_EditorClassIdentifier: WorldTour.World::WorldTour.World.Obstacle
-  radius: 0.42
+  radius: 0.5
 --- !u!1 &11479821
 GameObject:
   m_ObjectHideFlags: 0
@@ -15816,7 +15816,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2574b7893d69bc24886edc66f0972003, type: 3}
   m_Name: 
   m_EditorClassIdentifier: WorldTour.World::WorldTour.World.Obstacle
-  radius: 0.42
+  radius: 0.5
 --- !u!1 &553545886
 GameObject:
   m_ObjectHideFlags: 0
@@ -20063,7 +20063,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2574b7893d69bc24886edc66f0972003, type: 3}
   m_Name: 
   m_EditorClassIdentifier: WorldTour.World::WorldTour.World.Obstacle
-  radius: 0.42
+  radius: 0.5
 --- !u!1 &795701630
 GameObject:
   m_ObjectHideFlags: 0
@@ -23740,7 +23740,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2574b7893d69bc24886edc66f0972003, type: 3}
   m_Name: 
   m_EditorClassIdentifier: WorldTour.World::WorldTour.World.Obstacle
-  radius: 0.42
+  radius: 0.5
 --- !u!1 &976954987
 GameObject:
   m_ObjectHideFlags: 0
@@ -24330,7 +24330,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2574b7893d69bc24886edc66f0972003, type: 3}
   m_Name: 
   m_EditorClassIdentifier: WorldTour.World::WorldTour.World.Obstacle
-  radius: 0.42
+  radius: 0.5
 --- !u!1 &1038514379
 GameObject:
   m_ObjectHideFlags: 0
@@ -26686,7 +26686,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2574b7893d69bc24886edc66f0972003, type: 3}
   m_Name: 
   m_EditorClassIdentifier: WorldTour.World::WorldTour.World.Obstacle
-  radius: 0.42
+  radius: 0.5
 --- !u!1 &1212136835
 GameObject:
   m_ObjectHideFlags: 0
@@ -39912,6 +39912,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: WorldTour.World.Gameplay::WorldTour.World.Gameplay.WorldPlace
   placeId: club
+  interior: 
 --- !u!4 &1621138127
 Transform:
   m_ObjectHideFlags: 0
@@ -41972,7 +41973,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2574b7893d69bc24886edc66f0972003, type: 3}
   m_Name: 
   m_EditorClassIdentifier: WorldTour.World::WorldTour.World.Obstacle
-  radius: 0.42
+  radius: 0.5
 --- !u!1 &1709057803
 GameObject:
   m_ObjectHideFlags: 0
@@ -44417,7 +44418,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2574b7893d69bc24886edc66f0972003, type: 3}
   m_Name: 
   m_EditorClassIdentifier: WorldTour.World::WorldTour.World.Obstacle
-  radius: 0.42
+  radius: 0.5
 --- !u!1 &1796300058
 GameObject:
   m_ObjectHideFlags: 0
@@ -44794,7 +44795,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2574b7893d69bc24886edc66f0972003, type: 3}
   m_Name: 
   m_EditorClassIdentifier: WorldTour.World::WorldTour.World.Obstacle
-  radius: 0.42
+  radius: 0.5
 --- !u!1 &1821415592
 GameObject:
   m_ObjectHideFlags: 0
@@ -45594,7 +45595,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2574b7893d69bc24886edc66f0972003, type: 3}
   m_Name: 
   m_EditorClassIdentifier: WorldTour.World::WorldTour.World.Obstacle
-  radius: 0.42
+  radius: 0.5
 --- !u!1 &1876231695
 GameObject:
   m_ObjectHideFlags: 0

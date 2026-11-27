@@ -19,6 +19,12 @@ namespace WorldTour.World
 
         /// <summary>Metres kept clear of a blocker when planning a click path (a little more than the 0.35 m the walk pushes out by).</summary>
         public const float PlanMargin = 0.4f;
+        /// <summary>The margin used when she is wedged in a notch the full margin sees as solid (just under the walk's own margin).</summary>
+        public const float TightMargin = 0.3595f;
+        /// <summary>A step that ends closer than this to a blocker was a push-out that did not resolve (see <see cref="Obstacle.SlideStep"/>); a hair under <see cref="WalkMargin"/>.</summary>
+        public const float StepMargin = 0.3595f;
+        /// <summary>Metres the walk keeps from a blocker (10B: 0.36, was 0.35; the 0.01 gives the step test above and the tight plan room to tell a resolved push-out from a squeezed one).</summary>
+        public const float WalkMargin = 0.36f;
         /// <summary>Where the last click path ended up: the click itself, or the nearest reachable spot when it was closed off.</summary>
         public bool LastPathReached { get; private set; } = true;
 
@@ -31,8 +37,13 @@ namespace WorldTour.World
         int pathIndex;
         static readonly Plane Ground = new Plane(Vector3.up, Vector3.zero);
 
+        System.Func<Vector3, Vector3> pushOutFn;
+        System.Func<Vector3, bool> blockedFn;
+
         void Awake()
         {
+            pushOutFn = p => Obstacle.PushOut(Clamp(p), WalkMargin);   // made once: a closure built every frame would allocate every frame
+            blockedFn = p => Obstacle.IsBlocked(p, StepMargin);
             if (animator == null) animator = GetComponentInChildren<Animator>();
         }
 
@@ -53,7 +64,7 @@ namespace WorldTour.World
         void Plan()
         {
             bool reached;
-            path = PathGrid.Find(transform.position, target, bounds, p => Obstacle.IsBlocked(p, PlanMargin), out reached);
+            path = PathGrid.FindEscaping(transform.position, target, bounds, Obstacle.IsBlocked, PlanMargin, TightMargin, out reached);
             pathIndex = 0;
             LastPathReached = reached;
             if (path.Count == 0) path.Add(target);   // boxed in where she stands: walk straight and let the push-out sort it
@@ -130,8 +141,8 @@ namespace WorldTour.World
             }
 
             Vector3 before = transform.position;
-            Vector3 pos = before + move * (speed * Time.deltaTime);
-            pos = Obstacle.PushOut(Clamp(pos), 0.35f);
+            Vector3 delta = move * (speed * Time.deltaTime);
+            Vector3 pos = Obstacle.SlideStep(before, delta, pushOutFn, blockedFn);
             pos.y = 0;
             transform.position = pos;
 

@@ -93,6 +93,25 @@ namespace WorldTour.World
             return result;
         }
 
+        /// <summary>
+        /// <see cref="Find"/> that can lead her out of a pocket. A walker is pushed out of blockers by less than the margin the planner keeps (0.35 m against 0.4 m), so she can
+        /// slip into a notch (between two chairs, say) that the planner sees as solid on every side; from there a plain <see cref="Find"/> has nowhere to go and a click does nothing.
+        /// When the path with <paramref name="margin"/> does not reach the goal, the same search with <paramref name="tightMargin"/> is tried, and used when it gets nearer.
+        /// </summary>
+        public static List<Vector3> FindEscaping(Vector3 start, Vector3 goal, float bounds, Func<Vector3, float, bool> blocked, float margin, float tightMargin, out bool reached)
+        {
+            List<Vector3> path = Find(start, goal, bounds, p => blocked(p, margin), out reached);
+            if (reached) return path;
+            bool tightReached;
+            List<Vector3> tight = Find(start, goal, bounds, p => blocked(p, tightMargin), out tightReached);
+            if (tight.Count == 0) return path;
+            Vector3 endA = path.Count > 0 ? path[path.Count - 1] : start, endB = tight[tight.Count - 1];
+            goal.y = 0f; endA.y = 0f; endB.y = 0f;
+            if (!tightReached && path.Count > 0 && (endB - goal).sqrMagnitude >= (endA - goal).sqrMagnitude - 0.01f) return path;
+            reached = tightReached;
+            return tight;
+        }
+
         /// <summary>True when every point along the segment (checked every 0.2 m) is free.</summary>
         public static bool LineClear(Vector3 a, Vector3 b, Func<Vector3, bool> blocked)
         {

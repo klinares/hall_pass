@@ -237,7 +237,7 @@ public static class PlaceClubBuilder
         {
             float x = 0.5f - i * 1.05f;
             StaticFigure(t, FanPrefabs[i % FanPrefabs.Length], V(x, 0f, zq + (i % 3 - 1) * 0.12f), 90f + (i % 4 - 1.5f) * 10f, 0.85f, i % 4 == 1);
-            Block(blocks, x, zq, 0.42f);
+            Block(blocks, x, zq, 0.5f);   // 10B: 0.5 (was 0.42) so the queue is a solid wall at the walking margin, with no slit between it and the tables behind that she could be wedged in
         }
         float zr = 1.1f;
         for (int i = 0; i <= 5; i++) RopePost(t, V(1.0f - i * 2.2f, 0, zr), brass);

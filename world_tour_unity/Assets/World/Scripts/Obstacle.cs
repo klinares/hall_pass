@@ -32,6 +32,23 @@ namespace WorldTour.World
             return p;
         }
 
+        /// <summary>
+        /// One step of a walk: <paramref name="before"/> plus <paramref name="delta"/>, pushed out of blockers. The push-out goes one blocker at a time, so between two blockers
+        /// that overlap (a row of chairs) it can leave her inside one of them, wedged in a notch the planner sees as solid. A step that ends blocked is therefore not taken as it is:
+        /// it is tried along x alone, then z alone (sliding along the blocker), and otherwise she stays. When she already starts inside a blocker (wedged earlier, or a prop grew
+        /// round her) the plain push-out is used, so a step can always take her out.
+        /// </summary>
+        public static Vector3 SlideStep(Vector3 before, Vector3 delta, System.Func<Vector3, Vector3> pushOut, System.Func<Vector3, bool> blocked)
+        {
+            Vector3 full = pushOut(before + delta);
+            if (blocked == null || blocked(before) || !blocked(full)) return full;
+            Vector3 alongX = pushOut(before + new Vector3(delta.x, 0f, 0f));
+            if (!blocked(alongX) && (alongX - before).sqrMagnitude > 1e-8f) return alongX;
+            Vector3 alongZ = pushOut(before + new Vector3(0f, 0f, delta.z));
+            if (!blocked(alongZ) && (alongZ - before).sqrMagnitude > 1e-8f) return alongZ;
+            return before;
+        }
+
         /// <summary>True when a ground point is inside an obstacle circle or a keep-out box, each grown by margin metres (what <see cref="PushOut"/> would move it out of).</summary>
         public static bool IsBlocked(Vector3 p, float margin)
         {

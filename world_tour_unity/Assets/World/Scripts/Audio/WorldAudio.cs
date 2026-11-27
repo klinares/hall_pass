@@ -196,7 +196,7 @@ namespace WorldTour.World.Audio
             AudioMeter.Frame(dt);
         }
 
-        /// <summary>Test only: reads the cue clips into memory now, so the meter can see their samples.</summary>
+        /// <summary>Reads the cue clips into memory now (10B perf: at start, behind the card, so the first click does not decode one; the test meter also needs the samples).</summary>
         public void WarmCueClips()
         {
             foreach (AudioClip c in new[] { _open, _close, _whoosh, _done, _unlock }) if (c != null) c.LoadAudioData();

@@ -79,6 +79,8 @@ namespace WorldTour.World.Gameplay
         WorldAudio _audio;
         DogFollower _dog;
         string _placeId = Venues.First;
+        /// <summary>Phase 10B.1: "boutique" while a small interior is open, else "". Its WorldPlace names the street it opens off in placeId.</summary>
+        string _interior = "";
 
         // game
         WorldUi _ui;
@@ -145,6 +147,9 @@ namespace WorldTour.World.Gameplay
             SceneManager.sceneLoaded += OnSceneLoaded;
             _shop = gameObject.AddComponent<WorldShop>();   // phase 8.3: the wardrobe trunk and the backstage shop (see the wardrobe region below)
             _shop.Init(this, _ui);
+            if (TestMode) gameObject.AddComponent<HitchProbe>();   // test only: says what a long frame was made of (WT_HITCH)
+            _boutique = gameObject.AddComponent<BoutiqueGame>();   // phase 10B.1: the boutique door, the shop inside and its cards
+            _boutique.Init(this, _ui);
 
             Bind();
             SetMode(Mode.Free);
@@ -152,7 +157,12 @@ namespace WorldTour.World.Gameplay
                 + " fans=" + Fans() + " crowd=" + (_crowd != null ? _crowd.Count : 0));
             // test hook (only with ?wt_test): ?wt_goto=<venue id> travels straight to that place once the game is ready, so the browser tests can visit every place
             string go = TestMode ? QueryParam("wt_goto") : null;
-            if (!string.IsNullOrEmpty(go) && Venues.Exists(go) && go != _placeId && Application.CanStreamedLevelBeLoaded(WorldPlace.SceneName(go)))
+            if (go == "boutique" && Application.CanStreamedLevelBeLoaded(BoutiqueScene))
+            {
+                Debug.Log("WT_WORLD_GOTO place=boutique");
+                StartCoroutine(PassDoor(BoutiqueScene, null));
+            }
+            else if (!string.IsNullOrEmpty(go) && Venues.Exists(go) && go != _placeId && Application.CanStreamedLevelBeLoaded(WorldPlace.SceneName(go)))
             {
                 Debug.Log("WT_WORLD_GOTO place=" + go);
                 StartCoroutine(Travel(Venues.ById(go), true));
@@ -230,6 +240,7 @@ namespace WorldTour.World.Gameplay
                 _crew.Add(new Crew { Name = "Crew_" + i, Index = i - 1, T = t, Anim = t.GetComponentInChildren<Animator>() });
             }
             _placeId = WorldPlace.Resolve(SceneManager.GetActiveScene().name);
+            _interior = WorldPlace.InteriorOf();
             PropMotion.Reduced = GameSettings.ReducedMotion;
 
             // which mode each crew member offers
@@ -252,7 +263,7 @@ namespace WorldTour.World.Gameplay
             SaveStore store = Boot.Store;
             _world = store != null ? WorldSave.Read(store.Blob) : new WorldState();
             // (a saved spot that is now inside a prop is not used: she starts at the spawn instead)
-            bool savedSpot = _world.Place == _placeId && _world.HasPosition && !Obstacle.IsBlocked(new Vector3(_world.X, 0, _world.Z), 0.2f);
+            bool savedSpot = _interior.Length == 0 && _world.Place == _placeId && _world.HasPosition && !Obstacle.IsBlocked(new Vector3(_world.X, 0, _world.Z), 0.2f);
             if (savedSpot) _player.Place(new Vector3(_world.X, 0, _world.Z));
             else if (_spawn != null) { _player.Place(_spawn.position); _player.transform.rotation = _spawn.rotation; }
             if (_follow != null) { _follow.frozen = false; _follow.transform.position = _follow.FollowPosition; _follow.ResetVelocity(); }
@@ -273,8 +284,9 @@ namespace WorldTour.World.Gameplay
             }
             _stageArmed = _stage == null || FlatDist(_player.transform.position, _stage.position) > StageRadius + 0.6f;
             _exitArmed = _exit == null || FlatDist(_player.transform.position, _exit.position) > ExitRadius + 0.6f;
-            if (_audio != null) { _audio.Bind(_placeId, _player, _crowdArea); _audio.CrowdFill = _crowd != null ? _crowd.Fill : 0f; }
+            if (_audio != null) { _audio.Bind(_interior.Length > 0 ? _interior : _placeId, _player, _crowdArea); _audio.CrowdFill = _crowd != null ? _crowd.Fill : 0f; }
             if (_shop != null) _shop.PlaceLoaded(_placeId);
+            if (_boutique != null) _boutique.PlaceLoaded(_placeId, _interior);
         }
 
         // ---------- wardrobe (phase 8.3): the few things WorldShop asks of this class ----------
@@ -339,6 +351,7 @@ namespace WorldTour.World.Gameplay
             _mode = m;
             if (m == Mode.Free) RestoreOfferView(true);
             _modeFrame = Time.frameCount;
+            if (TestMode) HitchProbe.Mode = m.ToString();
             WorldInput.Paused = m != Mode.Free;
             if (m != Mode.Free && _ui != null) { _ui.HideTag(); _ui.HidePins(); _ui.HideHint(); }
             if (TestMode) Debug.Log("WT_WORLD_MODE mode=" + m + " run=" + _run);
@@ -760,8 +773,11 @@ namespace WorldTour.World.Gameplay
 
         // ---------- running a 2D screen over the world ----------
 
+        long _coinsAtStart;
+
         ShowScreen OpenShow(Func<ShowScreen> open)
         {
+            _coinsAtStart = Boot.Store != null ? CoinRules.Coins(Boot.Store.Blob) : 0;
             Action<ShowScreen> started = s =>
             {
                 if (s == null) return;
@@ -809,6 +825,8 @@ namespace WorldTour.World.Gameplay
             SaveWorld();   // 8.4: flush at the end of every gig, not only on the timer
             WorldAudio.Play(Cue.GigDone);
             string fans = "+" + s.Fans.ToString("#,##0", CultureInfo.InvariantCulture) + " fans";
+            long coins = Boot.Store != null ? CoinRules.Coins(Boot.Store.Blob) - _coinsAtStart : 0;
+            if (coins > 0) fans += " and +" + coins.ToString(CultureInfo.InvariantCulture) + " coins";
             string sub = s.First + " of " + s.N + " right on the first try";
             var ok = new List<DialogButton> { new DialogButton { Label = "keep exploring", OnClick = () => _ui.Stack.PopToRoot() } };
             _ui.OpenDialog("gig done", "nice set. " + fans + ".", sub, ok, null);
@@ -969,11 +987,76 @@ namespace WorldTour.World.Gameplay
             SetMode(Mode.Free);
         }
 
+        // ---------- doors and interiors (phase 10B.1): the few things BoutiqueGame asks of this class ----------
+
+        BoutiqueGame _boutique;
+        /// <summary>The boutique's scene (Assets/World/Scenes/Interior_Boutique.unity). Only one scene is loaded at a time, as for a travel.</summary>
+        public const string BoutiqueScene = "Interior_Boutique";
+        public bool InInterior { get { return _interior.Length > 0; } }
+        public string PlaceId { get { return _placeId; } }
+
+        /// <summary>A card or a store is up: she stops, the world waits (the same pause a crew member's talk gives).</summary>
+        public void BeginCard()
+        {
+            _pending = null; _talking = null;
+            if (_player != null) _player.StopWalking();
+            SetMode(Mode.Dialog);
+            _ui.HideTag();
+        }
+
+        /// <summary>The card is done: she can walk again.</summary>
+        public void EndCard() { SetMode(Mode.Free); }
+
+        /// <summary>
+        /// Through a door: a quick fade, the other scene loads (only one is ever loaded), and she is at its PlayerSpawn. Going in from the street,
+        /// <paramref name="streetSpot"/> is where the save keeps her (just outside the door), so a reload inside puts her back on the street there.
+        /// Going back out passes null: the save already holds the spot.
+        /// </summary>
+        public void GoThroughDoor(string scene, Vector3? streetSpot)
+        {
+            if (_mode == Mode.Travel || _mode == Mode.Boot) return;
+            StartCoroutine(PassDoor(scene, streetSpot));
+        }
+
+        /// <summary>Back out of an interior to the street it opens off.</summary>
+        public void LeaveInterior() { GoThroughDoor(WorldPlace.SceneName(_placeId), null); }
+
+        IEnumerator PassDoor(string scene, Vector3? streetSpot)
+        {
+            _exitArmed = false;
+            SetMode(Mode.Travel);
+            _ui.HideTag();
+            _ui.CloseDialog();
+            if (streetSpot.HasValue && Boot.Store != null)
+            {
+                _world.Place = _placeId; _world.HasPosition = true; _world.X = streetSpot.Value.x; _world.Z = streetSpot.Value.z;
+                WorldSave.Write(Boot.Store.Blob, _world);
+                Boot.Store.Save();
+            }
+            Debug.Log("WT_WORLD_DOOR scene=" + scene + " from=" + (_interior.Length > 0 ? _interior : _placeId));
+            _ui.FadeTo(1f, 0.25f);
+            _travelLoading = true;
+            AsyncOperation op = SceneManager.LoadSceneAsync(scene, LoadSceneMode.Single);
+            if (op != null) op.allowSceneActivation = false;
+            float t = 0f, least = GameSettings.ReducedMotion ? 0.05f : 0.3f;
+            while (t < least || (op != null && op.progress < 0.9f)) { t += Time.unscaledDeltaTime; yield return null; }
+            if (op != null) { op.allowSceneActivation = true; while (!op.isDone) yield return null; }
+            yield return Resources.UnloadUnusedAssets();   // as a travel does: the scene she left unloads fully before the next is drawn
+            GC.Collect();
+            _travelLoading = false;
+            Bind();
+            Debug.Log("WT_WORLD_ARRIVED place=" + _placeId + " interior=" + (_interior.Length > 0 ? _interior : "none") + " crew=" + string.Join(",", _crew.Select(c => c.Mode)));
+            _ui.FadeTo(0f, 0.3f);
+            yield return new WaitForSecondsRealtime(0.3f);
+            SetMode(Mode.Free);
+        }
+
         // ---------- saving where she is ----------
 
         void SaveWorld()
         {
             if (Boot.Store == null || _player == null) return;
+            if (_interior.Length > 0) { Boot.Store.Save(); return; }   // inside the boutique the save keeps her spot on the street, at the door
             _world.Place = _placeId;
             _world.HasPosition = true;
             Vector3 p = _player.transform.position;
@@ -1034,6 +1117,31 @@ namespace WorldTour.World.Gameplay
         {
             if (!TestMode || _mode != Mode.Free || !Venues.Exists(id) || !Application.CanStreamedLevelBeLoaded(WorldPlace.SceneName(id))) return;
             StartCoroutine(Travel(Venues.ById(id), true));
+        }
+
+        /// <summary>Test hook (only with ?wt_test), for the memory test: logs the live object counts and the managed and native memory ("WT_MEM tag=.. meshes=.. materials=.. textures=.. mono=.. native=..", MB).</summary>
+        public void TestMem(string tag)
+        {
+            if (!TestMode) return;
+            long mb = 1048576;
+            Debug.Log("WT_MEM tag=" + tag
+                + " meshes=" + Resources.FindObjectsOfTypeAll<Mesh>().Length
+                + " materials=" + Resources.FindObjectsOfTypeAll<Material>().Length
+                + " textures=" + Resources.FindObjectsOfTypeAll<Texture>().Length
+                + " objects=" + Resources.FindObjectsOfTypeAll<UnityEngine.Object>().Length
+                + " mono=" + (UnityEngine.Profiling.Profiler.GetMonoUsedSizeLong() / mb)
+                + " monoHeap=" + (UnityEngine.Profiling.Profiler.GetMonoHeapSizeLong() / mb)
+                + " native=" + (UnityEngine.Profiling.Profiler.GetTotalAllocatedMemoryLong() / mb)
+                + " reserved=" + (UnityEngine.Profiling.Profiler.GetTotalReservedMemoryLong() / mb));
+        }
+
+        /// <summary>Test hook (only with ?wt_test), for the memory test: "in" goes through the boutique door, "out" leaves it, "browse" tries 12 items on at the mirror and closes the store.</summary>
+        public void TestBoutique(string cmd)
+        {
+            if (!TestMode || _mode != Mode.Free || !Application.CanStreamedLevelBeLoaded(BoutiqueScene)) return;
+            if (cmd == "in" && _interior.Length == 0) GoThroughDoor(BoutiqueScene, null);
+            else if (cmd == "out" && _interior.Length > 0) LeaveInterior();
+            else if (cmd == "browse" && _interior == "boutique" && _boutique != null) _boutique.TestBrowse(12);
         }
 
         /// <summary>Called from the page (SendMessage) the moment the WebGL context is lost: write the save before she reloads.</summary>

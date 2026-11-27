@@ -184,6 +184,42 @@ namespace WorldTour.World.Wardrobe
             });
         }
 
+        /// <summary>
+        /// Phase 10B.1: the side of a cone cut flat (a skirt, a bell, a hat crown): <paramref name="rBottom"/> at y 0, <paramref name="rTop"/> at <paramref name="height"/>, axis Y, open at both ends,
+        /// drawn from both sides so it reads from inside too. <paramref name="faceted"/> gives flat panels (pleats); otherwise smooth. An optional <paramref name="cap"/> closes the top.
+        /// </summary>
+        public static Mesh Frustum(float rBottom, float rTop, float height, int segs = 16, bool faceted = false, bool cap = false)
+        {
+            return Get("wt_frustum_" + rBottom + "_" + rTop + "_" + height + "_" + segs + "_" + faceted + "_" + cap, () =>
+            {
+                var v = new List<Vector3>(); var n = new List<Vector3>(); var t = new List<int>();
+                float slope = (rBottom - rTop) / Mathf.Max(0.0001f, height);
+                for (int i = 0; i < segs; i++)
+                {
+                    float a0 = i / (float)segs * Mathf.PI * 2f, a1 = (i + 1) / (float)segs * Mathf.PI * 2f, am = (a0 + a1) * 0.5f;
+                    Vector3 d0 = new Vector3(Mathf.Cos(a0), 0f, Mathf.Sin(a0)), d1 = new Vector3(Mathf.Cos(a1), 0f, Mathf.Sin(a1)), dm = new Vector3(Mathf.Cos(am), 0f, Mathf.Sin(am));
+                    int k = v.Count;
+                    v.Add(d0 * rBottom); v.Add(d1 * rBottom); v.Add(d0 * rTop + Vector3.up * height); v.Add(d1 * rTop + Vector3.up * height);
+                    Vector3 nf = (dm + Vector3.up * slope).normalized;
+                    n.Add(faceted ? nf : (d0 + Vector3.up * slope).normalized); n.Add(faceted ? nf : (d1 + Vector3.up * slope).normalized);
+                    n.Add(faceted ? nf : (d0 + Vector3.up * slope).normalized); n.Add(faceted ? nf : (d1 + Vector3.up * slope).normalized);
+                    t.Add(k); t.Add(k + 2); t.Add(k + 1); t.Add(k + 1); t.Add(k + 2); t.Add(k + 3);
+                    // the inside: the same quad turned round, normals flipped
+                    int j = v.Count;
+                    for (int q = 0; q < 4; q++) { v.Add(v[k + q]); n.Add(-n[k + q]); }
+                    t.Add(j); t.Add(j + 1); t.Add(j + 2); t.Add(j + 1); t.Add(j + 3); t.Add(j + 2);
+                }
+                if (cap)
+                {
+                    int c = v.Count;
+                    v.Add(Vector3.up * height); n.Add(Vector3.up);
+                    for (int i = 0; i < segs; i++) { float a = i / (float)segs * Mathf.PI * 2f; v.Add(new Vector3(Mathf.Cos(a) * rTop, height, Mathf.Sin(a) * rTop)); n.Add(Vector3.up); }
+                    for (int i = 0; i < segs; i++) { t.Add(c); t.Add(c + 1 + (i + 1) % segs); t.Add(c + 1 + i); }
+                }
+                return Build(v, n, t);
+            });
+        }
+
         static Mesh Build(List<Vector3> v, List<Vector3> n, List<int> t)
         {
             var m = new Mesh();

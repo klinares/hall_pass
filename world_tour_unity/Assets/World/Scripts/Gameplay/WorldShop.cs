@@ -59,17 +59,21 @@ namespace WorldTour.World.Gameplay
 
         static SaveBlob Blob { get { return Boot.Store != null ? Boot.Store.Blob : null; } }
 
+        /// <summary>The open save (null before the game has booted), for the avatar try-on hook.</summary>
+        public static SaveBlob CurrentSave { get { return Blob; } }
+
         public void Init(WorldGame game, WorldUi ui)
         {
             Instance = this;
             _game = game; _ui = ui;
             _rig = new WardrobeRig(gameObject);
+            AvatarPreview.Rig = _rig; AvatarPreview.Save = () => Blob;
             var prev = WorldInput.ClickUsed;
             WorldInput.ClickUsed = p => OnClick(p) || (prev != null && prev(p));
             if (WorldGame.TestMode) TestHooks();
         }
 
-        void OnDestroy() { if (Instance == this) Instance = null; BackstageScreen.TryOnChanged -= OnTryOn; }
+        void OnDestroy() { if (Instance == this) Instance = null; AvatarEditorScreen.LookChanged -= OnAvatar; BackstageScreen.TryOnChanged -= OnTryOn; }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void ResetStatics() { Instance = null; }
@@ -83,11 +87,11 @@ namespace WorldTour.World.Gameplay
             _open = false; _pendingOpen = false; _view = View.None;
             _rig.Bind();
             SaveBlob blob = Blob;
-            if (blob != null) ApplyLook(WardrobeLook.Of(blob));
+            if (blob != null) ApplyAvatar(AvatarRules.Look(blob));
             if (_trunk != null) Destroy(_trunk);
             _trunk = null;
             Transform spawn = _game.Spawn;
-            if (spawn == null) return;
+            if (spawn == null || _game.InInterior) return;   // 10B.1: no wardrobe trunk inside the boutique (its own mirror is the try-on)
             if (!PickSpot(placeId, spawn.position, out _spot)) { Debug.Log("WT_WARDROBE_TRUNK place=" + placeId + " none"); return; }
             _trunk = WardrobeTrunk.Build(_spot, WardrobeAssets.Load());
             if (_trunk != null)
@@ -272,12 +276,12 @@ namespace WorldTour.World.Gameplay
         {
             if (_open || _game == null || Blob == null) return;
             _open = true;
-            Debug.Log("WT_WARDROBE_OPEN place=" + _placeId + " balance=" + Blob.Fans.Balance);
+            Debug.Log("WT_WARDROBE_OPEN place=" + _placeId + " balance=" + Blob.Fans.Balance + " coins=" + Blob.Fans.Coins);
             _game.Player.StopWalking();
             Save();
             _view = View.None;
-            BackstageScreen.TryOnChanged += OnTryOn;
-            _game.OpenHostedPanel(() => BackstageScreen.OpenCompact(_ui.Stack, select));
+            AvatarEditorScreen.LookChanged += OnAvatar;
+            _game.OpenHostedPanel(() => AvatarEditorScreen.Open(_ui.Stack, select));
         }
 
         void Save()
@@ -311,6 +315,34 @@ namespace WorldTour.World.Gameplay
             bool stage = it != null && it.Slot == Shop.Lights;
             _rig.ShowGuitar(stage || (it != null && it.Slot == Shop.Guitar));
             SetView(stage ? View.Stage : View.Close);
+        }
+
+        /// <summary>Phase 10B.1: the wardrobe editor changed what she is trying on (look, and the slot being edited), or closed (null).</summary>
+        void OnAvatar(AvatarLook look, string slot)
+        {
+            SaveBlob blob = Blob;
+            if (blob == null || !_open) return;
+            if (look == null)
+            {
+                AvatarEditorScreen.LookChanged -= OnAvatar;
+                _open = false;
+                AvatarLook saved = AvatarRules.Look(blob);
+                ApplyAvatar(saved);   // leaving: whatever she saved is what shows
+                _rig.ShowGuitar(false);
+                Debug.Log("WT_WARDROBE_CLOSE look " + saved);
+                StartCoroutine(Leave());
+                return;
+            }
+            ApplyAvatar(look);
+            bool stage = slot == AvatarCatalogue.Lights;
+            _rig.ShowGuitar(stage || slot == AvatarCatalogue.Guitar);
+            SetView(stage ? View.Stage : View.Close);
+        }
+
+        void ApplyAvatar(AvatarLook look)
+        {
+            _rig.Apply(look);
+            Debug.Log("WT_WARDROBE look " + look);
         }
 
         float NoseYaw() { return _rig != null && _rig.Dog != null ? _rig.Dog.NoseYaw : 0f; }
@@ -454,9 +486,15 @@ namespace WorldTour.World.Gameplay
             long n;
             if (long.TryParse(QueryParam("wt_fans") ?? "", NumberStyles.Integer, CultureInfo.InvariantCulture, out n) && n > 0)
             {
-                blob.Fans.Balance += n; blob.Fans.Lifetime += n;
+                blob.Fans.Balance += n; blob.Fans.Lifetime += n; blob.Fans.Coins += n / CoinRules.FansPerGrantCoin;   // test only: the fans hook also gives the matching spending money, as the old fans prices did
                 Boot.Store.Save();
                 Debug.Log("WT_WARDROBE_TEST fans +" + n);
+            }
+            if (long.TryParse(QueryParam("wt_coins") ?? "", NumberStyles.Integer, CultureInfo.InvariantCulture, out n) && n > 0)
+            {
+                blob.Fans.Coins += n;   // test only: spending money for the store tests
+                Boot.Store.Save();
+                Debug.Log("WT_WARDROBE_TEST coins +" + n);
             }
             string buy = QueryParam("wt_buy");
             if (!string.IsNullOrEmpty(buy))
@@ -465,7 +503,7 @@ namespace WorldTour.World.Gameplay
                 {
                     BuyResult r = MetaRules.Buy(blob, id);
                     bool worn = (r.Ok || MetaRules.Owns(blob, id)) && MetaRules.Equip(blob, id);
-                    Debug.Log("WT_WARDROBE_TEST buy " + id + " result=" + r + " worn=" + worn + " balance=" + blob.Fans.Balance);
+                    Debug.Log("WT_WARDROBE_TEST buy " + id + " result=" + r + " worn=" + worn + " coins=" + blob.Fans.Coins);
                 }
                 Boot.Store.Save();
             }

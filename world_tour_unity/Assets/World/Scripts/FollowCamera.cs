@@ -251,8 +251,12 @@ namespace WorldTour.World
             return b.max.y >= 1.0f && b.size.x < 80f && b.size.z < 80f;
         }
 
+        /// <summary>How long the last <see cref="Rescan"/> took, in ms (read by the test-only HitchProbe).</summary>
+        public static float LastRescanMs;
+
         void Rescan()
         {
+            float t0 = Time.realtimeSinceStartup;
             // Nothing is put back and re-hidden: the fade state stays with each renderer, and the scan only updates bounds and finds new and gone ones.
             if (_bank == null) _bank = FadeBank.Load();
             bool added = false;
@@ -293,6 +297,7 @@ namespace WorldTour.World
             if (added || drop.Count > 0) foreach (Item it in fresh) it.Attached = null;   // the indices moved
             _items.Clear();
             _items.AddRange(fresh);
+            LastRescanMs = (Time.realtimeSinceStartup - t0) * 1000f;
         }
 
         static readonly int[] None = new int[0];

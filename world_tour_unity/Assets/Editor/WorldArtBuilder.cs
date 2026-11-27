@@ -291,8 +291,8 @@ public static class WorldArtBuilder
     // (neutral to sweet), and a thin smile (a curved strip in the same dark swatch) added on the front of the face, skinned to the head bone.
 
     const int EyeCell = 26, SkinCell = 24;
-    const float BrowTargetDegrees = 14f, BrowLift = 0.02f, BrowThin = 0.7f;   // the inner end ends this many degrees above the outer one; the brow is thinned and lifted off the eye
-    const float EyeTurnDegrees = 24f, SmileHalfWidth = 0.085f, SmileDepth = 0.032f, SmileThick = 0.011f, SmileY = 0.19f;
+    const float BrowTargetDegrees = 3f, BrowLift = 0.03f, BrowThin = 0.6f;   // the inner end ends this many degrees above the outer one; the brow is thinned and lifted off the eye
+    const float EyeTurnDegrees = 14f, SmileHalfWidth = 0.1f, SmileDepth = 0.042f, SmileThick = 0.013f, SmileY = 0.19f;
 
     static int PaletteCell(Vector2 uv) { return (int)(uv.x * 8f) + 8 * (int)(uv.y * 4f); }
 
@@ -323,12 +323,13 @@ public static class WorldArtBuilder
             var weld = new System.Collections.Generic.Dictionary<string, int>();
             for (int i = 0; i < orig; i++)
             {
+                if (PaletteCell(uv[i]) != 25) continue;
                 string key = v[i].x.ToString("F3") + "," + v[i].y.ToString("F3") + "," + v[i].z.ToString("F3");
                 int other;
                 if (weld.TryGetValue(key, out other)) parent[Find(i)] = Find(other); else weld[key] = i;
             }
             var t0 = src.triangles;
-            for (int k = 0; k < t0.Length; k += 3) { parent[Find(t0[k + 1])] = Find(t0[k]); parent[Find(t0[k + 2])] = Find(t0[k]); }
+            for (int k = 0; k < t0.Length; k += 3) { if (PaletteCell(uv[t0[k]]) != 25) continue; parent[Find(t0[k + 1])] = Find(t0[k]); parent[Find(t0[k + 2])] = Find(t0[k]); }   // only hair-swatch triangles join, so a brow is its own island
             var comps = new System.Collections.Generic.Dictionary<int, System.Collections.Generic.List<int>>();
             for (int i = 0; i < orig; i++)
             {

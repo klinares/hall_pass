@@ -45,6 +45,7 @@ public static class WardrobePreview
 
             var cam = Camera.main;
             var follow = cam.GetComponent<FollowCamera>();
+            var sheet = new System.Collections.Generic.List<Texture2D>();
             var rt = new RenderTexture(size[0], size[1], 24, RenderTextureFormat.ARGB32) { antiAliasing = 2 };
             foreach (var ps in UnityEngine.Object.FindObjectsByType<ParticleSystem>(FindObjectsSortMode.None)) ps.Simulate(9f, true, true);
             var idle = WorldArtBuilder.KayClip("Idle_A");
@@ -88,6 +89,7 @@ public static class WardrobePreview
                 t.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
                 t.Apply();
                 File.WriteAllBytes(Path.Combine(outDir, name + ".png"), t.EncodeToPNG());
+                if (Arg("-wsheet") != null) sheet.Add(UnityEngine.Object.Instantiate(t));
                 UnityEngine.Object.DestroyImmediate(t);
                 RenderTexture.active = null;
                 cam.targetTexture = null;
@@ -102,7 +104,7 @@ public static class WardrobePreview
                 string name = parts[0], view = parts.Length > 2 ? parts[2] : "star";
                 var wl = new WardrobeLook { Outfit = "outfit:tour", Hair = "hair:chestnut", Guitar = "guitar:classic", Dog = "dog:none", Lights = "lights:tour" };
                 if (parts.Length > 1 && parts[1].Length > 0) foreach (string id in parts[1].Split(',')) wl.Set(id);
-                rig.Apply(wl);
+                rig.Apply(AvatarFromSpec(parts.Length > 1 ? parts[1] : ""));
                 bool guitar = view == "stage" || parts.Length > 1 && parts[1].Contains("guitar:");
                 rig.ShowGuitar(guitar);
                 player.Place(spawn);
@@ -143,7 +145,7 @@ public static class WardrobePreview
                         break;
                     case "dog":
                         {
-                            starT.rotation = Quaternion.LookRotation(Vector3.back);
+                            starT.rotation = Quaternion.LookRotation(view == "back" ? Vector3.forward : Vector3.back);
                             WorldShop.DogPose(s, Vector3.back, rig.Dog.NoseYaw, out dp, out dr);
                             dogF.transform.SetPositionAndRotation(dp, dr);
                             Vector3 nose = rig.Dog.NoseDirection; nose.y = 0f; nose.Normalize();
@@ -152,9 +154,41 @@ public static class WardrobePreview
                             Shot(name, cp, Quaternion.LookRotation(target - cp, Vector3.up), 45f);
                         }
                         break;
-                    default:   // star
+                    case "torso":
                         {
                             starT.rotation = Quaternion.LookRotation(Vector3.back);
+                            dogF.transform.position = spawn + new Vector3(-6f, 0f, 3f);
+                            Vector3 target = s + Vector3.up * 0.85f, cp = target + new Vector3(0f, 0.05f, -3.2f);
+                            Shot(name, cp, Quaternion.LookRotation(target - cp, Vector3.up), 26f);
+                        }
+                        break;
+                    case "head": case "headback": case "headside":
+                        {
+                            // a tight shot of the head: front, from behind or from the side (hair, hats and the face)
+                            bool back = view == "headback";
+                            starT.rotation = Quaternion.LookRotation(Vector3.back);
+                            dogF.transform.position = spawn + new Vector3(-6f, 0f, 3f);
+                            Vector3 target = s + Vector3.up * 1.45f;
+                            Vector3 dir = view == "headside" ? new Vector3(-1f, 0.04f, -0.2f) : new Vector3(0.0f, 0.06f, back ? 1f : -1f);
+                            Vector3 cp = target + dir.normalized * 3.2f;
+                            Shot(name, cp, Quaternion.LookRotation(target - cp, Vector3.up), 24f);
+                        }
+                        break;
+                    case "crew0": case "crew1": case "crew2":
+                        {
+                            // a tight shot of one of the crew (the three NPC figures with LookAtPlayer) from the front
+                            var crew = UnityEngine.Object.FindObjectsByType<WorldTour.World.LookAtPlayer>(FindObjectsSortMode.None).OrderBy(c => c.name).ToArray();
+                            if (crew.Length == 0) break;
+                            Transform ct = crew[Mathf.Min(view[4] - '0', crew.Length - 1)].transform;
+                            Vector3 target = ct.position + Vector3.up * 1.35f;
+                            Vector3 fwd = ct.forward; fwd.y = 0f; fwd.Normalize();
+                            Vector3 cp = target + (fwd * 3.0f) + Vector3.up * 0.1f;
+                            Shot(name, cp, Quaternion.LookRotation(target - cp, Vector3.up), 24f);
+                        }
+                        break;
+                    default:   // star
+                        {
+                            starT.rotation = Quaternion.LookRotation(view == "back" ? Vector3.forward : Vector3.back);
                             WorldShop.DogPose(s, Vector3.back, rig.Dog.NoseYaw, out dp, out dr);
                             dogF.transform.SetPositionAndRotation(dp, dr);
                             WorldShop.ClosePose(s, Vector3.back, out pos, out rot);
@@ -164,6 +198,17 @@ public static class WardrobePreview
                 }
             }
             rt.Release();
+            string sheetName = Arg("-wsheet");
+            if (sheetName != null && sheet.Count > 0)
+            {
+                int cols = int.Parse(Arg("-wcols") ?? "4"), rows = (sheet.Count + cols - 1) / cols, cw = sheet[0].width, ch = sheet[0].height;
+                var big = new Texture2D(cw * cols, ch * rows, TextureFormat.RGB24, false);
+                for (int i = 0; i < sheet.Count; i++) big.SetPixels((i % cols) * cw, (rows - 1 - i / cols) * ch, cw, ch, sheet[i].GetPixels());
+                big.Apply();
+                File.WriteAllBytes(Path.Combine(outDir, sheetName + ".png"), big.EncodeToPNG());
+                UnityEngine.Object.DestroyImmediate(big);
+                foreach (var s2 in sheet) UnityEngine.Object.DestroyImmediate(s2);
+            }
         }
         catch (Exception e) { Debug.LogError("WardrobePreview failed: " + e); }
         finally
@@ -175,5 +220,23 @@ public static class WardrobePreview
             File.WriteAllBytes(graphics, gb);
         }
         if (Application.isBatchMode) EditorApplication.Exit(0);
+    }
+
+    /// <summary>Phase 10B.1: an avatar look from "top:hoodie:3:1,hat:cap:7,skin=3,hair=15" (item id, colour, pattern; the rest stay the default look).</summary>
+    static AvatarLook AvatarFromSpec(string spec)
+    {
+        AvatarLook l = AvatarLook.Default();
+        foreach (string tok in spec.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+        {
+            if (tok.StartsWith("skin=")) { l.Skin = int.Parse(tok.Substring(5)); continue; }
+            if (tok.StartsWith("hair=")) { l.HairColor = int.Parse(tok.Substring(5)); l.Hair.Color = l.HairColor; continue; }
+            string[] p = tok.Split(':');
+            if (p.Length < 2) continue;
+            AvatarItem it = AvatarCatalogue.ById(p[0] + ":" + p[1]);
+            if (it == null) continue;
+            AvatarPick old = l.Get(it.Slot);
+            l.Set(it.Slot, new AvatarPick(it.Id, p.Length > 2 ? int.Parse(p[2]) : old.Color, p.Length > 3 ? int.Parse(p[3]) : 0));
+        }
+        return l;
     }
 }

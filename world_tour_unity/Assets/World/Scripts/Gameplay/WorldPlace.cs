@@ -12,6 +12,15 @@ namespace WorldTour.World.Gameplay
     public sealed class WorldPlace : MonoBehaviour
     {
         public string placeId = Venues.First;
+        /// <summary>Phase 10B.1: empty for a street or a venue. A small interior (the boutique) names itself here; placeId is then the venue it opens off (coffee).</summary>
+        public string interior = "";
+
+        /// <summary>The interior's name for the open scene ("boutique"), or "" when it is a street or a venue.</summary>
+        public static string InteriorOf()
+        {
+            var marker = Object.FindFirstObjectByType<WorldPlace>();
+            return marker != null && !string.IsNullOrEmpty(marker.interior) ? marker.interior : "";
+        }
 
         /// <summary>The place id for the open scene: the WorldPlace in it, else the scene name, else the first venue.</summary>
         public static string Resolve(string sceneName)

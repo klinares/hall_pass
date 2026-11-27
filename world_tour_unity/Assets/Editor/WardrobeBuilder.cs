@@ -41,6 +41,18 @@ public static class WardrobeBuilder
     /// <summary>A swatch gradient: the colour lightened (or darkened) at the top and the bottom, as WorldArtBuilder.Cell does.</summary>
     static (int, string, string) G(int cell, string hex, float lighten, float darken) { return WorldArtBuilder.Cell(cell, hex, lighten, darken); }
 
+    /// <summary>Phase 10B.1: the plain 256 px palette copy, readable, which the avatar paints its cells into at run time.</summary>
+    static Texture2D MakePalette(string src)
+    {
+        var t = WorldArtBuilder.Recolor(src, "wd_palette");
+        string p = AssetDatabase.GetAssetPath(t);
+        var imp = (TextureImporter)AssetImporter.GetAtPath(p);
+        imp.isReadable = true;
+        imp.textureCompression = TextureImporterCompression.Uncompressed;
+        imp.SaveAndReimport();
+        return AssetDatabase.LoadAssetAtPath<Texture2D>(p);
+    }
+
     static void MakeAssets()
     {
         string tdir = WorldArtBuilder.Art + "/KayKit_Adventurers/";
@@ -87,6 +99,7 @@ public static class WardrobeBuilder
         a.cube = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
         a.sphere = Resources.GetBuiltinResource<Mesh>("Sphere.fbx");
         a.cylinder = Resources.GetBuiltinResource<Mesh>("Cylinder.fbx");
+        a.palette = MakePalette(src);
         EditorUtility.SetDirty(a);
         EditorUtility.SetDirty(baseLit);
     }
@@ -117,6 +130,9 @@ public static class WardrobeBuilder
         try
         {
             specs.Add(Spec(s, "chest", StarWardrobe.FrontAnchor, s.transform.position + StarFrontOffset, s.transform.rotation));
+            // phase 10B.1: one anchor per bone the avatar parts hang on, at the bone joint, aligned with the Star (AvatarParts places parts in model space from these)
+            foreach (var (an, bn) in new[] { ("StarHead", "head"), ("StarChest", "chest"), ("StarHips", "hips"), ("StarArmL", "upperarm.l"), ("StarArmR", "upperarm.r"), ("StarLegL", "upperleg.l"), ("StarLegR", "upperleg.r"), ("StarFootL", "foot.l"), ("StarFootR", "foot.r") })
+                specs.Add(Spec(s, bn, an, s.GetComponentsInChildren<Transform>(true).First(t => t.name == bn).position, s.transform.rotation));
             Transform Bone(string n) { return r.GetComponentsInChildren<Transform>(true).First(t => t.name == n); }
             Quaternion nose = r.transform.rotation * Quaternion.Euler(0f, 180f, 0f);
             Vector3 j2 = Bone("Bone.002").position, j3 = Bone("Bone.003").position;

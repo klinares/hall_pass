@@ -24,6 +24,7 @@ namespace WorldTour.World.Audio
                 case "theater": return Surface.Carpet;   // red carpet and velvet
                 case "festival": return Surface.Grass;   // boardwalk and grass
                 case "arena": return Surface.Hard;       // the arena floor
+                case "boutique": return Surface.Carpet;  // phase 10B.1: the boutique's soft rug floor, no birds indoors
                 default: return Surface.Stone;
             }
         }

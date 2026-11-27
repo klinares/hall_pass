@@ -51,6 +51,8 @@ namespace WorldTour.World.Gameplay
         /// <summary>The lens shift (fraction of the screen width) that centres the view in the open part beside the compact panel.</summary>
         public float OpenLensShift { get { Rect r = _canvasRt.rect; return (ShowLayout.WidthFor(r.width) + ShowLayout.PanelMargin) / (2f * Mathf.Max(1f, r.width)); } }
         public bool PanelOpen { get { return PanelRoot != null && PanelRoot.gameObject.activeSelf; } }
+        /// <summary>Phase 10B.1: shifts a card that has no head to hang over (the boutique keeps the mirror view clear). Zero for every other card.</summary>
+        public Vector2 CardOffset;
         public bool DialogOpen { get { return _dialog != null && _dialog.gameObject.activeSelf; } }
 
         WorldGameplayAssets _assets;
@@ -151,6 +153,7 @@ namespace WorldTour.World.Gameplay
         {
             if (Hud != null) return;
             Hud = Hud.Create(_canvasRt, store);
+            Hud.AddCounters();
             // the fade stays above the HUD
             _fade.SetAsLastSibling();
         }
@@ -310,7 +313,7 @@ namespace WorldTour.World.Gameplay
         /// A speech bubble with a line, an optional second line and buttons. With a screen point it hangs above that point
         /// (a crew member's head) with a tail; with none it is a card in the middle of the screen.
         /// </summary>
-        public void OpenDialog(string who, string line, string sub, IList<DialogButton> buttons, Vector2? screenPoint, bool quiet = false)
+        public void OpenDialog(string who, string line, string sub, IList<DialogButton> buttons, Vector2? screenPoint, bool quiet = false, float width = 0f)
         {
             if (!quiet && !DialogOpen) WorldAudio.Play(Cue.CardOpen);
             if (BubbleHost != null) BubbleHost.gameObject.SetActive(false);   // a card never sits on top of riff's bubble: his lines wait until it closes
@@ -333,7 +336,7 @@ namespace WorldTour.World.Gameplay
             float h = Pad + WhoH + lh + (hasSub ? SubH : 0f) + 12f + ButtonH + Pad;
             if (_buttons.Count == 0) h -= 12f + ButtonH;
             // a card with three or more buttons is wider, and each button takes room by its label ("back to: the club" was clipped at 1366)
-            float bw = !screenPoint.HasValue && _buttons.Count >= 3 ? 700f : BubbleWidth;
+            float bw = width > 0f ? width : !screenPoint.HasValue && _buttons.Count >= 3 ? 700f : BubbleWidth;   // 10B.1: a store card may ask for its own width
             _dialog.sizeDelta = new Vector2(bw, h);
             var subRt = (RectTransform)_sub.transform.parent;
             subRt.gameObject.SetActive(hasSub);
@@ -402,7 +405,7 @@ namespace WorldTour.World.Gameplay
             {
                 // a card: the middle of the screen, or of the part beside the docked panel
                 float cx = PanelCompact ? (_canvasRt.rect.xMin + OpenRightLocal()) / 2f : 0f;
-                _dialog.anchoredPosition = new Vector2(cx, 20f);
+                _dialog.anchoredPosition = new Vector2(cx, 20f) + CardOffset;
             }
         }
 

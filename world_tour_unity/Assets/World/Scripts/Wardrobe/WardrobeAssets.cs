@@ -5,6 +5,8 @@ namespace WorldTour.World.Wardrobe
 {
     [Serializable] public sealed class OutfitSet { public string id; public Material top, legs; }
     [Serializable] public sealed class HairSet { public string id; public Material head; }
+    [Serializable] public sealed class NamedMesh { public string name; public Mesh mesh; }
+    [Serializable] public sealed class FaceTex { public string id; public Texture2D tex; }
 
     /// <summary>An attachment point: a child of a bone with this local pose (found at its rest pose in the Star and Riff prefabs; scale is compensated at run time so children are laid out in metres).</summary>
     [Serializable] public sealed class AnchorSpec { public string bone, name; public Vector3 position; public Quaternion rotation = Quaternion.identity; }
@@ -24,6 +26,29 @@ namespace WorldTour.World.Wardrobe
         public AnchorSpec[] anchors = new AnchorSpec[0];
         public Material baseLit;
         public Mesh cube, sphere, cylinder;
+        /// <summary>Phase 10B.1: a readable 256 px copy of the KayKit palette; the avatar paints its cells into runtime copies.</summary>
+        public Texture2D palette;
+        /// <summary>Phase 10B.1 fix: the Star's body parts without the leftover adventurer gear (belt, buckle, pouch, earring, painted-on face) and with UVs that give the
+        /// garment its own patch of the texture (see <see cref="Fabric"/>), by the name of the renderer they replace ("Rogue_Body" and so on).</summary>
+        public NamedMesh[] bodyMeshes = new NamedMesh[0];
+        /// <summary>The face decal: a copy of the front of her head, UVs a plain front projection.</summary>
+        public Mesh faceMesh;
+        /// <summary>The decal's material (transparent, lit, built at edit time so its shader variant is in the build); each face clones it with its own texture.</summary>
+        public Material faceMat;
+        public FaceTex[] faces = new FaceTex[0];
+
+        public Mesh BodyMesh(string rendererName)
+        {
+            foreach (NamedMesh n in bodyMeshes) if (n != null && n.name == rendererName) return n.mesh;
+            return null;
+        }
+
+        public Texture2D FaceTexture(string key)
+        {
+            foreach (FaceTex f in faces) if (f != null && f.id == key) return f.tex;
+            return null;
+        }
+
 
         static WardrobeAssets s_Loaded;
         public static WardrobeAssets Load()

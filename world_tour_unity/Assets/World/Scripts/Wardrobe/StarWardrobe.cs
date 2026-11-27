@@ -10,12 +10,12 @@ namespace WorldTour.World.Wardrobe
     /// the head material for the hair colour and the guitar's body colour; <see cref="ShowGuitar"/> hangs the guitar on her (stage shows). Nothing here is saved,
     /// the caller decides what to apply (the save's look, or an item being tried on).
     /// </summary>
-    public sealed class StarWardrobe : MonoBehaviour
+    public sealed partial class StarWardrobe : MonoBehaviour
     {
         /// <summary>Anchor under the chest bone (made at run time by WardrobeAnchors): rest pose aligned with the Star, units in metres.</summary>
         public const string FrontAnchor = "WearFront";
 
-        readonly List<Renderer> _top = new List<Renderer>(), _legs = new List<Renderer>();
+        readonly List<Renderer> _top = new List<Renderer>(), _legs = new List<Renderer>(), _arms = new List<Renderer>(), _body = new List<Renderer>();
         Renderer _head;
         Transform _front;
         GameObject _guitar;
@@ -44,7 +44,7 @@ namespace WorldTour.World.Wardrobe
             {
                 if (r.name.Contains("_Leg")) _legs.Add(r);
                 else if (r.name.Contains("_Head")) _head = r;
-                else _top.Add(r);
+                else { _top.Add(r); if (r.name.Contains("_Arm")) _arms.Add(r); else _body.Add(r); }
             }
         }
 
@@ -90,6 +90,7 @@ namespace WorldTour.World.Wardrobe
             WardrobeAssets a = WardrobeAssets.Load();
             _front = WardrobeAnchors.Ensure(gameObject, FrontAnchor);
             if (a == null || _front == null || a.cube == null || a.sphere == null) { Debug.LogWarning("[wardrobe] no guitar: assets or anchor missing"); return; }
+            if (_avatar != null) { BuildGuitarAvatar(a); return; }
             _guitar = new GameObject("Guitar");
             _guitar.transform.SetParent(_front, false);
             // her torso is about 0.6 deep and 0.5 wide (WardrobeDump), the front at z 0.3; the guitar sits on her right hip in front of it, the neck going up and across to her left

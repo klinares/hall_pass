@@ -150,14 +150,30 @@ namespace WorldTour.World.Gameplay
             if (TestMode) gameObject.AddComponent<HitchProbe>();   // test only: says what a long frame was made of (WT_HITCH)
             _boutique = gameObject.AddComponent<BoutiqueGame>();   // phase 10B.1: the boutique door, the shop inside and its cards
             _boutique.Init(this, _ui);
+            _home = gameObject.AddComponent<HomeGame>();   // phase 10B.2: her home, the street door and the decorating
+            _home.Init(this, _ui);
 
+            // 10B perf: the first frames of a session build shaders, the UI layout and the cue clips (one 140 to 200 ms frame the moment she could move). They now happen
+            // behind a solid card while the mode is still Boot; she can move only after it fades out.
+            _ui.FadeTo(1f, 0.0001f);
             Bind();
+            if (_audio != null) _audio.WarmCueClips();
+            for (int i = 0; i < 24; i++) yield return null;
+            yield return new WaitForSecondsRealtime(0.3f);
+            GC.Collect();
+            yield return null;
+            _ui.FadeTo(0f, 0.3f);
             SetMode(Mode.Free);
             Debug.Log(ReadyLog + " place=" + _placeId + " crew=" + string.Join(",", _crew.Select(c => c.Mode))
                 + " fans=" + Fans() + " crowd=" + (_crowd != null ? _crowd.Count : 0));
             // test hook (only with ?wt_test): ?wt_goto=<venue id> travels straight to that place once the game is ready, so the browser tests can visit every place
             string go = TestMode ? QueryParam("wt_goto") : null;
-            if (go == "boutique" && Application.CanStreamedLevelBeLoaded(BoutiqueScene))
+            if (go == "home" && Application.CanStreamedLevelBeLoaded(HomeScene))
+            {
+                Debug.Log("WT_WORLD_GOTO place=home");
+                StartCoroutine(PassDoor(HomeScene, null));
+            }
+            else if (go == "boutique" && Application.CanStreamedLevelBeLoaded(BoutiqueScene))
             {
                 Debug.Log("WT_WORLD_GOTO place=boutique");
                 StartCoroutine(PassDoor(BoutiqueScene, null));
@@ -287,6 +303,7 @@ namespace WorldTour.World.Gameplay
             if (_audio != null) { _audio.Bind(_interior.Length > 0 ? _interior : _placeId, _player, _crowdArea); _audio.CrowdFill = _crowd != null ? _crowd.Fill : 0f; }
             if (_shop != null) _shop.PlaceLoaded(_placeId);
             if (_boutique != null) _boutique.PlaceLoaded(_placeId, _interior);
+            if (_home != null) _home.PlaceLoaded(_placeId, _interior);
         }
 
         // ---------- wardrobe (phase 8.3): the few things WorldShop asks of this class ----------
@@ -936,6 +953,7 @@ namespace WorldTour.World.Gameplay
                         OnClick = () => { _backIndex = (_backIndex + 1) % offer.Earlier.Count; ShowExitCard(offer); }
                     });
             }
+            if (Application.CanStreamedLevelBeLoaded(HomeScene)) buttons.Add(new DialogButton { Label = "go home", Ghost = true, OnClick = GoHomeFromMap });   // 10B.2: home is always open
             buttons.Add(new DialogButton { Label = "stay here", Ghost = buttons.Count > 0, OnClick = () => SetMode(Mode.Free) });
             _ui.OpenDialog("tour map", offer.Line, string.IsNullOrEmpty(offer.Detail) ? null : offer.Detail, buttons, null);
         }
@@ -982,6 +1000,7 @@ namespace WorldTour.World.Gameplay
             Debug.Log("WT_WORLD_ARRIVED place=" + _placeId + " crew=" + string.Join(",", _crew.Select(c => c.Mode)) + " crowd=" + (_crowd != null ? _crowd.Count : 0));
             _ui.CloseDialog();
             _ui.HideTravel();
+            for (int i = 0; i < 4; i++) yield return null;   // 10B perf: the new place draws its first frames still under the card
             _ui.FadeTo(0f, 0.3f);
             yield return new WaitForSecondsRealtime(0.3f);
             SetMode(Mode.Free);
@@ -990,6 +1009,9 @@ namespace WorldTour.World.Gameplay
         // ---------- doors and interiors (phase 10B.1): the few things BoutiqueGame asks of this class ----------
 
         BoutiqueGame _boutique;
+        HomeGame _home;
+        /// <summary>Her home's scene (Assets/World/Scenes/Home.unity), reached from the coffee street door and from the tour map.</summary>
+        public const string HomeScene = "Home";
         /// <summary>The boutique's scene (Assets/World/Scenes/Interior_Boutique.unity). Only one scene is loaded at a time, as for a travel.</summary>
         public const string BoutiqueScene = "Interior_Boutique";
         public bool InInterior { get { return _interior.Length > 0; } }
@@ -1016,6 +1038,15 @@ namespace WorldTour.World.Gameplay
         {
             if (_mode == Mode.Travel || _mode == Mode.Boot) return;
             StartCoroutine(PassDoor(scene, streetSpot));
+        }
+
+        /// <summary>The tour map's "go home": the save keeps her on the coffee street (no spot), so a reload or the way out puts her there.</summary>
+        void GoHomeFromMap()
+        {
+            _world.Place = Venues.First; _world.HasPosition = false;
+            if (Boot.Store != null) { WorldSave.Write(Boot.Store.Blob, _world); Boot.Store.Save(); }
+            Debug.Log("WT_WORLD_GOHOME from=" + _placeId);
+            StartCoroutine(PassDoor(HomeScene, null));
         }
 
         /// <summary>Back out of an interior to the street it opens off.</summary>
@@ -1133,6 +1164,16 @@ namespace WorldTour.World.Gameplay
                 + " monoHeap=" + (UnityEngine.Profiling.Profiler.GetMonoHeapSizeLong() / mb)
                 + " native=" + (UnityEngine.Profiling.Profiler.GetTotalAllocatedMemoryLong() / mb)
                 + " reserved=" + (UnityEngine.Profiling.Profiler.GetTotalReservedMemoryLong() / mb));
+        }
+
+        /// <summary>Test hook (only with ?wt_test): "in" goes through the home door, "out" leaves, "map" is the tour map's go home; "grant", "deco", "layout", "state", "room:n" and "cell:x:z" go to HomeGame.</summary>
+        public void TestHome(string cmd)
+        {
+            if (!TestMode || _mode != Mode.Free || !Application.CanStreamedLevelBeLoaded(HomeScene)) { if (TestMode && _home != null && _mode == Mode.Dialog) _home.TestCommand(cmd); return; }
+            if (cmd == "in" && _interior.Length == 0) GoThroughDoor(HomeScene, null);
+            else if (cmd == "map" && _interior.Length == 0) GoHomeFromMap();
+            else if (cmd == "out" && _interior == "home") LeaveInterior();
+            else if (_home != null) _home.TestCommand(cmd);
         }
 
         /// <summary>Test hook (only with ?wt_test), for the memory test: "in" goes through the boutique door, "out" leaves it, "browse" tries 12 items on at the mirror and closes the store.</summary>

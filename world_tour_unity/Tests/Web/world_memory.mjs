@@ -5,6 +5,7 @@
 //   1. 200 editor changes by mouse (colors, patterns, items, on six tabs), sampled at the start, then every 50 changes.
 //   2. 20 boutique visits in one session (in through the door, try 12 items on at the mirror, out), sampled at the start, then every 5 visits.
 //      The hooks are ?wt_test only: WorldGame.TestBoutique("in" | "browse" | "out").
+//   3. 20 home visits (in through the door hook, twelve rounds of take out, drop, put away and repaint, out): WorldGame.TestHome("in" | "churn" | "out").
 //   A sample is taken after a forced JS garbage collection and is the same set world_gpu.mjs reads: live WebGL textures, buffers and renderbuffers with their estimated
 //   bytes (the wrapped WebGL calls), the wasm heap and the JS heap. The first lap is warm-up (50 changes, 5 visits): after it, every sample must stay within 10 percent of
 //   the warm-up sample (a small slack for 1 MB and a few textures). The numbers are printed and written to the results file.
@@ -26,7 +27,7 @@ const CHANGES = +opt('--changes', 200), VISITS = +opt('--visits', 20);
 const outFile = path.resolve(opt('--out', path.join(project, 'Temp', 'world-memory.json')));
 const READY = 120000;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-const results = { site, gpuMode, startedAt: new Date().toISOString(), failures: [], editor: [], boutique: [], stages: [] };
+const results = { site, gpuMode, startedAt: new Date().toISOString(), failures: [], editor: [], boutique: [], home: [], stages: [] };
 const fail = m => { results.failures.push(m); console.log('FAIL', m); };
 
 // the WebGL resource counter lives in world_gpu.mjs; reuse its text so the two tests count the same way
@@ -174,6 +175,35 @@ try {
     if (v % 5 === 0) await sample(results.boutique, `${v} visits`);
   }
   judge(results.boutique, 'boutique', 1);
+
+  // ---------------------------------------------------------------- 3. home visits (phase 10B.2)
+  console.log(`home: ${VISITS} visits`);
+  await sleep(1500);
+  await sample(results.home, 'start');
+  const homeHook = async (cmd, re, ms) => {
+    for (let tries = 0; tries < 8; tries++) {
+      const m = lines.length;
+      await page.evaluate(c => window.__wtInstance.SendMessage('WorldGame', 'TestHome', c), cmd);
+      const i = await wait(re, ms, m);
+      if (i >= 0) return i;
+      if (crashed) return -1;
+    }
+    return -1;
+  };
+  for (let v = 1; v <= VISITS && !crashed; v++) {
+    let m = lines.length;
+    if (await homeHook('in', /^WT_WORLD_ARRIVED place=coffee interior=home/, 2500) < 0) { fail(`home visit ${v}: never got inside`); break; }
+    if (await wait(/^WT_WORLD_MODE mode=Free/, 15000, m) < 0) { fail(`home visit ${v}: not free inside`); break; }
+    await sleep(600);
+    m = lines.length;
+    if (await homeHook('churn', /^WT_HOME_CHURN_DONE/, 12000) < 0) { fail(`home visit ${v}: the decorating round did not finish`); break; }
+    await sleep(700);
+    m = lines.length;
+    if (await homeHook('out', /^WT_WORLD_ARRIVED place=coffee interior=none/, 2500) < 0) { fail(`home visit ${v}: never got back out`); break; }
+    if (await wait(/^WT_WORLD_MODE mode=Free/, 15000, m) < 0) { fail(`home visit ${v}: not free outside`); break; }
+    if (v % 5 === 0) await sample(results.home, `${v} visits`);
+  }
+  judge(results.home, 'home', 1);
   if (errors.length) fail(`${errors.length} console error(s): ${errors.slice(0, 2).join(' | ').slice(0, 300)}`);
   if (crashed) fail('the renderer crashed during the run');
   await ctx.close();

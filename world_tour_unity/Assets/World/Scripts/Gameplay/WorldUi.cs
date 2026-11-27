@@ -53,6 +53,9 @@ namespace WorldTour.World.Gameplay
         public bool PanelOpen { get { return PanelRoot != null && PanelRoot.gameObject.activeSelf; } }
         /// <summary>Phase 10B.1: shifts a card that has no head to hang over (the boutique keeps the mirror view clear). Zero for every other card.</summary>
         public Vector2 CardOffset;
+        /// <summary>Phase 10B.2: the canvas root and the shared button prefab, for the home's decorate bar (HomeGame builds its own small panels).</summary>
+        public RectTransform CanvasRect { get { return _canvasRt; } }
+        public WorldGameplayAssets Assets { get { return _assets; } }
         public bool DialogOpen { get { return _dialog != null && _dialog.gameObject.activeSelf; } }
 
         WorldGameplayAssets _assets;

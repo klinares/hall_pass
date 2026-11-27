@@ -43,6 +43,8 @@ public static partial class BuildWeb
             if (list.Count == 0) list.Add(PlaceCoffeeBuilder.ScenePath);
             // phase 10B.1: the small interiors (the boutique off the coffee street); only ever loaded one at a time, like a place
             if (File.Exists(InteriorBoutiqueBuilder.ScenePath)) list.Add(InteriorBoutiqueBuilder.ScenePath);
+            // phase 10B.2: her home (four rooms in one scene), reached from the coffee street and the tour map
+            if (File.Exists(InteriorHomeBuilder.ScenePath)) list.Add(InteriorHomeBuilder.ScenePath);
             return list.ToArray();
         }
     }

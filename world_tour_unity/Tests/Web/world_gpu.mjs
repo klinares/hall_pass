@@ -229,6 +229,39 @@ async function lossTests(browser, server) {
   }
 }
 
+// phase 10B.1: the same safety net with the avatar editor open and inside the boutique (the context is lost, the reload card shows, the save is flushed, reload works)
+async function lossScreens(browser, server) {
+  const size = [1366, 768];
+  const cases = [
+    ['editor', '?wt_test=1&wt_shop=1', /^WT_AVATAR_READY/, 40000],
+    ['boutique', '?wt_test=1&wt_goto=boutique', /^WT_WORLD_ARRIVED place=coffee interior=boutique/, 90000],
+  ];
+  for (const [name, query, readyRe, ms] of cases) {
+    const h = await makePage(browser, server, size, 'loss_' + name, results, fail, shotsDir, 'loss_' + name);
+    const { page, gfail, step, mark, waitLine, focus } = h;
+    const g = results.loss[name] = { numbers: {} };
+    try {
+      if (!await loadReady(h, server, query, READY)) return;
+      if (!await waitLine(readyRe, ms)) { gfail(`${name}: never got there`); return; }
+      await focus(); await sleep(2000);
+      const m0 = mark();
+      if (!await loseContext(page)) { gfail(`${name}: no lose_context extension`); return; }
+      if (!await checkOverlay(h, name)) return;
+      if (!await waitLine(/^WT_SAVE_FLUSH_JS/, 5000, m0)) gfail(`${name}: the game did not flush the save when the context was lost`);
+      const saved = JSON.parse(await page.evaluate(() => localStorage.getItem('worldtour.v1')) || 'null');
+      g.saved = saved && saved.world;
+      // inside the boutique the game keeps her street spot (or, on a fresh save, no place at all), never the interior
+      if (!saved || (saved.world && saved.world.place !== 'coffee')) gfail(`${name}: the save has the wrong place after the loss: ` + JSON.stringify(saved && saved.world));
+      const m1 = mark();
+      await page.click('#reload');
+      await page.waitForLoadState('load');
+      const ready = await waitLine(/^WT_WORLD_GAME_READY/, READY, m1);
+      if (!ready) gfail(`${name}: no ready line after pressing reload`); else step(`${name}: back after reload: ` + ready.text);
+      if (h.g.errors.length) gfail(`${name}: ${h.g.errors.length} console error(s): ${h.g.errors.slice(0, 2).join(' | ').slice(0, 300)}`);
+    } finally { await h.ctx.close(); }
+  }
+}
+
 async function noWebglTest(browser, server) {
   const ctx = await browser.newContext({ viewport: { width: 1366, height: 768 } });
   await ctx.addInitScript(NO_WEBGL);
@@ -328,6 +361,7 @@ try {
   browser = await chromium.launch(launchOptions());
   results.browserVersion = browser.version();
   if (!only || only === 'loss') await lossTests(browser, server);
+  if (!only || only === 'loss') await lossScreens(browser, server);
   if (!only || only === 'nowebgl') await noWebglTest(browser, server);
   if (!only || only === 'memory') await memoryTest(browser, server);
 } catch (e) {

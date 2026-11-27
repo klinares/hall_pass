@@ -1,6 +1,6 @@
 // Phase 8.3 browser tests for the wardrobe in the world build (imported by world_smoke.mjs; `--no-wardrobe` skips it, `--wardrobe-only` runs only it):
-//   1. the shop through the UI: walk to the trunk by clicking it, open the shop, try an item on (the look changes, the save does not), buy it with two taps (balance
-//      and equipped item saved), try another item and leave without buying (the look goes back), reload and see the bought outfit still on her;
+//   1. the avatar editor through the UI (phase 10B.1): walk to the trunk by clicking it, open the editor, change a top color, a hair style, the skin tone and save an outfit
+//      (every change is worn and saved at once), close it with Done, reload and see the look still on her. Buying is the boutique's job (world_boutique.mjs);
 //   2. looks: the Star in three outfit and hair colour sets, riff in two outfits, a stage with another light colour, the guitar skin close up (shots at both sizes);
 //   3. the guitar in her hands during a stage show;
 //   4. every place has its trunk (a log line each) and a shot of it.
@@ -45,9 +45,9 @@ export async function wardrobeTests(o) {
     };
     s.lastLine = re => { for (let i = s.lines.length - 1; i >= 0; i--) if (re.test(s.lines[i])) return s.lines[i]; return null; };
     s.hits = async (from) => {
-      const l = await s.wait(/^WT_HITS screen=backstage /, 8000, from);
+      const l = await s.wait(/^WT_HITS screen=avatar /, 8000, from);
       if (!l) return null;
-      const all = s.lines.slice(from).filter(x => x.startsWith('WT_HITS screen=backstage '));
+      const all = s.lines.slice(from).filter(x => x.startsWith('WT_HITS screen=avatar '));
       const last = all[all.length - 1];
       const out = {};
       for (const m of last.matchAll(/ (\S+?)=([\d.]+),([\d.]+)/g)) out[m[1]] = [Math.round(+m[2] * vw), Math.round(+m[3] * vh)];
@@ -58,17 +58,16 @@ export async function wardrobeTests(o) {
     return s;
   }
 
-  const lookRe = (a) => new RegExp('^WT_WARDROBE look ' + a);
+  const lookRe = (a) => new RegExp('^WT_WARDROBE look .*' + a);
 
-  // ---------------------------------------------------------------- 1. the shop through the UI
+  // ---------------------------------------------------------------- 1. the editor through the UI (mouse only)
   for (const [vw, vh] of sizes) {
     const tag = `${vw}x${vh}`;
     const s = await open(vw, vh, '', 'ui ' + tag);
-    const { ready, from } = await s.go('wt_fans=100000');
+    const { ready, from } = await s.go('wt_fans=100000&wt_buy=' + encodeURIComponent('outfit:peach-navy,hair:blonde'));
     if (!ready) { wfail(`${tag}: no ready line`); await s.ctx.close(); continue; }
     const trunkLine = await s.wait(/^WT_WARDROBE_TRUNK place=coffee pos=/, 3000, from);
     if (!trunkLine) wfail(`${tag}: the coffee place has no wardrobe trunk`); else step(`${tag}: ${trunkLine.text}`);
-    if (!s.lastLine(lookRe('outfit=tour hair=chestnut guitar=classic dog=none lights=tour'))) wfail(`${tag}: a new save did not start in the default look: ` + s.lastLine(/^WT_WARDROBE look/));
     await sleep(1500);
     await s.shot('world_trunk');
     const tl = s.lastLine(/^WT_SHOP_TARGET trunk=/);
@@ -77,76 +76,78 @@ export async function wardrobeTests(o) {
     let m0 = s.mark();
     await s.click([+tm[1], +tm[2]]);
     const opened = await s.wait(/^WT_WARDROBE_OPEN/, 25000, m0);
-    if (!opened) { wfail(`${tag}: clicking the trunk never opened the shop`); await s.shot('open_missing'); await s.ctx.close(); continue; }
+    if (!opened) { wfail(`${tag}: clicking the trunk never opened the editor`); await s.shot('open_missing'); await s.ctx.close(); continue; }
     step(`${tag}: ${opened.text}`);
-    const rdy = await s.wait(/^WT_WARDROBE_READY/, 8000, m0);
-    if (!rdy) { wfail(`${tag}: the shop screen never got ready`); await s.ctx.close(); continue; }
-    await sleep(1400);
+    const rdy = await s.wait(/^WT_AVATAR_READY/, 8000, m0);
+    if (!rdy) { wfail(`${tag}: the editor never got ready`); await s.ctx.close(); continue; }
+    await sleep(1000);
     let hits = await s.hits(m0);
-    if (!hits || !hits['outfit:peach-navy'] || !hits.act || !hits.back || !hits.tab_hair) { wfail(`${tag}: hits missing: ` + JSON.stringify(hits)); await s.shot('hits_missing'); await s.ctx.close(); continue; }
-    await s.shot('shop_outfits');
+    if (!hits || !hits.Back || !hits.Tab_hair || !hits.Tab_top || !hits.Tab_outfits || !Object.keys(hits).some(k => k.startsWith('Item_'))) { wfail(`${tag}: hits missing: ` + JSON.stringify(hits && Object.keys(hits))); await s.shot('hits_missing'); await s.ctx.close(); continue; }
+    await s.shot('editor_tops');
+    const before = s.lastLine(/^WT_WARDROBE look/);
 
-    // try peach + navy on: the look changes, the save does not
+    // a top in another color: the look changes and is saved at once
     m0 = s.mark();
-    await s.click(hits['outfit:peach-navy']);
-    if (!await s.wait(lookRe('outfit=peach-navy'), 5000, m0)) wfail(`${tag}: selecting peach + navy did not put it on the Star`);
-    await sleep(900);
-    await s.shot('shop_tryon_peach');
-    let save = await s.save();
-    if (save.inventory.equipped.outfit) wfail(`${tag}: a try-on was saved as worn (${save.inventory.equipped.outfit})`);
-    const bal0 = save.fans.balance;
-    hits = await s.hits(m0);
-
-    // two-tap buy
-    m0 = s.mark();
-    await s.click(hits.act);
-    let press = await s.wait(/^WT_SHOP_PRESS id=outfit:peach-navy outcome=armed/, 5000, m0);
-    if (!press) wfail(`${tag}: the first tap on buy did not arm it`);
-    save = await s.save();
-    if (save.fans.balance !== bal0) wfail(`${tag}: the first tap spent fans`);
+    await s.click(hits.Color_5 || hits.Color_3);
+    const pick = await s.wait(/^WT_AVATAR_PICK slot=top .*color=(5|3) /, 5000, m0);
+    if (!pick) wfail(`${tag}: choosing a color did not change her top: ` + s.lastLine(/^WT_AVATAR_PICK/));
     await sleep(700);
-    hits = await s.hits(m0);
-    await s.click(hits.act);
-    press = await s.wait(/^WT_SHOP_PRESS id=outfit:peach-navy outcome=bought/, 5000, m0);
-    if (!press) wfail(`${tag}: the second tap did not buy it`);
-    await sleep(900);
-    save = await s.save();
-    w.numbers[tag + ' balance'] = [bal0, save.fans.balance];
-    if (save.fans.balance !== bal0 - 5000) wfail(`${tag}: buying peach + navy left balance ${save.fans.balance} (want ${bal0 - 5000})`);
-    if (save.inventory.equipped.outfit !== 'peach-navy' || !save.inventory.owned.includes('outfit:peach-navy')) wfail(`${tag}: the purchase is not in the save: ` + JSON.stringify(save.inventory));
-    if (save.fans.lifetime < 100000) wfail(`${tag}: lifetime fans went down`);
-    await s.shot('shop_bought');
+    let save = await s.save();
+    if (!save.avatar || !JSON.stringify(save.avatar).includes('|' + (/color=(\d+)/.exec(pick ? pick.text : '') || [0, 5])[1] + '|')) wfail(`${tag}: the new color is not in the save: ` + JSON.stringify(save.avatar).slice(0, 200));
+    if (s.lastLine(/^WT_WARDROBE look/) === before) wfail(`${tag}: the Star's look did not change on screen`);
+    await s.shot('editor_color');
 
-    // another shelf: try a hair colour, leave without buying
-    hits = await s.hits(m0);
+    // another item, on the hair tab
     m0 = s.mark();
-    await s.click(hits.tab_hair);
+    await s.click(hits.Tab_hair);
     hits = await s.hits(m0);
-    if (!hits || !hits['hair:blonde']) { wfail(`${tag}: no hair shelf`); await s.ctx.close(); continue; }
+    const hairItems = Object.keys(hits || {}).filter(k => k.startsWith('Item_hair:'));
+    if (hairItems.length < 2) { wfail(`${tag}: the hair tab lists ${hairItems.length} owned styles (want 2 or more)`); await s.ctx.close(); continue; }
     m0 = s.mark();
-    await s.click(hits['hair:blonde']);
-    if (!await s.wait(lookRe('outfit=peach-navy hair=blonde'), 5000, m0)) wfail(`${tag}: trying blonde hair on did not show: ` + s.lastLine(/^WT_WARDROBE look/));
-    await sleep(900);
-    await s.shot('shop_tryon_hair');
-    hits = await s.hits(m0);
-    m0 = s.mark();
-    await s.click(hits.back);
-    const closed = await s.wait(/^WT_WARDROBE_CLOSE look outfit=peach-navy hair=chestnut/, 6000, m0);
-    if (!closed) wfail(`${tag}: leaving without buying did not put the saved look back: ` + s.lastLine(/^WT_WARDROBE_CLOSE/));
-    save = await s.save();
-    if (save.inventory.equipped.hair) wfail(`${tag}: the hair she only tried on was saved (${save.inventory.equipped.hair})`);
-    if (!await s.wait(/^WT_WORLD_MODE mode=Free/, 6000, m0)) wfail(`${tag}: the world did not come back after the shop`);
-    await sleep(1200);
-    await s.shot('after_shop');
+    await s.click(hits[hairItems[1]]);
+    if (!await s.wait(/^WT_AVATAR_PICK slot=hair id=hair:/, 5000, m0)) wfail(`${tag}: picking a hair style logged nothing`);
+    await sleep(700);
+    await s.shot('editor_hair');
 
-    // reload: the outfit is on her again
+    // skin tone and the outfit slots
+    hits = await s.hits(m0);
+    m0 = s.mark();
+    await s.click(hits.Tab_skin);
+    hits = await s.hits(m0);
+    m0 = s.mark();
+    await s.click(hits.Skin_3);
+    if (!await s.wait(/^WT_AVATAR_PICK slot=hair .*skin=3/, 5000, m0)) wfail(`${tag}: picking a skin tone logged nothing`);
+    hits = await s.hits(m0);
+    m0 = s.mark();
+    await s.click(hits.Tab_outfits);
+    hits = await s.hits(m0);
+    m0 = s.mark();
+    await s.click(hits.Save_1);
+    if (!await s.wait(/^WT_AVATAR_PICK outfit=1 word=/, 5000, m0)) wfail(`${tag}: saving an outfit logged nothing`);
+    await sleep(500);
+    save = await s.save();
+    if (!save.avatar || !/"outfits"/.test(JSON.stringify(save.avatar))) wfail(`${tag}: the saved outfit is not in the save`);
+    await s.shot('editor_outfits');
+    hits = await s.hits(m0);
+
+    // done closes it with the mouse, the world comes back
+    m0 = s.mark();
+    await s.click(hits.Back);
+    if (!await s.wait(/^WT_WARDROBE_CLOSE/, 6000, m0)) wfail(`${tag}: Done did not close the editor`);
+    if (!await s.wait(/^WT_WORLD_MODE mode=Free/, 6000, m0)) wfail(`${tag}: the world did not come back after the editor`);
+    await sleep(1000);
+    await s.shot('after_editor');
+    const worn = s.lastLine(/^WT_WARDROBE look/);
+
+    // reload: the same look is on her again
     m0 = s.mark();
     await s.page.reload({ waitUntil: 'load' });
     const r2 = await s.wait(/^WT_WORLD_GAME_READY/, READY_TIMEOUT_MS, m0);
     if (!r2) { wfail(`${tag}: no ready line after reload`); await s.ctx.close(); continue; }
-    if (!await s.wait(lookRe('outfit=peach-navy hair=chestnut guitar=classic dog=none lights=tour'), 3000, m0)) wfail(`${tag}: after a reload she is not wearing peach + navy: ` + s.lastLine(/^WT_WARDROBE look/));
-    else step(`${tag}: after reload ${s.lastLine(/^WT_WARDROBE look/)}`);
     await sleep(1500);
+    const again = s.lastLine(/^WT_WARDROBE look/);
+    if (!again || !/skin=3 /.test(again + ' ') ) wfail(`${tag}: after a reload her look is not the saved one: ${again}`);
+    else step(`${tag}: after reload ${again}`);
     await s.shot('after_reload');
     await s.ctx.close();
   }
@@ -169,7 +170,7 @@ export async function wardrobeTests(o) {
       const s = await open(vw, vh, '', `${name} ${tag}`);
       const { ready, from } = await s.go(`wt_fans=300000&wt_buy=${encodeURIComponent(buy)}&wt_shop=${encodeURIComponent(sel)}`);
       if (!ready) { wfail(`${tag} ${name}: no ready line`); await s.ctx.close(); continue; }
-      const op = await s.wait(/^WT_WARDROBE_READY/, 20000, from);
+      const op = await s.wait(/^WT_AVATAR_READY/, 20000, from);
       if (!op) { wfail(`${tag} ${name}: the shop did not open`); await s.shot(name + '_missing'); await s.ctx.close(); continue; }
       await sleep(1800);
       await s.shot(name);

@@ -4,8 +4,8 @@
 //                                 [--shots <dir>] [--out <results.json>] [--fullshow coffee] [--fans 2000000]
 //
 // Starts in --from (a fresh save with ?wt_fans=N, or the localStorage saved in --state by the previous leg), visits each place up to and including --to, and travels
-// to the next through the exit card (the tour map). In each place (forward): talks to all three crew, plays one typed gig to the end, opens the wardrobe and tries an item
-// on, walks to the stage and starts the show: song 1 right, song 2 a deliberate miss then right, song 3 with a hint then right, then quits (or plays all ten with --fullshow).
+// to the next through the exit card (the tour map). In each place (forward): talks to all three crew, plays one typed gig to the end, opens the wardrobe editor and puts a color
+// on her top, walks to the stage and starts the show: song 1 right, song 2 a deliberate miss then right, song 3 with a hint then right, then quits (or plays all ten with --fullshow).
 // With --dir back it only walks place to place through the exits, towards coffee. All WT_AUDIO lines are collected. After each leg the save is written to --state.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -271,30 +271,31 @@ async function visit(id) {
   if (!opened) { pf('the wardrobe trunk never opened'); await shot(`tour_${id}_trunk_missing`); }
   else {
     const m0 = opened.i;
-    if (!await waitLine(/^WT_WARDROBE_READY/, 8000, m0)) pf('shop not ready');
+    if (!await waitLine(/^WT_AVATAR_READY/, 8000, m0)) pf('editor not ready');
     await sleep(1400);
     await shot(`tour_${id}_shop`);
-    await waitLine(/^WT_HITS screen=backstage /, 6000, m0);
-    const all = lines.slice(m0).filter(l => l.text.startsWith('WT_HITS screen=backstage '));
+    await waitLine(/^WT_HITS screen=avatar /, 6000, m0);
+    const all = lines.slice(m0).filter(l => l.text.startsWith('WT_HITS screen=avatar '));
     const last = all.length ? all[all.length - 1].text : '';
     const hits = {};
     for (const mm of last.matchAll(/ (\S+?)=([\d.]+),([\d.]+)/g)) hits[mm[1]] = [Math.round(+mm[2] * vw), Math.round(+mm[3] * vh)];
-    const outfit = Object.keys(hits).find(k => k.startsWith('outfit:') && k !== 'outfit:tour') || Object.keys(hits).find(k => k.startsWith('outfit:'));
     P.hitKeys = Object.keys(hits);
-    if (outfit) {
+    // the editor lists what she owns: put a color on her top (every change is worn and saved at once)
+    const swatch = ['Color_5', 'Color_3', 'Color_2'].find(k => hits[k]);
+    if (swatch) {
       const mt = mark();
-      await page.mouse.click(hits[outfit][0], hits[outfit][1]);
-      const l = await waitLine(/^WT_WARDROBE look/, 4000, mt);
-      step(`try on ${outfit}: ${l ? l.text : 'no look line'}`);
-      if (!l) pf('trying an outfit on logged no look');
+      await page.mouse.click(hits[swatch][0], hits[swatch][1]);
+      const l = await waitLine(/^WT_AVATAR_PICK slot=/, 4000, mt);
+      step(`wear ${swatch}: ${l ? l.text : 'no pick line'}`);
+      if (!l) pf('choosing a color logged no pick');
       await sleep(900); await shot(`tour_${id}_tryon`);
-    } else pf('no outfit buttons in the shop hits: ' + P.hitKeys.join(','));
-    if (hits.back) {
+    } else pf('no color swatches in the editor hits: ' + P.hitKeys.join(','));
+    if (hits.Back) {
       const mc = mark();
-      await page.mouse.click(hits.back[0], hits.back[1]);
-      if (!await waitLine(/^WT_WARDROBE_CLOSE/, 6000, mc)) pf('Back did not close the shop');
+      await page.mouse.click(hits.Back[0], hits.Back[1]);
+      if (!await waitLine(/^WT_WARDROBE_CLOSE/, 6000, mc)) pf('Done did not close the editor');
       await waitLine(/^WT_WORLD_MODE mode=Free/, 6000, mc);
-    } else { pf('no back button hit'); await key('Escape', 500); }
+    } else { pf('no done button hit'); await key('Escape', 500); }
     await sleep(800);
   }
 

@@ -134,7 +134,7 @@ async function visit(browser, server, id, size, mode) {
     let lastClick = 0, lastPos = null, lastMove = Date.now();
     while (Date.now() < end) {
       if (done()) return true;
-      // a click on the wardrobe trunk on the way opens the backstage panel: close it by clicking its "back to the street" button
+      // a click on the wardrobe trunk on the way opens the wardrobe editor: close it by clicking done
       if (modeNow() === 'Panel') { await closeWardrobe('on the way to ' + name); continue; }
       // tester fix 8.4: a stray click on a crew member on the way to the exit opens a normal talk; a child closes it with its "not now" button (or ok) and walks on
       if (name === 'exit' && modeNow() === 'Dialog' && !done()) { const mc = mark(); await pressFirst(mc, 'not'); await sleep(500); if (modeNow() === 'Dialog') await pressFirst(mark(), 'ok'); await sleep(500); continue; }
@@ -158,12 +158,12 @@ async function visit(browser, server, id, size, mode) {
     return done();
   }
 
-  // the open backstage panel: click its "back to the street" button (positions from the WT_HITS line the screen logs, as fractions of the page)
+  // the open wardrobe editor: click its "done" button (positions from the WT_HITS line the editor logs, as fractions of the page)
   async function closeWardrobe(where) {
     const m = mark();
     for (let n = 0; n < 40; n++) {
-      const l = lastLine(/^WT_HITS screen=backstage /);
-      const mm = l && / back=([\d.]+),([\d.]+)/.exec(l.text);
+      const l = lastLine(/^WT_HITS screen=avatar /);
+      const mm = l && / Back=([\d.]+),([\d.]+)/.exec(l.text);
       if (mm) {
         await click(Math.round(+mm[1] * vw), Math.round(+mm[2] * vh));
         if (await waitLine(/^WT_WARDROBE_CLOSE|^WT_WORLD_MODE mode=Free/, 2500, m)) return true;
@@ -192,7 +192,7 @@ async function visit(browser, server, id, size, mode) {
     if (!await closeWardrobe('after opening it')) return false;
     await sleep(800);
     if (modeNow() !== 'Free') { gfail('after the wardrobe closed the world is not hers: mode ' + modeNow()); return false; }
-    step('opened the wardrobe by clicking the trunk and closed it by clicking back');
+    step('opened the wardrobe by clicking the trunk and closed it by clicking done');
     return true;
   }
 
@@ -466,6 +466,9 @@ async function visit(browser, server, id, size, mode) {
       run.maxFrameMs = normal.length ? Math.round(Math.max(...normal.map(f => f[1]))) : null;
       run.maxTravelFrameMs = trav.length ? Math.round(Math.max(...trav.map(f => f[1]))) : null;
       run.worst = worst;
+      // phase 10B.1: the game's own probe (WT_HITCH, only with ?wt_test) says what each frame over 70 ms was made of: dt in all, scr the scripts, gc collections, mem MB, rs the last camera scan
+      run.probe = h.lines.filter(l => l.text.startsWith('WT_HITCH')).map(l => l.text.trim());
+      if (run.probe.length) console.log(`${label}: ${run.probe.length} frame(s) over 70 ms: ${run.probe.slice(0, 12).join(' | ')}`);
       if (run.maxFrameMs !== null && run.maxFrameMs > hitchMs) gfail(`longest frame ${run.maxFrameMs} ms (limit ${hitchMs}): ${worst.join('; ')}`);
     } catch (e) { /* page already gone */ }
     if (g.errors.length) gfail(`${g.errors.length} console error(s): ${g.errors.slice(0, 3).join(' | ').slice(0, 300)}`);

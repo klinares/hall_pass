@@ -3,8 +3,9 @@
 // The default save is fixtures/old_save_v1.json: the real "worldtour.v1" blob written by the build that shipped before 9.2 (a tour of
 // coffee and records with a gig and a show played, every place unlocked, 2,023,600 fans, the wardrobe tried on). It is put into
 // localStorage before the page loads. Checks: the game reaches WT_WORLD_GAME_READY with the same fan count, resumes in the saved place,
-// the save keeps its version and key, and after the game has re-saved, every earned thing (fans, venues, skills, words,
-// review queue, shows, inventory, journal, world) is identical to the fixture. A second run with storage blocked still starts and moves.
+// the save moves up to version 3 under the same key (phase 10B.1 adds fans.coins and fans.coinsGranted), and after the game has re-saved, every earned thing (venues, skills,
+// words, review queue, shows, inventory, journal, world, and the fan counts) is identical to the fixture. The one change is the one-time coin grant: lifetime fans / 500, at
+// most 500, once (a reload does not grant it again) and fans are never touched. A second run with storage blocked still starts and moves.
 import { createRequire } from 'node:module';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -36,6 +37,8 @@ async function open(init, blocked) {
 const wait = async (h, re, ms = 60000) => { const end = Date.now() + ms; while (Date.now() < end) { const l = h.lines.find(x => re.test(x)); if (l) return l; await sleep(100); } return null; };
 const save = h => h.page.evaluate(() => { try { return JSON.parse(localStorage.getItem('worldtour.v1')); } catch (e) { return null; } });
 const seed = JSON.parse(state);
+const NOW = 3;   // SaveBlob.Version
+const grant = Math.min(500, Math.floor(seed.fans.lifetime / 500));
 
 // the old save loads
 let h = await open(state);
@@ -46,13 +49,24 @@ check(fans === seed.fans.lifetime, `the game shows ${fans} fans, the save had ${
 const resume = await wait(h, /^WT_WORLD_RESUME/, 5000), arrived = await wait(h, new RegExp('^WT_WORLD_ARRIVED place=' + seed.world.place), 30000);
 check(!!resume && resume.includes('place=' + seed.world.place) && !!arrived, 'the game resumes in the saved place ' + seed.world.place + ': ' + resume + ' / ' + arrived);
 const sr = await wait(h, /^WT_SAVE_READY/, 5000);
-check(!!sr && new RegExp('v=' + seed.v + ' ').test(sr), 'the save loads as version ' + seed.v + ': ' + sr);
+check(!!sr && new RegExp('v=(' + seed.v + '|' + NOW + ') ').test(sr), 'the save loads (version ' + seed.v + ' or ' + NOW + '): ' + sr);
 await sleep(4000);
 const after = await save(h);
-check(!!after && after.v === seed.v, 'the save is still version ' + seed.v + ' under worldtour.v1');
-for (const k of ['fans', 'venues', 'skills', 'words', 'review', 'shows', 'inventory', 'journal', 'streak'])
+check(!!after && after.v === NOW, 'the save is now version ' + NOW + ' under worldtour.v1: ' + (after && after.v));
+const fansOf = f => f && JSON.stringify({ balance: f.balance, lifetime: f.lifetime });
+check(after && fansOf(after.fans) === fansOf(seed.fans), 'fans balance and lifetime are unchanged: ' + fansOf(after && after.fans));
+check(after && after.fans.coins === grant && after.fans.coinsGranted === true, `the coins were granted once: ${after && after.fans.coins} (want ${grant}) coinsGranted=${after && after.fans.coinsGranted}`);
+for (const k of ['venues', 'skills', 'words', 'review', 'shows', 'inventory', 'journal', 'streak'])
   check(after && JSON.stringify(after[k]) === JSON.stringify(seed[k]), `${k} is unchanged after the game re-saved`);
 check(after && after.world && after.world.place === seed.world.place && (after.world.metCrew || []).join() === (seed.world.metCrew || []).join(), 'world place and met crew are unchanged');
+// a second load must not grant again
+await h.page.reload({ waitUntil: 'load' });
+await wait(h, /^WT_SAVE_READY/, 5000);
+for (let n = 0; n < 600 && h.lines.filter(l => l.startsWith('WT_WORLD_GAME_READY')).length < 2; n++) await sleep(100);
+check(h.lines.filter(l => l.startsWith('WT_WORLD_GAME_READY')).length >= 2, 'the page reloads and is ready again');
+await sleep(3000);
+const again = await save(h);
+check(again && again.fans.coins === grant && fansOf(again.fans) === fansOf(seed.fans), `after a reload coins are still ${grant} and fans unchanged: ${again && again.fans.coins}`);
 check(h.errs.length === 0, 'no console errors: ' + h.errs.slice(0, 2).join(' | '));
 await h.ctx.close();
 

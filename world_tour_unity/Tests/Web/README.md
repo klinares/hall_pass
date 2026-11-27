@@ -4,7 +4,8 @@ All of these test the 3D game in `world/` in a real (headless) Chrome (the smoke
 
 - `world_smoke.mjs [--gpu d3d11]`: loads `world/` at 1366x768 and 1920x1080, waits for `WT_WORLD_READY`, moves by keyboard and by click, measures fps, plays a gig and a show, visits places and the wardrobe (uses `world_places.mjs` and `world_wardrobe.mjs`).
 - `world_places.mjs`: the place-by-place checks used by the smoke test (also runnable alone).
-- `world_gpu.mjs`: GPU, context-loss and memory checks.
+- `world_gpu.mjs`: GPU, context-loss (mid-walk, mid-show, with the avatar editor open and inside the boutique) and memory checks.
+- `world_memory.mjs [--gpu d3d11] [--changes 200] [--visits 20]`: the memory soak (phase 10B.1). 200 avatar editor changes by mouse and 20 boutique visits (in, try 12 items on, out) in one session, sampling live WebGL resources, wasm heap and JS heap at the start and every 50 changes or 5 visits; after the first warm-up sample every one must stay within 10 percent. Prints the numbers; results go to `Temp/world-memory.json`. Uses the `?wt_test` hook `WorldGame.TestBoutique`.
 - `world_stability.mjs`: nothing gets stuck, no frame hitches.
 - `world_tour.mjs`: the whole tour in legs; with `--state <file>` it writes the save it ended with.
 - `world_warm_load.mjs`: first and second load times.

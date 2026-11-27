@@ -79,6 +79,21 @@ const pos1 = lines.filter(l => l.startsWith('WT_WORLD_POS')).pop();
 const xy = l => (l || '').replace(/fps=\S+/, '').replace(/t=\S+/, '');
 check(xy(pos0) === xy(pos1), 'clicking the sliders did not walk her');
 
+// phase 10B.1: both at zero, then a reload: zero is a saved value, it does not fall back to the 40 and 100 defaults
+await page.keyboard.press('Escape');
+await sleep(400);
+m = lines.length;
+await page.reload({ waitUntil: 'load' });
+check((await wait(/^WT_WORLD_GAME_READY/, 120000, m)) >= 0, 'ready after a reload with both sliders off');
+await sleep(1000);
+let s2z = await save();
+check(!!s2z && s2z.settings.ambience === 0 && s2z.settings.effects === 0, 'both sliders are still off after a reload: ' + JSON.stringify(s2z && s2z.settings));
+m = lines.length;
+await clickAt(...BUTTON);
+check((await wait(/^WT_SOUND_TOGGLE open/, 3000, m)) >= 0, 'the card opens after the reload with both off');
+await sleep(400);
+await page.screenshot({ path: path.join(shots, 'sound_card_off_reloaded.png') });
+
 // back to something audible, then a reload keeps it
 await setStep(0, 4);
 await setStep(1, 10);
